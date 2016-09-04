@@ -4,7 +4,15 @@ Imports System.Math
 Imports System.Globalization
 Imports System.Threading
 
+'------- Korrel groepen in de inlaat stroom------
+Public Structure Korrel_struct
+    Public dia As Double            'Particle diameter [mu]
+    Public aandeel As Double        'Aandeel in de inlaat stroom [% weight]
+    Public verlies As Double        'verlies (nietgevangen) [-]
+End Structure
+
 Public Class Form1
+    Public korrel(22) As Korrel_struct    '22 korrel groepen
 
     'Type AC;Inlaatbreedte;Inlaathoogte;Inlaatlengte;Inlaat hartmaat;Inlaat afschuining;
     'Uitlaat keeldia inw.;Uitlaat flensdiameter inw.;Lengte insteekpijp inw.;
@@ -73,12 +81,13 @@ Public Class Form1
         End If
     End Sub
 
-    Private Sub button1_Click(sender As Object, e As EventArgs) Handles button1.Click, TabPage1.Enter, numericUpDown5.ValueChanged, numericUpDown9.ValueChanged, numericUpDown8.ValueChanged, numericUpDown7.ValueChanged, numericUpDown6.ValueChanged, numericUpDown13.ValueChanged, numericUpDown12.ValueChanged, numericUpDown11.ValueChanged, numericUpDown10.ValueChanged, ComboBox1.SelectedValueChanged, numericUpDown3.ValueChanged, numericUpDown2.ValueChanged, numericUpDown14.ValueChanged, NumericUpDown1.ValueChanged, NumericUpDown15.ValueChanged, CheckBox1.CheckedChanged
+    Private Sub button1_Click(sender As Object, e As EventArgs) Handles button1.Click, TabPage1.Enter, numericUpDown5.ValueChanged, numericUpDown9.ValueChanged, numericUpDown8.ValueChanged, numericUpDown7.ValueChanged, numericUpDown6.ValueChanged, numericUpDown12.ValueChanged, numericUpDown11.ValueChanged, numericUpDown10.ValueChanged, ComboBox1.SelectedValueChanged, numericUpDown3.ValueChanged, numericUpDown2.ValueChanged, numericUpDown14.ValueChanged, NumericUpDown1.ValueChanged, NumericUpDown15.ValueChanged, CheckBox1.CheckedChanged
         Dim words() As String
         Dim cyl_dim(20), db As Double
         Dim in_hoog, in_breed, Body_dia, Flow, inlet_velos, delta_p, K_waarde As Double
-
         Dim ro_gas, ro_particle, visco, wc As Double
+
+        Dim Totaal_korrel_verlies As Double  'Berekende verlies
 
         If (ComboBox1.SelectedIndex > -1) Then      'Prevent exceptions
             words = cyl_dimensions(ComboBox1.SelectedIndex).Split(";")
@@ -136,16 +145,61 @@ Public Class Form1
 
             TextBox23.Text = Round(K_waarde, 4).ToString           'Stokes waarde tov Standaard cycloon
             draw_chart()
+            '---------- Check speed ---------------
+            If inlet_velos < 14 Or inlet_velos > 22 Then
+                TextBox16.BackColor = Color.Red
+            Else
+                TextBox16.BackColor = Color.LightGreen
+            End If
 
+            '--------- Inlet korrel data -----------
+            korrel(0).dia = 1
+            korrel(1).dia = 3
+            korrel(2).dia = 5
+            korrel(3).dia = 8
+            korrel(4).dia = 14
+            korrel(5).dia = 24
+            korrel(6).dia = 40
+            korrel(7).dia = 75
 
-            TextBox24.Text = Round(calc_verlies(1) * 100, 1).ToString
-            TextBox25.Text = Round(calc_verlies(3) * 100, 1).ToString
-            TextBox26.Text = Round(calc_verlies(5) * 100, 1).ToString
-            TextBox27.Text = Round(calc_verlies(8) * 100, 1).ToString
-            TextBox28.Text = Round(calc_verlies(14) * 100, 1).ToString
-            TextBox29.Text = Round(calc_verlies(24) * 100, 1).ToString
-            TextBox30.Text = Round(calc_verlies(40) * 100, 1).ToString
-            TextBox31.Text = Round(calc_verlies(75) * 100, 1).ToString
+            korrel(0).aandeel = numericUpDown6.Value / 100  'Percentale van de inlaat stof belasting
+            korrel(1).aandeel = numericUpDown7.Value / 100
+            korrel(2).aandeel = numericUpDown8.Value / 100
+            korrel(3).aandeel = numericUpDown9.Value / 100
+            korrel(4).aandeel = numericUpDown10.Value / 100
+            korrel(5).aandeel = numericUpDown11.Value / 100
+            korrel(6).aandeel = numericUpDown12.Value / 100
+
+            '---- moet opgeteld 100% zijn --------------
+            korrel(7).aandeel = 1
+            For h = 0 To 6
+                korrel(7).aandeel -= korrel(h).aandeel
+            Next
+            numericUpDown13.Value = korrel(7).aandeel * 100
+
+            If korrel(7).aandeel < 0 Or korrel(7).aandeel > 1 Then
+                numericUpDown13.BackColor = Color.Red
+            Else
+                numericUpDown13.BackColor = Color.LightGreen
+            End If
+
+            '--------- overall resultaat --------------------
+            Totaal_korrel_verlies = 0
+            For h = 0 To 7
+                korrel(h).verlies = calc_verlies(korrel(h).dia)
+                Totaal_korrel_verlies += korrel(0).aandeel * korrel(h).verlies
+            Next h
+
+            TextBox24.Text = Round(korrel(0).verlies * 100, 1).ToString
+            TextBox25.Text = Round(korrel(1).verlies * 100, 1).ToString
+            TextBox26.Text = Round(korrel(2).verlies * 100, 1).ToString
+            TextBox27.Text = Round(korrel(3).verlies * 100, 1).ToString
+            TextBox28.Text = Round(korrel(4).verlies * 100, 1).ToString
+            TextBox29.Text = Round(korrel(5).verlies * 100, 1).ToString
+            TextBox30.Text = Round(korrel(6).verlies * 100, 1).ToString
+            TextBox31.Text = Round(korrel(7).verlies * 100, 1).ToString
+            TextBox32.Text = Round(Totaal_korrel_verlies * 100, 1).ToString 'Totaal verlies [-]
+            TextBox33.Text = Round(Totaal_korrel_verlies * NumericUpDown4.Value, 2).ToString 'Totaal verlies [kg/s]
         End If
     End Sub
     '-------- Bereken het verlies getal -----------
@@ -158,7 +212,6 @@ Public Class Form1
         Double.TryParse(TextBox23.Text, kwaarde)
 
         '-------------- korrelgrootte factoren ------
-        Label64.Text = ComboBox1.SelectedIndex.ToString
         words = rekenlijnen(ComboBox1.SelectedIndex).Split(";")
 
         dia_krit = words(1)
@@ -208,7 +261,7 @@ Public Class Form1
         Chart1.Titles.Add("Verlies Curve")
         Chart1.ChartAreas("ChartArea0").AxisX.Title = "particle dia [mu]"
 
-        Chart1.ChartAreas("ChartArea0").AxisY.Title = "Loss[-]"
+        Chart1.ChartAreas("ChartArea0").AxisY.Title = "Loss [%] (niet gevangen)"
         Chart1.ChartAreas("ChartArea0").AxisY.Minimum = 0       'Loss
         Chart1.ChartAreas("ChartArea0").AxisY.Maximum = 100     'Loss
         Chart1.ChartAreas("ChartArea0").AxisY.Interval = 10     'Interval
@@ -216,11 +269,11 @@ Public Class Form1
         If CheckBox1.Checked Then
             Chart1.ChartAreas("ChartArea0").AxisX.IsLogarithmic = True
             Chart1.ChartAreas("ChartArea0").AxisX.Minimum = 1     'Particle size
-            Chart1.ChartAreas("ChartArea0").AxisX.Maximum = 100      'Particle size
+            Chart1.ChartAreas("ChartArea0").AxisX.Maximum = 100   'Particle size
         Else
             Chart1.ChartAreas("ChartArea0").AxisX.IsLogarithmic = False
             Chart1.ChartAreas("ChartArea0").AxisX.Minimum = 0     'Particle size
-            Chart1.ChartAreas("ChartArea0").AxisX.Maximum = 40     'Particle size
+            Chart1.ChartAreas("ChartArea0").AxisX.Maximum = 40    'Particle size
         End If
 
         '----- now calc --------------------------
