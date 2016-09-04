@@ -73,7 +73,7 @@ Public Class Form1
         End If
     End Sub
 
-    Private Sub button1_Click(sender As Object, e As EventArgs) Handles button1.Click, TabPage1.Enter, numericUpDown5.ValueChanged, numericUpDown9.ValueChanged, numericUpDown8.ValueChanged, numericUpDown7.ValueChanged, numericUpDown6.ValueChanged, numericUpDown13.ValueChanged, numericUpDown12.ValueChanged, numericUpDown11.ValueChanged, numericUpDown10.ValueChanged, ComboBox1.SelectedValueChanged, numericUpDown3.ValueChanged, numericUpDown2.ValueChanged, numericUpDown14.ValueChanged, NumericUpDown1.ValueChanged, NumericUpDown15.ValueChanged
+    Private Sub button1_Click(sender As Object, e As EventArgs) Handles button1.Click, TabPage1.Enter, numericUpDown5.ValueChanged, numericUpDown9.ValueChanged, numericUpDown8.ValueChanged, numericUpDown7.ValueChanged, numericUpDown6.ValueChanged, numericUpDown13.ValueChanged, numericUpDown12.ValueChanged, numericUpDown11.ValueChanged, numericUpDown10.ValueChanged, ComboBox1.SelectedValueChanged, numericUpDown3.ValueChanged, numericUpDown2.ValueChanged, numericUpDown14.ValueChanged, NumericUpDown1.ValueChanged, NumericUpDown15.ValueChanged, CheckBox1.CheckedChanged
         Dim words() As String
         Dim cyl_dim(20), db As Double
         Dim in_hoog, in_breed, Body_dia, Flow, inlet_velos, delta_p, K_waarde As Double
@@ -87,8 +87,8 @@ Public Class Form1
             Next
 
             db = numericUpDown5.Value           'Body diameter
-            in_hoog = cyl_dim(1) * db
-            in_breed = cyl_dim(2) * db
+            in_hoog = cyl_dim(1) * db           '[m]
+            in_breed = cyl_dim(2) * db          '[m]
             Body_dia = numericUpDown5.Value     '[m]
             Flow = NumericUpDown1.Value         '[m3/s]
             ro_gas = numericUpDown3.Value       '[kg/m3]
@@ -103,10 +103,11 @@ Public Class Form1
             delta_p = 0.5 * ro_gas * inlet_velos ^ 2 * wc
 
             '----------- K_waarde-----------------------------------
-            K_waarde = db * 2000 * visco * 16 / (1000 * ro_particle * 0.0181 * inlet_velos)
+            K_waarde = db * 2000 * visco * 16 / (ro_particle * 0.0181 * inlet_velos)
             K_waarde = Sqrt(K_waarde)
 
-            calc_verlies(NumericUpDown15.Value)
+
+            TextBox22.Text = Round(calc_verlies(NumericUpDown15.Value) * 100, 1).ToString       'verlies getal[%]
 
             '----------- presenteren ----------------------------------
             TextBox1.Text = Round(in_hoog, 2).ToString              'inlaat breedte
@@ -135,13 +136,26 @@ Public Class Form1
 
             TextBox23.Text = Round(K_waarde, 4).ToString           'Stokes waarde tov Standaard cycloon
             draw_chart()
+
+
+            TextBox24.Text = Round(calc_verlies(1) * 100, 1).ToString
+            TextBox25.Text = Round(calc_verlies(3) * 100, 1).ToString
+            TextBox26.Text = Round(calc_verlies(5) * 100, 1).ToString
+            TextBox27.Text = Round(calc_verlies(8) * 100, 1).ToString
+            TextBox28.Text = Round(calc_verlies(14) * 100, 1).ToString
+            TextBox29.Text = Round(calc_verlies(24) * 100, 1).ToString
+            TextBox30.Text = Round(calc_verlies(40) * 100, 1).ToString
+            TextBox31.Text = Round(calc_verlies(75) * 100, 1).ToString
         End If
     End Sub
     '-------- Bereken het verlies getal -----------
     '----- de input is de korrel grootte-----------
     Private Function calc_verlies(korrel_g As Double)
         Dim words() As String
-        Dim dia_krit, fac_m, fac_a, fac_k, verlies As Double
+        Dim dia_krit, fac_m, fac_a, fac_k, verlies, kwaarde As Double
+
+
+        Double.TryParse(TextBox23.Text, kwaarde)
 
         '-------------- korrelgrootte factoren ------
         Label64.Text = ComboBox1.SelectedIndex.ToString
@@ -160,7 +174,7 @@ Public Class Form1
             fac_a = words(7)
         End If
 
-        verlies = -1 * ((korrel_g - fac_m) / fac_k) ^ fac_a
+        verlies = -((korrel_g / kwaarde - fac_m) / fac_k) ^ fac_a
         verlies = Math.E ^ verlies
 
         '---------- present------------------
@@ -168,7 +182,6 @@ Public Class Form1
         TextBox19.Text = Round(fac_m, 3).ToString               'faktor-m
         TextBox20.Text = Round(fac_k, 3).ToString               'faktor-kappa
         TextBox21.Text = Round(fac_a, 3).ToString               'faktor-a
-        TextBox22.Text = Round(verlies, 3).ToString             'verlies getal
         Return (verlies)
     End Function
 
@@ -183,35 +196,42 @@ Public Class Form1
         Chart1.Titles.Clear()
         Chart1.ChartAreas.Add("ChartArea0")
 
-        For h = 0 To 2
-            Chart1.Series.Add("Series" & h.ToString)
+        ' For h = 0 To 1
+        Chart1.Series.Add("Series" & h.ToString)
             Chart1.Series(h).ChartArea = "ChartArea0"
             Chart1.Series(h).ChartType = DataVisualization.Charting.SeriesChartType.Line
             '  Chart1.Series(schets_no).Name = (Tschets(schets_no).Tname)
             Chart1.Series(h).BorderWidth = 1
             Chart1.Series(h).IsVisibleInLegend = False
-        Next
+        ' Next
 
-        'Chart1.Series(ComboBox2.SelectedIndex).BorderWidth = 4
-        'Chart1.Series(ComboBox2.SelectedIndex).Color = Color.Red
-
-        Chart1.Titles.Add("S curve")
+        Chart1.Titles.Add("Verlies Curve")
         Chart1.ChartAreas("ChartArea0").AxisX.Title = "particle dia [mu]"
+
         Chart1.ChartAreas("ChartArea0").AxisY.Title = "Loss[-]"
-        Chart1.ChartAreas("ChartArea0").AxisY.Minimum = 0
-        Chart1.ChartAreas("ChartArea0").AxisY.Maximum = 1.0
-        Chart1.ChartAreas("ChartArea0").AxisX.Minimum = 0
+        Chart1.ChartAreas("ChartArea0").AxisY.Minimum = 0       'Loss
+        Chart1.ChartAreas("ChartArea0").AxisY.Maximum = 100     'Loss
+        Chart1.ChartAreas("ChartArea0").AxisY.Interval = 10     'Interval
+
+        If CheckBox1.Checked Then
+            Chart1.ChartAreas("ChartArea0").AxisX.IsLogarithmic = True
+            Chart1.ChartAreas("ChartArea0").AxisX.Minimum = 1     'Particle size
+            Chart1.ChartAreas("ChartArea0").AxisX.Maximum = 100      'Particle size
+        Else
+            Chart1.ChartAreas("ChartArea0").AxisX.IsLogarithmic = False
+            Chart1.ChartAreas("ChartArea0").AxisX.Minimum = 0     'Particle size
+            Chart1.ChartAreas("ChartArea0").AxisX.Maximum = 40     'Particle size
+        End If
 
         '----- now calc --------------------------
-        For h = 0 To 40
-            s_points(h, 0) = h                              'Partivle diameter [mu]
-            s_points(h, 1) = calc_verlies(s_points(h, 0))   'Loss [-]
+        For h = 0 To 100
+            s_points(h, 0) = h                                   'Particle diameter [mu]
+            s_points(h, 1) = calc_verlies(s_points(h, 0)) * 100  'Loss [%]
         Next
 
         '------ now present-------------
         For h = 0 To 40 - 1   'Fill line chart
             Chart1.Series(0).Points.AddXY(s_points(h, 0), s_points(h, 1))
         Next h
-
     End Sub
 End Class
