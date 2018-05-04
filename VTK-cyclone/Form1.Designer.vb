@@ -22,9 +22,9 @@ Partial Class Form1
     'Do not modify it using the code editor.
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
-        Dim ChartArea7 As System.Windows.Forms.DataVisualization.Charting.ChartArea = New System.Windows.Forms.DataVisualization.Charting.ChartArea()
-        Dim Legend7 As System.Windows.Forms.DataVisualization.Charting.Legend = New System.Windows.Forms.DataVisualization.Charting.Legend()
-        Dim Series7 As System.Windows.Forms.DataVisualization.Charting.Series = New System.Windows.Forms.DataVisualization.Charting.Series()
+        Dim ChartArea1 As System.Windows.Forms.DataVisualization.Charting.ChartArea = New System.Windows.Forms.DataVisualization.Charting.ChartArea()
+        Dim Legend1 As System.Windows.Forms.DataVisualization.Charting.Legend = New System.Windows.Forms.DataVisualization.Charting.Legend()
+        Dim Series1 As System.Windows.Forms.DataVisualization.Charting.Series = New System.Windows.Forms.DataVisualization.Charting.Series()
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(Form1))
         Me.TabControl1 = New System.Windows.Forms.TabControl()
         Me.TabPage1 = New System.Windows.Forms.TabPage()
@@ -50,6 +50,7 @@ Partial Class Form1
         Me.TextBox19 = New System.Windows.Forms.TextBox()
         Me.Label59 = New System.Windows.Forms.Label()
         Me.GroupBox4 = New System.Windows.Forms.GroupBox()
+        Me.Label73 = New System.Windows.Forms.Label()
         Me.Label11 = New System.Windows.Forms.Label()
         Me.TextBox23 = New System.Windows.Forms.TextBox()
         Me.Label14 = New System.Windows.Forms.Label()
@@ -128,6 +129,7 @@ Partial Class Form1
         Me.label9 = New System.Windows.Forms.Label()
         Me.label10 = New System.Windows.Forms.Label()
         Me.groupBox1 = New System.Windows.Forms.GroupBox()
+        Me.TextBox33 = New System.Windows.Forms.TextBox()
         Me.TextBox32 = New System.Windows.Forms.TextBox()
         Me.Label64 = New System.Windows.Forms.Label()
         Me.Label70 = New System.Windows.Forms.Label()
@@ -163,8 +165,7 @@ Partial Class Form1
         Me.TabPage4 = New System.Windows.Forms.TabPage()
         Me.pictureBox3 = New System.Windows.Forms.PictureBox()
         Me.pictureBox2 = New System.Windows.Forms.PictureBox()
-        Me.TextBox33 = New System.Windows.Forms.TextBox()
-        Me.Label73 = New System.Windows.Forms.Label()
+        Me.Label74 = New System.Windows.Forms.Label()
         Me.TabControl1.SuspendLayout()
         Me.TabPage1.SuspendLayout()
         CType(Me.Chart1, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -212,6 +213,7 @@ Partial Class Form1
         '
         'TabPage1
         '
+        Me.TabPage1.Controls.Add(Me.Label74)
         Me.TabPage1.Controls.Add(Me.CheckBox1)
         Me.TabPage1.Controls.Add(Me.Chart1)
         Me.TabPage1.Controls.Add(Me.GroupBox5)
@@ -240,16 +242,16 @@ Partial Class Form1
         '
         'Chart1
         '
-        ChartArea7.Name = "ChartArea1"
-        Me.Chart1.ChartAreas.Add(ChartArea7)
-        Legend7.Name = "Legend1"
-        Me.Chart1.Legends.Add(Legend7)
+        ChartArea1.Name = "ChartArea1"
+        Me.Chart1.ChartAreas.Add(ChartArea1)
+        Legend1.Name = "Legend1"
+        Me.Chart1.Legends.Add(Legend1)
         Me.Chart1.Location = New System.Drawing.Point(720, 18)
         Me.Chart1.Name = "Chart1"
-        Series7.ChartArea = "ChartArea1"
-        Series7.Legend = "Legend1"
-        Series7.Name = "Series1"
-        Me.Chart1.Series.Add(Series7)
+        Series1.ChartArea = "ChartArea1"
+        Series1.Legend = "Legend1"
+        Series1.Name = "Series1"
+        Me.Chart1.Series.Add(Series1)
         Me.Chart1.Size = New System.Drawing.Size(300, 330)
         Me.Chart1.TabIndex = 66
         Me.Chart1.Text = "Chart1"
@@ -470,6 +472,16 @@ Partial Class Form1
         Me.GroupBox4.TabIndex = 27
         Me.GroupBox4.TabStop = False
         Me.GroupBox4.Text = "Process data"
+        '
+        'Label73
+        '
+        Me.Label73.AutoSize = True
+        Me.Label73.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Label73.Location = New System.Drawing.Point(7, 94)
+        Me.Label73.Name = "Label73"
+        Me.Label73.Size = New System.Drawing.Size(174, 13)
+        Me.Label73.TabIndex = 67
+        Me.Label73.Text = "* T.o.v. de AC435 met std condities"
         '
         'Label11
         '
@@ -1317,6 +1329,14 @@ Partial Class Form1
         Me.groupBox1.TabStop = False
         Me.groupBox1.Text = "Distrubution dia particles"
         '
+        'TextBox33
+        '
+        Me.TextBox33.Location = New System.Drawing.Point(131, 245)
+        Me.TextBox33.Name = "TextBox33"
+        Me.TextBox33.Size = New System.Drawing.Size(66, 20)
+        Me.TextBox33.TabIndex = 78
+        Me.TextBox33.TextAlign = System.Windows.Forms.HorizontalAlignment.Center
+        '
         'TextBox32
         '
         Me.TextBox32.Location = New System.Drawing.Point(211, 244)
@@ -1652,23 +1672,15 @@ Partial Class Form1
         Me.pictureBox2.TabIndex = 1
         Me.pictureBox2.TabStop = False
         '
-        'TextBox33
+        'Label74
         '
-        Me.TextBox33.Location = New System.Drawing.Point(131, 245)
-        Me.TextBox33.Name = "TextBox33"
-        Me.TextBox33.Size = New System.Drawing.Size(66, 20)
-        Me.TextBox33.TabIndex = 78
-        Me.TextBox33.TextAlign = System.Windows.Forms.HorizontalAlignment.Center
-        '
-        'Label73
-        '
-        Me.Label73.AutoSize = True
-        Me.Label73.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label73.Location = New System.Drawing.Point(7, 94)
-        Me.Label73.Name = "Label73"
-        Me.Label73.Size = New System.Drawing.Size(174, 13)
-        Me.Label73.TabIndex = 67
-        Me.Label73.Text = "* T.o.v. de AC435 met std condities"
+        Me.Label74.AutoSize = True
+        Me.Label74.Font = New System.Drawing.Font("Microsoft Sans Serif", 15.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Label74.Location = New System.Drawing.Point(799, 556)
+        Me.Label74.Name = "Label74"
+        Me.Label74.Size = New System.Drawing.Size(165, 25)
+        Me.Label74.TabIndex = 69
+        Me.Label74.Text = "TEST VERSION"
         '
         'Form1
         '
@@ -1857,4 +1869,5 @@ Partial Class Form1
     Private WithEvents Label64 As Label
     Friend WithEvents TextBox33 As TextBox
     Friend WithEvents Label73 As Label
+    Friend WithEvents Label74 As Label
 End Class
