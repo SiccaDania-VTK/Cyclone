@@ -96,7 +96,7 @@ Public Class Form1
         End If
     End Sub
 
-    Private Sub button1_Click(sender As Object, e As EventArgs) Handles button1.Click, TabPage1.Enter, numericUpDown5.ValueChanged, numericUpDown9.ValueChanged, numericUpDown8.ValueChanged, numericUpDown7.ValueChanged, numericUpDown6.ValueChanged, numericUpDown12.ValueChanged, numericUpDown11.ValueChanged, numericUpDown10.ValueChanged, ComboBox1.SelectedValueChanged, numericUpDown3.ValueChanged, numericUpDown2.ValueChanged, numericUpDown14.ValueChanged, NumericUpDown1.ValueChanged, NumericUpDown15.ValueChanged, CheckBox1.CheckedChanged
+    Private Sub Button1_Click(sender As Object, e As EventArgs) Handles button1.Click, TabPage1.Enter, numericUpDown5.ValueChanged, numericUpDown9.ValueChanged, numericUpDown8.ValueChanged, numericUpDown7.ValueChanged, numericUpDown6.ValueChanged, numericUpDown12.ValueChanged, numericUpDown11.ValueChanged, numericUpDown10.ValueChanged, ComboBox1.SelectedValueChanged, numericUpDown3.ValueChanged, numericUpDown2.ValueChanged, numericUpDown14.ValueChanged, NumericUpDown1.ValueChanged, NumericUpDown15.ValueChanged, CheckBox1.CheckedChanged
         Dim words() As String
         Dim cyl_dim(20), db As Double
         Dim in_hoog, in_breed, Body_dia, Flow, inlet_velos, delta_p, K_waarde As Double
@@ -131,7 +131,7 @@ Public Class Form1
             K_waarde = Sqrt(K_waarde)
 
 
-            TextBox22.Text = Round(calc_verlies(NumericUpDown15.Value) * 100, 1).ToString       'verlies getal[%]
+            TextBox22.Text = Round(Calc_verlies(NumericUpDown15.Value) * 100, 1).ToString       'verlies getal[%]
 
             '----------- presenteren ----------------------------------
             TextBox1.Text = Round(in_hoog, 2).ToString              'inlaat breedte
@@ -159,9 +159,9 @@ Public Class Form1
             TextBox17.Text = Round(delta_p, 0).ToString             'Pressure loss
 
             TextBox23.Text = Round(K_waarde, 4).ToString           'Stokes waarde tov Standaard cycloon
-            draw_chart()
+            Draw_chart()
             '---------- Check speed ---------------
-            If inlet_velos < 14 Or inlet_velos > 22 Then
+            If inlet_velos < 12 Or inlet_velos > 25 Then
                 TextBox16.BackColor = Color.Red
             Else
                 TextBox16.BackColor = Color.LightGreen
@@ -201,7 +201,7 @@ Public Class Form1
             '--------- overall resultaat --------------------
             Totaal_korrel_verlies = 0
             For h = 0 To 7
-                korrel(h).verlies = calc_verlies(korrel(h).dia)
+                korrel(h).verlies = Calc_verlies(korrel(h).dia)
                 Totaal_korrel_verlies += korrel(0).aandeel * korrel(h).verlies
             Next h
 
@@ -219,7 +219,7 @@ Public Class Form1
     End Sub
     '-------- Bereken het verlies getal -----------
     '----- de input is de korrel grootte-----------
-    Private Function calc_verlies(korrel_g As Double)
+    Private Function Calc_verlies(korrel_g As Double)
         Dim words() As String
         Dim dia_krit, fac_m, fac_a, fac_k, verlies, kwaarde As Double
 
@@ -254,7 +254,7 @@ Public Class Form1
     End Function
 
 
-    Private Sub draw_chart()
+    Private Sub Draw_chart()
         '-------
         Dim s_points(100, 2) As Double
         Dim h As Integer
@@ -266,11 +266,11 @@ Public Class Form1
 
         ' For h = 0 To 1
         Chart1.Series.Add("Series" & h.ToString)
-            Chart1.Series(h).ChartArea = "ChartArea0"
-            Chart1.Series(h).ChartType = DataVisualization.Charting.SeriesChartType.Line
-            '  Chart1.Series(schets_no).Name = (Tschets(schets_no).Tname)
-            Chart1.Series(h).BorderWidth = 1
-            Chart1.Series(h).IsVisibleInLegend = False
+        Chart1.Series(h).ChartArea = "ChartArea0"
+        Chart1.Series(h).ChartType = DataVisualization.Charting.SeriesChartType.Line
+        '  Chart1.Series(schets_no).Name = (Tschets(schets_no).Tname)
+        Chart1.Series(h).BorderWidth = 1
+        Chart1.Series(h).IsVisibleInLegend = False
         ' Next
 
         Chart1.Titles.Add("Verlies Curve")
