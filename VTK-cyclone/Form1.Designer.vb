@@ -22,9 +22,9 @@ Partial Class Form1
     'Do not modify it using the code editor.
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
-        Dim ChartArea1 As System.Windows.Forms.DataVisualization.Charting.ChartArea = New System.Windows.Forms.DataVisualization.Charting.ChartArea()
-        Dim Legend1 As System.Windows.Forms.DataVisualization.Charting.Legend = New System.Windows.Forms.DataVisualization.Charting.Legend()
-        Dim Series1 As System.Windows.Forms.DataVisualization.Charting.Series = New System.Windows.Forms.DataVisualization.Charting.Series()
+        Dim ChartArea2 As System.Windows.Forms.DataVisualization.Charting.ChartArea = New System.Windows.Forms.DataVisualization.Charting.ChartArea()
+        Dim Legend2 As System.Windows.Forms.DataVisualization.Charting.Legend = New System.Windows.Forms.DataVisualization.Charting.Legend()
+        Dim Series2 As System.Windows.Forms.DataVisualization.Charting.Series = New System.Windows.Forms.DataVisualization.Charting.Series()
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(Form1))
         Me.TabControl1 = New System.Windows.Forms.TabControl()
         Me.TabPage1 = New System.Windows.Forms.TabPage()
@@ -162,21 +162,20 @@ Partial Class Form1
         Me.TabPage2 = New System.Windows.Forms.TabPage()
         Me.pictureBox1 = New System.Windows.Forms.PictureBox()
         Me.TabPage3 = New System.Windows.Forms.TabPage()
+        Me.PictureBox5 = New System.Windows.Forms.PictureBox()
         Me.TabPage4 = New System.Windows.Forms.TabPage()
         Me.pictureBox3 = New System.Windows.Forms.PictureBox()
         Me.pictureBox2 = New System.Windows.Forms.PictureBox()
         Me.TabPage5 = New System.Windows.Forms.TabPage()
-        Me.TabPage6 = New System.Windows.Forms.TabPage()
-        Me.NumericUpDown16 = New System.Windows.Forms.NumericUpDown()
-        Me.Label75 = New System.Windows.Forms.Label()
-        Me.Label76 = New System.Windows.Forms.Label()
-        Me.NumericUpDown17 = New System.Windows.Forms.NumericUpDown()
-        Me.Label77 = New System.Windows.Forms.Label()
-        Me.Label78 = New System.Windows.Forms.Label()
         Me.Label79 = New System.Windows.Forms.Label()
         Me.TextBox34 = New System.Windows.Forms.TextBox()
         Me.Label80 = New System.Windows.Forms.Label()
-        Me.PictureBox5 = New System.Windows.Forms.PictureBox()
+        Me.NumericUpDown17 = New System.Windows.Forms.NumericUpDown()
+        Me.Label77 = New System.Windows.Forms.Label()
+        Me.Label78 = New System.Windows.Forms.Label()
+        Me.NumericUpDown16 = New System.Windows.Forms.NumericUpDown()
+        Me.Label75 = New System.Windows.Forms.Label()
+        Me.Label76 = New System.Windows.Forms.Label()
         Me.TabControl1.SuspendLayout()
         Me.TabPage1.SuspendLayout()
         CType(Me.Chart1, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -203,13 +202,13 @@ Partial Class Form1
         Me.TabPage2.SuspendLayout()
         CType(Me.pictureBox1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.TabPage3.SuspendLayout()
+        CType(Me.PictureBox5, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.TabPage4.SuspendLayout()
         CType(Me.pictureBox3, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.pictureBox2, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.TabPage5.SuspendLayout()
-        CType(Me.NumericUpDown16, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.NumericUpDown17, System.ComponentModel.ISupportInitialize).BeginInit()
-        CType(Me.PictureBox5, System.ComponentModel.ISupportInitialize).BeginInit()
+        CType(Me.NumericUpDown16, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
         '
         'TabControl1
@@ -219,7 +218,6 @@ Partial Class Form1
         Me.TabControl1.Controls.Add(Me.TabPage3)
         Me.TabControl1.Controls.Add(Me.TabPage4)
         Me.TabControl1.Controls.Add(Me.TabPage5)
-        Me.TabControl1.Controls.Add(Me.TabPage6)
         Me.TabControl1.Dock = System.Windows.Forms.DockStyle.Fill
         Me.TabControl1.Location = New System.Drawing.Point(0, 0)
         Me.TabControl1.Name = "TabControl1"
@@ -268,16 +266,16 @@ Partial Class Form1
         '
         'Chart1
         '
-        ChartArea1.Name = "ChartArea1"
-        Me.Chart1.ChartAreas.Add(ChartArea1)
-        Legend1.Name = "Legend1"
-        Me.Chart1.Legends.Add(Legend1)
+        ChartArea2.Name = "ChartArea1"
+        Me.Chart1.ChartAreas.Add(ChartArea2)
+        Legend2.Name = "Legend1"
+        Me.Chart1.Legends.Add(Legend2)
         Me.Chart1.Location = New System.Drawing.Point(720, 18)
         Me.Chart1.Name = "Chart1"
-        Series1.ChartArea = "ChartArea1"
-        Series1.Legend = "Legend1"
-        Series1.Name = "Series1"
-        Me.Chart1.Series.Add(Series1)
+        Series2.ChartArea = "ChartArea1"
+        Series2.Legend = "Legend1"
+        Series2.Name = "Series1"
+        Me.Chart1.Series.Add(Series2)
         Me.Chart1.Size = New System.Drawing.Size(300, 330)
         Me.Chart1.TabIndex = 66
         Me.Chart1.Text = "Chart1"
@@ -1653,6 +1651,17 @@ Partial Class Form1
         Me.TabPage3.Text = "VTK Cyclone efficiency"
         Me.TabPage3.UseVisualStyleBackColor = True
         '
+        'PictureBox5
+        '
+        Me.PictureBox5.Dock = System.Windows.Forms.DockStyle.Right
+        Me.PictureBox5.Image = CType(resources.GetObject("PictureBox5.Image"), System.Drawing.Image)
+        Me.PictureBox5.Location = New System.Drawing.Point(418, 3)
+        Me.PictureBox5.Name = "PictureBox5"
+        Me.PictureBox5.Size = New System.Drawing.Size(621, 707)
+        Me.PictureBox5.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom
+        Me.PictureBox5.TabIndex = 1
+        Me.PictureBox5.TabStop = False
+        '
         'TabPage4
         '
         Me.TabPage4.Controls.Add(Me.pictureBox3)
@@ -1705,48 +1714,33 @@ Partial Class Form1
         Me.TabPage5.Text = "Stress calculation"
         Me.TabPage5.UseVisualStyleBackColor = True
         '
-        'TabPage6
+        'Label79
         '
-        Me.TabPage6.Location = New System.Drawing.Point(4, 22)
-        Me.TabPage6.Name = "TabPage6"
-        Me.TabPage6.Padding = New System.Windows.Forms.Padding(3)
-        Me.TabPage6.Size = New System.Drawing.Size(1042, 713)
-        Me.TabPage6.TabIndex = 5
-        Me.TabPage6.Text = "ONSHAPE"
-        Me.TabPage6.UseVisualStyleBackColor = True
+        Me.Label79.AutoSize = True
+        Me.Label79.Font = New System.Drawing.Font("Microsoft Sans Serif", 11.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Label79.Location = New System.Drawing.Point(331, 131)
+        Me.Label79.Name = "Label79"
+        Me.Label79.Size = New System.Drawing.Size(40, 18)
+        Me.Label79.TabIndex = 65
+        Me.Label79.Text = "[kgs]"
         '
-        'NumericUpDown16
+        'TextBox34
         '
-        Me.NumericUpDown16.Increment = New Decimal(New Integer() {10, 0, 0, 0})
-        Me.NumericUpDown16.Location = New System.Drawing.Point(242, 60)
-        Me.NumericUpDown16.Maximum = New Decimal(New Integer() {400, 0, 0, 0})
-        Me.NumericUpDown16.Minimum = New Decimal(New Integer() {1, 0, 0, 0})
-        Me.NumericUpDown16.Name = "NumericUpDown16"
-        Me.NumericUpDown16.Size = New System.Drawing.Size(65, 20)
-        Me.NumericUpDown16.TabIndex = 28
-        Me.NumericUpDown16.TextAlign = System.Windows.Forms.HorizontalAlignment.Center
-        Me.NumericUpDown16.Value = New Decimal(New Integer() {100, 0, 0, 0})
+        Me.TextBox34.Location = New System.Drawing.Point(242, 129)
+        Me.TextBox34.Name = "TextBox34"
+        Me.TextBox34.Size = New System.Drawing.Size(66, 20)
+        Me.TextBox34.TabIndex = 64
+        Me.TextBox34.TextAlign = System.Windows.Forms.HorizontalAlignment.Center
         '
-        'Label75
+        'Label80
         '
-        Me.Label75.AutoSize = True
-        Me.Label75.Font = New System.Drawing.Font("Microsoft Sans Serif", 11.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label75.Location = New System.Drawing.Point(332, 60)
-        Me.Label75.Name = "Label75"
-        Me.Label75.Size = New System.Drawing.Size(50, 18)
-        Me.Label75.TabIndex = 30
-        Me.Label75.Text = "[mbar]"
-        '
-        'Label76
-        '
-        Me.Label76.AutoSize = True
-        Me.Label76.FlatStyle = System.Windows.Forms.FlatStyle.System
-        Me.Label76.Font = New System.Drawing.Font("Microsoft Sans Serif", 11.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label76.Location = New System.Drawing.Point(72, 60)
-        Me.Label76.Name = "Label76"
-        Me.Label76.Size = New System.Drawing.Size(68, 18)
-        Me.Label76.TabIndex = 29
-        Me.Label76.Text = "Pressure"
+        Me.Label80.AutoSize = True
+        Me.Label80.Font = New System.Drawing.Font("Microsoft Sans Serif", 11.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Label80.Location = New System.Drawing.Point(73, 130)
+        Me.Label80.Name = "Label80"
+        Me.Label80.Size = New System.Drawing.Size(54, 18)
+        Me.Label80.TabIndex = 63
+        Me.Label80.Text = "Weight"
         '
         'NumericUpDown17
         '
@@ -1782,44 +1776,38 @@ Partial Class Form1
         Me.Label78.TabIndex = 32
         Me.Label78.Text = "Wall Thickness"
         '
-        'Label79
+        'NumericUpDown16
         '
-        Me.Label79.AutoSize = True
-        Me.Label79.Font = New System.Drawing.Font("Microsoft Sans Serif", 11.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label79.Location = New System.Drawing.Point(331, 131)
-        Me.Label79.Name = "Label79"
-        Me.Label79.Size = New System.Drawing.Size(40, 18)
-        Me.Label79.TabIndex = 65
-        Me.Label79.Text = "[kgs]"
+        Me.NumericUpDown16.Increment = New Decimal(New Integer() {10, 0, 0, 0})
+        Me.NumericUpDown16.Location = New System.Drawing.Point(242, 60)
+        Me.NumericUpDown16.Maximum = New Decimal(New Integer() {400, 0, 0, 0})
+        Me.NumericUpDown16.Minimum = New Decimal(New Integer() {1, 0, 0, 0})
+        Me.NumericUpDown16.Name = "NumericUpDown16"
+        Me.NumericUpDown16.Size = New System.Drawing.Size(65, 20)
+        Me.NumericUpDown16.TabIndex = 28
+        Me.NumericUpDown16.TextAlign = System.Windows.Forms.HorizontalAlignment.Center
+        Me.NumericUpDown16.Value = New Decimal(New Integer() {100, 0, 0, 0})
         '
-        'TextBox34
+        'Label75
         '
-        Me.TextBox34.Location = New System.Drawing.Point(242, 129)
-        Me.TextBox34.Name = "TextBox34"
-        Me.TextBox34.Size = New System.Drawing.Size(66, 20)
-        Me.TextBox34.TabIndex = 64
-        Me.TextBox34.TextAlign = System.Windows.Forms.HorizontalAlignment.Center
+        Me.Label75.AutoSize = True
+        Me.Label75.Font = New System.Drawing.Font("Microsoft Sans Serif", 11.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Label75.Location = New System.Drawing.Point(332, 60)
+        Me.Label75.Name = "Label75"
+        Me.Label75.Size = New System.Drawing.Size(50, 18)
+        Me.Label75.TabIndex = 30
+        Me.Label75.Text = "[mbar]"
         '
-        'Label80
+        'Label76
         '
-        Me.Label80.AutoSize = True
-        Me.Label80.Font = New System.Drawing.Font("Microsoft Sans Serif", 11.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label80.Location = New System.Drawing.Point(73, 130)
-        Me.Label80.Name = "Label80"
-        Me.Label80.Size = New System.Drawing.Size(54, 18)
-        Me.Label80.TabIndex = 63
-        Me.Label80.Text = "Weight"
-        '
-        'PictureBox5
-        '
-        Me.PictureBox5.Dock = System.Windows.Forms.DockStyle.Right
-        Me.PictureBox5.Image = CType(resources.GetObject("PictureBox5.Image"), System.Drawing.Image)
-        Me.PictureBox5.Location = New System.Drawing.Point(418, 3)
-        Me.PictureBox5.Name = "PictureBox5"
-        Me.PictureBox5.Size = New System.Drawing.Size(621, 707)
-        Me.PictureBox5.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom
-        Me.PictureBox5.TabIndex = 1
-        Me.PictureBox5.TabStop = False
+        Me.Label76.AutoSize = True
+        Me.Label76.FlatStyle = System.Windows.Forms.FlatStyle.System
+        Me.Label76.Font = New System.Drawing.Font("Microsoft Sans Serif", 11.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Label76.Location = New System.Drawing.Point(72, 60)
+        Me.Label76.Name = "Label76"
+        Me.Label76.Size = New System.Drawing.Size(68, 18)
+        Me.Label76.TabIndex = 29
+        Me.Label76.Text = "Pressure"
         '
         'Form1
         '
@@ -1828,7 +1816,7 @@ Partial Class Form1
         Me.ClientSize = New System.Drawing.Size(1050, 739)
         Me.Controls.Add(Me.TabControl1)
         Me.Name = "Form1"
-        Me.Text = "Form1"
+        Me.Text = "Cyclone sizing. 29-05-2019 (TEST VERSION)"
         Me.TabControl1.ResumeLayout(False)
         Me.TabPage1.ResumeLayout(False)
         Me.TabPage1.PerformLayout()
@@ -1861,14 +1849,14 @@ Partial Class Form1
         Me.TabPage2.ResumeLayout(False)
         CType(Me.pictureBox1, System.ComponentModel.ISupportInitialize).EndInit()
         Me.TabPage3.ResumeLayout(False)
+        CType(Me.PictureBox5, System.ComponentModel.ISupportInitialize).EndInit()
         Me.TabPage4.ResumeLayout(False)
         CType(Me.pictureBox3, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.pictureBox2, System.ComponentModel.ISupportInitialize).EndInit()
         Me.TabPage5.ResumeLayout(False)
         Me.TabPage5.PerformLayout()
-        CType(Me.NumericUpDown16, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.NumericUpDown17, System.ComponentModel.ISupportInitialize).EndInit()
-        CType(Me.PictureBox5, System.ComponentModel.ISupportInitialize).EndInit()
+        CType(Me.NumericUpDown16, System.ComponentModel.ISupportInitialize).EndInit()
         Me.ResumeLayout(False)
 
     End Sub
@@ -2022,6 +2010,5 @@ Partial Class Form1
     Private WithEvents NumericUpDown16 As NumericUpDown
     Private WithEvents Label75 As Label
     Private WithEvents Label76 As Label
-    Friend WithEvents TabPage6 As TabPage
     Friend WithEvents PictureBox5 As PictureBox
 End Class
