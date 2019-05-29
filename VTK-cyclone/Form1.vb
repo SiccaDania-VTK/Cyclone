@@ -59,7 +59,7 @@ Public Class Form1
     "AC1850;30.00;7.00;3.00;1.50;1.00;0.60;0.45;0.35;0.25;0.20;0.15;0.08;0.04"}
 
 
-    'Nieuwe reken methode, verdeling volgens Weibull
+    'Nieuwe reken methode, verdeling volgens Weibull verdeling
     'm1,k1,a1 als d < d_krit
     'm2,k2,a2 als d > d_krit
     ' type;dkrit;m1;k1;a1;m2;k2;a2
@@ -110,7 +110,7 @@ Public Class Form1
         Dim kgh As Double       'Dust inlet per hour/cycloon 
         Dim kgs As Double       'Dust inlet per second
 
-        Dim Totaal_korrel_verlies As Double  'Berekende verlies
+        Dim total_loss As Double  'Berekende verlies
 
         If (ComboBox1.SelectedIndex > -1) Then     'Prevent exceptions
             words = cyl_dimensions(ComboBox1.SelectedIndex).Split(";")
@@ -214,7 +214,7 @@ Public Class Form1
             DataGridView1.Rows.Clear()
             DataGridView1.Rows.Add(8)
 
-            Totaal_korrel_verlies = 0
+            total_loss = 0
             DataGridView1.Columns(0).HeaderText = "Dia [mu]"
             DataGridView1.Columns(1).HeaderText = "Wght [kg/h]"
             DataGridView1.Columns(2).HeaderText = "Weight [%]"
@@ -232,7 +232,7 @@ Public Class Form1
 
             For h = 0 To 7
                 korrel(h).verlies = Calc_verlies(korrel(h).dia)
-                Totaal_korrel_verlies += korrel(h).aandeel * korrel(h).verlies
+                total_loss += korrel(h).aandeel * korrel(h).verlies
 
                 '--- write in dataview grid -----
                 DataGridView1.Rows.Item(h).Cells(1).Value = Round(korrel(h).aandeel * tot_kgh, 0)
@@ -240,7 +240,7 @@ Public Class Form1
                 DataGridView1.Rows.Item(h).Cells(3).Value = Round(korrel(h).verlies * 100, 2)
                 DataGridView1.Rows.Item(h).Cells(4).Value = Round(korrel(h).aandeel * korrel(h).verlies, 4)
             Next h
-            DataGridView1.Rows.Item(8).Cells(4).Value = Round((Totaal_korrel_verlies * tot_kgh), 0)
+            DataGridView1.Rows.Item(8).Cells(4).Value = Round((total_loss * tot_kgh), 0)
 
             TextBox39.Text = kgh.ToString("0")              'Stof inlet
             TextBox40.Text = tot_kgh.ToString("0")  'Stof inlet totaal
@@ -253,7 +253,6 @@ Public Class Form1
         Dim words() As String
         Dim dia_krit, fac_m, fac_a, fac_k, verlies, kwaarde As Double
 
-
         Double.TryParse(TextBox23.Text, kwaarde)
 
         '-------------- korrelgrootte factoren ------
@@ -261,7 +260,7 @@ Public Class Form1
 
         dia_krit = words(1)
 
-        '-------- de grafieken zijn in 2 delen gesplits voor hogere nouwkeurigheid----------
+        '-------- de grafieken zijn in 2 delen gesplits voor hogere nauwkeurigheid----------
         If korrel_g < dia_krit Then
             fac_m = words(2)
             fac_k = words(3)
@@ -276,14 +275,18 @@ Public Class Form1
         verlies = Math.E ^ verlies
 
         '---------- present------------------
+        TextBox24.Text &= "Korrel=  " & korrel_g.ToString
+        TextBox24.Text &= ", Dia_krit= " & dia_krit.ToString
+        TextBox24.Text &= ", fac_m= " & fac_m.ToString
+        TextBox24.Text &= ", fac_k= " & fac_k.ToString
+        TextBox24.Text &= ", fac_a= " & fac_a.ToString & vbCrLf
+
         TextBox18.Text = Round(dia_krit, 3).ToString            'diameter_kritisch
         TextBox19.Text = Round(fac_m, 3).ToString               'faktor-m
         TextBox20.Text = Round(fac_k, 3).ToString               'faktor-kappa
         TextBox21.Text = Round(fac_a, 3).ToString               'faktor-a
         Return (verlies)
     End Function
-
-
     Private Sub Draw_chart()
         '-------
         Dim s_points(100, 2) As Double
@@ -324,7 +327,7 @@ Public Class Form1
         '----- now calc --------------------------
         For h = 0 To 100
             s_points(h, 0) = h                                   'Particle diameter [mu]
-            s_points(h, 1) = calc_verlies(s_points(h, 0)) * 100  'Loss [%]
+            s_points(h, 1) = Calc_verlies(s_points(h, 0)) * 100  'Loss [%]
         Next
 
         '------ now present-------------

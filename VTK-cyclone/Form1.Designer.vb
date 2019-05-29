@@ -191,6 +191,10 @@ Partial Class Form1
         Me.label8 = New System.Windows.Forms.Label()
         Me.label7 = New System.Windows.Forms.Label()
         Me.label12 = New System.Windows.Forms.Label()
+        Me.Label64 = New System.Windows.Forms.Label()
+        Me.Label69 = New System.Windows.Forms.Label()
+        Me.TabPage8 = New System.Windows.Forms.TabPage()
+        Me.TextBox24 = New System.Windows.Forms.TextBox()
         Me.TabControl1.SuspendLayout()
         Me.TabPage1.SuspendLayout()
         Me.GroupBox7.SuspendLayout()
@@ -233,6 +237,7 @@ Partial Class Form1
         Me.GroupBox6.SuspendLayout()
         Me.TabPage7.SuspendLayout()
         Me.groupBox3.SuspendLayout()
+        Me.TabPage8.SuspendLayout()
         Me.SuspendLayout()
         '
         'TabControl1
@@ -244,6 +249,7 @@ Partial Class Form1
         Me.TabControl1.Controls.Add(Me.TabPage5)
         Me.TabControl1.Controls.Add(Me.TabPage6)
         Me.TabControl1.Controls.Add(Me.TabPage7)
+        Me.TabControl1.Controls.Add(Me.TabPage8)
         Me.TabControl1.Dock = System.Windows.Forms.DockStyle.Fill
         Me.TabControl1.Location = New System.Drawing.Point(0, 0)
         Me.TabControl1.Name = "TabControl1"
@@ -272,6 +278,7 @@ Partial Class Form1
         '
         'GroupBox7
         '
+        Me.GroupBox7.Controls.Add(Me.Label64)
         Me.GroupBox7.Controls.Add(Me.Label86)
         Me.GroupBox7.Controls.Add(Me.NumericUpDown20)
         Me.GroupBox7.Controls.Add(Me.ComboBox1)
@@ -1482,10 +1489,11 @@ Partial Class Form1
         '
         'GroupBox6
         '
+        Me.GroupBox6.Controls.Add(Me.Label69)
         Me.GroupBox6.Controls.Add(Me.TextBox35)
         Me.GroupBox6.Location = New System.Drawing.Point(54, 36)
         Me.GroupBox6.Name = "GroupBox6"
-        Me.GroupBox6.Size = New System.Drawing.Size(605, 88)
+        Me.GroupBox6.Size = New System.Drawing.Size(605, 118)
         Me.GroupBox6.TabIndex = 1
         Me.GroupBox6.TabStop = False
         Me.GroupBox6.Text = "Based on"
@@ -2035,6 +2043,45 @@ Partial Class Form1
         Me.label12.TabIndex = 18
         Me.label12.Text = "[m]"
         '
+        'Label64
+        '
+        Me.Label64.AutoSize = True
+        Me.Label64.Font = New System.Drawing.Font("Microsoft Sans Serif", 11.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Label64.Location = New System.Drawing.Point(268, 40)
+        Me.Label64.Name = "Label64"
+        Me.Label64.Size = New System.Drawing.Size(29, 18)
+        Me.Label64.TabIndex = 70
+        Me.Label64.Text = "[m]"
+        '
+        'Label69
+        '
+        Me.Label69.AutoSize = True
+        Me.Label69.Location = New System.Drawing.Point(22, 73)
+        Me.Label69.Name = "Label69"
+        Me.Label69.Size = New System.Drawing.Size(245, 13)
+        Me.Label69.TabIndex = 1
+        Me.Label69.Text = "VTK Test showed: impossible to plug up a cyclone"
+        '
+        'TabPage8
+        '
+        Me.TabPage8.Controls.Add(Me.TextBox24)
+        Me.TabPage8.Location = New System.Drawing.Point(4, 22)
+        Me.TabPage8.Name = "TabPage8"
+        Me.TabPage8.Padding = New System.Windows.Forms.Padding(3)
+        Me.TabPage8.Size = New System.Drawing.Size(1042, 713)
+        Me.TabPage8.TabIndex = 7
+        Me.TabPage8.Text = "Logging"
+        Me.TabPage8.UseVisualStyleBackColor = True
+        '
+        'TextBox24
+        '
+        Me.TextBox24.Location = New System.Drawing.Point(28, 20)
+        Me.TextBox24.Multiline = True
+        Me.TextBox24.Name = "TextBox24"
+        Me.TextBox24.ScrollBars = System.Windows.Forms.ScrollBars.Both
+        Me.TextBox24.Size = New System.Drawing.Size(450, 653)
+        Me.TextBox24.TabIndex = 0
+        '
         'Form1
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -2094,6 +2141,8 @@ Partial Class Form1
         Me.TabPage7.ResumeLayout(False)
         Me.groupBox3.ResumeLayout(False)
         Me.groupBox3.PerformLayout()
+        Me.TabPage8.ResumeLayout(False)
+        Me.TabPage8.PerformLayout()
         Me.ResumeLayout(False)
 
     End Sub
@@ -2263,4 +2312,8 @@ Partial Class Form1
     Private WithEvents numericUpDown8 As NumericUpDown
     Private WithEvents numericUpDown7 As NumericUpDown
     Private WithEvents numericUpDown6 As NumericUpDown
+    Private WithEvents Label64 As Label
+    Friend WithEvents Label69 As Label
+    Friend WithEvents TabPage8 As TabPage
+    Friend WithEvents TextBox24 As TextBox
 End Class
