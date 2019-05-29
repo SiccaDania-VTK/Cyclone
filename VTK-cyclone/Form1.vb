@@ -92,32 +92,42 @@ Public Class Form1
         Next hh
 
         If ComboBox1.Items.Count > 0 Then
-            ComboBox1.SelectedIndex = 2                 'Select Cyclone type
+            ComboBox1.SelectedIndex = 5                 'Select Cyclone type
         End If
     End Sub
 
-    Private Sub Button1_Click(sender As Object, e As EventArgs) Handles button1.Click, TabPage1.Enter, numericUpDown5.ValueChanged, numericUpDown9.ValueChanged, numericUpDown8.ValueChanged, numericUpDown7.ValueChanged, numericUpDown6.ValueChanged, numericUpDown12.ValueChanged, numericUpDown11.ValueChanged, numericUpDown10.ValueChanged, ComboBox1.SelectedValueChanged, numericUpDown3.ValueChanged, numericUpDown2.ValueChanged, numericUpDown14.ValueChanged, NumericUpDown1.ValueChanged, NumericUpDown15.ValueChanged, CheckBox1.CheckedChanged
+    Private Sub Button1_Click(sender As Object, e As EventArgs) Handles button1.Click, TabPage1.Enter, numericUpDown3.ValueChanged, numericUpDown2.ValueChanged, numericUpDown14.ValueChanged, NumericUpDown1.ValueChanged, NumericUpDown15.ValueChanged, CheckBox1.CheckedChanged, numericUpDown5.ValueChanged, NumericUpDown20.ValueChanged, NumericUpDown19.ValueChanged, NumericUpDown18.ValueChanged, ComboBox1.SelectedIndexChanged, numericUpDown9.ValueChanged, numericUpDown8.ValueChanged, numericUpDown7.ValueChanged, numericUpDown6.ValueChanged, numericUpDown12.ValueChanged, numericUpDown11.ValueChanged, numericUpDown10.ValueChanged
+        Get_input()
+    End Sub
+    Private Sub Get_input()
         Dim words() As String
         Dim cyl_dim(20), db As Double
         Dim in_hoog, in_breed, Body_dia, Flow, inlet_velos, delta_p, K_waarde As Double
         Dim ro_gas, ro_particle, visco, wc As Double
+        Dim no_cycl As Double   'Number cyclones
+        Dim stofb As Double
+        Dim tot_kgh As Double       'Dust inlet per hour totaal 
+        Dim kgh As Double       'Dust inlet per hour/cycloon 
+        Dim kgs As Double       'Dust inlet per second
 
         Dim Totaal_korrel_verlies As Double  'Berekende verlies
 
-        If (ComboBox1.SelectedIndex > -1) Then      'Prevent exceptions
+        If (ComboBox1.SelectedIndex > -1) Then     'Prevent exceptions
             words = cyl_dimensions(ComboBox1.SelectedIndex).Split(";")
             For hh = 1 To 15
                 cyl_dim(hh) = words(hh)
             Next
-
+            no_cycl = NumericUpDown20.Value     'Paralelle cyclonen
             db = numericUpDown5.Value           'Body diameter
             in_hoog = cyl_dim(1) * db           '[m]
             in_breed = cyl_dim(2) * db          '[m]
             Body_dia = numericUpDown5.Value     '[m]
-            Flow = NumericUpDown1.Value         '[m3/s]
+            Flow = NumericUpDown1.Value / 3600  '[m3/s]
+            Flow /= no_cycl                     '[m3/s/cycloon]
             ro_gas = numericUpDown3.Value       '[kg/m3]
             ro_particle = numericUpDown2.Value  '[kg/m3]
             visco = numericUpDown14.Value       '[cPoise]
+            stofb = NumericUpDown4.Value        '[g/Am3]
 
             '----------- inlaat snelheid ---------------------
             inlet_velos = Flow / (in_breed * in_hoog)
@@ -126,39 +136,48 @@ Public Class Form1
             wc = weerstand_coef(ComboBox1.SelectedIndex)
             delta_p = 0.5 * ro_gas * inlet_velos ^ 2 * wc
 
+            '----------- stof belasting ------------
+            kgs = Flow * stofb / 1000               '[kg/s/cycloon]
+            kgh = kgs * 3600                        '[kg/h/cycloon]
+            tot_kgh = kgh * no_cycl                 '[kg/h] total
+
             '----------- K_waarde-----------------------------------
             K_waarde = db * 2000 * visco * 16 / (ro_particle * 0.0181 * inlet_velos)
             K_waarde = Sqrt(K_waarde)
 
-
-            TextBox22.Text = Round(Calc_verlies(NumericUpDown15.Value) * 100, 1).ToString       'verlies getal[%]
-
             '----------- presenteren ----------------------------------
-            TextBox1.Text = Round(in_hoog, 2).ToString              'inlaat breedte
-            TextBox2.Text = Round(in_breed, 2).ToString             'Inlaat hoogte
-            TextBox3.Text = Round(cyl_dim(3) * db, 2).ToString      'Inlaat lengte
-            TextBox4.Text = Round(cyl_dim(4) * db, 2).ToString      'Inlaat hartmaat
-            TextBox5.Text = Round(cyl_dim(5) * db, 2).ToString      'Inlaat afschuining
+            TextBox22.Text = Round(Calc_verlies(NumericUpDown15.Value) * 100, 1).ToString       'verlies getal[%]
+            TextBox36.Text = Flow.ToString("0.000")                 '[m3/s] flow
 
-            TextBox6.Text = Round(cyl_dim(6) * db, 2).ToString      'Uitlaat keeldia inw.
-            TextBox7.Text = Round(cyl_dim(7) * db, 2).ToString      'Uitlaat flensdiameter inw.
+            '----------- presenteren afmetingen ------------------------------
+            TextBox1.Text = (in_hoog).ToString("0.000")              'inlaat breedte
+            TextBox2.Text = (in_breed).ToString("0.000")             'Inlaat hoogte
+            TextBox3.Text = (cyl_dim(3) * db).ToString("0.000")      'Inlaat lengte
+            TextBox4.Text = (cyl_dim(4) * db).ToString("0.000")      'Inlaat hartmaat
+            TextBox5.Text = (cyl_dim(5) * db).ToString("0.000")      'Inlaat afschuining
 
-            TextBox8.Text = Round(cyl_dim(8) * db, 2).ToString      'Lengte insteekpijp inw.
+            TextBox6.Text = (cyl_dim(6) * db).ToString("0.000")      'Uitlaat keeldia inw.
+            TextBox7.Text = (cyl_dim(7) * db).ToString("0.000")      'Uitlaat flensdiameter inw.
 
-            TextBox9.Text = Round(cyl_dim(9) * db, 2).ToString      'Lengte romp + conus
-            TextBox10.Text = Round(cyl_dim(10) * db, 2).ToString    'Lengte romp
-            TextBox11.Text = Round(cyl_dim(11) * db, 2).ToString    'Lengte çonus
+            TextBox8.Text = (cyl_dim(8) * db).ToString("0.000")      'Lengte insteekpijp inw.
 
-            TextBox12.Text = Round(cyl_dim(12) * db, 2).ToString    'Dia_conus / 3P-pijp
-            TextBox13.Text = Round(cyl_dim(13) * db, 2).ToString    'Lengte 3P-pijp
+            TextBox9.Text = (cyl_dim(9) * db).ToString("0.000")      'Lengte romp + conus
+            TextBox10.Text = (cyl_dim(10) * db).ToString("0.000")    'Lengte romp
+            TextBox11.Text = (cyl_dim(11) * db).ToString("0.000")    'Lengte çonus
 
-            TextBox14.Text = Round(cyl_dim(14) * db, 2).ToString    'Dia_conus / 3P-pijp
-            TextBox15.Text = Round(cyl_dim(15) * db, 2).ToString    'Lengte 3P-pijp
+            TextBox12.Text = (cyl_dim(12) * db).ToString("0.000")    'Dia_conus / 3P-pijp
+            TextBox13.Text = (cyl_dim(13) * db).ToString("0.000")    'Lengte 3P-pijp
 
-            TextBox16.Text = Round(inlet_velos, 1).ToString         'inlaat snelheid
-            TextBox17.Text = Round(delta_p, 0).ToString             'Pressure loss
+            TextBox14.Text = (cyl_dim(14) * db).ToString("0.000")    'Dia_conus / 3P-pijp
+            TextBox15.Text = (cyl_dim(15) * db).ToString("0.000")    'Lengte 3P-pijp
 
-            TextBox23.Text = Round(K_waarde, 4).ToString           'Stokes waarde tov Standaard cycloon
+            TextBox16.Text = inlet_velos.ToString("0.0")            'inlaat snelheid
+            TextBox17.Text = delta_p.ToString("0")                  'Pressure loss
+
+            TextBox23.Text = K_waarde.ToString("0.000")             'Stokes waarde tov Standaard cycloon
+            TextBox37.Text = numericUpDown5.Value.ToString          'Cycloone diameter
+            TextBox38.Text = ComboBox1.SelectedItem                 'Cycloon type
+
             Draw_chart()
             '---------- Check speed ---------------
             If inlet_velos < 12 Or inlet_velos > 25 Then
@@ -168,14 +187,14 @@ Public Class Form1
             End If
 
             '--------- Inlet korrel data -----------
-            korrel(0).dia = 1
-            korrel(1).dia = 3
-            korrel(2).dia = 5
-            korrel(3).dia = 8
-            korrel(4).dia = 14
-            korrel(5).dia = 24
-            korrel(6).dia = 40
-            korrel(7).dia = 75
+            korrel(0).dia = 10
+            korrel(1).dia = 15
+            korrel(2).dia = 20
+            korrel(3).dia = 30
+            korrel(4).dia = 40
+            korrel(5).dia = 50
+            korrel(6).dia = 60
+            korrel(7).dia = 80
 
             korrel(0).aandeel = numericUpDown6.Value / 100  'Percentale van de inlaat stof belasting
             korrel(1).aandeel = numericUpDown7.Value / 100
@@ -184,39 +203,50 @@ Public Class Form1
             korrel(4).aandeel = numericUpDown10.Value / 100
             korrel(5).aandeel = numericUpDown11.Value / 100
             korrel(6).aandeel = numericUpDown12.Value / 100
+            korrel(7).aandeel = numericUpDown13.Value / 100
 
             '---- moet opgeteld 100% zijn --------------
-            korrel(7).aandeel = 1
-            For h = 0 To 6
-                korrel(7).aandeel -= korrel(h).aandeel
-            Next
-            numericUpDown13.Value = korrel(7).aandeel * 100
 
-            If korrel(7).aandeel < 0 Or korrel(7).aandeel > 1 Then
-                numericUpDown13.BackColor = Color.Red
-            Else
-                numericUpDown13.BackColor = Color.LightGreen
-            End If
 
             '--------- overall resultaat --------------------
+            DataGridView1.ColumnCount = 5
+            DataGridView1.AutoResizeColumns()
+            DataGridView1.Rows.Clear()
+            DataGridView1.Rows.Add(8)
+
             Totaal_korrel_verlies = 0
+            DataGridView1.Columns(0).HeaderText = "Dia [mu]"
+            DataGridView1.Columns(1).HeaderText = "Wght [kg/h]"
+            DataGridView1.Columns(2).HeaderText = "Weight [%]"
+            DataGridView1.Columns(3).HeaderText = "Loss [%]"
+            DataGridView1.Columns(4).HeaderText = "Loss [kg/h]"
+
+            DataGridView1.Rows.Item(0).Cells(0).Value = " 0-10"
+            DataGridView1.Rows.Item(1).Cells(0).Value = "10-15"
+            DataGridView1.Rows.Item(2).Cells(0).Value = "15-20"
+            DataGridView1.Rows.Item(3).Cells(0).Value = "20-30"
+            DataGridView1.Rows.Item(4).Cells(0).Value = "30-40"
+            DataGridView1.Rows.Item(5).Cells(0).Value = "40-50"
+            DataGridView1.Rows.Item(6).Cells(0).Value = "50-60"
+            DataGridView1.Rows.Item(7).Cells(0).Value = "60-80"
+
             For h = 0 To 7
                 korrel(h).verlies = Calc_verlies(korrel(h).dia)
-                Totaal_korrel_verlies += korrel(0).aandeel * korrel(h).verlies
-            Next h
+                Totaal_korrel_verlies += korrel(h).aandeel * korrel(h).verlies
 
-            TextBox24.Text = Round(korrel(0).verlies * 100, 1).ToString
-            TextBox25.Text = Round(korrel(1).verlies * 100, 1).ToString
-            TextBox26.Text = Round(korrel(2).verlies * 100, 1).ToString
-            TextBox27.Text = Round(korrel(3).verlies * 100, 1).ToString
-            TextBox28.Text = Round(korrel(4).verlies * 100, 1).ToString
-            TextBox29.Text = Round(korrel(5).verlies * 100, 1).ToString
-            TextBox30.Text = Round(korrel(6).verlies * 100, 1).ToString
-            TextBox31.Text = Round(korrel(7).verlies * 100, 1).ToString
-            TextBox32.Text = Round(Totaal_korrel_verlies * 100, 1).ToString 'Totaal verlies [-]
-            TextBox33.Text = Round(Totaal_korrel_verlies * NumericUpDown4.Value, 2).ToString 'Totaal verlies [kg/s]
+                '--- write in dataview grid -----
+                DataGridView1.Rows.Item(h).Cells(1).Value = Round(korrel(h).aandeel * tot_kgh, 0)
+                DataGridView1.Rows.Item(h).Cells(2).Value = Round(korrel(h).aandeel * 100, 2)
+                DataGridView1.Rows.Item(h).Cells(3).Value = Round(korrel(h).verlies * 100, 2)
+                DataGridView1.Rows.Item(h).Cells(4).Value = Round(korrel(h).aandeel * korrel(h).verlies, 4)
+            Next h
+            DataGridView1.Rows.Item(8).Cells(4).Value = Round((Totaal_korrel_verlies * tot_kgh), 0)
+
+            TextBox39.Text = kgh.ToString("0")              'Stof inlet
+            TextBox40.Text = tot_kgh.ToString("0")  'Stof inlet totaal
         End If
     End Sub
+
     '-------- Bereken het verlies getal -----------
     '----- de input is de korrel grootte-----------
     Private Function Calc_verlies(korrel_g As Double)
@@ -302,4 +332,5 @@ Public Class Form1
             Chart1.Series(0).Points.AddXY(s_points(h, 0), s_points(h, 1))
         Next h
     End Sub
+
 End Class
