@@ -6,13 +6,15 @@ Imports System.Threading
 
 '------- Korrel groepen in de inlaat stroom------
 Public Structure Korrel_struct
-    Public dia As Double            'Particle diameter [mu]
+    Public dia_small As Double      'Particle diameter [mu]
+    Public dia_big As Double        'Particle diameter [mu]
+    Public dia_ave As Double        'Particle diameter [mu]
     Public aandeel As Double        'Aandeel in de inlaat stroom [% weight]
     Public verlies As Double        'verlies (nietgevangen) [-]
 End Structure
 
 Public Class Form1
-    Public korrel(22) As Korrel_struct    '22 korrel groepen
+    Public korrel_grp(22) As Korrel_struct    '22 korrel groepen
 
     'Type AC;Inlaatbreedte;Inlaathoogte;Inlaatlengte;Inlaat hartmaat;Inlaat afschuining;
     'Uitlaat keeldia inw.;Uitlaat flensdiameter inw.;Lengte insteekpijp inw.;
@@ -175,7 +177,7 @@ Public Class Form1
             TextBox17.Text = delta_p.ToString("0")                  'Pressure loss
 
             TextBox23.Text = K_waarde.ToString("0.000")             'Stokes waarde tov Standaard cycloon
-            TextBox37.Text = numericUpDown5.Value.ToString          'Cycloone diameter
+            TextBox37.Text = numericUpDown5.Value.ToString          'Cycloone dia_avemeter
             TextBox38.Text = ComboBox1.SelectedItem                 'Cycloon type
 
             Draw_chart()
@@ -186,24 +188,37 @@ Public Class Form1
                 TextBox16.BackColor = Color.LightGreen
             End If
 
-            '--------- Inlet korrel data -----------
-            korrel(0).dia = 10
-            korrel(1).dia = 15
-            korrel(2).dia = 20
-            korrel(3).dia = 30
-            korrel(4).dia = 40
-            korrel(5).dia = 50
-            korrel(6).dia = 60
-            korrel(7).dia = 80
+            '--------- Inlet korrel-greop data -----------
+            korrel_grp(0).dia_small = 0
+            korrel_grp(1).dia_small = 10
+            korrel_grp(2).dia_small = 15
+            korrel_grp(3).dia_small = 20
+            korrel_grp(4).dia_small = 30
+            korrel_grp(5).dia_small = 40
+            korrel_grp(6).dia_small = 50
+            korrel_grp(7).dia_small = 60
 
-            korrel(0).aandeel = numericUpDown6.Value / 100  'Percentale van de inlaat stof belasting
-            korrel(1).aandeel = numericUpDown7.Value / 100
-            korrel(2).aandeel = numericUpDown8.Value / 100
-            korrel(3).aandeel = numericUpDown9.Value / 100
-            korrel(4).aandeel = numericUpDown10.Value / 100
-            korrel(5).aandeel = numericUpDown11.Value / 100
-            korrel(6).aandeel = numericUpDown12.Value / 100
-            korrel(7).aandeel = numericUpDown13.Value / 100
+            korrel_grp(0).dia_big = 10
+            korrel_grp(1).dia_big = 15
+            korrel_grp(2).dia_big = 20
+            korrel_grp(3).dia_big = 30
+            korrel_grp(4).dia_big = 40
+            korrel_grp(5).dia_big = 50
+            korrel_grp(6).dia_big = 60
+            korrel_grp(7).dia_big = 80
+
+            For h = 0 To 7
+                korrel_grp(h).dia_ave = (korrel_grp(h).dia_small + korrel_grp(h).dia_big) / 2
+            Next
+
+            korrel_grp(0).aandeel = numericUpDown6.Value / 100  'Percentale van de inlaat stof belasting
+            korrel_grp(1).aandeel = numericUpDown7.Value / 100
+            korrel_grp(2).aandeel = numericUpDown8.Value / 100
+            korrel_grp(3).aandeel = numericUpDown9.Value / 100
+            korrel_grp(4).aandeel = numericUpDown10.Value / 100
+            korrel_grp(5).aandeel = numericUpDown11.Value / 100
+            korrel_grp(6).aandeel = numericUpDown12.Value / 100
+            korrel_grp(7).aandeel = numericUpDown13.Value / 100
 
             '---- moet opgeteld 100% zijn --------------
 
@@ -231,14 +246,14 @@ Public Class Form1
             DataGridView1.Rows.Item(7).Cells(0).Value = "60-80"
 
             For h = 0 To 7
-                korrel(h).verlies = Calc_verlies(korrel(h).dia)
-                total_loss += korrel(h).aandeel * korrel(h).verlies * tot_kgh
+                korrel_grp(h).verlies = Calc_verlies(korrel_grp(h).dia_ave)
+                total_loss += korrel_grp(h).aandeel * korrel_grp(h).verlies * tot_kgh
 
                 '--- write in dataview grid -----
-                DataGridView1.Rows.Item(h).Cells(1).Value = Round(korrel(h).aandeel * tot_kgh, 0) '[kg/h]
-                DataGridView1.Rows.Item(h).Cells(2).Value = Round(korrel(h).aandeel * 100, 2) '[%]
-                DataGridView1.Rows.Item(h).Cells(3).Value = Round(korrel(h).verlies * 100, 2) '[%]
-                DataGridView1.Rows.Item(h).Cells(4).Value = Round(korrel(h).aandeel * korrel(h).verlies * tot_kgh, 1) '[kg/hr]
+                DataGridView1.Rows.Item(h).Cells(1).Value = Round(korrel_grp(h).aandeel * tot_kgh, 0) '[kg/h]
+                DataGridView1.Rows.Item(h).Cells(2).Value = Round(korrel_grp(h).aandeel * 100, 2) '[%]
+                DataGridView1.Rows.Item(h).Cells(3).Value = Round(korrel_grp(h).verlies * 100, 2) '[%]
+                DataGridView1.Rows.Item(h).Cells(4).Value = Round(korrel_grp(h).aandeel * korrel_grp(h).verlies * tot_kgh, 1) '[kg/hr]
             Next h
             DataGridView1.Rows.Item(8).Cells(4).Value = Round((total_loss), 0)
 
