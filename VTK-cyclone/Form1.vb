@@ -350,6 +350,10 @@ Public Class Form1
         Chart1.ChartAreas("ChartArea0").AxisY.Minimum = 0       'Loss
         Chart1.ChartAreas("ChartArea0").AxisY.Maximum = 100     'Loss
         Chart1.ChartAreas("ChartArea0").AxisY.Interval = 10     'Interval
+        Chart1.ChartAreas("ChartArea0").AxisX.MinorTickMark.Enabled = True
+        Chart1.ChartAreas("ChartArea0").AxisY.MinorTickMark.Enabled = True
+        Chart1.ChartAreas("ChartArea0").AxisX.MinorGrid.Enabled = True
+        Chart1.ChartAreas("ChartArea0").AxisY.MinorGrid.Enabled = True
 
         If CheckBox1.Checked Then
             Chart1.ChartAreas("ChartArea0").AxisX.IsLogarithmic = True
