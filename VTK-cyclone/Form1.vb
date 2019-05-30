@@ -118,11 +118,12 @@ Public Class Form1
         Dim class_loss As Double    'Loss in [kg] per class
         Dim effficiency As Double
         Dim total_input_weight As Double
+        Dim dp50_dia As Double
 
         If (ComboBox1.SelectedIndex > -1) Then     'Prevent exceptions
             words = cyl_dimensions(ComboBox1.SelectedIndex).Split(";")
             For hh = 1 To 15
-                cyl_dim(hh) = words(hh)
+                cyl_dim(hh) = words(hh)         'Cyclone dimensions
             Next
             no_cycl = NumericUpDown20.Value     'Paralelle cyclonen
             db = numericUpDown5.Value           'Body diameter
@@ -153,7 +154,6 @@ Public Class Form1
             K_waarde = Sqrt(K_waarde)
 
             '----------- presenteren ----------------------------------
-            TextBox22.Text = Round(Calc_verlies(NumericUpDown15.Value) * 100, 1).ToString       'verlies getal[%]
             TextBox36.Text = Flow.ToString("0.000")                 '[m3/s] flow
 
             '----------- presenteren afmetingen ------------------------------
@@ -193,7 +193,7 @@ Public Class Form1
                 TextBox16.BackColor = Color.LightGreen
             End If
 
-            '--------- Inlet korrel-greop data -----------
+            '--------- Inlet korrel-groep data -----------
             Init_groups()
 
             korrel_grp(0).class_wght_cum_pro = numericUpDown6.Value / 100  'Percentale van de inlaat stof belasting
@@ -242,7 +242,13 @@ Public Class Form1
             '---------- efficiency -----------
             effficiency = ((tot_kgh - total_loss) / tot_kgh) * 100  '[%]
 
-            TextBox39.Text = kgh.ToString("0")      'Stof inlet
+            '---------- Calc diameter with 50% separation ---
+            dp50_dia = Dp50()
+
+            '---------- present -------
+            TextBox26.Text = dp50_dia.ToString("0.00")   '[mu]
+
+            TextBox39.Text = kgh.ToString("0")          'Stof inlet
             TextBox40.Text = tot_kgh.ToString("0")  'Stof inlet totaal
             TextBox25.Text = effficiency.ToString("0.0")
         End If
@@ -308,6 +314,7 @@ Public Class Form1
             fac_a = words(7)
         End If
 
+        '------ loss calculation ----
         verlies = -((korrel_g / kwaarde - fac_m) / fac_k) ^ fac_a
         verlies = Math.E ^ verlies
 
@@ -322,8 +329,23 @@ Public Class Form1
         TextBox19.Text = Round(fac_m, 3).ToString               'faktor-m
         TextBox20.Text = Round(fac_k, 3).ToString               'faktor-kappa
         TextBox21.Text = Round(fac_a, 3).ToString               'faktor-a
+
         Return (verlies)
     End Function
+    Private Function Dp50() As Double
+        Dim dia_dp50 As Double
+        Dim los As Double
+
+        '----- now calc chart poins --------------------------
+        For dia_dp50 = 0 To 100 Step 0.01      'Particle diameter [mu]
+            los = Calc_verlies(dia_dp50) 'Loss [%]
+            If los >= 0.5 Then Exit For
+        Next
+
+        Return (dia_dp50)
+    End Function
+
+
     Private Sub Draw_chart()
         '-------
         Dim s_points(100, 2) As Double
@@ -365,7 +387,7 @@ Public Class Form1
             Chart1.ChartAreas("ChartArea0").AxisX.Maximum = 40    'Particle size
         End If
 
-        '----- now calc --------------------------
+        '----- now calc chart poins --------------------------
         For h = 0 To 100
             s_points(h, 0) = h                                   'Particle diameter [mu]
             s_points(h, 1) = Calc_verlies(s_points(h, 0)) * 100  'Loss [%]
