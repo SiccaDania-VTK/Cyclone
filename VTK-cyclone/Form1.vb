@@ -6,11 +6,13 @@ Imports System.Threading
 
 '------- Korrel groepen in de inlaat stroom------
 Public Structure Korrel_struct
-    Public dia_small As Double      'Particle diameter [mu]
-    Public dia_big As Double        'Particle diameter [mu]
-    Public dia_ave As Double        'Particle diameter [mu]
-    Public aandeel As Double        'Aandeel in de inlaat stroom [% weight]
-    Public verlies As Double        'verlies (nietgevangen) [-]
+    Public dia_small As Double          'Particle diameter [mu]
+    Public dia_big As Double            'Particle diameter [mu]
+    Public dia_ave As Double            'Particle diameter [mu]
+    Public class_wght_cum_pro As Double 'group_weight_cum in de inlaat stroom [% weight]
+    Public class_wght_pro As Double     'group_weight in de inlaat stroom [% weight]
+    Public class_wght_kg As Double      'group_weight in de inlaat stroom [kg]
+    Public verlies As Double            'verlies (niet gevangen) [-]
 End Structure
 
 Public Class Form1
@@ -109,10 +111,13 @@ Public Class Form1
         Dim no_cycl As Double   'Number cyclones
         Dim stofb As Double
         Dim tot_kgh As Double       'Dust inlet per hour totaal 
-        Dim kgh As Double       'Dust inlet per hour/cycloon 
-        Dim kgs As Double       'Dust inlet per second
+        Dim kgh As Double           'Dust inlet per hour/cycloon 
+        Dim kgs As Double           'Dust inlet per second
 
-        Dim total_loss As Double  'Berekende verlies
+        Dim total_loss As Double    'Berekende verlies
+        Dim class_loss As Double    'Loss in [kg] per class
+        Dim effficiency As Double
+        Dim total_input_weight As Double
 
         If (ComboBox1.SelectedIndex > -1) Then     'Prevent exceptions
             words = cyl_dimensions(ComboBox1.SelectedIndex).Split(";")
@@ -189,41 +194,57 @@ Public Class Form1
             End If
 
             '--------- Inlet korrel-greop data -----------
-            init_groups()
+            Init_groups()
 
-            korrel_grp(0).aandeel = numericUpDown6.Value / 100  'Percentale van de inlaat stof belasting
-            korrel_grp(1).aandeel = numericUpDown7.Value / 100
-            korrel_grp(2).aandeel = numericUpDown8.Value / 100
-            korrel_grp(3).aandeel = numericUpDown9.Value / 100
-            korrel_grp(4).aandeel = numericUpDown10.Value / 100
-            korrel_grp(5).aandeel = numericUpDown11.Value / 100
-            korrel_grp(6).aandeel = numericUpDown12.Value / 100
-            korrel_grp(7).aandeel = numericUpDown13.Value / 100
+            korrel_grp(0).class_wght_cum_pro = numericUpDown6.Value / 100  'Percentale van de inlaat stof belasting
+            korrel_grp(1).class_wght_cum_pro = numericUpDown7.Value / 100
+            korrel_grp(2).class_wght_cum_pro = numericUpDown8.Value / 100
+            korrel_grp(3).class_wght_cum_pro = numericUpDown9.Value / 100
+            korrel_grp(4).class_wght_cum_pro = numericUpDown10.Value / 100
+            korrel_grp(5).class_wght_cum_pro = numericUpDown11.Value / 100
+            korrel_grp(6).class_wght_cum_pro = numericUpDown12.Value / 100
+            korrel_grp(7).class_wght_cum_pro = numericUpDown13.Value / 100
 
             '---- moet opgeteld 100% zijn --------------
 
+            '---- determine group weights in [%] and [kg]-----------
+            For h = 0 To 7
+                korrel_grp(h).class_wght_pro = korrel_grp(h).class_wght_cum_pro - korrel_grp(h + 1).class_wght_cum_pro
+                korrel_grp(h).class_wght_kg = korrel_grp(h).class_wght_pro * tot_kgh
+            Next
 
             '--------- overall resultaat --------------------
             total_loss = 0
+            class_loss = 0
+            total_input_weight = 0
+
             For h = 0 To 7
                 korrel_grp(h).verlies = Calc_verlies(korrel_grp(h).dia_ave)
-                total_loss += korrel_grp(h).aandeel * korrel_grp(h).verlies * tot_kgh
 
                 '--- write in dataview grid -----
                 DataGridView1.Rows.Item(h).Cells(0).Value = korrel_grp(h).dia_small
                 DataGridView1.Rows.Item(h).Cells(1).Value = korrel_grp(h).dia_big
                 DataGridView1.Rows.Item(h).Cells(2).Value = korrel_grp(h).dia_ave
-                DataGridView1.Rows.Item(h).Cells(3).Value = Round(korrel_grp(h).aandeel * tot_kgh, 0) '[kg/h]
-                DataGridView1.Rows.Item(h).Cells(4).Value = Round(korrel_grp(h).aandeel * 100, 2) '[%]
-                DataGridView1.Rows.Item(h).Cells(5).Value = Round(korrel_grp(h).verlies * 100, 2) '[%]
-                DataGridView1.Rows.Item(h).Cells(6).Value = Round(korrel_grp(h).aandeel * korrel_grp(h).verlies * tot_kgh, 1) '[kg/hr]
 
+                DataGridView1.Rows.Item(h).Cells(3).Value = korrel_grp(h).class_wght_kg.ToString("0") '[kg/h]
+                DataGridView1.Rows.Item(h).Cells(4).Value = (korrel_grp(h).class_wght_pro * 100).ToString("0.0") '[%]
+                DataGridView1.Rows.Item(h).Cells(5).Value = (korrel_grp(h).verlies * 100).ToString("0.0") '[%]
+                class_loss = (korrel_grp(h).class_wght_kg * korrel_grp(h).verlies)
+                DataGridView1.Rows.Item(h).Cells(6).Value = class_loss.ToString("0.0") '[kg/hr]
+
+                total_loss += class_loss
+                total_input_weight += korrel_grp(h).class_wght_kg
             Next h
-            DataGridView1.Rows.Item(8).Cells(6).Value = Round((total_loss), 0)
+            DataGridView1.Rows.Item(8).Cells(6).Value = total_loss.ToString("0.0")
+            DataGridView1.Rows.Item(8).Cells(3).Value = total_input_weight.ToString("0")
             DataGridView1.AutoResizeColumns()
 
-            TextBox39.Text = kgh.ToString("0")              'Stof inlet
+            '---------- efficiency -----------
+            effficiency = ((tot_kgh - total_loss) / tot_kgh) * 100  '[%]
+
+            TextBox39.Text = kgh.ToString("0")      'Stof inlet
             TextBox40.Text = tot_kgh.ToString("0")  'Stof inlet totaal
+            TextBox25.Text = effficiency.ToString("0.0")
         End If
     End Sub
     Private Sub Init_groups()
