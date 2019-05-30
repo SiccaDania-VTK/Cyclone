@@ -315,15 +315,16 @@ Public Class Form1
         End If
 
         '------ loss calculation ----
-        verlies = -((korrel_g / kwaarde - fac_m) / fac_k) ^ fac_a
-        verlies = Math.E ^ verlies
+        verlies = (((korrel_g / kwaarde) - fac_m) / fac_k) ^ fac_a
+        verlies = Math.E ^ -verlies
 
         '---------- present------------------
         TextBox24.Text &= "Korrel=  " & korrel_g.ToString
         TextBox24.Text &= ", Dia_krit= " & dia_krit.ToString
         TextBox24.Text &= ", fac_m= " & fac_m.ToString
         TextBox24.Text &= ", fac_k= " & fac_k.ToString
-        TextBox24.Text &= ", fac_a= " & fac_a.ToString & vbCrLf
+        TextBox24.Text &= ", fac_a= " & fac_a.ToString
+        TextBox24.Text &= ", verlies= " & verlies.ToString("0.00") & vbCrLf
 
         TextBox18.Text = Round(dia_krit, 3).ToString            'diameter_kritisch
         TextBox19.Text = Round(fac_m, 3).ToString               'faktor-m
@@ -336,10 +337,15 @@ Public Class Form1
         Dim dia_dp50 As Double
         Dim los As Double
 
-        '----- now calc chart poins --------------------------
-        For dia_dp50 = 0 To 100 Step 0.01      'Particle diameter [mu]
+        '----- now calc  --------------------------
+        For dia_dp50 = 1 To 10 Step 0.1      'Particle diameter [mu]
             los = Calc_verlies(dia_dp50) 'Loss [%]
-            If los >= 0.5 Then Exit For
+            TextBox24.Text &= "*****dia_dp50= " & dia_dp50.ToString("0.000")
+            TextBox24.Text &= ", verlies= " & los.ToString("0.000") & "*****" & vbCrLf
+            If los <= 0.5 Then
+                TextBox24.Text &= "------found------------ " & los.ToString("0.000") & vbCrLf
+                Exit For
+            End If
         Next
 
         Return (dia_dp50)
