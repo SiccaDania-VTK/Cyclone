@@ -98,7 +98,7 @@ Public Class Form1
         End If
     End Sub
 
-    Private Sub Button1_Click(sender As Object, e As EventArgs) Handles button1.Click, TabPage1.Enter, numericUpDown3.ValueChanged, numericUpDown2.ValueChanged, numericUpDown14.ValueChanged, NumericUpDown1.ValueChanged, NumericUpDown15.ValueChanged, CheckBox1.CheckedChanged, numericUpDown5.ValueChanged, NumericUpDown20.ValueChanged, NumericUpDown19.ValueChanged, NumericUpDown18.ValueChanged, ComboBox1.SelectedIndexChanged, numericUpDown9.ValueChanged, numericUpDown8.ValueChanged, numericUpDown7.ValueChanged, numericUpDown6.ValueChanged, numericUpDown12.ValueChanged, numericUpDown11.ValueChanged, numericUpDown10.ValueChanged
+    Private Sub Button1_Click(sender As Object, e As EventArgs) Handles button1.Click, TabPage1.Enter, numericUpDown3.ValueChanged, numericUpDown2.ValueChanged, numericUpDown14.ValueChanged, NumericUpDown1.ValueChanged, CheckBox1.CheckedChanged, numericUpDown5.ValueChanged, NumericUpDown20.ValueChanged, NumericUpDown19.ValueChanged, NumericUpDown18.ValueChanged, ComboBox1.SelectedIndexChanged, numericUpDown9.ValueChanged, numericUpDown8.ValueChanged, numericUpDown7.ValueChanged, numericUpDown6.ValueChanged, numericUpDown12.ValueChanged, numericUpDown11.ValueChanged, numericUpDown10.ValueChanged, numericUpDown13.ValueChanged
         Get_input()
     End Sub
     Private Sub Get_input()
@@ -189,27 +189,7 @@ Public Class Form1
             End If
 
             '--------- Inlet korrel-greop data -----------
-            korrel_grp(0).dia_small = 0
-            korrel_grp(1).dia_small = 10
-            korrel_grp(2).dia_small = 15
-            korrel_grp(3).dia_small = 20
-            korrel_grp(4).dia_small = 30
-            korrel_grp(5).dia_small = 40
-            korrel_grp(6).dia_small = 50
-            korrel_grp(7).dia_small = 60
-
-            korrel_grp(0).dia_big = 10
-            korrel_grp(1).dia_big = 15
-            korrel_grp(2).dia_big = 20
-            korrel_grp(3).dia_big = 30
-            korrel_grp(4).dia_big = 40
-            korrel_grp(5).dia_big = 50
-            korrel_grp(6).dia_big = 60
-            korrel_grp(7).dia_big = 80
-
-            For h = 0 To 7
-                korrel_grp(h).dia_ave = (korrel_grp(h).dia_small + korrel_grp(h).dia_big) / 2
-            Next
+            init_groups()
 
             korrel_grp(0).aandeel = numericUpDown6.Value / 100  'Percentale van de inlaat stof belasting
             korrel_grp(1).aandeel = numericUpDown7.Value / 100
@@ -224,44 +204,65 @@ Public Class Form1
 
 
             '--------- overall resultaat --------------------
-            DataGridView1.ColumnCount = 5
-            DataGridView1.AutoResizeColumns()
-            DataGridView1.Rows.Clear()
-            DataGridView1.Rows.Add(8)
-
             total_loss = 0
-            DataGridView1.Columns(0).HeaderText = "Dia [mu]"
-            DataGridView1.Columns(1).HeaderText = "Wght [kg/h]"
-            DataGridView1.Columns(2).HeaderText = "Weight [%]"
-            DataGridView1.Columns(3).HeaderText = "Loss [%]"
-            DataGridView1.Columns(4).HeaderText = "Loss [kg/h]"
-
-            DataGridView1.Rows.Item(0).Cells(0).Value = " 0-10"
-            DataGridView1.Rows.Item(1).Cells(0).Value = "10-15"
-            DataGridView1.Rows.Item(2).Cells(0).Value = "15-20"
-            DataGridView1.Rows.Item(3).Cells(0).Value = "20-30"
-            DataGridView1.Rows.Item(4).Cells(0).Value = "30-40"
-            DataGridView1.Rows.Item(5).Cells(0).Value = "40-50"
-            DataGridView1.Rows.Item(6).Cells(0).Value = "50-60"
-            DataGridView1.Rows.Item(7).Cells(0).Value = "60-80"
-
             For h = 0 To 7
                 korrel_grp(h).verlies = Calc_verlies(korrel_grp(h).dia_ave)
                 total_loss += korrel_grp(h).aandeel * korrel_grp(h).verlies * tot_kgh
 
                 '--- write in dataview grid -----
-                DataGridView1.Rows.Item(h).Cells(1).Value = Round(korrel_grp(h).aandeel * tot_kgh, 0) '[kg/h]
-                DataGridView1.Rows.Item(h).Cells(2).Value = Round(korrel_grp(h).aandeel * 100, 2) '[%]
-                DataGridView1.Rows.Item(h).Cells(3).Value = Round(korrel_grp(h).verlies * 100, 2) '[%]
-                DataGridView1.Rows.Item(h).Cells(4).Value = Round(korrel_grp(h).aandeel * korrel_grp(h).verlies * tot_kgh, 1) '[kg/hr]
+                DataGridView1.Rows.Item(h).Cells(0).Value = korrel_grp(h).dia_small
+                DataGridView1.Rows.Item(h).Cells(1).Value = korrel_grp(h).dia_big
+                DataGridView1.Rows.Item(h).Cells(2).Value = korrel_grp(h).dia_ave
+                DataGridView1.Rows.Item(h).Cells(3).Value = Round(korrel_grp(h).aandeel * tot_kgh, 0) '[kg/h]
+                DataGridView1.Rows.Item(h).Cells(4).Value = Round(korrel_grp(h).aandeel * 100, 2) '[%]
+                DataGridView1.Rows.Item(h).Cells(5).Value = Round(korrel_grp(h).verlies * 100, 2) '[%]
+                DataGridView1.Rows.Item(h).Cells(6).Value = Round(korrel_grp(h).aandeel * korrel_grp(h).verlies * tot_kgh, 1) '[kg/hr]
+
             Next h
-            DataGridView1.Rows.Item(8).Cells(4).Value = Round((total_loss), 0)
+            DataGridView1.Rows.Item(8).Cells(6).Value = Round((total_loss), 0)
+            DataGridView1.AutoResizeColumns()
 
             TextBox39.Text = kgh.ToString("0")              'Stof inlet
             TextBox40.Text = tot_kgh.ToString("0")  'Stof inlet totaal
         End If
     End Sub
+    Private Sub Init_groups()
+        DataGridView1.ColumnCount = 7
+        DataGridView1.Rows.Clear()
+        DataGridView1.Rows.Add(8)
+        DataGridView1.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill
 
+        '[mu] Class lower particle diameter limit diameter
+        korrel_grp(0).dia_small = 0
+        korrel_grp(1).dia_small = 10
+        korrel_grp(2).dia_small = 15
+        korrel_grp(3).dia_small = 20
+        korrel_grp(4).dia_small = 30
+        korrel_grp(5).dia_small = 40
+        korrel_grp(6).dia_small = 50
+        korrel_grp(7).dia_small = 60
+
+        '[mu] Class upper particle diameter limit diameter
+        korrel_grp(0).dia_big = 10
+        korrel_grp(1).dia_big = 15
+        korrel_grp(2).dia_big = 20
+        korrel_grp(3).dia_big = 30
+        korrel_grp(4).dia_big = 40
+        korrel_grp(5).dia_big = 50
+        korrel_grp(6).dia_big = 60
+        korrel_grp(7).dia_big = 80
+
+        For h = 0 To 7
+            korrel_grp(h).dia_ave = (korrel_grp(h).dia_small + korrel_grp(h).dia_big) / 2
+        Next
+        DataGridView1.Columns(0).HeaderText = "Dia lower [mu]"
+        DataGridView1.Columns(1).HeaderText = "Dia upper [mu]"
+        DataGridView1.Columns(2).HeaderText = "Dia average [mu]"
+        DataGridView1.Columns(3).HeaderText = "Weight [kg/h]"
+        DataGridView1.Columns(4).HeaderText = "Weight [%]"
+        DataGridView1.Columns(5).HeaderText = "Loss [%]"
+        DataGridView1.Columns(6).HeaderText = "Loss [kg/h]"
+    End Sub
     '-------- Bereken het verlies getal -----------
     '----- de input is de korrel grootte-----------
     Private Function Calc_verlies(korrel_g As Double)
@@ -317,7 +318,7 @@ Public Class Form1
         Chart1.Series(h).ChartArea = "ChartArea0"
         Chart1.Series(h).ChartType = DataVisualization.Charting.SeriesChartType.Line
         '  Chart1.Series(schets_no).Name = (Tschets(schets_no).Tname)
-        Chart1.Series(h).BorderWidth = 1
+        Chart1.Series(h).BorderWidth = 2
         Chart1.Series(h).IsVisibleInLegend = False
         ' Next
 
