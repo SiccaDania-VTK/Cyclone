@@ -232,15 +232,15 @@ Public Class Form1
 
             For h = 0 To 7
                 korrel(h).verlies = Calc_verlies(korrel(h).dia)
-                total_loss += korrel(h).aandeel * korrel(h).verlies
+                total_loss += korrel(h).aandeel * korrel(h).verlies * tot_kgh
 
                 '--- write in dataview grid -----
-                DataGridView1.Rows.Item(h).Cells(1).Value = Round(korrel(h).aandeel * tot_kgh, 0)
-                DataGridView1.Rows.Item(h).Cells(2).Value = Round(korrel(h).aandeel * 100, 2)
-                DataGridView1.Rows.Item(h).Cells(3).Value = Round(korrel(h).verlies * 100, 2)
-                DataGridView1.Rows.Item(h).Cells(4).Value = Round(korrel(h).aandeel * korrel(h).verlies, 4)
+                DataGridView1.Rows.Item(h).Cells(1).Value = Round(korrel(h).aandeel * tot_kgh, 0) '[kg/h]
+                DataGridView1.Rows.Item(h).Cells(2).Value = Round(korrel(h).aandeel * 100, 2) '[%]
+                DataGridView1.Rows.Item(h).Cells(3).Value = Round(korrel(h).verlies * 100, 2) '[%]
+                DataGridView1.Rows.Item(h).Cells(4).Value = Round(korrel(h).aandeel * korrel(h).verlies * tot_kgh, 1) '[kg/hr]
             Next h
-            DataGridView1.Rows.Item(8).Cells(4).Value = Round((total_loss * tot_kgh), 0)
+            DataGridView1.Rows.Item(8).Cells(4).Value = Round((total_loss), 0)
 
             TextBox39.Text = kgh.ToString("0")              'Stof inlet
             TextBox40.Text = tot_kgh.ToString("0")  'Stof inlet totaal
