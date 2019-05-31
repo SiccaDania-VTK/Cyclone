@@ -23,9 +23,9 @@ Partial Class Form1
     <System.Diagnostics.DebuggerStepThrough()>
     Private Sub InitializeComponent()
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(Form1))
-        Dim ChartArea4 As System.Windows.Forms.DataVisualization.Charting.ChartArea = New System.Windows.Forms.DataVisualization.Charting.ChartArea()
-        Dim Legend4 As System.Windows.Forms.DataVisualization.Charting.Legend = New System.Windows.Forms.DataVisualization.Charting.Legend()
-        Dim Series4 As System.Windows.Forms.DataVisualization.Charting.Series = New System.Windows.Forms.DataVisualization.Charting.Series()
+        Dim ChartArea7 As System.Windows.Forms.DataVisualization.Charting.ChartArea = New System.Windows.Forms.DataVisualization.Charting.ChartArea()
+        Dim Legend7 As System.Windows.Forms.DataVisualization.Charting.Legend = New System.Windows.Forms.DataVisualization.Charting.Legend()
+        Dim Series7 As System.Windows.Forms.DataVisualization.Charting.Series = New System.Windows.Forms.DataVisualization.Charting.Series()
         Me.TabControl1 = New System.Windows.Forms.TabControl()
         Me.TabPage1 = New System.Windows.Forms.TabPage()
         Me.GroupBox5 = New System.Windows.Forms.GroupBox()
@@ -207,6 +207,15 @@ Partial Class Form1
         Me.label12 = New System.Windows.Forms.Label()
         Me.TabPage8 = New System.Windows.Forms.TabPage()
         Me.TextBox24 = New System.Windows.Forms.TextBox()
+        Me.GroupBox9 = New System.Windows.Forms.GroupBox()
+        Me.Label99 = New System.Windows.Forms.Label()
+        Me.Label100 = New System.Windows.Forms.Label()
+        Me.TextBox28 = New System.Windows.Forms.TextBox()
+        Me.TextBox29 = New System.Windows.Forms.TextBox()
+        Me.Button3 = New System.Windows.Forms.Button()
+        Me.Button4 = New System.Windows.Forms.Button()
+        Me.OpenFileDialog1 = New System.Windows.Forms.OpenFileDialog()
+        Me.Label101 = New System.Windows.Forms.Label()
         Me.TabControl1.SuspendLayout()
         Me.TabPage1.SuspendLayout()
         Me.GroupBox5.SuspendLayout()
@@ -252,6 +261,7 @@ Partial Class Form1
         Me.TabPage7.SuspendLayout()
         Me.groupBox3.SuspendLayout()
         Me.TabPage8.SuspendLayout()
+        Me.GroupBox9.SuspendLayout()
         Me.SuspendLayout()
         '
         'TabControl1
@@ -273,6 +283,8 @@ Partial Class Form1
         '
         'TabPage1
         '
+        Me.TabPage1.Controls.Add(Me.Label101)
+        Me.TabPage1.Controls.Add(Me.GroupBox9)
         Me.TabPage1.Controls.Add(Me.GroupBox5)
         Me.TabPage1.Controls.Add(Me.GroupBox4)
         Me.TabPage1.Controls.Add(Me.Label74)
@@ -527,9 +539,9 @@ Partial Class Form1
         Me.GroupBox4.Controls.Add(Me.TextBox17)
         Me.GroupBox4.Controls.Add(Me.TextBox16)
         Me.GroupBox4.Controls.Add(Me.Label55)
-        Me.GroupBox4.Location = New System.Drawing.Point(19, 460)
+        Me.GroupBox4.Location = New System.Drawing.Point(19, 554)
         Me.GroupBox4.Name = "GroupBox4"
-        Me.GroupBox4.Size = New System.Drawing.Size(318, 160)
+        Me.GroupBox4.Size = New System.Drawing.Size(318, 144)
         Me.GroupBox4.TabIndex = 71
         Me.GroupBox4.TabStop = False
         Me.GroupBox4.Text = "Process data"
@@ -660,7 +672,7 @@ Partial Class Form1
         '
         Me.Label74.AutoSize = True
         Me.Label74.Font = New System.Drawing.Font("Microsoft Sans Serif", 15.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label74.Location = New System.Drawing.Point(141, 642)
+        Me.Label74.Location = New System.Drawing.Point(376, 595)
         Me.Label74.Name = "Label74"
         Me.Label74.Size = New System.Drawing.Size(165, 25)
         Me.Label74.TabIndex = 69
@@ -675,12 +687,12 @@ Partial Class Form1
         Me.GroupBox7.Controls.Add(Me.Label29)
         Me.GroupBox7.Controls.Add(Me.label15)
         Me.GroupBox7.Controls.Add(Me.numericUpDown5)
-        Me.GroupBox7.Location = New System.Drawing.Point(19, 345)
+        Me.GroupBox7.Location = New System.Drawing.Point(19, 444)
         Me.GroupBox7.Name = "GroupBox7"
-        Me.GroupBox7.Size = New System.Drawing.Size(318, 100)
+        Me.GroupBox7.Size = New System.Drawing.Size(318, 104)
         Me.GroupBox7.TabIndex = 70
         Me.GroupBox7.TabStop = False
-        Me.GroupBox7.Text = "Select Cyclone"
+        Me.GroupBox7.Text = "Select Cyclone in paralel"
         '
         'Label64
         '
@@ -768,23 +780,23 @@ Partial Class Form1
         '
         'Chart1
         '
-        ChartArea4.Name = "ChartArea1"
-        Me.Chart1.ChartAreas.Add(ChartArea4)
-        Legend4.Name = "Legend1"
-        Me.Chart1.Legends.Add(Legend4)
+        ChartArea7.Name = "ChartArea1"
+        Me.Chart1.ChartAreas.Add(ChartArea7)
+        Legend7.Name = "Legend1"
+        Me.Chart1.Legends.Add(Legend7)
         Me.Chart1.Location = New System.Drawing.Point(598, 321)
         Me.Chart1.Name = "Chart1"
-        Series4.ChartArea = "ChartArea1"
-        Series4.Legend = "Legend1"
-        Series4.Name = "Series1"
-        Me.Chart1.Series.Add(Series4)
+        Series7.ChartArea = "ChartArea1"
+        Series7.Legend = "Legend1"
+        Series7.Name = "Series1"
+        Me.Chart1.Series.Add(Series7)
         Me.Chart1.Size = New System.Drawing.Size(436, 364)
         Me.Chart1.TabIndex = 66
         Me.Chart1.Text = "Chart1"
         '
         'button1
         '
-        Me.button1.Location = New System.Drawing.Point(29, 626)
+        Me.button1.Location = New System.Drawing.Point(381, 637)
         Me.button1.Name = "button1"
         Me.button1.Size = New System.Drawing.Size(75, 23)
         Me.button1.TabIndex = 26
@@ -829,9 +841,9 @@ Partial Class Form1
         Me.groupBox2.Controls.Add(Me.label13)
         Me.groupBox2.Controls.Add(Me.label9)
         Me.groupBox2.Controls.Add(Me.label10)
-        Me.groupBox2.Location = New System.Drawing.Point(17, 6)
+        Me.groupBox2.Location = New System.Drawing.Point(17, 118)
         Me.groupBox2.Name = "groupBox2"
-        Me.groupBox2.Size = New System.Drawing.Size(320, 333)
+        Me.groupBox2.Size = New System.Drawing.Size(320, 316)
         Me.groupBox2.TabIndex = 24
         Me.groupBox2.TabStop = False
         Me.groupBox2.Text = "Gas data inlet"
@@ -2233,6 +2245,89 @@ Partial Class Form1
         Me.TextBox24.Size = New System.Drawing.Size(632, 653)
         Me.TextBox24.TabIndex = 0
         '
+        'GroupBox9
+        '
+        Me.GroupBox9.Controls.Add(Me.Button4)
+        Me.GroupBox9.Controls.Add(Me.Button3)
+        Me.GroupBox9.Controls.Add(Me.TextBox29)
+        Me.GroupBox9.Controls.Add(Me.TextBox28)
+        Me.GroupBox9.Controls.Add(Me.Label100)
+        Me.GroupBox9.Controls.Add(Me.Label99)
+        Me.GroupBox9.Location = New System.Drawing.Point(19, 6)
+        Me.GroupBox9.Name = "GroupBox9"
+        Me.GroupBox9.Size = New System.Drawing.Size(318, 106)
+        Me.GroupBox9.TabIndex = 76
+        Me.GroupBox9.TabStop = False
+        Me.GroupBox9.Text = "Project data"
+        '
+        'Label99
+        '
+        Me.Label99.AutoSize = True
+        Me.Label99.Font = New System.Drawing.Font("Microsoft Sans Serif", 11.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Label99.Location = New System.Drawing.Point(14, 20)
+        Me.Label99.Name = "Label99"
+        Me.Label99.Size = New System.Drawing.Size(74, 18)
+        Me.Label99.TabIndex = 77
+        Me.Label99.Text = "Quote no."
+        '
+        'Label100
+        '
+        Me.Label100.AutoSize = True
+        Me.Label100.Font = New System.Drawing.Font("Microsoft Sans Serif", 11.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Label100.Location = New System.Drawing.Point(14, 44)
+        Me.Label100.Name = "Label100"
+        Me.Label100.Size = New System.Drawing.Size(58, 18)
+        Me.Label100.TabIndex = 76
+        Me.Label100.Text = "Tag no."
+        '
+        'TextBox28
+        '
+        Me.TextBox28.BackColor = System.Drawing.Color.Yellow
+        Me.TextBox28.Location = New System.Drawing.Point(110, 16)
+        Me.TextBox28.Name = "TextBox28"
+        Me.TextBox28.Size = New System.Drawing.Size(186, 20)
+        Me.TextBox28.TabIndex = 78
+        '
+        'TextBox29
+        '
+        Me.TextBox29.BackColor = System.Drawing.Color.Yellow
+        Me.TextBox29.Location = New System.Drawing.Point(110, 44)
+        Me.TextBox29.Name = "TextBox29"
+        Me.TextBox29.Size = New System.Drawing.Size(186, 20)
+        Me.TextBox29.TabIndex = 79
+        Me.TextBox29.Text = "xxx"
+        '
+        'Button3
+        '
+        Me.Button3.Location = New System.Drawing.Point(22, 73)
+        Me.Button3.Name = "Button3"
+        Me.Button3.Size = New System.Drawing.Size(117, 23)
+        Me.Button3.TabIndex = 80
+        Me.Button3.Text = "Save project"
+        Me.Button3.UseVisualStyleBackColor = True
+        '
+        'Button4
+        '
+        Me.Button4.Location = New System.Drawing.Point(173, 74)
+        Me.Button4.Name = "Button4"
+        Me.Button4.Size = New System.Drawing.Size(117, 23)
+        Me.Button4.TabIndex = 81
+        Me.Button4.Text = "Retrieve project"
+        Me.Button4.UseVisualStyleBackColor = True
+        '
+        'OpenFileDialog1
+        '
+        Me.OpenFileDialog1.FileName = "OpenFileDialog1"
+        '
+        'Label101
+        '
+        Me.Label101.AutoSize = True
+        Me.Label101.Location = New System.Drawing.Point(935, 309)
+        Me.Label101.Name = "Label101"
+        Me.Label101.Size = New System.Drawing.Size(51, 13)
+        Me.Label101.TabIndex = 77
+        Me.Label101.Text = "Label101"
+        '
         'Form1
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -2296,6 +2391,8 @@ Partial Class Form1
         Me.groupBox3.PerformLayout()
         Me.TabPage8.ResumeLayout(False)
         Me.TabPage8.PerformLayout()
+        Me.GroupBox9.ResumeLayout(False)
+        Me.GroupBox9.PerformLayout()
         Me.ResumeLayout(False)
 
     End Sub
@@ -2481,4 +2578,13 @@ Partial Class Form1
     Friend WithEvents TextBox27 As TextBox
     Private WithEvents Label97 As Label
     Private WithEvents Label98 As Label
+    Friend WithEvents GroupBox9 As GroupBox
+    Friend WithEvents Button4 As Button
+    Friend WithEvents Button3 As Button
+    Friend WithEvents TextBox29 As TextBox
+    Friend WithEvents TextBox28 As TextBox
+    Private WithEvents Label100 As Label
+    Private WithEvents Label99 As Label
+    Friend WithEvents OpenFileDialog1 As OpenFileDialog
+    Friend WithEvents Label101 As Label
 End Class

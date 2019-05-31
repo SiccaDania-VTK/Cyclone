@@ -1,8 +1,9 @@
 ﻿Imports System.IO
 Imports System.Math
-'Imports System.Windows.Forms.DataVisualization.Charting
 Imports System.Globalization
 Imports System.Threading
+Imports System.Text
+Imports System.Management
 
 '------- Korrel groepen in de inlaat stroom------
 Public Structure Korrel_struct
@@ -14,7 +15,6 @@ Public Structure Korrel_struct
     Public class_wght_kg As Double      'group_weight in de inlaat stroom [kg]
     Public verlies As Double            'verlies (niet gevangen) [-]
 End Structure
-
 
 Public Class Form1
     Public korrel_grp(22) As Korrel_struct    '22 korrel groepen
@@ -81,9 +81,102 @@ Public Class Form1
 
     Public weerstand_coef(7) As Double               'Poly Coefficients, Polynomial regression
 
+    '----------- directory's-----------
+    Dim dirpath_Eng As String = "N:\Engineering\VBasic\Cyclone_sizing_input\"
+    Dim dirpath_Rap As String = "N:\Engineering\VBasic\Cyclone_rapport_copy\"
+    Dim dirpath_tmp As String = "C:\Tmp\"
+    Dim ProcID As Integer = Process.GetCurrentProcess.Id
+    Dim dirpath_Temp As String = "C:\Temp\" & ProcID.ToString
+
 
     Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+        Dim hh, life_time, i As Integer
         Dim words() As String
+        Dim separators() As String = {";"}
+        Dim Pro_user, HD_number As String
+        Dim nu, nu2 As Date
+        Dim user_list As New List(Of String)
+        Dim hard_disk_list As New List(Of String)
+        Dim pass_name As Boolean = False
+        Dim pass_disc As Boolean = False
+
+        '------ allowed users with hard disc id's -----
+        user_list.Add("user")
+        hard_disk_list.Add("058F63646471")      'Privee PC, graslaan25
+
+        user_list.Add("GerritP")
+        hard_disk_list.Add("S2R6NX0H740154H")  'VTK PC, GP
+
+        user_list.Add("GerritP")
+        hard_disk_list.Add("0008_0D02_003E_0FBB.")       'VTK laptop, GP
+
+        user_list.Add("FredKo")
+        hard_disk_list.Add("JR10006P02Y6EE")    'VTK laptop, FKo
+
+        user_list.Add("VittorioS")
+        hard_disk_list.Add("002427108605")      'VTK laptop, Vittorio
+
+        user_list.Add("keess")
+        hard_disk_list.Add("002410146654")      'VTK laptop, KeesS
+
+        user_list.Add("JanK")
+        hard_disk_list.Add("0025_38B4_71B4_88FC.") 'VTK laptop, Jank
+
+        user_list.Add("JeroenA")
+        hard_disk_list.Add("171095402070")       'VTK desktop, Jeroen
+
+        user_list.Add("JeroenA")
+        hard_disk_list.Add("170228801578")       'VTK laptop, Jeroen disk 1
+        hard_disk_list.Add("MCDBM1M4F3QRBEH6")   'VTK laptop, Jeroen disk 2
+        hard_disk_list.Add("0025_388A_81BB_14B5.")   'Zweet kamer, Jeroen 
+
+        user_list.Add("lennardh")
+        hard_disk_list.Add("141190402709")       'VTK PC, Lennard Hubert
+
+        user_list.Add("Peterdw")
+        hard_disk_list.Add("134309552747")       'VTK PC, Peter de Wild
+
+        user_list.Add("Jeffreyvdz")
+        hard_disk_list.Add("ACE4_2E81_7006_2BD9.")     'VTK Laptop, Jeffrey van der Zwart
+
+        user_list.Add("Twana")
+        hard_disk_list.Add("ACE4_2E81_7006_2BD7.")     'VTK Laptop, Twan Akbheis
+
+        user_list.Add("robru")
+        hard_disk_list.Add("174741803447")     'VTK Laptop, Rob 
+
+        nu = Now()
+        nu2 = CDate("2019-12-01 00:00:00")
+        life_time = CInt((nu2 - nu).TotalDays)
+        Label101.Text = "Expire " & life_time.ToString
+
+        TextBox28.Text = "Q" & Now.ToString("yy") & ".10"
+
+        Pro_user = Environment.UserName     'User name on the screen
+        HD_number = HardDisc_Id()           'Harddisk identification
+        Me.Text &= "  (" & Pro_user & ")"
+
+        'Check user name 
+        For i = 0 To user_list.Count - 1
+            If StrComp(LCase(Pro_user), LCase(user_list.Item(i))) = 0 Then pass_name = True
+        Next
+
+        'Check disc_id
+        For i = 0 To hard_disk_list.Count - 1
+            If CBool(HD_number = Trim(hard_disk_list(i))) Then pass_disc = True
+        Next
+
+        If pass_name = False Or pass_disc = False Then
+            MessageBox.Show("VTK Cyclone selection program" & vbCrLf & "Access denied, contact GPa" & vbCrLf)
+            MessageBox.Show("User_name= " & Pro_user & ", Pass name= " & pass_name.ToString)
+            MessageBox.Show("HD_id= *" & HD_number & "*" & ", Pass disc= " & pass_disc.ToString)
+            Environment.Exit(0)
+        End If
+
+        If life_time < 0 Then
+            MessageBox.Show("Program lease Is Expired, contact GPa")
+            Environment.Exit(0)
+        End If
 
         Thread.CurrentThread.CurrentCulture = New CultureInfo("en-US")
         Thread.CurrentThread.CurrentUICulture = New CultureInfo("en-US")
@@ -347,17 +440,13 @@ Public Class Form1
         Dim dia_dp50 As Double
         Dim los As Double
 
-        '----- now calc  --------------------------
+        '----- now finf 50% loss --------------------------
         For dia_dp50 = 1 To 10 Step 0.1      'Particle diameter [mu]
             los = Calc_verlies(dia_dp50, False) 'Loss [%]
-            TextBox24.Text &= "*****dia_dp50= " & dia_dp50.ToString("0.000")
-            TextBox24.Text &= ", verlies= " & los.ToString("0.000") & "*****" & vbCrLf
             If los <= 0.5 Then
-                TextBox24.Text &= "------found------------ " & los.ToString("0.000") & vbCrLf
                 Exit For
             End If
         Next
-
         Return (dia_dp50)
     End Function
 
@@ -372,14 +461,11 @@ Public Class Form1
         Chart1.Titles.Clear()
         Chart1.ChartAreas.Add("ChartArea0")
 
-        ' For h = 0 To 1
         Chart1.Series.Add("Series" & h.ToString)
         Chart1.Series(h).ChartArea = "ChartArea0"
         Chart1.Series(h).ChartType = DataVisualization.Charting.SeriesChartType.Line
-        '  Chart1.Series(schets_no).Name = (Tschets(schets_no).Tname)
         Chart1.Series(h).BorderWidth = 2
         Chart1.Series(h).IsVisibleInLegend = False
-        ' Next
 
         Chart1.Titles.Add("Verlies Curve")
         Chart1.ChartAreas("ChartArea0").AxisX.Title = "particle dia [mu]"
@@ -421,4 +507,232 @@ Public Class Form1
         pdia = NumericUpDown15.Value
         Calc_verlies(pdia, True)
     End Sub
+
+    Private Sub Button3_Click(sender As Object, e As EventArgs) Handles Button3.Click
+        If TextBox28.Text.Trim.Length > 0 And TextBox29.Text.Trim.Length > 0 Then
+            Save_tofile()
+        Else
+            MessageBox.Show("Complete Quote and Tag number")
+        End If
+    End Sub
+    Private Sub Save_tofile()
+
+        Dim temp_string, user As String
+
+        user = Trim(Environment.UserName)         'User name on the screen
+        Dim filename As String = "Cyclone_select_" & TextBox28.Text & "_" & TextBox29.Text & DateTime.Now.ToString("_yyyy_MM_dd_") & user & ".vtk2"
+        filename = Replace(filename, Chr(32), Chr(95)) 'Replace the space's
+
+        Dim all_num, all_combo, all_check, all_radio As New List(Of Control)
+        Dim i As Integer
+
+        If String.IsNullOrEmpty(TextBox29.Text) Then
+            TextBox29.Text = "-"
+        End If
+
+        temp_string = TextBox28.Text & ";" & TextBox29.Text & ";"
+
+        '-------- find all numeric controls -----------------
+        FindControlRecursive(all_num, Me, GetType(NumericUpDown))   'Find the control
+        all_num = all_num.OrderBy(Function(x) x.Name).ToList()      'Alphabetical order
+        For i = 0 To all_num.Count - 1
+            Dim grbx As NumericUpDown = CType(all_num(i), NumericUpDown)
+            temp_string &= grbx.Value.ToString & ";"
+            TextBox24.Text &= grbx.Name.ToString & "value= " & grbx.Value.ToString & vbTab & " is Saved to file" & vbCrLf
+        Next
+        temp_string &= vbCrLf & "BREAK" & vbCrLf & ";"
+
+        '-------- find all combobox controls and save ----------------
+        FindControlRecursive(all_combo, Me, GetType(ComboBox))      'Find the control
+        all_combo = all_combo.OrderBy(Function(x) x.Name).ToList()   'Alphabetical order
+        For i = 0 To all_combo.Count - 1
+            Dim grbx As ComboBox = CType(all_combo(i), ComboBox)
+            temp_string &= grbx.SelectedItem.ToString & ";"
+        Next
+        temp_string &= vbCrLf & "BREAK" & vbCrLf & ";"
+
+        '-------- find all checkbox controls and save --------------------
+        FindControlRecursive(all_check, Me, GetType(CheckBox))      'Find the control
+        all_check = all_check.OrderBy(Function(x) x.Name).ToList()  'Alphabetical order
+        For i = 0 To all_check.Count - 1
+            Dim grbx As CheckBox = CType(all_check(i), CheckBox)
+            temp_string &= grbx.Checked.ToString & ";"
+        Next
+        temp_string &= vbCrLf & "BREAK" & vbCrLf & ";"
+
+        '-------- find all radio controls and save ---------------
+        FindControlRecursive(all_radio, Me, GetType(RadioButton))   'Find the control
+        all_radio = all_radio.OrderBy(Function(x) x.Name).ToList()  'Alphabetical order
+        For i = 0 To all_radio.Count - 1
+            Dim grbx As RadioButton = CType(all_radio(i), RadioButton)
+            temp_string &= grbx.Checked.ToString & ";"
+        Next
+        temp_string &= vbCrLf & "BREAK" & vbCrLf & ";"
+
+        '---- if path not exist then create one----------
+        Try
+            If (Not System.IO.Directory.Exists(dirpath_tmp)) Then System.IO.Directory.CreateDirectory(dirpath_tmp)
+        Catch ex As Exception
+            MessageBox.Show("Create directory without VTK intranet (L578)" & vbCrLf & ex.Message)
+        End Try
+
+        Try
+            If (Not System.IO.Directory.Exists(dirpath_Temp)) Then System.IO.Directory.CreateDirectory(dirpath_Temp)
+            If (Not System.IO.Directory.Exists(dirpath_Eng)) Then System.IO.Directory.CreateDirectory(dirpath_Eng)
+            If (Not System.IO.Directory.Exists(dirpath_Rap)) Then System.IO.Directory.CreateDirectory(dirpath_Rap)
+        Catch ex As Exception
+            MessageBox.Show("Can not create directory on the VTK intranet (L6286) " & vbCrLf & vbCrLf & ex.Message)
+        End Try
+
+        Try
+            If CInt(temp_string.Length.ToString) > 100 Then      'String may be empty
+                If Directory.Exists(dirpath_Eng) Then
+                    File.WriteAllText(dirpath_Eng & filename, temp_string, Encoding.ASCII)     'used at VTK with intranet
+                Else
+                    File.WriteAllText(dirpath_tmp & filename, temp_string, Encoding.ASCII)     'used at home
+                End If
+            End If
+        Catch ex As Exception
+            MessageBox.Show("Line 6298, " & ex.Message)  ' Show the exception's message.
+        End Try
+    End Sub
+    'Retrieve control settings and case_x_conditions from file
+    'Split the file string into 5 separate strings
+    'Each string represents a control type (combobox, checkbox,..)
+    'Then split up the secton string into part to read into the parameters
+    Private Sub Read_file()
+        Dim control_words(), words() As String
+        Dim i As Integer
+        Dim ttt As Double
+        Dim k As Integer = 0
+        Dim all_num, all_combo, all_check, all_radio As New List(Of Control)
+        Dim separators() As String = {";"}
+        Dim separators1() As String = {"BREAK"}
+
+        OpenFileDialog1.FileName = "Cyclone_select_*"
+
+        If Directory.Exists(dirpath_Eng) Then
+            OpenFileDialog1.InitialDirectory = dirpath_Eng  'used at VTK
+        Else
+            OpenFileDialog1.InitialDirectory = dirpath_tmp  'used at home
+        End If
+
+        OpenFileDialog1.Title = "Open a Text File"
+        OpenFileDialog1.Filter = "VTK2 Files|*.vtk2|VTK1 file|*.vtk"
+        If OpenFileDialog1.ShowDialog() = System.Windows.Forms.DialogResult.OK Then
+            Dim readText As String = File.ReadAllText(OpenFileDialog1.FileName, Encoding.ASCII)
+
+            control_words = readText.Split(separators1, StringSplitOptions.None) 'Split the read file content
+
+            '----- retrieve case condition-----
+            words = control_words(0).Split(separators, StringSplitOptions.None) 'Split the read file content
+            TextBox28.Text = words(0)                  'Project number
+            TextBox29.Text = words(1)                  'Item no
+
+            '---------- Retrieve Numeric controls from disk-----------------
+            FindControlRecursive(all_num, Me, GetType(NumericUpDown))               'Find the numericupdowns
+            all_num = all_num.OrderBy(Function(x) x.Name).ToList()                  'Sort in Alphabetical order
+            words = control_words(0).Split(separators, StringSplitOptions.None)     'Split the read file content
+            For i = 0 To all_num.Count - 1
+                Dim grbx As NumericUpDown = CType(all_num(i), NumericUpDown)
+                '--- dit deel voorkomt problemen bij het uitbreiden van het aantal checkboxes--
+                If (i < words.Length - 1) Then
+                    If Not (Double.TryParse(words(i + 1), ttt)) Then
+                        MessageBox.Show("Numeric controls conversion problem occured")
+                        TextBox24.Text &= grbx.Name.ToString & ", ttt= |" & ttt.ToString & "| Cannot be converted to number" & vbCrLf
+                    End If
+
+                    If ttt <= grbx.Maximum And ttt >= grbx.Minimum Then
+                        grbx.Value = CDec(ttt)          'OK
+                    Else
+                        TextBox24.Text &= grbx.Name.ToString & " ttt= " & ttt.ToString & " range=, " & grbx.Minimum & "-" & grbx.Maximum & " Minimum value Is used " & vbCrLf
+                        grbx.Value = grbx.Minimum       'NOK
+                    End If
+                Else
+                    TextBox24.Text &= "Warning last Numeric-Updown-controls Not found In file" & vbCrLf
+                End If
+            Next
+
+            '---------- Retrieve  combobox controls -----------------
+            FindControlRecursive(all_combo, Me, GetType(ComboBox))
+            all_combo = all_combo.OrderBy(Function(x) x.Name).ToList()          'Alphabetical order
+            words = control_words(1).Split(separators, StringSplitOptions.None) 'Split the read file content
+            For i = 0 To all_combo.Count - 1
+                Dim grbx As ComboBox = CType(all_combo(i), ComboBox)
+                '--- dit deel voorkomt problemen bij het uitbreiden van het aantal checkboxes--
+                If (i < words.Length - 1) Then
+                    grbx.SelectedItem = words(i + 1)
+                Else
+                    TextBox24.Text &= "Warning last combobox Not found In file" & vbCrLf
+                End If
+            Next
+
+            '---------- Retrieve  checkbox controls -----------------
+            FindControlRecursive(all_check, Me, GetType(CheckBox))
+            all_check = all_check.OrderBy(Function(x) x.Name).ToList()                  'Alphabetical order
+            words = control_words(2).Split(separators, StringSplitOptions.None) 'Split the read file content
+            For i = 0 To all_check.Count - 1
+                Dim grbx As CheckBox = CType(all_check(i), CheckBox)
+                '--- dit deel voorkomt problemen bij het uitbreiden van het aantal checkboxes--
+                If (i < words.Length - 1) Then
+                    Boolean.TryParse(words(i + 1), grbx.Checked)
+                Else
+                    TextBox24.Text &= "Warning last checkbox Not found In file" & vbCrLf
+                End If
+            Next
+
+            '---------- Retrieve  radiobuttons controls -----------------
+            FindControlRecursive(all_radio, Me, GetType(RadioButton))
+            all_radio = all_radio.OrderBy(Function(x) x.Name).ToList()                  'Alphabetical order
+            words = control_words(3).Split(separators, StringSplitOptions.None) 'Split the read file content
+            For i = 0 To all_radio.Count - 1
+                Dim grbx As RadioButton = CType(all_radio(i), RadioButton)
+                '--- dit deel voorkomt problemen bij het uitbreiden van het aantal radiobuttons--
+                If (i < words.Length - 1) Then
+                    Boolean.TryParse(words(i + 1), grbx.Checked)
+                Else
+                    TextBox24.Text &= "Warning last radiobutton Not found In file" & vbCrLf
+                End If
+            Next
+        End If
+    End Sub
+
+    Private Sub Button4_Click(sender As Object, e As EventArgs) Handles Button4.Click
+        Read_file()
+    End Sub
+    '----------- Find all controls on form1------
+    'Nota Bene, sequence of found control may be differen, List sort is required
+    Public Shared Function FindControlRecursive(ByVal list As List(Of Control), ByVal parent As Control, ByVal ctrlType As System.Type) As List(Of Control)
+        If parent Is Nothing Then Return list
+
+        If parent.GetType Is ctrlType Then
+            list.Add(parent)
+        End If
+        For Each child As Control In parent.Controls
+            FindControlRecursive(list, child, ctrlType)
+        Next
+        Return list
+    End Function
+
+    Public Function HardDisc_Id() As String
+        'Add system.management as reference !!
+        'imports system.management
+        Dim tmpStr2 As String = ""
+        Dim myScop As New ManagementScope("\\" & Environment.MachineName & "\root\cimv2")
+        Dim oQuer As New SelectQuery("SELECT * FROM WIN32_DiskDrive")
+
+        Dim oResult As New ManagementObjectSearcher(myScop, oQuer)
+        Dim oIte As ManagementObject
+        Dim oPropert As PropertyData
+        For Each oIte In oResult.Get()
+            For Each oPropert In oIte.Properties
+                If Not oPropert.Value Is Nothing AndAlso oPropert.Name = "SerialNumber" Then
+                    tmpStr2 = oPropert.Value.ToString
+                    Exit For
+                End If
+            Next
+            Exit For
+        Next
+        Return (Trim(tmpStr2))         'Harddisk identification
+    End Function
 End Class
