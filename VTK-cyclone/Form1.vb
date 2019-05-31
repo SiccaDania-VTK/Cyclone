@@ -106,13 +106,21 @@ Public Class Form1
     Private Sub Get_input()
         Dim words() As String
         Dim cyl_dim(20), db As Double
-        Dim in_hoog, in_breed, Body_dia, Flow, inlet_velos, delta_p, K_waarde As Double
+        Dim Flow, delta_p, K_waarde As Double
         Dim ro_gas, ro_particle, visco, wc As Double
         Dim no_cycl As Double   'Number cyclones
         Dim stofb As Double
         Dim tot_kgh As Double       'Dust inlet per hour totaal 
         Dim kgh As Double           'Dust inlet per hour/cycloon 
         Dim kgs As Double           'Dust inlet per second
+
+        Dim body_dia As Double      '[m]
+        Dim in_hoog As Double       '[m]
+        Dim in_breed As Double      '[m]
+        Dim dia_outlet As Double    '[m] gas outlet
+
+        Dim inlet_velos As Double   '[m/s]
+        Dim outlet_velos As Double  '[m/s]
 
         Dim total_loss As Double    'Berekende verlies
         Dim class_loss As Double    'Loss in [kg] per class
@@ -129,7 +137,8 @@ Public Class Form1
             db = numericUpDown5.Value           'Body diameter
             in_hoog = cyl_dim(1) * db           '[m]
             in_breed = cyl_dim(2) * db          '[m]
-            Body_dia = numericUpDown5.Value     '[m]
+            dia_outlet = cyl_dim(6) * db        '[m] 
+            body_dia = numericUpDown5.Value     '[m]
             Flow = NumericUpDown1.Value / 3600  '[m3/s]
             Flow /= no_cycl                     '[m3/s/cycloon]
             ro_gas = numericUpDown3.Value       '[kg/m3]
@@ -139,6 +148,9 @@ Public Class Form1
 
             '----------- inlaat snelheid ---------------------
             inlet_velos = Flow / (in_breed * in_hoog)
+
+            '----------- uitlaat snelheid ---------------------
+            outlet_velos = Flow / ((PI / 4) * dia_outlet ^ 2)   '[m/s]
 
             '----------- Pressure loss cyclone----------------------
             wc = weerstand_coef(ComboBox1.SelectedIndex)
@@ -180,6 +192,7 @@ Public Class Form1
 
             TextBox16.Text = inlet_velos.ToString("0.0")            'inlaat snelheid
             TextBox17.Text = delta_p.ToString("0")                  'Pressure loss
+            TextBox22.Text = outlet_velos.ToString("0.0")           'uitlaat snelheid
 
             TextBox23.Text = K_waarde.ToString("0.000")             'Stokes waarde tov Standaard cycloon
             TextBox37.Text = numericUpDown5.Value.ToString          'Cycloone dia_avemeter
