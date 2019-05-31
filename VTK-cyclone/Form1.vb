@@ -15,6 +15,7 @@ Public Structure Korrel_struct
     Public verlies As Double            'verlies (niet gevangen) [-]
 End Structure
 
+
 Public Class Form1
     Public korrel_grp(22) As Korrel_struct    '22 korrel groepen
 
@@ -90,14 +91,11 @@ Public Class Form1
         'De weerstandscoefficient volgt uit het cycloon type
         weerstand_coef = {7, 7, 7, 7, 7.5, 9.5, 14.5}
 
-        For hh = 0 To (cyl_dimensions.Length - 1)  'Fill combobox9 Insulation data
+        For hh = 0 To (cyl_dimensions.Length - 1)  'Fill combobox1 cyclone types
             words = cyl_dimensions(hh).Split(";")
             ComboBox1.Items.Add(words(0))
         Next hh
-
-        If ComboBox1.Items.Count > 0 Then
-            ComboBox1.SelectedIndex = 5                 'Select Cyclone type
-        End If
+        ComboBox1.SelectedIndex = 5                 'Select Cyclone type
     End Sub
 
     Private Sub Button1_Click(sender As Object, e As EventArgs) Handles button1.Click, TabPage1.Enter, numericUpDown3.ValueChanged, numericUpDown2.ValueChanged, numericUpDown14.ValueChanged, NumericUpDown1.ValueChanged, CheckBox1.CheckedChanged, numericUpDown5.ValueChanged, NumericUpDown20.ValueChanged, NumericUpDown19.ValueChanged, NumericUpDown18.ValueChanged, ComboBox1.SelectedIndexChanged, numericUpDown9.ValueChanged, numericUpDown8.ValueChanged, numericUpDown7.ValueChanged, numericUpDown6.ValueChanged, numericUpDown12.ValueChanged, numericUpDown11.ValueChanged, numericUpDown10.ValueChanged, numericUpDown13.ValueChanged
@@ -232,7 +230,7 @@ Public Class Form1
             total_input_weight = 0
 
             For h = 0 To 7
-                korrel_grp(h).verlies = Calc_verlies(korrel_grp(h).dia_ave)
+                korrel_grp(h).verlies = Calc_verlies(korrel_grp(h).dia_ave, False)
 
                 '--- write in dataview grid -----
                 DataGridView1.Rows.Item(h).Cells(0).Value = korrel_grp(h).dia_small
@@ -305,54 +303,53 @@ Public Class Form1
     End Sub
     '-------- Bereken het verlies getal -----------
     '----- de input is de korrel grootte-----------
-    Private Function Calc_verlies(korrel_g As Double)
+    Private Function Calc_verlies(korrel_g As Double, present As Boolean)
         Dim words() As String
-        Dim dia_krit, fac_m, fac_a, fac_k, verlies, kwaarde As Double
+        Dim dia_krit, fac_m, fac_a, fac_k, kwaarde As Double
+        Dim verlies As Double = 1
 
-        Double.TryParse(TextBox23.Text, kwaarde)
+        If (ComboBox1.SelectedIndex > -1) Then
+            Double.TryParse(TextBox23.Text, kwaarde)
 
-        '-------------- korrelgrootte factoren ------
-        words = rekenlijnen(ComboBox1.SelectedIndex).Split(";")
+            '-------------- korrelgrootte factoren ------
+            words = rekenlijnen(ComboBox1.SelectedIndex).Split(";")
 
-        dia_krit = words(1)
+            dia_krit = words(1)
 
-        '-------- de grafieken zijn in 2 delen gesplits voor hogere nauwkeurigheid----------
-        If korrel_g < dia_krit Then
-            fac_m = words(2)
-            fac_k = words(3)
-            fac_a = words(4)
-        Else
-            fac_m = words(5)
-            fac_k = words(6)
-            fac_a = words(7)
+            '-------- de grafieken zijn in 2 delen gesplits voor hogere nauwkeurigheid----------
+            If korrel_g < dia_krit Then
+                fac_m = words(2)
+                fac_k = words(3)
+                fac_a = words(4)
+            Else
+                fac_m = words(5)
+                fac_k = words(6)
+                fac_a = words(7)
+            End If
+
+            '------ loss calculation ----
+            verlies = (((korrel_g / kwaarde) - fac_m) / fac_k) ^ fac_a
+            verlies = Math.E ^ -verlies
+
+            If present Then
+                '---------- present------------------
+                TextBox18.Text = dia_krit.ToString("0.00")          'diameter_kritisch
+                TextBox19.Text = fac_m.ToString("0.00")             'faktor-m
+                TextBox20.Text = fac_k.ToString("0.00")             'faktor-kappa
+                TextBox21.Text = fac_a.ToString("0.00")             'faktor-a
+                TextBox27.Text = (verlies * 100).ToString("0.0") 'verlies
+            End If
         End If
-
-        '------ loss calculation ----
-        verlies = (((korrel_g / kwaarde) - fac_m) / fac_k) ^ fac_a
-        verlies = Math.E ^ -verlies
-
-        '---------- present------------------
-        TextBox24.Text &= "Korrel=  " & korrel_g.ToString
-        TextBox24.Text &= ", Dia_krit= " & dia_krit.ToString
-        TextBox24.Text &= ", fac_m= " & fac_m.ToString
-        TextBox24.Text &= ", fac_k= " & fac_k.ToString
-        TextBox24.Text &= ", fac_a= " & fac_a.ToString
-        TextBox24.Text &= ", verlies= " & verlies.ToString("0.00") & vbCrLf
-
-        TextBox18.Text = Round(dia_krit, 3).ToString            'diameter_kritisch
-        TextBox19.Text = Round(fac_m, 3).ToString               'faktor-m
-        TextBox20.Text = Round(fac_k, 3).ToString               'faktor-kappa
-        TextBox21.Text = Round(fac_a, 3).ToString               'faktor-a
-
         Return (verlies)
     End Function
+    'Note dp(50) meaning with this diameter 50% is separated and 50% is lost
     Private Function Dp50() As Double
         Dim dia_dp50 As Double
         Dim los As Double
 
         '----- now calc  --------------------------
         For dia_dp50 = 1 To 10 Step 0.1      'Particle diameter [mu]
-            los = Calc_verlies(dia_dp50) 'Loss [%]
+            los = Calc_verlies(dia_dp50, False) 'Loss [%]
             TextBox24.Text &= "*****dia_dp50= " & dia_dp50.ToString("0.000")
             TextBox24.Text &= ", verlies= " & los.ToString("0.000") & "*****" & vbCrLf
             If los <= 0.5 Then
@@ -409,7 +406,7 @@ Public Class Form1
         '----- now calc chart poins --------------------------
         For h = 0 To 100
             s_points(h, 0) = h                                   'Particle diameter [mu]
-            s_points(h, 1) = Calc_verlies(s_points(h, 0)) * 100  'Loss [%]
+            s_points(h, 1) = Calc_verlies(s_points(h, 0), False) * 100  'Loss [%]
         Next
 
         '------ now present-------------
@@ -418,4 +415,10 @@ Public Class Form1
         Next h
     End Sub
 
+    Private Sub Button2_Click(sender As Object, e As EventArgs) Handles Button2.Click, NumericUpDown15.ValueChanged
+        Dim pdia As Double
+
+        pdia = NumericUpDown15.Value
+        Calc_verlies(pdia, True)
+    End Sub
 End Class
