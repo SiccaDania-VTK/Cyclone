@@ -3,6 +3,7 @@ Imports System.Math
 Imports System.Globalization
 Imports System.Threading
 Imports System.Text
+Imports Word = Microsoft.Office.Interop.Word
 Imports System.Management
 
 '------- Korrel groepen in de inlaat stroom------
@@ -191,7 +192,7 @@ Public Class Form1
         ComboBox1.SelectedIndex = 5                 'Select Cyclone type
     End Sub
 
-    Private Sub Button1_Click(sender As Object, e As EventArgs) Handles button1.Click, TabPage1.Enter, numericUpDown3.ValueChanged, numericUpDown2.ValueChanged, numericUpDown14.ValueChanged, NumericUpDown1.ValueChanged, CheckBox1.CheckedChanged, numericUpDown5.ValueChanged, NumericUpDown20.ValueChanged, NumericUpDown19.ValueChanged, NumericUpDown18.ValueChanged, ComboBox1.SelectedIndexChanged, numericUpDown9.ValueChanged, numericUpDown8.ValueChanged, numericUpDown7.ValueChanged, numericUpDown6.ValueChanged, numericUpDown12.ValueChanged, numericUpDown11.ValueChanged, numericUpDown10.ValueChanged, numericUpDown13.ValueChanged
+    Private Sub Button1_Click(sender As Object, e As EventArgs) Handles button1.Click, TabPage1.Enter, numericUpDown3.ValueChanged, numericUpDown2.ValueChanged, numericUpDown14.ValueChanged, NumericUpDown1.ValueChanged, numericUpDown5.ValueChanged, NumericUpDown20.ValueChanged, NumericUpDown19.ValueChanged, NumericUpDown18.ValueChanged, ComboBox1.SelectedIndexChanged, numericUpDown9.ValueChanged, numericUpDown8.ValueChanged, numericUpDown7.ValueChanged, numericUpDown6.ValueChanged, numericUpDown12.ValueChanged, numericUpDown11.ValueChanged, numericUpDown10.ValueChanged, numericUpDown13.ValueChanged, CheckBox1.CheckedChanged
         Get_input()
     End Sub
     Private Sub Get_input()
@@ -289,7 +290,8 @@ Public Class Form1
             TextBox37.Text = numericUpDown5.Value.ToString          'Cycloone dia_avemeter
             TextBox38.Text = ComboBox1.SelectedItem                 'Cycloon type
 
-            Draw_chart()
+            Draw_chart1()
+            Draw_chart2()
             '---------- Check speed ---------------
             If inlet_velos < 12 Or inlet_velos > 25 Then
                 TextBox16.BackColor = Color.Red
@@ -449,9 +451,7 @@ Public Class Form1
         Next
         Return (dia_dp50)
     End Function
-
-
-    Private Sub Draw_chart()
+    Private Sub Draw_chart1()
         '-------
         Dim s_points(100, 2) As Double
         Dim h As Integer
@@ -467,7 +467,7 @@ Public Class Form1
         Chart1.Series(h).BorderWidth = 2
         Chart1.Series(h).IsVisibleInLegend = False
 
-        Chart1.Titles.Add("Verlies Curve")
+        Chart1.Titles.Add("Loss Curve")
         Chart1.ChartAreas("ChartArea0").AxisX.Title = "particle dia [mu]"
 
         Chart1.ChartAreas("ChartArea0").AxisY.Title = "Loss [%] (niet gevangen)"
@@ -500,8 +500,53 @@ Public Class Form1
             Chart1.Series(0).Points.AddXY(s_points(h, 0), s_points(h, 1))
         Next h
     End Sub
+    Private Sub Draw_chart2()
+        '-------
+        Dim s_points(100, 2) As Double
+        Dim h As Integer
 
-    Private Sub Button2_Click(sender As Object, e As EventArgs) Handles Button2.Click, NumericUpDown15.ValueChanged
+        Chart2.Series.Clear()
+        Chart2.ChartAreas.Clear()
+        Chart2.Titles.Clear()
+        Chart2.ChartAreas.Add("ChartArea0")
+
+        Chart2.Series.Add("Series" & h.ToString)
+        Chart2.Series(h).ChartArea = "ChartArea0"
+        Chart2.Series(h).ChartType = DataVisualization.Charting.SeriesChartType.Line
+        Chart2.Series(h).BorderWidth = 2
+        Chart2.Series(h).IsVisibleInLegend = False
+
+        Chart2.Titles.Add("Loss Curve")
+        Chart2.ChartAreas("ChartArea0").AxisX.Title = "particle dia [mu]"
+
+        ' Chart2.ChartAreas("ChartArea0").AxisY.Title = "Loss [%] (niet gevangen)"
+        Chart2.ChartAreas("ChartArea0").AxisY.Minimum = 0       'Loss
+        Chart2.ChartAreas("ChartArea0").AxisY.Maximum = 100     'Loss
+        Chart2.ChartAreas("ChartArea0").AxisY.Interval = 10     'Interval
+        'Chart2.ChartAreas("ChartArea0").AxisX.MinorTickMark.Enabled = False
+        'Chart2.ChartAreas("ChartArea0").AxisY.MinorTickMark.Enabled = False
+        'Chart2.ChartAreas("ChartArea0").AxisX.MinorGrid.Enabled = True
+        'Chart2.ChartAreas("ChartArea0").AxisY.MinorGrid.Enabled = True
+
+
+        ' Chart2.ChartAreas("ChartArea0").AxisX.IsLogarithmic = False
+        Chart2.ChartAreas("ChartArea0").AxisX.Minimum = 0     'Particle size
+        Chart2.ChartAreas("ChartArea0").AxisX.Maximum = 20    'Particle size
+
+        '----- now calc chart poins --------------------------
+        For h = 0 To 100
+            s_points(h, 0) = h                                   'Particle diameter [mu]
+            s_points(h, 1) = Calc_verlies(s_points(h, 0), False) * 100  'Loss [%]
+        Next
+
+        '------ now present-------------
+        For h = 0 To 40 - 1   'Fill line chart
+            Chart2.Series(0).Points.AddXY(s_points(h, 0), s_points(h, 1))
+        Next h
+    End Sub
+
+
+    Private Sub Button2_Click(sender As Object, e As EventArgs) Handles NumericUpDown15.ValueChanged
         Dim pdia As Double
 
         pdia = NumericUpDown15.Value
@@ -635,7 +680,7 @@ Public Class Form1
             words = control_words(1).Split(separators, StringSplitOptions.None)     'Split the read file content
             For i = 0 To all_num.Count - 1
                 Dim grbx As NumericUpDown = CType(all_num(i), NumericUpDown)
-                '--- dit deel voorkomt problemen bij het uitbreiden van het aantal checkboxes--
+                '--- dit deel voorkomt problemen bij het uitbreiden van het aantal --
                 If (i < words.Length - 1) Then
                     If Not (Double.TryParse(words(i + 1), ttt)) Then
                         MessageBox.Show("Numeric controls conversion problem occured")
@@ -735,4 +780,100 @@ Public Class Form1
         Next
         Return (Trim(tmpStr2))         'Harddisk identification
     End Function
+
+    Private Sub Button5_Click(sender As Object, e As EventArgs) Handles Button5.Click
+        If TextBox28.Text.Trim.Length > 0 Then
+            'Calc_overall()
+            Write_to_word_com() 'Commercial data to Word
+        Else
+            MessageBox.Show("Enter 'Case name' and save Case, then Export sizing data to Word")
+        End If
+    End Sub
+
+    'Write COMMERCIAL data to Word 
+    'see https://msdn.microsoft.com/en-us/library/office/aa192495(v=office.11).aspx
+    Private Sub Write_to_word_com()
+        Dim bmp_tab_page1 As New Bitmap(TabPage1.Width, TabPage1.Height)
+        Dim oWord As Word.Application
+        Dim oDoc As Word.Document
+        Dim oTable As Word.Table
+        Dim oPara1, oPara4 As Word.Paragraph
+
+        Dim chart_size As Integer = 55  '% of original picture size
+        Dim file_name As String
+
+        Try
+            oWord = CType(CreateObject("Word.Application"), Word.Application)
+            oWord.Visible = True
+            oDoc = oWord.Documents.Add
+
+            oDoc.PageSetup.TopMargin = 35
+            oDoc.PageSetup.BottomMargin = 20
+            oDoc.PageSetup.RightMargin = 20
+            oDoc.PageSetup.Orientation = Word.WdOrientation.wdOrientPortrait
+            oDoc.PageSetup.PaperSize = Word.WdPaperSize.wdPaperA4
+            'oDoc.PageSetup.VerticalAlignment = Word.WdVerticalAlignment.wdAlignVerticalCenter
+
+            oPara1 = oDoc.Content.Paragraphs.Add
+            oPara1.Range.Text = "VTK Sales"
+            oPara1.Range.Font.Name = "Arial"
+            oPara1.Range.Font.Size = 14
+            oPara1.Range.Font.Bold = CInt(True)
+            oPara1.Format.SpaceAfter = 0.5                '24 pt spacing after paragraph. 
+            oPara1.Range.InsertParagraphAfter()
+
+            '----------------------------------------------
+            'Insert a table, fill it with data and change the column widths.
+            oTable = oDoc.Tables.Add(oDoc.Bookmarks.Item("\endofdoc").Range, 9, 3)
+            oTable.Range.ParagraphFormat.SpaceAfter = 1
+            oTable.Range.Font.Size = 10
+            oTable.Range.Font.Bold = CInt(False)
+            oTable.Rows.Item(1).Range.Font.Bold = CInt(True)
+
+            oTable.Cell(1, 1).Range.Text = "Tag number"
+            oTable.Cell(1, 3).Range.Text = TextBox29.Text
+
+            oTable.Cell(2, 1).Range.Text = "Cyclone type "
+            oTable.Cell(2, 2).Range.Text = "[-]"
+            oTable.Cell(2, 3).Range.Text = ComboBox1.SelectedItem.ToString
+
+            oTable.Cell(3, 1).Range.Text = "Fan speed"
+            oTable.Cell(3, 2).Range.Text = "[rpm]"
+            'oTable.Cell(3, 3).Range.Text = NumericUpDown013.Value.ToString
+
+            oTable.Cell(4, 1).Range.Text = "Impeller diameter"
+            oTable.Cell(4, 2).Range.Text = "[mm]"
+            'oTable.Cell(4, 3).Range.Text = NumericUpDown033.Value.ToString
+
+            oTable.Cell(5, 1).Range.Text = "Inlet opening "
+            oTable.Cell(5, 2).Range.Text = "[mm]"
+            'oTable.Cell(5, 3).Range.Text = TextBox159.Text
+
+            oTable.Cell(6, 1).Range.Text = "Outlet opening "
+            oTable.Cell(6, 2).Range.Text = "[mm]"
+            ' oTable.Cell(6, 3).Range.Text = TextBox160.Text & " x " & TextBox161.Text
+
+
+            oTable.Columns(1).Width = oWord.InchesToPoints(2.0)   'Change width of columns 
+            oTable.Columns(2).Width = oWord.InchesToPoints(1)
+            oTable.Columns(3).Width = oWord.InchesToPoints(2)
+
+            oTable.Rows.Item(1).Range.Font.Bold = CInt(True)
+            oDoc.Bookmarks.Item("\endofdoc").Range.InsertParagraphAfter()
+
+            '------------------save Chart1 (Loss curve)---------------- 
+            Draw_chart2()
+            file_name = dirpath_Temp & "Chart_loss.Jpeg"
+            Chart2.SaveImage(file_name, System.Drawing.Imaging.ImageFormat.Jpeg)
+            oPara4 = oDoc.Content.Paragraphs.Add
+            oPara4.Alignment = Word.WdParagraphAlignment.wdAlignParagraphCenter
+            oPara4.Range.InlineShapes.AddPicture(file_name)
+            oPara4.Range.InlineShapes.Item(1).LockAspectRatio = CType(True, Microsoft.Office.Core.MsoTriState)
+            oPara4.Range.InlineShapes.Item(1).ScaleWidth = chart_size       'Size
+            oPara4.Range.InsertParagraphAfter()
+
+        Catch ex As Exception
+            MessageBox.Show(ex.Message & " Problem writing to Commercial data to Word ")  ' Show the exception's message.
+        End Try
+    End Sub
 End Class
