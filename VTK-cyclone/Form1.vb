@@ -186,16 +186,16 @@ Public Class Form1
         weerstand_coef = {7, 7, 7, 7, 7.5, 9.5, 14.5}
 
         For hh = 0 To (cyl_dimensions.Length - 1)  'Fill combobox1 cyclone types
-            words = cyl_dimensions(hh).Split(";")
+            words = cyl_dimensions(hh).Split(CType(";", Char()))
             ComboBox1.Items.Add(words(0))
         Next hh
         ComboBox1.SelectedIndex = 5                 'Select Cyclone type
     End Sub
 
     Private Sub Button1_Click(sender As Object, e As EventArgs) Handles button1.Click, TabPage1.Enter, numericUpDown3.ValueChanged, numericUpDown2.ValueChanged, numericUpDown14.ValueChanged, NumericUpDown1.ValueChanged, numericUpDown5.ValueChanged, NumericUpDown20.ValueChanged, NumericUpDown19.ValueChanged, NumericUpDown18.ValueChanged, ComboBox1.SelectedIndexChanged, numericUpDown9.ValueChanged, numericUpDown8.ValueChanged, numericUpDown7.ValueChanged, numericUpDown6.ValueChanged, numericUpDown12.ValueChanged, numericUpDown11.ValueChanged, numericUpDown10.ValueChanged, numericUpDown13.ValueChanged, CheckBox1.CheckedChanged
-        Get_input()
+        Get_input_and_calc()
     End Sub
-    Private Sub Get_input()
+    Private Sub Get_input_and_calc()
         Dim words() As String
         Dim cyl_dim(20), db As Double
         Dim Flow, delta_p, K_waarde As Double
@@ -221,9 +221,9 @@ Public Class Form1
         Dim dp50_dia As Double
 
         If (ComboBox1.SelectedIndex > -1) Then     'Prevent exceptions
-            words = cyl_dimensions(ComboBox1.SelectedIndex).Split(";")
+            words = cyl_dimensions(ComboBox1.SelectedIndex).Split(CType(";", Char()))
             For hh = 1 To 15
-                cyl_dim(hh) = words(hh)         'Cyclone dimensions
+                cyl_dim(hh) = CDbl(words(hh))         'Cyclone dimensions
             Next
             no_cycl = NumericUpDown20.Value     'Paralelle cyclonen
             db = numericUpDown5.Value           'Body diameter
@@ -288,7 +288,7 @@ Public Class Form1
 
             TextBox23.Text = K_waarde.ToString("0.000")             'Stokes waarde tov Standaard cycloon
             TextBox37.Text = numericUpDown5.Value.ToString          'Cycloone dia_avemeter
-            TextBox38.Text = ComboBox1.SelectedItem                 'Cycloon type
+            TextBox38.Text = CType(ComboBox1.SelectedItem, String)                 'Cycloon type
 
             Draw_chart1()
             Draw_chart2()
@@ -353,7 +353,6 @@ Public Class Form1
 
             '---------- present -------
             TextBox26.Text = dp50_dia.ToString("0.00")   '[mu]
-
             TextBox39.Text = kgh.ToString("0")          'Stof inlet
             TextBox40.Text = tot_kgh.ToString("0")  'Stof inlet totaal
             TextBox25.Text = effficiency.ToString("0.0")
@@ -398,7 +397,7 @@ Public Class Form1
     End Sub
     '-------- Bereken het verlies getal -----------
     '----- de input is de korrel grootte-----------
-    Private Function Calc_verlies(korrel_g As Double, present As Boolean)
+    Private Function Calc_verlies(korrel_g As Double, present As Boolean) As Double
         Dim words() As String
         Dim dia_krit, fac_m, fac_a, fac_k, kwaarde As Double
         Dim verlies As Double = 1
@@ -407,19 +406,19 @@ Public Class Form1
             Double.TryParse(TextBox23.Text, kwaarde)
 
             '-------------- korrelgrootte factoren ------
-            words = rekenlijnen(ComboBox1.SelectedIndex).Split(";")
+            words = rekenlijnen(ComboBox1.SelectedIndex).Split(CType(";", Char()))
 
-            dia_krit = words(1)
+            dia_krit = CDbl(words(1))
 
             '-------- de grafieken zijn in 2 delen gesplits voor hogere nauwkeurigheid----------
             If korrel_g < dia_krit Then
-                fac_m = words(2)
-                fac_k = words(3)
-                fac_a = words(4)
+                fac_m = CDbl(words(2))
+                fac_k = CDbl(words(3))
+                fac_a = CDbl(words(4))
             Else
-                fac_m = words(5)
-                fac_k = words(6)
-                fac_a = words(7)
+                fac_m = CDbl(words(5))
+                fac_k = CDbl(words(6))
+                fac_a = CDbl(words(7))
             End If
 
             '------ loss calculation ----
@@ -518,18 +517,9 @@ Public Class Form1
 
         Chart2.Titles.Add("Loss Curve")
         Chart2.ChartAreas("ChartArea0").AxisX.Title = "particle dia [mu]"
-
-        ' Chart2.ChartAreas("ChartArea0").AxisY.Title = "Loss [%] (niet gevangen)"
         Chart2.ChartAreas("ChartArea0").AxisY.Minimum = 0       'Loss
         Chart2.ChartAreas("ChartArea0").AxisY.Maximum = 100     'Loss
         Chart2.ChartAreas("ChartArea0").AxisY.Interval = 10     'Interval
-        'Chart2.ChartAreas("ChartArea0").AxisX.MinorTickMark.Enabled = False
-        'Chart2.ChartAreas("ChartArea0").AxisY.MinorTickMark.Enabled = False
-        'Chart2.ChartAreas("ChartArea0").AxisX.MinorGrid.Enabled = True
-        'Chart2.ChartAreas("ChartArea0").AxisY.MinorGrid.Enabled = True
-
-
-        ' Chart2.ChartAreas("ChartArea0").AxisX.IsLogarithmic = False
         Chart2.ChartAreas("ChartArea0").AxisX.Minimum = 0     'Particle size
         Chart2.ChartAreas("ChartArea0").AxisX.Maximum = 20    'Particle size
 
@@ -783,10 +773,10 @@ Public Class Form1
 
     Private Sub Button5_Click(sender As Object, e As EventArgs) Handles Button5.Click
         If TextBox28.Text.Trim.Length > 0 Then
-            'Calc_overall()
+            Get_input_and_calc()
             Write_to_word_com() 'Commercial data to Word
         Else
-            MessageBox.Show("Enter 'Case name' and save Case, then Export sizing data to Word")
+            MessageBox.Show("Enter Quote nummer and Tag, then Export sizing data to Word")
         End If
     End Sub
 
@@ -801,7 +791,7 @@ Public Class Form1
 
         Dim chart_size As Integer = 55  '% of original picture size
         Dim file_name As String
-
+        Dim row As Integer = 0
         Try
             oWord = CType(CreateObject("Word.Application"), Word.Application)
             oWord.Visible = True
@@ -822,36 +812,58 @@ Public Class Form1
             oPara1.Format.SpaceAfter = 0.5                '24 pt spacing after paragraph. 
             oPara1.Range.InsertParagraphAfter()
 
-            '----------------------------------------------
+            '---------------Inlet data-------------------------------
             'Insert a table, fill it with data and change the column widths.
-            oTable = oDoc.Tables.Add(oDoc.Bookmarks.Item("\endofdoc").Range, 9, 3)
+            oTable = oDoc.Tables.Add(oDoc.Bookmarks.Item("\endofdoc").Range, 12, 3)
             oTable.Range.ParagraphFormat.SpaceAfter = 1
             oTable.Range.Font.Size = 10
             oTable.Range.Font.Bold = CInt(False)
             oTable.Rows.Item(1).Range.Font.Bold = CInt(True)
+            row = 2
+            oTable.Cell(row, 1).Range.Text = "Project number"
+            oTable.Cell(row, 2).Range.Text = TextBox29.Text
+            row += 1
+            oTable.Cell(row, 1).Range.Text = "Tag nummer "
+            oTable.Cell(row, 2).Range.Text = ComboBox1.SelectedItem.ToString
+            row += 1
+            oTable.Cell(row, 1).Range.Text = "Flow"
+            'oTable.Cell(row, 3).Range.Text = NumericUpDown013.Value.ToString
+            oTable.Cell(row, 3).Range.Text = "[Am3/hr]"
 
-            oTable.Cell(1, 1).Range.Text = "Tag number"
-            oTable.Cell(1, 3).Range.Text = TextBox29.Text
+            row += 1
+            oTable.Cell(row, 1).Range.Text = "Druk"
+            'oTable.Cell(row, 2).Range.Text = NumericUpDown033.Value.ToString
+            oTable.Cell(row, 3).Range.Text = "[mbar g]"
 
-            oTable.Cell(2, 1).Range.Text = "Cyclone type "
-            oTable.Cell(2, 2).Range.Text = "[-]"
-            oTable.Cell(2, 3).Range.Text = ComboBox1.SelectedItem.ToString
+            row += 1
+            oTable.Cell(row, 1).Range.Text = "Particle density "
+            'oTable.Cell(row, 2).Range.Text = TextBox159.Text
+            oTable.Cell(row, 3).Range.Text = "[kg/m3]"
 
-            oTable.Cell(3, 1).Range.Text = "Fan speed"
-            oTable.Cell(3, 2).Range.Text = "[rpm]"
-            'oTable.Cell(3, 3).Range.Text = NumericUpDown013.Value.ToString
+            row += 1
+            oTable.Cell(row, 1).Range.Text = "Gas density "
+            ' oTable.Cell(row, 2).Range.Text = TextBox160.Text & " x " & TextBox161.Text
+            oTable.Cell(row, 3).Range.Text = "[kg/m3]"
 
-            oTable.Cell(4, 1).Range.Text = "Impeller diameter"
-            oTable.Cell(4, 2).Range.Text = "[mm]"
-            'oTable.Cell(4, 3).Range.Text = NumericUpDown033.Value.ToString
+            row += 1
+            oTable.Cell(row, 1).Range.Text = "Air viscosity"
+            'oTable.Cell(row, 2).Range.Text = NumericUpDown033.Value.ToString
+            oTable.Cell(row, 3).Range.Text = "[centi Poise]"
 
-            oTable.Cell(5, 1).Range.Text = "Inlet opening "
-            oTable.Cell(5, 2).Range.Text = "[mm]"
-            'oTable.Cell(5, 3).Range.Text = TextBox159.Text
+            row += 1
+            oTable.Cell(row, 1).Range.Text = "Dust load"
+            'oTable.Cell(row, 2).Range.Text = TextBox159.Text
+            oTable.Cell(row, 3).Range.Text = "[gr/Am3]"
 
-            oTable.Cell(6, 1).Range.Text = "Outlet opening "
-            oTable.Cell(6, 2).Range.Text = "[mm]"
-            ' oTable.Cell(6, 3).Range.Text = TextBox160.Text & " x " & TextBox161.Text
+            row += 1
+            oTable.Cell(row, 1).Range.Text = "Dust load"
+            'oTable.Cell(row, 2).Range.Text = TextBox159.Text
+            oTable.Cell(row, 3).Range.Text = "[kg/hr]"
+
+            row += 1
+            oTable.Cell(row, 1).Range.Text = "dp(50) "
+            ' oTable.Cell(row, 2).Range.Text = TextBox160.Text & " 
+            oTable.Cell(row, 3).Range.Text = "[mu]"
 
 
             oTable.Columns(1).Width = oWord.InchesToPoints(2.0)   'Change width of columns 
@@ -860,6 +872,104 @@ Public Class Form1
 
             oTable.Rows.Item(1).Range.Font.Bold = CInt(True)
             oDoc.Bookmarks.Item("\endofdoc").Range.InsertParagraphAfter()
+
+
+            '---------------cyclone data-------------------------------
+            'Insert a table, fill it with data and change the column widths.
+            oTable = oDoc.Tables.Add(oDoc.Bookmarks.Item("\endofdoc").Range, 5, 3)
+            oTable.Range.ParagraphFormat.SpaceAfter = 1
+            oTable.Range.Font.Size = 10
+            oTable.Range.Font.Bold = CInt(False)
+            oTable.Rows.Item(1).Range.Font.Bold = CInt(True)
+            row = 1
+            oTable.Cell(row, 1).Range.Text = "Cyclone data"
+            row += 1
+            oTable.Cell(row, 1).Range.Text = "Cyclone type "
+            oTable.Cell(row, 2).Range.Text = ComboBox1.SelectedItem.ToString
+            row += 1
+            oTable.Cell(row, 1).Range.Text = "Body diameter"
+            'oTable.Cell(row, 2).Range.Text = NumericUpDown013.Value.ToString
+            oTable.Cell(row, 3).Range.Text = "[mm]"
+
+            row += 1
+            oTable.Cell(row, 1).Range.Text = "No paralelle"
+            'oTable.Cell(row, 2).Range.Text = NumericUpDown033.Value.ToString
+
+            oTable.Columns(1).Width = oWord.InchesToPoints(2.0)   'Change width of columns 
+            oTable.Columns(2).Width = oWord.InchesToPoints(1)
+            oTable.Columns(3).Width = oWord.InchesToPoints(2)
+
+            oTable.Rows.Item(1).Range.Font.Bold = CInt(True)
+            oDoc.Bookmarks.Item("\endofdoc").Range.InsertParagraphAfter()
+
+            '---------------Process data-------------------------------
+            'Insert a table, fill it with data and change the column widths.
+            oTable = oDoc.Tables.Add(oDoc.Bookmarks.Item("\endofdoc").Range, 5, 3)
+            oTable.Range.ParagraphFormat.SpaceAfter = 1
+            oTable.Range.Font.Size = 10
+            oTable.Range.Font.Bold = CInt(False)
+            oTable.Rows.Item(1).Range.Font.Bold = CInt(True)
+            row = 1
+            oTable.Cell(row, 1).Range.Text = "Process data"
+            row += 1
+            oTable.Cell(row, 1).Range.Text = "Inlet speed "
+            'oTable.Cell(row, 2).Range.Text = ComboBox1.SelectedItem.ToString
+            oTable.Cell(row, 3).Range.Text = "[m/s]"
+
+            row += 1
+            oTable.Cell(row, 1).Range.Text = "Outlet data"
+            'oTable.Cell(row, 2).Range.Text = NumericUpDown013.Value.ToString
+            oTable.Cell(row, 3).Range.Text = "[m/s]"
+
+            row += 1
+            oTable.Cell(row, 1).Range.Text = "Pressure loss"
+            'oTable.Cell(row, 2).Range.Text = NumericUpDown033.Value.ToString
+            oTable.Cell(row, 3).Range.Text = "[Pa]"
+
+            oTable.Columns(1).Width = oWord.InchesToPoints(2.0)   'Change width of columns 
+            oTable.Columns(2).Width = oWord.InchesToPoints(1)
+            oTable.Columns(3).Width = oWord.InchesToPoints(2)
+
+            oTable.Rows.Item(1).Range.Font.Bold = CInt(True)
+            oDoc.Bookmarks.Item("\endofdoc").Range.InsertParagraphAfter()
+
+            '---------------Calculation date-------------------------------
+            'Insert a table, fill it with data and change the column widths.
+            oTable = oDoc.Tables.Add(oDoc.Bookmarks.Item("\endofdoc").Range, 12, 8)
+            oTable.Range.ParagraphFormat.SpaceAfter = 1
+            oTable.Range.Font.Size = 10
+            oTable.Range.Font.Bold = CInt(False)
+            oTable.Rows.Item(1).Range.Font.Bold = CInt(True)
+            row = 1
+            oTable.Cell(row, 1).Range.Text = "Calculation data"
+            row += 1
+
+            oTable.Cell(row, 1).Range.Text = "Lower dia [mu]"
+            oTable.Cell(row, 2).Range.Text = "Upper dia [mu]"
+            oTable.Cell(row, 3).Range.Text = "Average dia [mu]"
+            oTable.Cell(row, 4).Range.Text = "Wght [kg/hr]"
+            oTable.Cell(row, 5).Range.Text = "Wght [%]"
+            oTable.Cell(row, 6).Range.Text = "Loss [%]"
+            oTable.Cell(row, 7).Range.Text = "Loss [kg/hr]"
+
+
+            For j = 0 To 8
+                row += 1
+                oTable.Cell(row, 1).Range.Text = CType(DataGridView1.Rows.Item(j).Cells(0).Value, String)
+                oTable.Cell(row, 2).Range.Text = CType(DataGridView1.Rows.Item(j).Cells(1).Value, String)
+                oTable.Cell(row, 3).Range.Text = CType(DataGridView1.Rows.Item(j).Cells(2).Value, String)
+                oTable.Cell(row, 4).Range.Text = CType(DataGridView1.Rows.Item(j).Cells(3).Value, String)
+                oTable.Cell(row, 5).Range.Text = CType(DataGridView1.Rows.Item(j).Cells(4).Value, String)
+                oTable.Cell(row, 6).Range.Text = CType(DataGridView1.Rows.Item(j).Cells(5).Value, String)
+                oTable.Cell(row, 7).Range.Text = CType(DataGridView1.Rows.Item(j).Cells(6).Value, String)
+            Next
+
+            For j = 1 To 8
+                oTable.Columns(j).Width = oWord.InchesToPoints(0.8)   'Change width of columns 
+            Next
+            oTable.Rows.Item(1).Range.Font.Bold = CInt(True)
+            oDoc.Bookmarks.Item("\endofdoc").Range.InsertParagraphAfter()
+
 
             '------------------save Chart1 (Loss curve)---------------- 
             Draw_chart2()
