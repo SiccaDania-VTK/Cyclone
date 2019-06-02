@@ -986,4 +986,26 @@ Public Class Form1
             MessageBox.Show(ex.Message & " Problem writing to Commercial data to Word ")  ' Show the exception's message.
         End Try
     End Sub
+    'Air viscosity
+
+    Private Sub Button6_Click(sender As Object, e As EventArgs) Handles Button6.Click, NumericUpDown21.ValueChanged
+        Dim Visco As Double
+        Visco = Air_visco(CDbl(NumericUpDown21.Value))
+        TextBox30.Text = Visco.ToString("0.0000")
+    End Sub
+    'http://www-mdp.eng.cam.ac.uk/web/library/enginfo/aerothermal_dvd_only/aero/fprops/propsoffluids/node5.html
+    'Sutherland Equation
+    Private Function Air_visco(temp As Double) As Double
+        Dim C1, C2 As Double
+        Dim vis As Double
+
+        temp += 273.15  '[K]
+
+        C1 = 1.458 * 10 ^ -5
+        C2 = 110.4
+
+        vis = C1 * temp ^ 1.5 / (temp + C2)
+
+        Return (vis * 100)    '[kg/m-s]--[centi Poise]
+    End Function
 End Class
