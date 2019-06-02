@@ -530,7 +530,9 @@ Public Class Form1
             TextBox29.Text = "-"
         End If
 
+        '-------- Project information -----------------
         temp_string = TextBox28.Text & ";" & TextBox29.Text & ";"
+        temp_string &= vbCrLf & "BREAK" & vbCrLf & ";"
 
         '-------- find all numeric controls -----------------
         FindControlRecursive(all_num, Me, GetType(NumericUpDown))   'Find the control
@@ -621,18 +623,16 @@ Public Class Form1
         OpenFileDialog1.Filter = "VTK2 Files|*.vtk2|VTK1 file|*.vtk"
         If OpenFileDialog1.ShowDialog() = System.Windows.Forms.DialogResult.OK Then
             Dim readText As String = File.ReadAllText(OpenFileDialog1.FileName, Encoding.ASCII)
-
             control_words = readText.Split(separators1, StringSplitOptions.None) 'Split the read file content
-
-            '----- retrieve case condition-----
+            '----- retrieve Project information ----------------------
             words = control_words(0).Split(separators, StringSplitOptions.None) 'Split the read file content
             TextBox28.Text = words(0)                  'Project number
-            TextBox29.Text = words(1)                  'Item no
+            TextBox29.Text = words(1)                  'Tag no
 
             '---------- Retrieve Numeric controls from disk-----------------
             FindControlRecursive(all_num, Me, GetType(NumericUpDown))               'Find the numericupdowns
             all_num = all_num.OrderBy(Function(x) x.Name).ToList()                  'Sort in Alphabetical order
-            words = control_words(0).Split(separators, StringSplitOptions.None)     'Split the read file content
+            words = control_words(1).Split(separators, StringSplitOptions.None)     'Split the read file content
             For i = 0 To all_num.Count - 1
                 Dim grbx As NumericUpDown = CType(all_num(i), NumericUpDown)
                 '--- dit deel voorkomt problemen bij het uitbreiden van het aantal checkboxes--
@@ -656,7 +656,7 @@ Public Class Form1
             '---------- Retrieve  combobox controls -----------------
             FindControlRecursive(all_combo, Me, GetType(ComboBox))
             all_combo = all_combo.OrderBy(Function(x) x.Name).ToList()          'Alphabetical order
-            words = control_words(1).Split(separators, StringSplitOptions.None) 'Split the read file content
+            words = control_words(2).Split(separators, StringSplitOptions.None) 'Split the read file content
             For i = 0 To all_combo.Count - 1
                 Dim grbx As ComboBox = CType(all_combo(i), ComboBox)
                 '--- dit deel voorkomt problemen bij het uitbreiden van het aantal checkboxes--
@@ -670,7 +670,7 @@ Public Class Form1
             '---------- Retrieve  checkbox controls -----------------
             FindControlRecursive(all_check, Me, GetType(CheckBox))
             all_check = all_check.OrderBy(Function(x) x.Name).ToList()                  'Alphabetical order
-            words = control_words(2).Split(separators, StringSplitOptions.None) 'Split the read file content
+            words = control_words(3).Split(separators, StringSplitOptions.None) 'Split the read file content
             For i = 0 To all_check.Count - 1
                 Dim grbx As CheckBox = CType(all_check(i), CheckBox)
                 '--- dit deel voorkomt problemen bij het uitbreiden van het aantal checkboxes--
@@ -684,7 +684,7 @@ Public Class Form1
             '---------- Retrieve  radiobuttons controls -----------------
             FindControlRecursive(all_radio, Me, GetType(RadioButton))
             all_radio = all_radio.OrderBy(Function(x) x.Name).ToList()                  'Alphabetical order
-            words = control_words(3).Split(separators, StringSplitOptions.None) 'Split the read file content
+            words = control_words(4).Split(separators, StringSplitOptions.None) 'Split the read file content
             For i = 0 To all_radio.Count - 1
                 Dim grbx As RadioButton = CType(all_radio(i), RadioButton)
                 '--- dit deel voorkomt problemen bij het uitbreiden van het aantal radiobuttons--
