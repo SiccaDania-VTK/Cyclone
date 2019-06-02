@@ -789,7 +789,7 @@ Public Class Form1
         Dim oTable As Word.Table
         Dim oPara1, oPara4 As Word.Paragraph
 
-        Dim chart_size As Integer = 55  '% of original picture size
+        Dim chart_size As Integer = 140  '% of original picture size
         Dim file_name As String
         Dim row As Integer = 0
         Try
@@ -797,8 +797,9 @@ Public Class Form1
             oWord.Visible = True
             oDoc = oWord.Documents.Add
 
+            oDoc.PageSetup.LeftMargin = 60
             oDoc.PageSetup.TopMargin = 35
-            oDoc.PageSetup.BottomMargin = 20
+            oDoc.PageSetup.BottomMargin = 10
             oDoc.PageSetup.RightMargin = 20
             oDoc.PageSetup.Orientation = Word.WdOrientation.wdOrientPortrait
             oDoc.PageSetup.PaperSize = Word.WdPaperSize.wdPaperA4
@@ -814,55 +815,64 @@ Public Class Form1
 
             '---------------Inlet data-------------------------------
             'Insert a table, fill it with data and change the column widths.
-            oTable = oDoc.Tables.Add(oDoc.Bookmarks.Item("\endofdoc").Range, 12, 3)
+            oTable = oDoc.Tables.Add(oDoc.Bookmarks.Item("\endofdoc").Range, 14, 3)
             oTable.Range.ParagraphFormat.SpaceAfter = 1
-            oTable.Range.Font.Size = 10
+            oTable.Range.Font.Size = 11
             oTable.Range.Font.Bold = CInt(False)
             oTable.Rows.Item(1).Range.Font.Bold = CInt(True)
             row = 2
             oTable.Cell(row, 1).Range.Text = "Project number"
-            oTable.Cell(row, 2).Range.Text = TextBox29.Text
+            oTable.Cell(row, 2).Range.Text = TextBox28.Text
             row += 1
             oTable.Cell(row, 1).Range.Text = "Tag nummer "
-            oTable.Cell(row, 2).Range.Text = ComboBox1.SelectedItem.ToString
+            oTable.Cell(row, 2).Range.Text = TextBox29.Text
+
             row += 1
+            oTable.Cell(row, 1).Range.Text = "Print date"
+            oTable.Cell(row, 2).Range.Text = Now().ToString("MM-dd-yyyy")
+            row += 2
             oTable.Cell(row, 1).Range.Text = "Flow"
-            'oTable.Cell(row, 3).Range.Text = NumericUpDown013.Value.ToString
+            oTable.Cell(row, 2).Range.Text = NumericUpDown1.Value.ToString
             oTable.Cell(row, 3).Range.Text = "[Am3/hr]"
 
             row += 1
+            oTable.Cell(row, 1).Range.Text = "Temperature"
+            oTable.Cell(row, 2).Range.Text = NumericUpDown18.Value.ToString
+            oTable.Cell(row, 3).Range.Text = "[c]"
+
+            row += 1
             oTable.Cell(row, 1).Range.Text = "Druk"
-            'oTable.Cell(row, 2).Range.Text = NumericUpDown033.Value.ToString
-            oTable.Cell(row, 3).Range.Text = "[mbar g]"
+            oTable.Cell(row, 2).Range.Text = (NumericUpDown19.Value / 100).ToString("0.0")
+            oTable.Cell(row, 3).Range.Text = "[mbar]"
 
             row += 1
             oTable.Cell(row, 1).Range.Text = "Particle density "
-            'oTable.Cell(row, 2).Range.Text = TextBox159.Text
+            oTable.Cell(row, 2).Range.Text = numericUpDown2.Value.ToString
             oTable.Cell(row, 3).Range.Text = "[kg/m3]"
 
             row += 1
             oTable.Cell(row, 1).Range.Text = "Gas density "
-            ' oTable.Cell(row, 2).Range.Text = TextBox160.Text & " x " & TextBox161.Text
+            oTable.Cell(row, 2).Range.Text = numericUpDown3.Value.ToString
             oTable.Cell(row, 3).Range.Text = "[kg/m3]"
 
             row += 1
             oTable.Cell(row, 1).Range.Text = "Air viscosity"
-            'oTable.Cell(row, 2).Range.Text = NumericUpDown033.Value.ToString
+            oTable.Cell(row, 2).Range.Text = numericUpDown14.Value.ToString
             oTable.Cell(row, 3).Range.Text = "[centi Poise]"
 
             row += 1
             oTable.Cell(row, 1).Range.Text = "Dust load"
-            'oTable.Cell(row, 2).Range.Text = TextBox159.Text
+            oTable.Cell(row, 2).Range.Text = NumericUpDown4.Value.ToString
             oTable.Cell(row, 3).Range.Text = "[gr/Am3]"
 
             row += 1
             oTable.Cell(row, 1).Range.Text = "Dust load"
-            'oTable.Cell(row, 2).Range.Text = TextBox159.Text
+            oTable.Cell(row, 2).Range.Text = TextBox39.Text
             oTable.Cell(row, 3).Range.Text = "[kg/hr]"
 
             row += 1
             oTable.Cell(row, 1).Range.Text = "dp(50) "
-            ' oTable.Cell(row, 2).Range.Text = TextBox160.Text & " 
+            oTable.Cell(row, 2).Range.Text = TextBox26.Text
             oTable.Cell(row, 3).Range.Text = "[mu]"
 
 
@@ -873,10 +883,9 @@ Public Class Form1
             oTable.Rows.Item(1).Range.Font.Bold = CInt(True)
             oDoc.Bookmarks.Item("\endofdoc").Range.InsertParagraphAfter()
 
-
             '---------------cyclone data-------------------------------
             'Insert a table, fill it with data and change the column widths.
-            oTable = oDoc.Tables.Add(oDoc.Bookmarks.Item("\endofdoc").Range, 5, 3)
+            oTable = oDoc.Tables.Add(oDoc.Bookmarks.Item("\endofdoc").Range, 4, 3)
             oTable.Range.ParagraphFormat.SpaceAfter = 1
             oTable.Range.Font.Size = 10
             oTable.Range.Font.Bold = CInt(False)
@@ -888,12 +897,11 @@ Public Class Form1
             oTable.Cell(row, 2).Range.Text = ComboBox1.SelectedItem.ToString
             row += 1
             oTable.Cell(row, 1).Range.Text = "Body diameter"
-            'oTable.Cell(row, 2).Range.Text = NumericUpDown013.Value.ToString
+            oTable.Cell(row, 2).Range.Text = numericUpDown5.Value.ToString
             oTable.Cell(row, 3).Range.Text = "[mm]"
-
             row += 1
             oTable.Cell(row, 1).Range.Text = "No paralelle"
-            'oTable.Cell(row, 2).Range.Text = NumericUpDown033.Value.ToString
+            oTable.Cell(row, 2).Range.Text = NumericUpDown20.Value.ToString
 
             oTable.Columns(1).Width = oWord.InchesToPoints(2.0)   'Change width of columns 
             oTable.Columns(2).Width = oWord.InchesToPoints(1)
@@ -904,7 +912,7 @@ Public Class Form1
 
             '---------------Process data-------------------------------
             'Insert a table, fill it with data and change the column widths.
-            oTable = oDoc.Tables.Add(oDoc.Bookmarks.Item("\endofdoc").Range, 5, 3)
+            oTable = oDoc.Tables.Add(oDoc.Bookmarks.Item("\endofdoc").Range, 4, 3)
             oTable.Range.ParagraphFormat.SpaceAfter = 1
             oTable.Range.Font.Size = 10
             oTable.Range.Font.Bold = CInt(False)
@@ -913,17 +921,17 @@ Public Class Form1
             oTable.Cell(row, 1).Range.Text = "Process data"
             row += 1
             oTable.Cell(row, 1).Range.Text = "Inlet speed "
-            'oTable.Cell(row, 2).Range.Text = ComboBox1.SelectedItem.ToString
+            oTable.Cell(row, 2).Range.Text = TextBox16.Text
             oTable.Cell(row, 3).Range.Text = "[m/s]"
 
             row += 1
             oTable.Cell(row, 1).Range.Text = "Outlet data"
-            'oTable.Cell(row, 2).Range.Text = NumericUpDown013.Value.ToString
+            oTable.Cell(row, 2).Range.Text = TextBox22.Text
             oTable.Cell(row, 3).Range.Text = "[m/s]"
 
             row += 1
             oTable.Cell(row, 1).Range.Text = "Pressure loss"
-            'oTable.Cell(row, 2).Range.Text = NumericUpDown033.Value.ToString
+            oTable.Cell(row, 2).Range.Text = TextBox17.Text
             oTable.Cell(row, 3).Range.Text = "[Pa]"
 
             oTable.Columns(1).Width = oWord.InchesToPoints(2.0)   'Change width of columns 
@@ -935,13 +943,13 @@ Public Class Form1
 
             '---------------Calculation date-------------------------------
             'Insert a table, fill it with data and change the column widths.
-            oTable = oDoc.Tables.Add(oDoc.Bookmarks.Item("\endofdoc").Range, 12, 8)
+            oTable = oDoc.Tables.Add(oDoc.Bookmarks.Item("\endofdoc").Range, 11, 8)
             oTable.Range.ParagraphFormat.SpaceAfter = 1
             oTable.Range.Font.Size = 10
             oTable.Range.Font.Bold = CInt(False)
             oTable.Rows.Item(1).Range.Font.Bold = CInt(True)
             row = 1
-            oTable.Cell(row, 1).Range.Text = "Calculation data"
+            oTable.Cell(row, 1).Range.Text = "Calc.data"
             row += 1
 
             oTable.Cell(row, 1).Range.Text = "Lower dia [mu]"
@@ -951,7 +959,6 @@ Public Class Form1
             oTable.Cell(row, 5).Range.Text = "Wght [%]"
             oTable.Cell(row, 6).Range.Text = "Loss [%]"
             oTable.Cell(row, 7).Range.Text = "Loss [kg/hr]"
-
 
             For j = 0 To 8
                 row += 1
@@ -991,21 +998,22 @@ Public Class Form1
     Private Sub Button6_Click(sender As Object, e As EventArgs) Handles Button6.Click, NumericUpDown21.ValueChanged
         Dim Visco As Double
         Visco = Air_visco(CDbl(NumericUpDown21.Value))
-        TextBox30.Text = Visco.ToString("0.0000")
+        TextBox30.Text = Visco.ToString("0.00000")
     End Sub
+
     'http://www-mdp.eng.cam.ac.uk/web/library/enginfo/aerothermal_dvd_only/aero/fprops/propsoffluids/node5.html
-    'Sutherland Equation
+    'Sutherland Equation (Range -70 to 1600 celsius)
     Private Function Air_visco(temp As Double) As Double
         Dim C1, C2 As Double
         Dim vis As Double
 
-        temp += 273.15  '[K]
+        temp += 273.15  '[Celsius]-->[K]
 
         C1 = 1.458 * 10 ^ -5
         C2 = 110.4
 
         vis = C1 * temp ^ 1.5 / (temp + C2)
 
-        Return (vis * 100)    '[kg/m-s]--[centi Poise]
+        Return (vis * 100)    '[kg/m-s]-->[centi Poise]
     End Function
 End Class
