@@ -218,7 +218,11 @@ Public Class Form1
         Dim class_loss As Double    'Loss in [kg] per class
         Dim effficiency As Double
         Dim total_input_weight As Double
+        Dim dp95_dia As Double      '95% lost
+        Dim dp90_dia As Double
         Dim dp50_dia As Double
+        Dim dp10_dia As Double
+        Dim dp5_dia As Double
 
         If (ComboBox1.SelectedIndex > -1) Then     'Prevent exceptions
             words = cyl_dimensions(ComboBox1.SelectedIndex).Split(CType(";", Char()))
@@ -349,12 +353,20 @@ Public Class Form1
             effficiency = ((tot_kgh - total_loss) / tot_kgh) * 100  '[%]
 
             '---------- Calc diameter with 50% separation ---
-            dp50_dia = Dp50()
+            dp95_dia = Dp50(0.95)   '95% lost
+            dp90_dia = Dp50(0.9)    '90% lost
+            dp50_dia = Dp50(0.5)    '50% lost
+            dp10_dia = Dp50(0.1)    '10% lost
+            dp5_dia = Dp50(0.05)    ' 5% lost
 
             '---------- present -------
-            TextBox26.Text = dp50_dia.ToString("0.00")   '[mu]
+            TextBox26.Text = dp95_dia.ToString("0.00")  '[mu]
+            TextBox31.Text = dp90_dia.ToString("0.00")  '[mu]
+            TextBox32.Text = dp50_dia.ToString("0.00")  '[mu]
+            TextBox33.Text = dp10_dia.ToString("0.00")  '[mu]
+            TextBox41.Text = dp5_dia.ToString("0.00")   '[mu]
             TextBox39.Text = kgh.ToString("0")          'Stof inlet
-            TextBox40.Text = tot_kgh.ToString("0")  'Stof inlet totaal
+            TextBox40.Text = tot_kgh.ToString("0")      'Stof inlet totaal
             TextBox25.Text = effficiency.ToString("0.0")
         End If
     End Sub
@@ -437,14 +449,15 @@ Public Class Form1
         Return (verlies)
     End Function
     'Note dp(50) meaning with this diameter 50% is separated and 50% is lost
-    Private Function Dp50() As Double
+    Private Function Dp50(qq As Double) As Double
         Dim dia_dp50 As Double
         Dim los As Double
 
-        '----- now finf 50% loss --------------------------
-        For dia_dp50 = 1 To 10 Step 0.1      'Particle diameter [mu]
+        If qq > 1 Then MessageBox.Show("Problem Line 458")
+        '----- now find 50% loss --------------------------
+        For dia_dp50 = 0.2 To 20 Step 0.01      'Particle diameter [mu]
             los = Calc_verlies(dia_dp50, False) 'Loss [%]
-            If los <= 0.5 Then
+            If los <= qq Then
                 Exit For
             End If
         Next
