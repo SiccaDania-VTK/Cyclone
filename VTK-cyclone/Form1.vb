@@ -80,7 +80,8 @@ Public Class Form1
     "AC1850;    9.3;    0.50;   1.1927; 0.5983;     -0.196;     1.3687; 0.6173",
     "AC1850+afz;10.45;  0.4617; 0.2921; 0.4560;     -0.2396;    0.1269; 0.3633"}
 
-    Public weerstand_coef(7) As Double               'Poly Coefficients, Polynomial regression
+    Public weerstand_coef_air(7) As Double      'Inlet-air pressure loss calculation
+    Public weerstand_coef_dust(7) As Double     'Inlet-air pressure loss calculation
 
     '----------- directory's-----------
     Dim dirpath_Eng As String = "N:\Engineering\VBasic\Cyclone_sizing_input\"
@@ -182,8 +183,9 @@ Public Class Form1
         Thread.CurrentThread.CurrentCulture = New CultureInfo("en-US")
         Thread.CurrentThread.CurrentUICulture = New CultureInfo("en-US")
 
-        'De weerstandscoefficient volgt uit het cycloon type
-        weerstand_coef = {7, 7, 7, 7, 7.5, 9.5, 14.5}
+        'De weerstandscoefficient inlet-air volgt uit het cycloon type
+        weerstand_coef_air = {7, 7, 7, 7, 7.5, 9.5, 14.5}
+        weerstand_coef_dust = {0, 7.927, 8.26, 7.615, 6.606, 6.175, 0}
 
         For hh = 0 To (cyl_dimensions.Length - 1)  'Fill combobox1 cyclone types
             words = cyl_dimensions(hh).Split(CType(";", Char()))
@@ -192,15 +194,18 @@ Public Class Form1
         ComboBox1.SelectedIndex = 5                 'Select Cyclone type
     End Sub
 
-    Private Sub Button1_Click(sender As Object, e As EventArgs) Handles button1.Click, TabPage1.Enter, numericUpDown3.ValueChanged, numericUpDown2.ValueChanged, numericUpDown14.ValueChanged, NumericUpDown1.ValueChanged, numericUpDown5.ValueChanged, NumericUpDown20.ValueChanged, NumericUpDown19.ValueChanged, NumericUpDown18.ValueChanged, ComboBox1.SelectedIndexChanged, numericUpDown9.ValueChanged, numericUpDown8.ValueChanged, numericUpDown7.ValueChanged, numericUpDown6.ValueChanged, numericUpDown12.ValueChanged, numericUpDown11.ValueChanged, numericUpDown10.ValueChanged, numericUpDown13.ValueChanged, CheckBox1.CheckedChanged, CheckBox2.CheckedChanged
+    Private Sub Button1_Click(sender As Object, e As EventArgs) Handles button1.Click, TabPage1.Enter, numericUpDown3.ValueChanged, numericUpDown2.ValueChanged, numericUpDown14.ValueChanged, NumericUpDown1.ValueChanged, numericUpDown5.ValueChanged, NumericUpDown20.ValueChanged, NumericUpDown19.ValueChanged, NumericUpDown18.ValueChanged, ComboBox1.SelectedIndexChanged, numericUpDown9.ValueChanged, numericUpDown8.ValueChanged, numericUpDown7.ValueChanged, numericUpDown6.ValueChanged, numericUpDown12.ValueChanged, numericUpDown11.ValueChanged, numericUpDown10.ValueChanged, numericUpDown13.ValueChanged, CheckBox1.CheckedChanged, CheckBox2.CheckedChanged, NumericUpDown22.ValueChanged
         Dust_load_correction()
         Get_input_and_calc()
     End Sub
     Private Sub Get_input_and_calc()
         Dim words() As String
         Dim cyl_dim(20), db As Double
-        Dim Flow, delta_p, K_waarde As Double
-        Dim ro_gas, ro_particle, visco, wc As Double
+        Dim Flow, K_waarde As Double
+        Dim dp_inlet_gas As Double
+        Dim dp_inlet_dust As Double
+        Dim ro_gas, ro_particle, visco As Double
+        Dim wc_air, wc_dust As Double
         Dim no_cycl As Double   'Number cyclones
         Dim stofb As Double
         Dim tot_kgh As Double       'Dust inlet per hour totaal 
@@ -245,8 +250,12 @@ Public Class Form1
             outlet_velos = Flow / ((PI / 4) * dia_outlet ^ 2)   '[m/s]
 
             '----------- Pressure loss cyclone----------------------
-            wc = weerstand_coef(ComboBox1.SelectedIndex)
-            delta_p = 0.5 * ro_gas * inlet_velos ^ 2 * wc
+            wc_air = weerstand_coef_air(ComboBox1.SelectedIndex)
+            wc_dust = weerstand_coef_dust(ComboBox1.SelectedIndex)
+            dp_inlet_gas = 0.5 * ro_gas * inlet_velos ^ 2 * wc_air
+            dp_inlet_dust = 0.5 * ro_gas * inlet_velos ^ 2 * wc_dust
+
+
 
             '----------- stof belasting ------------
             kgs = Flow * stofb / 1000               '[kg/s/cycloon]
@@ -276,11 +285,13 @@ Public Class Form1
             TextBox13.Text = (cyl_dim(13) * db).ToString("0.000")    'Lengte 3P-pijp
             TextBox14.Text = (cyl_dim(14) * db).ToString("0.000")    'Dia_conus / 3P-pijp
             TextBox15.Text = (cyl_dim(15) * db).ToString("0.000")    'Lengte 3P-pijp
-            TextBox16.Text = inlet_velos.ToString("0.0")            'inlaat snelheid
-            TextBox17.Text = delta_p.ToString("0")                  'Pressure loss
-            TextBox22.Text = outlet_velos.ToString("0.0")           'uitlaat snelheid
-            TextBox23.Text = K_waarde.ToString("0.000")             'Stokes waarde tov Standaard cycloon
-            TextBox37.Text = numericUpDown5.Value.ToString          'Cycloone dia_avemeter
+            TextBox16.Text = inlet_velos.ToString("0.0")             'inlaat snelheid
+            TextBox17.Text = dp_inlet_gas.ToString("0")              '[Pa] Pressure loss inlet-gas
+            TextBox48.Text = dp_inlet_dust.ToString("0")             '[Pa]Pressure loss inlet-dust
+
+            TextBox22.Text = outlet_velos.ToString("0.0")            'uitlaat snelheid
+            TextBox23.Text = K_waarde.ToString("0.000")              'Stokes waarde tov Standaard cycloon
+            TextBox37.Text = numericUpDown5.Value.ToString           'Cycloone dia_avemeter
             TextBox38.Text = CType(ComboBox1.SelectedItem, String)                 'Cycloon type
 
             Draw_chart1()
@@ -443,9 +454,11 @@ Public Class Form1
         Dim k_st As Double 'K-stokes
         Double.TryParse(TextBox23.Text, k_st)
 
-        '----- Hoge stog belasting correctie -------
-        cor1 = 1    'Hoge stof belasting correctie acc VT-UK
-        cor2 = 1    'Hoge stof belasting correctie acc VT-UK
+        '----- Insteek pijp corectie correctie -------
+        cor1 = NumericUpDown22.Value    'Correctie insteek pijp
+
+        'Hoge stof belasting correctie acc VT-UK
+        Double.TryParse(TextBox47.Text, cor2)
 
         '-------------- korrelgrootte factoren ------
         words = rekenlijnen(ComboBox1.SelectedIndex).Split(CType(";", Char()))
@@ -511,6 +524,7 @@ Public Class Form1
         '-------
         Dim s_points(100, 2) As Double
         Dim h As Integer
+        Dim sdia As Integer
 
         Chart1.Series.Clear()
         Chart1.ChartAreas.Clear()
@@ -542,26 +556,27 @@ Public Class Form1
         Else
             Chart1.ChartAreas("ChartArea0").AxisX.IsLogarithmic = False
             Chart1.ChartAreas("ChartArea0").AxisX.Minimum = 0     'Particle size
-            Chart1.ChartAreas("ChartArea0").AxisX.Maximum = 40    'Particle size
+            Chart1.ChartAreas("ChartArea0").AxisX.Maximum = 20    'Particle size
         End If
 
         '----- now calc chart points --------------------------
-        's_points(0, 0) = 0      'Particle diameter [mu]
-        's_points(0, 1) = 100    '100% loss
-        For h = 1 To 100
+        Integer.TryParse(TextBox42.Text, sdia)
+        s_points(0, 0) = sdia   'Particle diameter [mu]
+        s_points(0, 1) = 100    '100% loss
+        For h = 1 To 40
             s_points(h, 0) = h                                   'Particle diameter [mu]
             s_points(h, 1) = Calc_verlies(s_points(h, 0), False) * 100  'Loss [%]
         Next
 
         '------ now present-------------
-        For h = 1 To 40 - 1   'Fill line chart
+        For h = 0 To 40 - 1   'Fill line chart
             Chart1.Series(0).Points.AddXY(s_points(h, 0), s_points(h, 1))
         Next h
     End Sub
     Private Sub Draw_chart2()
-        '-------
         Dim s_points(100, 2) As Double
         Dim h As Integer
+        Dim sdia As Integer
 
         Chart2.Series.Clear()
         Chart2.ChartAreas.Clear()
@@ -577,13 +592,15 @@ Public Class Form1
         Chart2.Titles.Add("Loss Curve")
         Chart2.ChartAreas("ChartArea0").AxisX.Title = "particle dia [mu]"
         Chart2.ChartAreas("ChartArea0").AxisY.Minimum = 0       'Loss
-        Chart2.ChartAreas("ChartArea0").AxisY.Maximum = 100     'Loss
-        Chart2.ChartAreas("ChartArea0").AxisY.Interval = 10     'Interval
+        Chart2.ChartAreas("ChartArea0").AxisY.Maximum = 20    'Loss
         Chart2.ChartAreas("ChartArea0").AxisX.Minimum = 0     'Particle size
         Chart2.ChartAreas("ChartArea0").AxisX.Maximum = 20    'Particle size
 
         '----- now calc chart poins --------------------------
-        For h = 0 To 100
+        Integer.TryParse(TextBox42.Text, sdia)
+        s_points(0, 0) = sdia   'Particle diameter [mu]
+        s_points(0, 1) = 100    '100% loss
+        For h = 1 To 40
             s_points(h, 0) = h                                   'Particle diameter [mu]
             s_points(h, 1) = Calc_verlies(s_points(h, 0), False) * 100  'Loss [%]
         Next
@@ -916,7 +933,7 @@ Public Class Form1
 
             row += 1
             oTable.Cell(row, 1).Range.Text = "Air viscosity"
-            oTable.Cell(row, 2).Range.Text = numericUpDown14.Value.ToString
+            oTable.Cell(row, 2).Range.Text = numericUpDown14.Value.ToString("0.0000")
             oTable.Cell(row, 3).Range.Text = "[centi Poise]"
 
             row += 1
@@ -925,13 +942,13 @@ Public Class Form1
             oTable.Cell(row, 3).Range.Text = "[gr/Am3]"
 
             row += 1
-            oTable.Cell(row, 1).Range.Text = "Dust load"
+            oTable.Cell(row, 1).Range.Text = "Dust load (1 cyclone)"
             oTable.Cell(row, 2).Range.Text = TextBox39.Text
             oTable.Cell(row, 3).Range.Text = "[kg/hr]"
 
             row += 1
             oTable.Cell(row, 1).Range.Text = "dp(50) "
-            oTable.Cell(row, 2).Range.Text = TextBox26.Text
+            oTable.Cell(row, 2).Range.Text = TextBox32.Text
             oTable.Cell(row, 3).Range.Text = "[mu]"
 
 
@@ -957,9 +974,9 @@ Public Class Form1
             row += 1
             oTable.Cell(row, 1).Range.Text = "Body diameter"
             oTable.Cell(row, 2).Range.Text = numericUpDown5.Value.ToString
-            oTable.Cell(row, 3).Range.Text = "[mm]"
+            oTable.Cell(row, 3).Range.Text = "[m]"
             row += 1
-            oTable.Cell(row, 1).Range.Text = "No paralelle"
+            oTable.Cell(row, 1).Range.Text = "No parallel"
             oTable.Cell(row, 2).Range.Text = NumericUpDown20.Value.ToString
 
             oTable.Columns(1).Width = oWord.InchesToPoints(2.0)   'Change width of columns 
@@ -1035,7 +1052,6 @@ Public Class Form1
             Next
             oTable.Rows.Item(1).Range.Font.Bold = CInt(True)
             oDoc.Bookmarks.Item("\endofdoc").Range.InsertParagraphAfter()
-
 
             '------------------save Chart1 (Loss curve)---------------- 
             Draw_chart2()
