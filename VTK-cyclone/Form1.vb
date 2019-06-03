@@ -591,8 +591,8 @@ Public Class Form1
 
         Chart2.Titles.Add("Loss Curve")
         Chart2.ChartAreas("ChartArea0").AxisX.Title = "particle dia [mu]"
-        Chart2.ChartAreas("ChartArea0").AxisY.Minimum = 0       'Loss
-        Chart2.ChartAreas("ChartArea0").AxisY.Maximum = 20    'Loss
+        Chart2.ChartAreas("ChartArea0").AxisY.Minimum = 0     'Loss
+        Chart2.ChartAreas("ChartArea0").AxisY.Maximum = 100   'Loss
         Chart2.ChartAreas("ChartArea0").AxisX.Minimum = 0     'Particle size
         Chart2.ChartAreas("ChartArea0").AxisX.Maximum = 20    'Particle size
 
@@ -612,11 +612,12 @@ Public Class Form1
     End Sub
 
 
-    Private Sub Button2_Click(sender As Object, e As EventArgs) Handles NumericUpDown15.ValueChanged
+    Private Sub Button2_Click(sender As Object, e As EventArgs) Handles NumericUpDown15.ValueChanged, Button2.Click
         Dim pdia As Double
 
         pdia = NumericUpDown15.Value
         Calc_verlies(pdia, True)
+        Calc_verlies_grid()
     End Sub
 
     Private Sub Button3_Click(sender As Object, e As EventArgs) Handles Button3.Click
@@ -1091,4 +1092,28 @@ Public Class Form1
 
         Return (vis * 100)    '[kg/m-s]-->[centi Poise]
     End Function
+
+    Private Sub Calc_verlies_grid()
+        DataGridView2.ColumnCount = 7
+        DataGridView2.Rows.Clear()
+        DataGridView2.Rows.Add(110)
+        DataGridView2.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill
+
+        DataGridView2.Columns(0).HeaderText = "Dia lower [mu]"
+        DataGridView2.Columns(1).HeaderText = "Dia upper [mu]"
+        DataGridView2.Columns(2).HeaderText = "Dia average [mu]"
+        DataGridView2.Columns(3).HeaderText = "Weight [kg/h]"
+        DataGridView2.Columns(4).HeaderText = "Weight [%]"
+        DataGridView2.Columns(5).HeaderText = "Loss [%]"
+        DataGridView2.Columns(6).HeaderText = "Loss [kg/h]"
+
+        For row = 0 To 100
+            DataGridView2.Rows.Item(row).Cells(0).Value = row
+            DataGridView2.Rows.Item(row).Cells(1).Value = row + 1
+            DataGridView2.Rows.Item(row).Cells(2).Value = row + 0.5
+        Next
+
+    End Sub
+
+
 End Class
