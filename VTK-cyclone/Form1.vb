@@ -192,7 +192,8 @@ Public Class Form1
         ComboBox1.SelectedIndex = 5                 'Select Cyclone type
     End Sub
 
-    Private Sub Button1_Click(sender As Object, e As EventArgs) Handles button1.Click, TabPage1.Enter, numericUpDown3.ValueChanged, numericUpDown2.ValueChanged, numericUpDown14.ValueChanged, NumericUpDown1.ValueChanged, numericUpDown5.ValueChanged, NumericUpDown20.ValueChanged, NumericUpDown19.ValueChanged, NumericUpDown18.ValueChanged, ComboBox1.SelectedIndexChanged, numericUpDown9.ValueChanged, numericUpDown8.ValueChanged, numericUpDown7.ValueChanged, numericUpDown6.ValueChanged, numericUpDown12.ValueChanged, numericUpDown11.ValueChanged, numericUpDown10.ValueChanged, numericUpDown13.ValueChanged, CheckBox1.CheckedChanged
+    Private Sub Button1_Click(sender As Object, e As EventArgs) Handles button1.Click, TabPage1.Enter, numericUpDown3.ValueChanged, numericUpDown2.ValueChanged, numericUpDown14.ValueChanged, NumericUpDown1.ValueChanged, numericUpDown5.ValueChanged, NumericUpDown20.ValueChanged, NumericUpDown19.ValueChanged, NumericUpDown18.ValueChanged, ComboBox1.SelectedIndexChanged, numericUpDown9.ValueChanged, numericUpDown8.ValueChanged, numericUpDown7.ValueChanged, numericUpDown6.ValueChanged, numericUpDown12.ValueChanged, numericUpDown11.ValueChanged, numericUpDown10.ValueChanged, numericUpDown13.ValueChanged, CheckBox1.CheckedChanged, CheckBox2.CheckedChanged
+        Dust_load_correction()
         Get_input_and_calc()
     End Sub
     Private Sub Get_input_and_calc()
@@ -218,16 +219,11 @@ Public Class Form1
         Dim class_loss As Double    'Loss in [kg] per class
         Dim effficiency As Double
         Dim total_input_weight As Double
-        Dim dp95_dia As Double      '95% lost
-        Dim dp90_dia As Double
-        Dim dp50_dia As Double
-        Dim dp10_dia As Double
-        Dim dp5_dia As Double
 
         If (ComboBox1.SelectedIndex > -1) Then     'Prevent exceptions
             words = cyl_dimensions(ComboBox1.SelectedIndex).Split(CType(";", Char()))
             For hh = 1 To 15
-                cyl_dim(hh) = CDbl(words(hh))         'Cyclone dimensions
+                cyl_dim(hh) = CDbl(words(hh))   'Cyclone dimensions
             Next
             no_cycl = NumericUpDown20.Value     'Paralelle cyclonen
             db = numericUpDown5.Value           'Body diameter
@@ -270,26 +266,19 @@ Public Class Form1
             TextBox3.Text = (cyl_dim(3) * db).ToString("0.000")      'Inlaat lengte
             TextBox4.Text = (cyl_dim(4) * db).ToString("0.000")      'Inlaat hartmaat
             TextBox5.Text = (cyl_dim(5) * db).ToString("0.000")      'Inlaat afschuining
-
             TextBox6.Text = (cyl_dim(6) * db).ToString("0.000")      'Uitlaat keeldia inw.
             TextBox7.Text = (cyl_dim(7) * db).ToString("0.000")      'Uitlaat flensdiameter inw.
-
             TextBox8.Text = (cyl_dim(8) * db).ToString("0.000")      'Lengte insteekpijp inw.
-
             TextBox9.Text = (cyl_dim(9) * db).ToString("0.000")      'Lengte romp + conus
             TextBox10.Text = (cyl_dim(10) * db).ToString("0.000")    'Lengte romp
             TextBox11.Text = (cyl_dim(11) * db).ToString("0.000")    'Lengte çonus
-
             TextBox12.Text = (cyl_dim(12) * db).ToString("0.000")    'Dia_conus / 3P-pijp
             TextBox13.Text = (cyl_dim(13) * db).ToString("0.000")    'Lengte 3P-pijp
-
             TextBox14.Text = (cyl_dim(14) * db).ToString("0.000")    'Dia_conus / 3P-pijp
             TextBox15.Text = (cyl_dim(15) * db).ToString("0.000")    'Lengte 3P-pijp
-
             TextBox16.Text = inlet_velos.ToString("0.0")            'inlaat snelheid
             TextBox17.Text = delta_p.ToString("0")                  'Pressure loss
             TextBox22.Text = outlet_velos.ToString("0.0")           'uitlaat snelheid
-
             TextBox23.Text = K_waarde.ToString("0.000")             'Stokes waarde tov Standaard cycloon
             TextBox37.Text = numericUpDown5.Value.ToString          'Cycloone dia_avemeter
             TextBox38.Text = CType(ComboBox1.SelectedItem, String)                 'Cycloon type
@@ -353,18 +342,14 @@ Public Class Form1
             effficiency = ((tot_kgh - total_loss) / tot_kgh) * 100  '[%]
 
             '---------- Calc diameter with 50% separation ---
-            dp95_dia = Dp50(0.95)   '95% lost
-            dp90_dia = Dp50(0.9)    '90% lost
-            dp50_dia = Dp50(0.5)    '50% lost
-            dp10_dia = Dp50(0.1)    '10% lost
-            dp5_dia = Dp50(0.05)    ' 5% lost
-
             '---------- present -------
-            TextBox26.Text = dp95_dia.ToString("0.00")  '[mu]
-            TextBox31.Text = dp90_dia.ToString("0.00")  '[mu]
-            TextBox32.Text = dp50_dia.ToString("0.00")  '[mu]
-            TextBox33.Text = dp10_dia.ToString("0.00")  '[mu]
-            TextBox41.Text = dp5_dia.ToString("0.00")   '[mu]
+            TextBox42.Text = Dp50(1.0).ToString("0.000")     '[mu] @ 100% loss
+            TextBox26.Text = Dp50(0.95).ToString("0.000")    '[mu] @  95% lost
+            TextBox31.Text = Dp50(0.9).ToString("0.000")     '[mu] @  90% lost
+            TextBox32.Text = Dp50(0.5).ToString("0.000")     '[mu] @  50% lost
+            TextBox33.Text = Dp50(0.1).ToString("0.000")     '[mu] @  10% lost
+            TextBox41.Text = Dp50(0.05).ToString("0.000")    '[mu] @   5% lost
+
             TextBox39.Text = kgh.ToString("0")          'Stof inlet
             TextBox40.Text = tot_kgh.ToString("0")      'Stof inlet totaal
             TextBox25.Text = effficiency.ToString("0.0")
@@ -450,19 +435,78 @@ Public Class Form1
     End Function
     'Note dp(50) meaning with this diameter 50% is separated and 50% is lost
     Private Function Dp50(qq As Double) As Double
-        Dim dia_dp50 As Double
-        Dim los As Double
+        Dim dia_result As Double
+        Dim words() As String
+        Dim dia_krit As Double
+        Dim d1, d2 As Double
+        Dim cor1, cor2 As Double 'Insteek pijp
+        Dim k_st As Double 'K-stokes
+        Double.TryParse(TextBox23.Text, k_st)
 
-        If qq > 1 Then MessageBox.Show("Problem Line 458")
-        '----- now find 50% loss --------------------------
-        For dia_dp50 = 0.2 To 20 Step 0.01      'Particle diameter [mu]
-            los = Calc_verlies(dia_dp50, False) 'Loss [%]
-            If los <= qq Then
-                Exit For
-            End If
-        Next
-        Return (dia_dp50)
+        '----- Hoge stog belasting correctie -------
+        cor1 = 1    'Hoge stof belasting correctie acc VT-UK
+        cor2 = 1    'Hoge stof belasting correctie acc VT-UK
+
+        '-------------- korrelgrootte factoren ------
+        words = rekenlijnen(ComboBox1.SelectedIndex).Split(CType(";", Char()))
+        dia_krit = CDbl(words(1))
+        Dim fac_m, fac_k, fac_a As Double
+
+        '---- diameter kleiner kritisch
+        fac_m = CDbl(words(2))
+            fac_k = CDbl(words(3))
+            fac_a = CDbl(words(4))
+        d1 = fac_k * k_st * ((-Math.Log(qq ^ (1 / (cor1 * cor2))))) ^ (1 / fac_a) + fac_m * k_st
+
+        '---- diameter groter kritisch
+        fac_m = CDbl(words(5))
+            fac_k = CDbl(words(6))
+            fac_a = CDbl(words(7))
+        d2 = fac_k * k_st * ((-Math.Log(qq ^ (1 / (cor1 * cor2))))) ^ (1 / fac_a) + fac_m * k_st
+
+        If (d1 / k_st) > (qq / dia_krit) Then
+            dia_result = d1
+        Else
+            dia_result = d2
+        End If
+        Return (dia_result)
     End Function
+    '---- According to VT-UK -----
+    Private Sub Dust_load_correction()
+        Dim f1, f2, f3, f4, f As Double
+        Dim dst As Double
+
+        'Dust load dimension is [kg/Am3}
+        dst = NumericUpDown4.Value / 1000
+
+        f1 = 0.97833 + 2.918055 * dst - 39.3739 * dst ^ 2 + 472.0149 * dst ^ 3 - 769.586 * dst ^ 4
+        f2 = -0.30338 + 21.91961 * dst - 73.5039 * dst ^ 2 + 112.485 * dst ^ 3 - 63.4408 * dst ^ 4
+        f3 = 2.043212 + 0.725352 * dst - 0.2663 * dst ^ 2 + 0.04299 * dst ^ 3 - 0.00233 * dst ^ 4
+        f4 = 2.853325 + 0.019026 * dst - 0.00036 * dst ^ 2 + 0.000003 * dst ^ 3 - 0.0000000065 * dst ^ 4
+
+        If (CheckBox2.Checked) Then
+            Select Case dst
+                Case < 0.02
+                    f = 1
+                Case < 0.14
+                    f = f1
+                Case < 0.7
+                    f = f2
+                Case < 9.1
+                    f = f3
+                Case Else
+                    f = f4
+            End Select
+        Else
+            f = 1
+        End If
+        TextBox43.Text = f1.ToString("0.000")
+        TextBox44.Text = f2.ToString("0.000")
+        TextBox45.Text = f3.ToString("0.000")
+        TextBox46.Text = f4.ToString("0.000")
+        TextBox47.Text = f.ToString("0.000")
+    End Sub
+
     Private Sub Draw_chart1()
         '-------
         Dim s_points(100, 2) As Double
@@ -501,14 +545,16 @@ Public Class Form1
             Chart1.ChartAreas("ChartArea0").AxisX.Maximum = 40    'Particle size
         End If
 
-        '----- now calc chart poins --------------------------
-        For h = 0 To 100
+        '----- now calc chart points --------------------------
+        's_points(0, 0) = 0      'Particle diameter [mu]
+        's_points(0, 1) = 100    '100% loss
+        For h = 1 To 100
             s_points(h, 0) = h                                   'Particle diameter [mu]
             s_points(h, 1) = Calc_verlies(s_points(h, 0), False) * 100  'Loss [%]
         Next
 
         '------ now present-------------
-        For h = 0 To 40 - 1   'Fill line chart
+        For h = 1 To 40 - 1   'Fill line chart
             Chart1.Series(0).Points.AddXY(s_points(h, 0), s_points(h, 1))
         Next h
     End Sub
@@ -646,7 +692,7 @@ Public Class Form1
             MessageBox.Show("Line 6298, " & ex.Message)  ' Show the exception's message.
         End Try
     End Sub
-    'Retrieve control settings and case_x_conditions from file
+    'Retrieve control settings from file
     'Split the file string into 5 separate strings
     'Each string represents a control type (combobox, checkbox,..)
     'Then split up the secton string into part to read into the parameters
