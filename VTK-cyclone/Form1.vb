@@ -16,9 +16,36 @@ Public Structure Korrel_struct
     Public class_wght_kg As Double      'group_weight in de inlaat stroom [kg]
     Public verlies As Double            'verlies (niet gevangen) [-]
 End Structure
+'Variables used by GvG in calculation
+Public Structure GvG_Calc_struct
+    Public dia As Double            'Particle diameter [mu]
+    Public d_ave As Double          'Average diameter [mu]
+    Public d_ave_K As Double        'Average diam/K_stokes [-]
+    'Public loss1 As Double         'dia < d_krit Loss
+    'Public loss2 As Double         'dia > d_krit Loss
+    'Public loss1_C As Double       'dia < d_krit Loss, Corrected
+    'Public loss2_C As Double       'dia > d_krit Loss, Corrected
+    'Public loss_overall As Double  'Overall loss
+    Public loss_overall_C As Double 'Overall loss Corrected
+    Public catch_chart As Double    '[%] for chart
+    Public i_d1 As Double           'Interpolatie dia volgens Rosin Rammler
+    Public i_d2 As Double           'Interpolatie dia
+    Public i_p1 As Double           'Interpolatie
+    Public i_p2 As Double           'Interpolatie
+    Public i_k As Double            'Interpolatie
+    Public i_m As Double            'Interpolatie
+    Public psd_cum As Double        'Partice Size Distribution cummulatief
+    Public psd_cump As Double       '[%] PSD cummulatief
+    Public psd_dif As Double        '[%] PSD diff
+    Public loss_abs As Double       '
+    Public loss_abs_C As Double     '
+End Structure
+
 
 Public Class Form1
     Public korrel_grp(22) As Korrel_struct    '22 korrel groepen
+    Public guus(150) As GvG_Calc_struct
+    Public _K_stokes As Double
 
     'Type AC;Inlaatbreedte;Inlaathoogte;Inlaatlengte;Inlaat hartmaat;Inlaat afschuining;
     'Uitlaat keeldia inw.;Uitlaat flensdiameter inw.;Lengte insteekpijp inw.;
@@ -201,7 +228,7 @@ Public Class Form1
     Private Sub Get_input_and_calc()
         Dim words() As String
         Dim cyl_dim(20), db As Double
-        Dim Flow, K_waarde As Double
+        Dim Flow As Double
         Dim dp_inlet_gas As Double
         Dim dp_inlet_dust As Double
         Dim ro_gas, ro_particle, visco As Double
@@ -255,16 +282,14 @@ Public Class Form1
             dp_inlet_gas = 0.5 * ro_gas * inlet_velos ^ 2 * wc_air
             dp_inlet_dust = 0.5 * ro_gas * inlet_velos ^ 2 * wc_dust
 
-
-
             '----------- stof belasting ------------
             kgs = Flow * stofb / 1000               '[kg/s/cycloon]
             kgh = kgs * 3600                        '[kg/h/cycloon]
             tot_kgh = kgh * no_cycl                 '[kg/h] total
 
-            '----------- K_waarde-----------------------------------
-            K_waarde = db * 2000 * visco * 16 / (ro_particle * 0.0181 * inlet_velos)
-            K_waarde = Sqrt(K_waarde)
+            '----------- K_stokes-----------------------------------
+            _K_stokes = db * 2000 * visco * 16 / (ro_particle * 0.0181 * inlet_velos)
+            _K_stokes = Sqrt(_K_stokes)
 
             '----------- presenteren ----------------------------------
             TextBox36.Text = Flow.ToString("0.000")                 '[m3/s] flow
@@ -290,7 +315,7 @@ Public Class Form1
             TextBox48.Text = dp_inlet_dust.ToString("0")             '[Pa]Pressure loss inlet-dust
 
             TextBox22.Text = outlet_velos.ToString("0.0")            'uitlaat snelheid
-            TextBox23.Text = K_waarde.ToString("0.000")              'Stokes waarde tov Standaard cycloon
+            TextBox23.Text = _K_stokes.ToString("0.000")             'Stokes waarde tov Standaard cycloon
             TextBox37.Text = numericUpDown5.Value.ToString           'Cycloone dia_avemeter
             TextBox38.Text = CType(ComboBox1.SelectedItem, String)                 'Cycloon type
 
@@ -354,12 +379,12 @@ Public Class Form1
 
             '---------- Calc diameter with 50% separation ---
             '---------- present -------
-            TextBox42.Text = Dp50(1.0).ToString("0.000")     '[mu] @ 100% loss
-            TextBox26.Text = Dp50(0.95).ToString("0.000")    '[mu] @  95% lost
-            TextBox31.Text = Dp50(0.9).ToString("0.000")     '[mu] @  90% lost
-            TextBox32.Text = Dp50(0.5).ToString("0.000")     '[mu] @  50% lost
-            TextBox33.Text = Dp50(0.1).ToString("0.000")     '[mu] @  10% lost
-            TextBox41.Text = Dp50(0.05).ToString("0.000")    '[mu] @   5% lost
+            TextBox42.Text = Calc_dia(1.0).ToString("0.000")     '[mu] @ 100% loss
+            TextBox26.Text = Calc_dia(0.95).ToString("0.000")    '[mu] @  95% lost
+            TextBox31.Text = Calc_dia(0.9).ToString("0.000")     '[mu] @  90% lost
+            TextBox32.Text = Calc_dia(0.5).ToString("0.000")     '[mu] @  50% lost
+            TextBox33.Text = Calc_dia(0.1).ToString("0.000")     '[mu] @  10% lost
+            TextBox41.Text = Calc_dia(0.05).ToString("0.000")    '[mu] @   5% lost
 
             TextBox39.Text = kgh.ToString("0")          'Stof inlet
             TextBox40.Text = tot_kgh.ToString("0")      'Stof inlet totaal
@@ -404,14 +429,14 @@ Public Class Form1
         DataGridView1.Columns(6).HeaderText = "Loss [kg/h]"
     End Sub
     '-------- Bereken het verlies getal -----------
-    '----- de input is de korrel grootte-----------
+    '----- de input is de GEMIDDELDE korrel grootte-----------
     Private Function Calc_verlies(korrel_g As Double, present As Boolean) As Double
         Dim words() As String
-        Dim dia_krit, fac_m, fac_a, fac_k, kwaarde As Double
+        Dim dia_krit, fac_m, fac_a, fac_k As Double
         Dim verlies As Double = 1
 
         If (ComboBox1.SelectedIndex > -1) Then
-            Double.TryParse(TextBox23.Text, kwaarde)
+            'Double.TryParse(TextBox23.Text, kwaarde)
 
             '-------------- korrelgrootte factoren ------
             words = rekenlijnen(ComboBox1.SelectedIndex).Split(CType(";", Char()))
@@ -430,8 +455,12 @@ Public Class Form1
             End If
 
             '------ loss calculation ----
-            verlies = (((korrel_g / kwaarde) - fac_m) / fac_k) ^ fac_a
-            verlies = Math.E ^ -verlies
+            If ((korrel_g / _K_stokes) - fac_m) > 0 Then
+                verlies = (((korrel_g / _K_stokes) - fac_m) / fac_k) ^ fac_a
+                verlies = Math.E ^ -verlies
+            Else
+                verlies = 1.0        '100% loss (very small particle)
+            End If
 
             If present Then
                 '---------- present------------------
@@ -439,48 +468,50 @@ Public Class Form1
                 TextBox19.Text = fac_m.ToString("0.00")             'faktor-m
                 TextBox20.Text = fac_k.ToString("0.00")             'faktor-kappa
                 TextBox21.Text = fac_a.ToString("0.00")             'faktor-a
-                TextBox27.Text = (verlies * 100).ToString("0.0") 'verlies
+                TextBox27.Text = (verlies * 100).ToString("0.000")  'verlies
             End If
         End If
         Return (verlies)
     End Function
-    'Note dp(50) meaning with this diameter 50% is separated and 50% is lost
-    Private Function Dp50(qq As Double) As Double
-        Dim dia_result As Double
+    'Note dp(95) meaning with this diameter 95% is lost
+    'Calculate the diameter at which 95% is lost
+    Private Function Calc_dia(qq As Double) As Double
+        Dim dia_result As Double = 99
         Dim words() As String
         Dim dia_krit As Double
         Dim d1, d2 As Double
         Dim cor1, cor2 As Double 'Insteek pijp
-        Dim k_st As Double 'K-stokes
-        Double.TryParse(TextBox23.Text, k_st)
-
-        '----- Insteek pijp corectie correctie -------
-        cor1 = NumericUpDown22.Value    'Correctie insteek pijp
-
-        'Hoge stof belasting correctie acc VT-UK
-        Double.TryParse(TextBox47.Text, cor2)
-
-        '-------------- korrelgrootte factoren ------
-        words = rekenlijnen(ComboBox1.SelectedIndex).Split(CType(";", Char()))
-        dia_krit = CDbl(words(1))
         Dim fac_m, fac_k, fac_a As Double
 
-        '---- diameter kleiner kritisch
-        fac_m = CDbl(words(2))
+        If (ComboBox1.SelectedIndex > -1) Then 'Prevent exceptions
+
+            '----- Insteek pijp corectie correctie -------
+            cor1 = NumericUpDown22.Value    'Correctie insteek pijp
+
+            'Hoge stof belasting correctie acc VT-UK
+            Double.TryParse(TextBox47.Text, cor2)
+
+            '-------------- korrelgrootte factoren ------
+            words = rekenlijnen(ComboBox1.SelectedIndex).Split(CType(";", Char()))
+            dia_krit = CDbl(words(1))
+
+            '---- diameter kleiner kritisch
+            fac_m = CDbl(words(2))
             fac_k = CDbl(words(3))
             fac_a = CDbl(words(4))
-        d1 = fac_k * k_st * ((-Math.Log(qq ^ (1 / (cor1 * cor2))))) ^ (1 / fac_a) + fac_m * k_st
+            d1 = fac_k * _K_stokes * ((-Math.Log(qq ^ (1 / (cor1 * cor2))))) ^ (1 / fac_a) + fac_m * _K_stokes
 
-        '---- diameter groter kritisch
-        fac_m = CDbl(words(5))
+            '---- diameter groter kritisch
+            fac_m = CDbl(words(5))
             fac_k = CDbl(words(6))
             fac_a = CDbl(words(7))
-        d2 = fac_k * k_st * ((-Math.Log(qq ^ (1 / (cor1 * cor2))))) ^ (1 / fac_a) + fac_m * k_st
+            d2 = fac_k * _K_stokes * ((-Math.Log(qq ^ (1 / (cor1 * cor2))))) ^ (1 / fac_a) + fac_m * _K_stokes
 
-        If (d1 / k_st) > (qq / dia_krit) Then
-            dia_result = d1
-        Else
-            dia_result = d2
+            If (d1 / _K_stokes) > (qq / dia_krit) Then
+                dia_result = d1
+            Else
+                dia_result = d2
+            End If
         End If
         Return (dia_result)
     End Function
@@ -610,14 +641,13 @@ Public Class Form1
             Chart2.Series(0).Points.AddXY(s_points(h, 0), s_points(h, 1))
         Next h
     End Sub
-
-
     Private Sub Button2_Click(sender As Object, e As EventArgs) Handles NumericUpDown15.ValueChanged, Button2.Click
         Dim pdia As Double
 
         pdia = NumericUpDown15.Value
-        Calc_verlies(pdia, True)
-        Calc_verlies_grid()
+        Calc_verlies(pdia, True)    'Calc verlies + present results
+        Calc_loss_gvg()             'Calc according Guus
+        Present_loss_grid()         'Present the results
     End Sub
 
     Private Sub Button3_Click(sender As Object, e As EventArgs) Handles Button3.Click
@@ -1093,27 +1123,80 @@ Public Class Form1
         Return (vis * 100)    '[kg/m-s]-->[centi Poise]
     End Function
 
-    Private Sub Calc_verlies_grid()
-        DataGridView2.ColumnCount = 7
+    Private Sub Present_loss_grid()
+        Dim j As Integer
+
+        DataGridView2.ColumnCount = 9
         DataGridView2.Rows.Clear()
         DataGridView2.Rows.Add(110)
         DataGridView2.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill
 
-        DataGridView2.Columns(0).HeaderText = "Dia lower [mu]"
-        DataGridView2.Columns(1).HeaderText = "Dia upper [mu]"
-        DataGridView2.Columns(2).HeaderText = "Dia average [mu]"
-        DataGridView2.Columns(3).HeaderText = "Weight [kg/h]"
-        DataGridView2.Columns(4).HeaderText = "Weight [%]"
-        DataGridView2.Columns(5).HeaderText = "Loss [%]"
-        DataGridView2.Columns(6).HeaderText = "Loss [kg/h]"
+        DataGridView2.Columns(0).HeaderText = "Dia class [mu]"
+        DataGridView2.Columns(1).HeaderText = "Feed pds cum"
+        DataGridView2.Columns(2).HeaderText = "Feed psd diff"
+        DataGridView2.Columns(3).HeaderText = "Loss % of feed"
+        DataGridView2.Columns(4).HeaderText = "Loss abs"
+        DataGridView2.Columns(5).HeaderText = "Loss psd cum"
+        DataGridView2.Columns(6).HeaderText = "Catch abs"
+        DataGridView2.Columns(7).HeaderText = "Catch psd cum"
+        DataGridView2.Columns(8).HeaderText = "Grade efficiebcy"
 
-        For row = 0 To 100
-            DataGridView2.Rows.Item(row).Cells(0).Value = row
-            DataGridView2.Rows.Item(row).Cells(1).Value = row + 1
-            DataGridView2.Rows.Item(row).Cells(2).Value = row + 0.5
+        For row = 1 To 100
+            j = row - 1
+            DataGridView2.Rows.Item(j).Cells(0).Value = guus(j).d_ave.ToString
+            DataGridView2.Rows.Item(j).Cells(1).Value = guus(j).d_ave.ToString("0.00")   'Average diameter
+            DataGridView2.Rows.Item(j).Cells(2).Value = guus(j).d_ave_K.ToString("0.00") 'Average dia/K stokes
+            DataGridView2.Rows.Item(j).Cells(3).Value = guus(j).loss_overall_C.ToString("0.00")   'Loss 
         Next
 
     End Sub
+    Private Sub Calc_loss_gvg()
+        Dim i As Integer
+        Dim istep As Double
+        Dim dia_b, dia_s As Double
 
+        guus(i).dia = Calc_dia(1.0)
+        guus(i).d_ave = guus(0).dia / 2                                 'Average diameter
+        guus(i).d_ave_K = guus(0).d_ave / _K_stokes                     'dia/k_stokes
+        guus(i).loss_overall_C = Calc_verlies(guus(0).d_ave_K, False)   '[-]
+        guus(i).catch_chart = (1 - guus(i).loss_overall_C) * 100        '[%]
+        'guus(i).i_d1 = 99
+        'guus(i).i_d2 = 99
+        'guus(i).i_p1 = 99
+        'guus(i).i_p2 = 99
+        'guus(i).i_k = 99
+        'guus(i).i_m = 99
+        'guus(i).psd_cum = 99
+        'guus(i).psd_cump = 99
+        'guus(i).psd_dif = 99
+        'guus(i).loss_abs = 99
+        'guus(i).loss_abs_C = 99
+
+        '------ increment step --------
+        'stapgrootte bij 110-staps logaritmische verdeling van het
+        'deeltjesdiameter-bereik van loss=100% tot 0,00000001%
+        'Deze wordt gebruikt voor het opstellen van de gefractioneerde
+        'verliescurve.
+
+        dia_b = Calc_dia(1.0)          '100% loss
+
+        dia_s = Calc_dia(1.0)          '0.0000000% loss
+
+        ' MessageBox.Show(dia_s.ToString)
+
+
+
+        istep = Calc_dia(dia_b / dia_s) ^ (1 / 110)
+        ' MessageBox.Show(istep.ToString)
+
+        For i = 1 To 100
+            guus(i).dia = guus(i - 1).dia * istep
+            guus(i).d_ave = (guus(i - 1).dia + guus(i).dia) / 2             'Average diameter
+            guus(i).d_ave_K = guus(0).d_ave / _K_stokes                     'dia/k_stokes
+            guus(i).loss_overall_C = Calc_verlies(guus(0).d_ave_K, False)   '[-]
+            guus(i).catch_chart = (1 - guus(i).loss_overall_C) * 100        '[%]
+        Next
+
+    End Sub
 
 End Class
