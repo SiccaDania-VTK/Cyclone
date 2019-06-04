@@ -379,12 +379,12 @@ Public Class Form1
 
             '---------- Calc diameter with 50% separation ---
             '---------- present -------
-            TextBox42.Text = Calc_dia(1.0).ToString("0.000")     '[mu] @ 100% loss
-            TextBox26.Text = Calc_dia(0.95).ToString("0.000")    '[mu] @  95% lost
-            TextBox31.Text = Calc_dia(0.9).ToString("0.000")     '[mu] @  90% lost
-            TextBox32.Text = Calc_dia(0.5).ToString("0.000")     '[mu] @  50% lost
-            TextBox33.Text = Calc_dia(0.1).ToString("0.000")     '[mu] @  10% lost
-            TextBox41.Text = Calc_dia(0.05).ToString("0.000")    '[mu] @   5% lost
+            TextBox42.Text = Calc_dia_particle(1.0).ToString("0.000")     '[mu] @ 100% loss
+            TextBox26.Text = Calc_dia_particle(0.95).ToString("0.000")    '[mu] @  95% lost
+            TextBox31.Text = Calc_dia_particle(0.9).ToString("0.000")     '[mu] @  90% lost
+            TextBox32.Text = Calc_dia_particle(0.5).ToString("0.000")     '[mu] @  50% lost
+            TextBox33.Text = Calc_dia_particle(0.1).ToString("0.000")     '[mu] @  10% lost
+            TextBox41.Text = Calc_dia_particle(0.05).ToString("0.000")    '[mu] @   5% lost
 
             TextBox39.Text = kgh.ToString("0")          'Stof inlet
             TextBox40.Text = tot_kgh.ToString("0")      'Stof inlet totaal
@@ -475,13 +475,15 @@ Public Class Form1
     End Function
     'Note dp(95) meaning with this diameter 95% is lost
     'Calculate the diameter at which 95% is lost
-    Private Function Calc_dia(qq As Double) As Double
-        Dim dia_result As Double = 99
+    Private Function Calc_dia_particle(qq As Double) As Double
+        Dim dia_result As Double = 0
         Dim words() As String
         Dim dia_krit As Double
         Dim d1, d2 As Double
         Dim cor1, cor2 As Double 'Insteek pijp
         Dim fac_m, fac_k, fac_a As Double
+
+        If qq > 1 Then MessageBox.Show("Too Big, Line 486, qq= " & qq.ToString)
 
         If (ComboBox1.SelectedIndex > -1) Then 'Prevent exceptions
 
@@ -641,13 +643,14 @@ Public Class Form1
             Chart2.Series(0).Points.AddXY(s_points(h, 0), s_points(h, 1))
         Next h
     End Sub
-    Private Sub Button2_Click(sender As Object, e As EventArgs) Handles NumericUpDown15.ValueChanged, Button2.Click
+    Private Sub Button2_Click(sender As Object, e As EventArgs) Handles NumericUpDown15.ValueChanged, Button2.Click, NumericUpDown23.ValueChanged, TabPage9.Enter
         Dim pdia As Double
 
         pdia = NumericUpDown15.Value
         Calc_verlies(pdia, True)    'Calc verlies + present results
         Calc_loss_gvg()             'Calc according Guus
         Present_loss_grid()         'Present the results
+        TextBox49.Text = Calc_dia_particle(NumericUpDown23.Value / 100).ToString("0.0000")
     End Sub
 
     Private Sub Button3_Click(sender As Object, e As EventArgs) Handles Button3.Click
@@ -1132,21 +1135,22 @@ Public Class Form1
         DataGridView2.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill
 
         DataGridView2.Columns(0).HeaderText = "Dia class [mu]"
-        DataGridView2.Columns(1).HeaderText = "Feed pds cum"
-        DataGridView2.Columns(2).HeaderText = "Feed psd diff"
-        DataGridView2.Columns(3).HeaderText = "Loss % of feed"
-        DataGridView2.Columns(4).HeaderText = "Loss abs"
-        DataGridView2.Columns(5).HeaderText = "Loss psd cum"
-        DataGridView2.Columns(6).HeaderText = "Catch abs"
-        DataGridView2.Columns(7).HeaderText = "Catch psd cum"
-        DataGridView2.Columns(8).HeaderText = "Grade efficiebcy"
+        DataGridView2.Columns(1).HeaderText = "Dia average"
+        DataGridView2.Columns(2).HeaderText = "Dia/k"
+        DataGridView2.Columns(3).HeaderText = "Loss overall"
+        DataGridView2.Columns(4).HeaderText = "Catch chart"
+        DataGridView2.Columns(5).HeaderText = "" '"Loss psd cum"
+        DataGridView2.Columns(6).HeaderText = "" '"Catch abs"
+        DataGridView2.Columns(7).HeaderText = "" '"Catch psd cum"
+        DataGridView2.Columns(8).HeaderText = "" 'Grade efficiency"
 
-        For row = 1 To 100
+        For row = 1 To 110
             j = row - 1
-            DataGridView2.Rows.Item(j).Cells(0).Value = guus(j).d_ave.ToString
-            DataGridView2.Rows.Item(j).Cells(1).Value = guus(j).d_ave.ToString("0.00")   'Average diameter
-            DataGridView2.Rows.Item(j).Cells(2).Value = guus(j).d_ave_K.ToString("0.00") 'Average dia/K stokes
-            DataGridView2.Rows.Item(j).Cells(3).Value = guus(j).loss_overall_C.ToString("0.00")   'Loss 
+            DataGridView2.Rows.Item(j).Cells(0).Value = guus(j).dia.ToString
+            DataGridView2.Rows.Item(j).Cells(1).Value = guus(j).d_ave.ToString   'Average diameter
+            DataGridView2.Rows.Item(j).Cells(2).Value = guus(j).d_ave_K.ToString 'Average dia/K stokes
+            DataGridView2.Rows.Item(j).Cells(3).Value = guus(j).loss_overall_C.ToString   'Loss 
+            DataGridView2.Rows.Item(j).Cells(4).Value = guus(j).catch_chart.ToString   'Catch
         Next
 
     End Sub
@@ -1155,7 +1159,7 @@ Public Class Form1
         Dim istep As Double
         Dim dia_b, dia_s As Double
 
-        guus(i).dia = Calc_dia(1.0)
+        guus(i).dia = Calc_dia_particle(1.0)
         guus(i).d_ave = guus(0).dia / 2                                 'Average diameter
         guus(i).d_ave_K = guus(0).d_ave / _K_stokes                     'dia/k_stokes
         guus(i).loss_overall_C = Calc_verlies(guus(0).d_ave_K, False)   '[-]
@@ -1168,7 +1172,7 @@ Public Class Form1
         'guus(i).i_m = 99
         'guus(i).psd_cum = 99
         'guus(i).psd_cump = 99
-        'guus(i).psd_dif = 99
+        guus(i).psd_dif = 99
         'guus(i).loss_abs = 99
         'guus(i).loss_abs_C = 99
 
@@ -1178,22 +1182,15 @@ Public Class Form1
         'Deze wordt gebruikt voor het opstellen van de gefractioneerde
         'verliescurve.
 
-        dia_b = Calc_dia(1.0)          '100% loss
+        dia_s = Calc_dia_particle(1.0)          '=100% loss
+        dia_b = Calc_dia_particle(0.00000001)   '0.00000001 loss
+        istep = (dia_b / dia_s) ^ (1 / 110)
 
-        dia_s = Calc_dia(1.0)          '0.0000000% loss
-
-        ' MessageBox.Show(dia_s.ToString)
-
-
-
-        istep = Calc_dia(dia_b / dia_s) ^ (1 / 110)
-        ' MessageBox.Show(istep.ToString)
-
-        For i = 1 To 100
+        For i = 1 To 110
             guus(i).dia = guus(i - 1).dia * istep
             guus(i).d_ave = (guus(i - 1).dia + guus(i).dia) / 2             'Average diameter
-            guus(i).d_ave_K = guus(0).d_ave / _K_stokes                     'dia/k_stokes
-            guus(i).loss_overall_C = Calc_verlies(guus(0).d_ave_K, False)   '[-]
+            guus(i).d_ave_K = guus(i).d_ave / _K_stokes                     'dia/k_stokes
+            guus(i).loss_overall_C = Calc_verlies(guus(i).d_ave, False)   '[-]
             guus(i).catch_chart = (1 - guus(i).loss_overall_C) * 100        '[%]
         Next
 
