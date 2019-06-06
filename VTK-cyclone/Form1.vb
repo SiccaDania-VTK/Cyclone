@@ -21,11 +21,7 @@ Public Structure GvG_Calc_struct
     Public dia As Double            'Particle diameter [mu]
     Public d_ave As Double          'Average diameter [mu]
     Public d_ave_K As Double        'Average diam/K_stokes [-]
-    'Public loss1 As Double         'dia < d_krit Loss
-    'Public loss2 As Double         'dia > d_krit Loss
-    'Public loss1_C As Double       'dia < d_krit Loss, Corrected
-    'Public loss2_C As Double       'dia > d_krit Loss, Corrected
-    'Public loss_overall As Double  'Overall loss
+    Public loss_overall As Double   'Overall Corrected
     Public loss_overall_C As Double 'Overall loss Corrected
     Public catch_chart As Double    '[%] for chart
     Public i_d1 As Double           'Interpolatie dia volgens Rosin Rammler
@@ -90,7 +86,6 @@ Public Class Form1
     "AC850;60.00;26.00;9.00;3.70;1.18;1.10;0.65;0.50;0.35;0.25;0.16;0.10;0.045",
     "AC1850;60.00;20.00;12.00;6.50;4.00;2.50;1.70;1.20;0.85;0.60;0.40;0.15;0.05",
     "AC1850;30.00;7.00;3.00;1.50;1.00;0.60;0.45;0.35;0.25;0.20;0.15;0.08;0.04"}
-
 
     'Nieuwe reken methode, verdeling volgens Weibull verdeling
     'm1,k1,a1 als d < d_krit
@@ -221,7 +216,7 @@ Public Class Form1
         ComboBox1.SelectedIndex = 5                 'Select Cyclone type
     End Sub
 
-    Private Sub Button1_Click(sender As Object, e As EventArgs) Handles button1.Click, TabPage1.Enter, numericUpDown3.ValueChanged, numericUpDown2.ValueChanged, numericUpDown14.ValueChanged, NumericUpDown1.ValueChanged, numericUpDown5.ValueChanged, NumericUpDown20.ValueChanged, NumericUpDown19.ValueChanged, NumericUpDown18.ValueChanged, ComboBox1.SelectedIndexChanged, numericUpDown9.ValueChanged, numericUpDown8.ValueChanged, numericUpDown7.ValueChanged, numericUpDown6.ValueChanged, numericUpDown12.ValueChanged, numericUpDown11.ValueChanged, numericUpDown10.ValueChanged, numericUpDown13.ValueChanged, CheckBox1.CheckedChanged, CheckBox2.CheckedChanged, NumericUpDown22.ValueChanged
+    Private Sub Button1_Click(sender As Object, e As EventArgs) Handles button1.Click, TabPage1.Enter, numericUpDown3.ValueChanged, numericUpDown2.ValueChanged, numericUpDown14.ValueChanged, NumericUpDown1.ValueChanged, numericUpDown5.ValueChanged, NumericUpDown20.ValueChanged, NumericUpDown19.ValueChanged, NumericUpDown18.ValueChanged, ComboBox1.SelectedIndexChanged, numericUpDown9.ValueChanged, numericUpDown8.ValueChanged, numericUpDown7.ValueChanged, numericUpDown6.ValueChanged, numericUpDown12.ValueChanged, numericUpDown11.ValueChanged, numericUpDown10.ValueChanged, numericUpDown13.ValueChanged, CheckBox2.CheckedChanged, NumericUpDown22.ValueChanged
         Dust_load_correction()
         Get_input_and_calc()
     End Sub
@@ -428,7 +423,7 @@ Public Class Form1
         DataGridView1.Columns(5).HeaderText = "Loss [%]"
         DataGridView1.Columns(6).HeaderText = "Loss [kg/h]"
     End Sub
-    '-------- Bereken het verlies getal -----------
+    '-------- Bereken het verlies getal NIET gecorrigeerd -----------
     '----- de input is de GEMIDDELDE korrel grootte-----------
     Private Function Calc_verlies(korrel_g As Double, present As Boolean) As Double
         Dim words() As String
@@ -436,8 +431,6 @@ Public Class Form1
         Dim verlies As Double = 1
 
         If (ComboBox1.SelectedIndex > -1) Then
-            'Double.TryParse(TextBox23.Text, kwaarde)
-
             '-------------- korrelgrootte factoren ------
             words = rekenlijnen(ComboBox1.SelectedIndex).Split(CType(";", Char()))
 
@@ -454,7 +447,6 @@ Public Class Form1
                 fac_a = CDbl(words(7))
             End If
 
-            '------ loss calculation ----
             If ((korrel_g / _K_stokes) - fac_m) > 0 Then
                 verlies = (((korrel_g / _K_stokes) - fac_m) / fac_k) ^ fac_a
                 verlies = Math.E ^ -verlies
@@ -462,17 +454,64 @@ Public Class Form1
                 verlies = 1.0        '100% loss (very small particle)
             End If
 
-            If present Then
-                '---------- present------------------
-                TextBox18.Text = dia_krit.ToString("0.00")          'diameter_kritisch
-                TextBox19.Text = fac_m.ToString("0.00")             'faktor-m
-                TextBox20.Text = fac_k.ToString("0.00")             'faktor-kappa
-                TextBox21.Text = fac_a.ToString("0.00")             'faktor-a
-                TextBox27.Text = (verlies * 100).ToString("0.000")  'verlies
-            End If
         End If
+
+        If present Then '---------- present------------------
+            TextBox50.Text = ComboBox1.Text
+            TextBox18.Text = dia_krit.ToString("0.0000")        'diameter_kritisch
+            TextBox19.Text = fac_m.ToString("0.0000")           'faktor-m
+            TextBox20.Text = fac_k.ToString("0.0000")           'faktor-kappa
+            TextBox21.Text = fac_a.ToString("0.0000")           'faktor-a
+            TextBox27.Text = (verlies * 100).ToString("0.000")  'verlies NOT coorected
+        End If
+
         Return (verlies)
     End Function
+
+    '-------- Bereken het verlies getal GECORRIGEERD -----------
+    '----- de input is de GEMIDDELDE korrel grootte-----------
+    Private Sub Calc_verlies_corrected(ByRef grp As GvG_Calc_struct)
+        Dim words() As String
+        Dim dia_krit, fac_m, fac_a, fac_k As Double
+        Dim cor1, cor2 As Double
+
+        If (ComboBox1.SelectedIndex > -1) Then
+
+            '-------------- korrelgrootte factoren ------
+            words = rekenlijnen(ComboBox1.SelectedIndex).Split(CType(";", Char()))
+            dia_krit = CDbl(words(1))
+
+            '-------- de grafieken zijn in 2 delen gesplits voor hogere nauwkeurigheid----------
+            If grp.dia < dia_krit Then
+                fac_m = CDbl(words(2))
+                fac_k = CDbl(words(3))
+                fac_a = CDbl(words(4))
+            Else
+                fac_m = CDbl(words(5))
+                fac_k = CDbl(words(6))
+                fac_a = CDbl(words(7))
+            End If
+
+            '----- Insteek pijp corectie correctie -------
+            cor1 = NumericUpDown22.Value    'Correctie insteek pijp
+
+            'Hoge stof belasting correctie acc VT-UK
+            Double.TryParse(TextBox47.Text, cor2)
+
+            grp.loss_overall_C = grp.loss_overall ^ (cor1 * cor2)
+
+        End If
+        If fac_a > 0 Then
+            TextBox24.Text &= "---------------" & grp.ToString & vbCrLf
+            TextBox24.Text &= "cor1 = " & cor1.ToString & ", cor2 = " & cor2.ToString & vbCrLf
+            TextBox24.Text &= "fac_m = " & fac_m.ToString & ", fac_k = " & fac_k.ToString & ", fac_a = " & fac_a.ToString & vbCrLf
+            TextBox24.Text &= "grp.d_ave_K = " & grp.d_ave_K.ToString & vbCrLf
+            TextBox24.Text &= "grp.loss_overall_C = " & grp.loss_overall_C.ToString & vbCrLf
+            TextBox24.Text &= "guus(1).loss_overall_C. = " & guus(1).loss_overall_C.ToString & vbCrLf
+        End If
+
+    End Sub
+
     'Note dp(95) meaning with this diameter 95% is lost
     'Calculate the diameter at which 95% is lost
     Private Function Calc_dia_particle(qq As Double) As Double
@@ -483,7 +522,7 @@ Public Class Form1
         Dim cor1, cor2 As Double 'Insteek pijp
         Dim fac_m, fac_k, fac_a As Double
 
-        If qq > 1 Then MessageBox.Show("Too Big, Line 486, qq= " & qq.ToString)
+        If qq > 1 Then MessageBox.Show("Loss > 100% is impossible, Line 486, qq= " & qq.ToString)
 
         If (ComboBox1.SelectedIndex > -1) Then 'Prevent exceptions
 
@@ -496,6 +535,8 @@ Public Class Form1
             '-------------- korrelgrootte factoren ------
             words = rekenlijnen(ComboBox1.SelectedIndex).Split(CType(";", Char()))
             dia_krit = CDbl(words(1))
+
+            '=$K$38*$B$51*((-LN(H56^(1/($B$54*$B$64))))^(1/$K$40))+$K$36*$B$51
 
             '---- diameter kleiner kritisch
             fac_m = CDbl(words(2))
@@ -510,16 +551,18 @@ Public Class Form1
             d2 = fac_k * _K_stokes * ((-Math.Log(qq ^ (1 / (cor1 * cor2))))) ^ (1 / fac_a) + fac_m * _K_stokes
 
             If (d1 / _K_stokes) > (qq / dia_krit) Then
-                dia_result = d1
+                dia_result = d1     'diameter kleiner kritisch
             Else
-                dia_result = d2
+                dia_result = d2     'diameter groter kritisch
             End If
+
+            TextBox24.Text &= "_K_stokes" & _K_stokes.ToString & vbCrLf
         End If
         Return (dia_result)
     End Function
     '---- According to VT-UK -----
     Private Sub Dust_load_correction()
-        Dim f1, f2, f3, f4, f As Double
+        Dim f1, f2, f3, f4, f, f_used As Double
         Dim dst As Double
 
         'Dust load dimension is [kg/Am3}
@@ -530,27 +573,31 @@ Public Class Form1
         f3 = 2.043212 + 0.725352 * dst - 0.2663 * dst ^ 2 + 0.04299 * dst ^ 3 - 0.00233 * dst ^ 4
         f4 = 2.853325 + 0.019026 * dst - 0.00036 * dst ^ 2 + 0.000003 * dst ^ 3 - 0.0000000065 * dst ^ 4
 
+        Select Case dst
+            Case < 0.02
+                f = 1
+            Case < 0.14
+                f = f1
+            Case < 0.7
+                f = f2
+            Case < 9.1
+                f = f3
+            Case Else
+                f = f4
+        End Select
+
         If (CheckBox2.Checked) Then
-            Select Case dst
-                Case < 0.02
-                    f = 1
-                Case < 0.14
-                    f = f1
-                Case < 0.7
-                    f = f2
-                Case < 9.1
-                    f = f3
-                Case Else
-                    f = f4
-            End Select
+            f_used = f
         Else
-            f = 1
+            f_used = 1
         End If
+
         TextBox43.Text = f1.ToString("0.000")
         TextBox44.Text = f2.ToString("0.000")
         TextBox45.Text = f3.ToString("0.000")
         TextBox46.Text = f4.ToString("0.000")
         TextBox47.Text = f.ToString("0.000")
+        TextBox55.Text = f_used.ToString("0.000")
     End Sub
 
     Private Sub Draw_chart1()
@@ -643,11 +690,8 @@ Public Class Form1
             Chart2.Series(0).Points.AddXY(s_points(h, 0), s_points(h, 1))
         Next h
     End Sub
-    Private Sub Button2_Click(sender As Object, e As EventArgs) Handles NumericUpDown15.ValueChanged, Button2.Click, NumericUpDown23.ValueChanged, TabPage9.Enter
-        Dim pdia As Double
-
-        pdia = NumericUpDown15.Value
-        Calc_verlies(pdia, True)    'Calc verlies + present results
+    Private Sub Button2_Click(sender As Object, e As EventArgs) Handles Button2.Click, TabPage9.Enter
+        Calc_verlies(NumericUpDown15.Value, True)    'Calc verlies + present results
         Calc_loss_gvg()             'Calc according Guus
         Present_loss_grid()         'Present the results
         TextBox49.Text = Calc_dia_particle(NumericUpDown23.Value / 100).ToString("0.0000")
@@ -1117,60 +1161,76 @@ Public Class Form1
         Dim vis As Double
 
         temp += 273.15  '[Celsius]-->[K]
-
         C1 = 1.458 * 10 ^ -5
         C2 = 110.4
-
         vis = C1 * temp ^ 1.5 / (temp + C2)
-
         Return (vis * 100)    '[kg/m-s]-->[centi Poise]
     End Function
 
     Private Sub Present_loss_grid()
         Dim j As Integer
+        Dim total_abs_loss As Double = 0
+        Dim total_abs_loss_C As Double = 0
 
-        DataGridView2.ColumnCount = 11
+        DataGridView2.ColumnCount = 17
         DataGridView2.Rows.Clear()
-        DataGridView2.Rows.Add(110)
-        DataGridView2.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill
+        DataGridView2.Rows.Add(111)
+        ' DataGridView2.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill
 
         DataGridView2.Columns(0).HeaderText = "Dia class [mu]"
         DataGridView2.Columns(1).HeaderText = "Dia average"
         DataGridView2.Columns(2).HeaderText = "Dia/k"
         DataGridView2.Columns(3).HeaderText = "Loss overall"
-        DataGridView2.Columns(4).HeaderText = "Catch chart"
-        DataGridView2.Columns(5).HeaderText = "d1" '"Loss psd cum"
-        DataGridView2.Columns(6).HeaderText = "d2" '"Catch abs"
-        DataGridView2.Columns(7).HeaderText = "p1" '"Catch psd cum"
-        DataGridView2.Columns(8).HeaderText = "p2" 'Grade efficiency"
-        DataGridView2.Columns(9).HeaderText = "k" '"Catch psd cum"
-        DataGridView2.Columns(10).HeaderText = "m" 'Grade efficiency"
+        DataGridView2.Columns(4).HeaderText = "Loss overall Corrected"
+        DataGridView2.Columns(5).HeaderText = "Catch chart"
+        DataGridView2.Columns(6).HeaderText = "d1" '"Loss psd cum"
+        DataGridView2.Columns(7).HeaderText = "d2" '"Catch abs"
+        DataGridView2.Columns(8).HeaderText = "p1" '"Catch psd cum"
+        DataGridView2.Columns(9).HeaderText = "p2" 'Grade efficiency"
+        DataGridView2.Columns(10).HeaderText = "k" '"Catch psd cum"
+        DataGridView2.Columns(11).HeaderText = "m" 'Grade efficiency"
 
-        For row = 1 To 110
+        DataGridView2.Columns(12).HeaderText = "i_psd cum" 'Grade efficiency"
+        DataGridView2.Columns(13).HeaderText = "psd cum [%]" '"Catch psd cum"
+        DataGridView2.Columns(14).HeaderText = "psd diff" 'Grade efficiency"
+        DataGridView2.Columns(15).HeaderText = "loss abs [%]" '"Catch psd cum"
+        DataGridView2.Columns(16).HeaderText = "loss corr abs [%]" '"Catch psd cum"
+
+        For row = 1 To 110  'Fill the DataGrid
             j = row - 1
             DataGridView2.Rows.Item(j).Cells(0).Value = guus(j).dia.ToString
             DataGridView2.Rows.Item(j).Cells(1).Value = guus(j).d_ave.ToString   'Average diameter
             DataGridView2.Rows.Item(j).Cells(2).Value = guus(j).d_ave_K.ToString 'Average dia/K stokes
-            DataGridView2.Rows.Item(j).Cells(3).Value = guus(j).loss_overall_C.ToString   'Loss 
-            DataGridView2.Rows.Item(j).Cells(4).Value = guus(j).catch_chart.ToString   'Catch
-            DataGridView2.Rows.Item(j).Cells(5).Value = guus(j).i_d1.ToString   'class lower dia limit
-            DataGridView2.Rows.Item(j).Cells(6).Value = guus(j).i_d2.ToString   'class upper dia limit
-            DataGridView2.Rows.Item(j).Cells(7).Value = guus(j).i_p1.ToString   'User input percentage
-            DataGridView2.Rows.Item(j).Cells(8).Value = guus(j).i_p2.ToString   '
-            DataGridView2.Rows.Item(j).Cells(9).Value = guus(j).i_k.ToString   'User input percentage
-            DataGridView2.Rows.Item(j).Cells(10).Value = guus(j).i_m.ToString   '
+            DataGridView2.Rows.Item(j).Cells(3).Value = guus(j).loss_overall.ToString   'Loss 
+            DataGridView2.Rows.Item(j).Cells(4).Value = guus(j).loss_overall_C.ToString   'Loss 
+            DataGridView2.Rows.Item(j).Cells(5).Value = guus(j).catch_chart.ToString   'Catch
+            DataGridView2.Rows.Item(j).Cells(6).Value = guus(j).i_d1.ToString   'class lower dia limit
+            DataGridView2.Rows.Item(j).Cells(7).Value = guus(j).i_d2.ToString   'class upper dia limit
+            DataGridView2.Rows.Item(j).Cells(8).Value = guus(j).i_p1.ToString   'User input percentage
+            DataGridView2.Rows.Item(j).Cells(9).Value = guus(j).i_p2.ToString   '
+            DataGridView2.Rows.Item(j).Cells(10).Value = guus(j).i_k.ToString   'User input percentage
+            DataGridView2.Rows.Item(j).Cells(11).Value = guus(j).i_m.ToString   '
+            DataGridView2.Rows.Item(j).Cells(12).Value = guus(j).psd_cum.ToString  '
+            DataGridView2.Rows.Item(j).Cells(13).Value = guus(j).psd_cump.ToString("0.0")   '[%]
+            DataGridView2.Rows.Item(j).Cells(14).Value = guus(j).psd_dif.ToString("E4")     '[%]
+            DataGridView2.Rows.Item(j).Cells(15).Value = guus(j).loss_abs.ToString("E4")    '[%]
+            DataGridView2.Rows.Item(j).Cells(16).Value = guus(j).loss_abs_C.ToString("E4")  '[%]
+            total_abs_loss += guus(j).loss_abs
+            total_abs_loss_C += guus(j).loss_abs_C
         Next
-
+        DataGridView2.Rows.Item(111).Cells(14).Value = total_abs_loss.ToString
+        DataGridView2.Rows.Item(111).Cells(15).Value = total_abs_loss_C.ToString
     End Sub
     Private Sub Calc_loss_gvg()
-        Dim i As Integer
+        Dim i As Integer = 0
         Dim istep As Double
         Dim dia_b, dia_s As Double
 
         guus(i).dia = Calc_dia_particle(1.0)
         guus(i).d_ave = guus(0).dia / 2                                 'Average diameter
         guus(i).d_ave_K = guus(0).d_ave / _K_stokes                     'dia/k_stokes
-        guus(i).loss_overall_C = Calc_verlies(guus(0).d_ave_K, False)   '[-]
+        guus(i).loss_overall = Calc_verlies(guus(0).d_ave_K, False)     '[-] loss overall
+        Calc_verlies_corrected(guus(0))                                 '[-] loss overall corrected
         guus(i).catch_chart = (1 - guus(i).loss_overall_C) * 100        '[%]
         guus(i).i_d1 = Find_class_limits(guus(i).d_ave, 1)              'Lower limit diameter
         guus(i).i_d2 = Find_class_limits(guus(i).d_ave, 2)              'Upper limit diameter
@@ -1178,13 +1238,12 @@ Public Class Form1
         guus(i).i_p2 = Find_class_limits(guus(i).d_ave, 4)              'Percentage
         guus(i).i_k = Log(Math.Log(guus(i).i_p1) / Math.Log(guus(i).i_p2))
         guus(i).i_k /= Log(guus(i).i_d1 / guus(i).i_d2)
-
         guus(i).i_m = guus(i).i_d1 / ((-Log(guus(i).i_p1)) ^ (1 / guus(i).i_k))
         guus(i).psd_cum = Math.E ^ (-((guus(i).dia / guus(i).i_m) ^ guus(i).i_k))
         guus(i).psd_cump = guus(i).psd_cum * 100
         guus(i).psd_dif = 100 * (1 - guus(i).psd_cum)
+        guus(i).loss_abs = guus(i).loss_overall * guus(i).psd_dif
         guus(i).loss_abs_C = guus(i).loss_overall_C * guus(i).psd_dif
-
 
         '------ increment step --------
         'stapgrootte bij 110-staps logaritmische verdeling van het
@@ -1192,23 +1251,51 @@ Public Class Form1
         'Deze wordt gebruikt voor het opstellen van de gefractioneerde
         'verliescurve.
 
-        dia_s = Calc_dia_particle(1.0)          '=100% loss
-        dia_b = Calc_dia_particle(0.00000001)   '0.00000001 loss
-        istep = (dia_b / dia_s) ^ (1 / 110)
+        '///////////// problem to solved later ///////
+        dia_b = Calc_dia_particle(1.0)          '=100% loss (biggest particle)
+        dia_s = Calc_dia_particle(0.0000001)   '0.0000001 loss (smallest particle)
+        ' istep = (dia_b / dia_s) ^ (1 / 110)
+        '////////////////////////////////////////////
+        istep = (128.31 / 0.6508) ^ (1 / 110)
 
-        For i = 1 To 110
+        TextBox51.Text = dia_s.ToString("0.00000000")
+        TextBox52.Text = dia_b.ToString("0.000000")
+        TextBox53.Text = istep.ToString("0.000000")
+
+        TextBox24.Text &= "dia_s = " & dia_s.ToString & vbCrLf
+        TextBox24.Text &= "dia_b = " & dia_b.ToString & vbCrLf
+        TextBox24.Text &= "istep = " & istep.ToString & vbCrLf
+
+        For i = 1 To 100
             guus(i).dia = guus(i - 1).dia * istep
-            guus(i).d_ave = (guus(i - 1).dia + guus(i).dia) / 2             'Average diameter
-            guus(i).d_ave_K = guus(i).d_ave / _K_stokes                     'dia/k_stokes
-            guus(i).loss_overall_C = Calc_verlies(guus(i).d_ave, False)     '[-]
-            guus(i).catch_chart = (1 - guus(i).loss_overall_C) * 100        '[%]
-            guus(i).i_d1 = Find_class_limits(guus(i).d_ave, 1)           'Lower diameter limit
+            guus(i).d_ave = (guus(i - 1).dia + guus(i).dia) / 2         'Average diameter
+            guus(i).d_ave_K = guus(i).d_ave / _K_stokes                 'dia/k_stokes
+            guus(i).loss_overall = Calc_verlies(guus(i).d_ave, False)   '[-] loss overall
+            Calc_verlies_corrected(guus(i))                             '[-] loss overall corrected
+            If CheckBox2.Checked Then
+                guus(i).catch_chart = (1 - guus(i).loss_overall_C) * 100    '[%] Corrected
+            Else
+                guus(i).catch_chart = (1 - guus(i).loss_overall) * 100    '[%] NOT corrected
+            End If
+            guus(i).i_d1 = Find_class_limits(guus(i).d_ave, 1)          'Lower diameter limit
             guus(i).i_d2 = Find_class_limits(guus(i).d_ave, 2)          'Upper diameter limit
-            guus(i).i_p1 = Find_class_limits(guus(i).d_ave, 3)              'Percentage
-            guus(i).i_p2 = Find_class_limits(guus(i).d_ave, 4)              'Percentage
+            guus(i).i_p1 = Find_class_limits(guus(i).d_ave, 3)          'Percentage
+            guus(i).i_p2 = Find_class_limits(guus(i).d_ave, 4)          'Percentage
             guus(i).i_k = Log(Log(guus(i).i_p1) / Log(guus(i).i_p2)) / Log(guus(i).i_d1 / guus(i).i_d2)
             guus(i).i_m = guus(i).i_d1 / ((-Log(guus(i).i_p1)) ^ (1 / guus(i).i_k))
+            guus(i).psd_cum = Math.E ^ (-((guus(i).dia / guus(i).i_m) ^ guus(i).i_k))
+            guus(i).psd_cump = guus(i).psd_cum * 100
+            guus(i).psd_dif = 100 * (guus(i - 1).psd_cum - guus(i).psd_cum)
+            guus(i).loss_abs = guus(i).loss_overall * guus(i).psd_dif
+            guus(i).loss_abs_C = guus(i).loss_overall_C * guus(i).psd_dif
         Next
+
+        TextBox56.Text = ComboBox1.Text
+        TextBox57.Text = "57"
+        TextBox58.Text = "58"
+        TextBox59.Text = "59"
+        TextBox60.Text = "60"
+        TextBox61.Text = "61"
     End Sub
     'Determine the particle diameter class upper and lower limits
     Private Function Find_class_limits(dia As Double, noi As Integer) As Double
@@ -1279,4 +1366,14 @@ Public Class Form1
 
         Return (ret)
     End Function
+
+    Private Sub Button7_Click(sender As Object, e As EventArgs) Handles Button7.Click
+        Dim pdia As Double
+
+        pdia = NumericUpDown15.Value
+        Calc_verlies(pdia, True)    'Calc verlies + present results
+        Calc_loss_gvg()             'Calc according Guus
+        Present_loss_grid()         'Present the results
+        TextBox49.Text = Calc_dia_particle(NumericUpDown23.Value / 100).ToString("0.0000")
+    End Sub
 End Class
