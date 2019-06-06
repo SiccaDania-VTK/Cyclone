@@ -1169,8 +1169,8 @@ Public Class Form1
 
     Private Sub Present_loss_grid()
         Dim j As Integer
-        Dim total_abs_loss As Double = 0
         Dim total_abs_loss_C As Double = 0
+        Dim total_abs_loss As Double = 0
 
         DataGridView2.ColumnCount = 17
         DataGridView2.Rows.Clear()
@@ -1220,11 +1220,14 @@ Public Class Form1
         Next
         DataGridView2.Rows.Item(111).Cells(14).Value = total_abs_loss.ToString
         DataGridView2.Rows.Item(111).Cells(15).Value = total_abs_loss_C.ToString
+
     End Sub
     Private Sub Calc_loss_gvg()
         Dim i As Integer = 0
         Dim istep As Double
         Dim dia_b, dia_s As Double
+        Dim sum_loss As Double
+        Dim sum_loss_C As Double
 
         guus(i).dia = Calc_dia_particle(1.0)
         guus(i).d_ave = guus(0).dia / 2                                 'Average diameter
@@ -1245,6 +1248,8 @@ Public Class Form1
         guus(i).loss_abs = guus(i).loss_overall * guus(i).psd_dif
         guus(i).loss_abs_C = guus(i).loss_overall_C * guus(i).psd_dif
 
+        sum_loss = guus(i).loss_abs
+        sum_loss_C = guus(i).loss_abs_C
         '------ increment step --------
         'stapgrootte bij 110-staps logaritmische verdeling van het
         'deeltjesdiameter-bereik van loss=100% tot 0,00000001%
@@ -1288,14 +1293,28 @@ Public Class Form1
             guus(i).psd_dif = 100 * (guus(i - 1).psd_cum - guus(i).psd_cum)
             guus(i).loss_abs = guus(i).loss_overall * guus(i).psd_dif
             guus(i).loss_abs_C = guus(i).loss_overall_C * guus(i).psd_dif
+            '----- sum value -----
+            sum_loss += guus(i).loss_abs
+            sum_loss_C += guus(i).loss_abs_C
         Next
 
         TextBox56.Text = ComboBox1.Text
-        TextBox57.Text = "57"
-        TextBox58.Text = "58"
-        TextBox59.Text = "59"
-        TextBox60.Text = "60"
-        TextBox61.Text = "61"
+        TextBox57.Text = CheckBox2.Checked.ToString
+        If CheckBox2.Checked Then
+            TextBox58.Text = sum_loss_C.ToString("0.000")    'Corrected
+            TextBox59.Text = (100 - sum_loss_C).ToString("0.000")
+            TextBox60.Text = (NumericUpDown4.Value * sum_loss_C / 100).ToString("0.00")
+            TextBox61.Text = "61"
+        Else
+            TextBox58.Text = sum_loss.ToString("0.000")      'NOT Corrected
+            TextBox59.Text = (100 - sum_loss).ToString("0.000")
+            TextBox60.Text = (NumericUpDown4.Value * sum_loss / 100).ToString("0.00")
+            TextBox61.Text = "61"
+        End If
+
+
+
+
     End Sub
     'Determine the particle diameter class upper and lower limits
     Private Function Find_class_limits(dia As Double, noi As Integer) As Double
@@ -1368,10 +1387,7 @@ Public Class Form1
     End Function
 
     Private Sub Button7_Click(sender As Object, e As EventArgs) Handles Button7.Click
-        Dim pdia As Double
-
-        pdia = NumericUpDown15.Value
-        Calc_verlies(pdia, True)    'Calc verlies + present results
+        Calc_verlies(NumericUpDown15.Value, True)    'Calc verlies + present results
         Calc_loss_gvg()             'Calc according Guus
         Present_loss_grid()         'Present the results
         TextBox49.Text = Calc_dia_particle(NumericUpDown23.Value / 100).ToString("0.0000")
