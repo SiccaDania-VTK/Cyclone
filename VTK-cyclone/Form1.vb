@@ -244,6 +244,9 @@ Public Class Form1
         Dim inlet_velos As Double   '[m/s]
         Dim outlet_velos As Double  '[m/s]
         Dim total_input_weight As Double
+        Dim h18, h19 As Double
+        Dim j18, i18 As Double
+        Dim l18, k19, k41 As Double
 
         If (ComboBox1.SelectedIndex > -1) Then     'Prevent exceptions
             words = cyl_dimensions(ComboBox1.SelectedIndex).Split(CType(";", Char()))
@@ -305,6 +308,7 @@ Public Class Form1
             TextBox15.Text = (cyl_dim(15) * db).ToString("0.000")    'Lengte 3P-pijp
             TextBox16.Text = inlet_velos.ToString("0.0")             'inlaat snelheid
             TextBox17.Text = dp_inlet_gas.ToString("0")              '[Pa] Pressure loss inlet-gas
+            TextBox19.Text = (dp_inlet_gas / 100).ToString("0.0")    '[mbar] Pressure loss inlet-gas
             TextBox48.Text = dp_inlet_dust.ToString("0")             '[Pa]Pressure loss inlet-dust
 
             TextBox22.Text = outlet_velos.ToString("0.0")            'uitlaat snelheid
@@ -315,50 +319,81 @@ Public Class Form1
             Draw_chart1()
             Draw_chart2()
             '---------- Check speed ---------------
-            If inlet_velos < 12 Or inlet_velos > 25 Then
+            If inlet_velos < 10 Or inlet_velos > 30 Then
                 TextBox16.BackColor = Color.Red
             Else
                 TextBox16.BackColor = Color.LightGreen
             End If
 
+            '---------- Check dp ---------------
+            If dp_inlet_gas > 2000 Then
+                TextBox17.BackColor = Color.Red
+                TextBox19.BackColor = Color.Red
+            Else
+                TextBox17.BackColor = Color.LightGreen
+                TextBox19.BackColor = Color.LightGreen
+            End If
+
             '--------- Inlet korrel-groep data -----------
             Init_groups()
 
-            korrel_grp(0).class_wght_cum_pro = numericUpDown6.Value / 100  'Percentale van de inlaat stof belasting
-            korrel_grp(1).class_wght_cum_pro = numericUpDown7.Value / 100
-            korrel_grp(2).class_wght_cum_pro = numericUpDown8.Value / 100
-            korrel_grp(3).class_wght_cum_pro = numericUpDown9.Value / 100
-            korrel_grp(4).class_wght_cum_pro = numericUpDown10.Value / 100
-            korrel_grp(5).class_wght_cum_pro = numericUpDown11.Value / 100
-            korrel_grp(6).class_wght_cum_pro = numericUpDown12.Value / 100
-            korrel_grp(7).class_wght_cum_pro = numericUpDown13.Value / 100
-
-            '---- moet opgeteld 100% zijn --------------
 
             '---- determine group weights in [%] and [kg]-----------
-            For h = 0 To 7
-                korrel_grp(h).class_wght_pro = korrel_grp(h).class_wght_cum_pro - korrel_grp(h + 1).class_wght_cum_pro
-                korrel_grp(h).class_wght_kg = korrel_grp(h).class_wght_pro * tot_kgh
-            Next
+            'For h = 0 To 7
+            '    korrel_grp(h).class_wght_pro = korrel_grp(h).class_wght_cum_pro - korrel_grp(h + 1).class_wght_cum_pro
+            '    korrel_grp(h).class_wght_kg = korrel_grp(h).class_wght_pro * tot_kgh
+            'Next
 
             '--------- overall resultaat --------------------
             total_input_weight = 0
 
-            For h = 0 To 7
-                korrel_grp(h).verlies = Calc_verlies(korrel_grp(h).dia_ave, False)
+            'For h = 0 To 7
+            '    korrel_grp(h).dia_ave = (korrel_grp(h).dia_small + korrel_grp(h).dia_big) / 2
+            'Next
+            DataGridView1.Columns(0).HeaderText = "Dia class"
+            DataGridView1.Columns(1).HeaderText = "Feed psd cum"
+            DataGridView1.Columns(2).HeaderText = "Feed psd diff"
+            DataGridView1.Columns(3).HeaderText = "Loss % of feed"
+            DataGridView1.Columns(4).HeaderText = "Loss abs [%]"
+            DataGridView1.Columns(5).HeaderText = "Loss psd cum"
+            DataGridView1.Columns(6).HeaderText = "Catch abs"
+            DataGridView1.Columns(7).HeaderText = "Catch psd cum"
+            DataGridView1.Columns(8).HeaderText = "Grade eff."
 
-                '--- write in dataview grid -----
-                DataGridView1.Rows.Item(h).Cells(0).Value = korrel_grp(h).dia_small
-                DataGridView1.Rows.Item(h).Cells(1).Value = korrel_grp(h).dia_big
-                DataGridView1.Rows.Item(h).Cells(2).Value = korrel_grp(h).dia_ave
+            For h = 0 To 22
+                '---- diameter
+                DataGridView1.Rows.Item(h).Cells(0).Value = guus(h * 5).d_ave.ToString("0.000")
 
-                DataGridView1.Rows.Item(h).Cells(3).Value = korrel_grp(h).class_wght_kg.ToString("0") '[kg/h]
-                DataGridView1.Rows.Item(h).Cells(4).Value = (korrel_grp(h).class_wght_pro * 100).ToString("0.0") '[%]
-                DataGridView1.Rows.Item(h).Cells(5).Value = (korrel_grp(h).verlies * 100).ToString("0.0") '[%]
+                '---- feed
+                DataGridView1.Rows.Item(h).Cells(1).Value = guus(h * 5).psd_cump.ToString("0.0000")
+                If h > 0 Then
+                    h18 = CDbl(DataGridView1.Rows.Item(h - 1).Cells(1).Value)
+                Else
+                    h18 = 100
+                End If
+                h19 = CDbl(DataGridView1.Rows.Item(h).Cells(1).Value)
+                DataGridView1.Rows.Item(h).Cells(2).Value = (h18 - h19).ToString("0.000")
 
-                total_input_weight += korrel_grp(h).class_wght_kg
+                '---- loss
+                If CheckBox1.Checked Then
+                    DataGridView1.Rows.Item(h).Cells(3).Value = (guus(h * 5).loss_overall * 100).ToString("0.0000")
+                Else
+                    DataGridView1.Rows.Item(h).Cells(3).Value = (guus(h * 5).loss_overall_C * 100).ToString("0.0000")
+                End If
+                i18 = CDbl(DataGridView1.Rows.Item(h).Cells(2).Value)
+                j18 = CDbl(DataGridView1.Rows.Item(h).Cells(3).Value)
+                DataGridView1.Rows.Item(h).Cells(4).Value = (i18 * j18 / 100).ToString("0.0000")
+                l18 = 1
+                k19 = 1
+                k41 = 1
+                DataGridView1.Rows.Item(h).Cells(5).Value = (l18 - 100 * k19 / k41).ToString("0.0000")
+
+                '---- catch
+                DataGridView1.Rows.Item(h).Cells(6).Value = "mm"
+                DataGridView1.Rows.Item(h).Cells(7).Value = "kk"
+                '---- efficiency
+                DataGridView1.Rows.Item(h).Cells(8).Value = "ll"
             Next h
-            DataGridView1.Rows.Item(8).Cells(3).Value = total_input_weight.ToString("0")
             DataGridView1.AutoResizeColumns()
 
             '---------- Calc diameter with 50% separation ---
@@ -377,9 +412,9 @@ Public Class Form1
 
     End Sub
     Private Sub Init_groups()
-        DataGridView1.ColumnCount = 7
+        DataGridView1.ColumnCount = 10
         DataGridView1.Rows.Clear()
-        DataGridView1.Rows.Add(8)
+        DataGridView1.Rows.Add(24)
         DataGridView1.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill
 
         '[mu] Class lower particle diameter limit diameter
@@ -402,16 +437,15 @@ Public Class Form1
         korrel_grp(6).dia_big = 60
         korrel_grp(7).dia_big = 80
 
-        For h = 0 To 7
-            korrel_grp(h).dia_ave = (korrel_grp(h).dia_small + korrel_grp(h).dia_big) / 2
-        Next
-        DataGridView1.Columns(0).HeaderText = "Dia lower [mu]"
-        DataGridView1.Columns(1).HeaderText = "Dia upper [mu]"
-        DataGridView1.Columns(2).HeaderText = "Dia average [mu]"
-        DataGridView1.Columns(3).HeaderText = "Weight [kg/h]"
-        DataGridView1.Columns(4).HeaderText = "Weight [%]"
-        DataGridView1.Columns(5).HeaderText = "Loss [%]"
-        DataGridView1.Columns(6).HeaderText = "Loss [kg/h]"
+        korrel_grp(0).class_wght_cum_pro = numericUpDown6.Value / 100  'Percentale van de inlaat stof belasting
+        korrel_grp(1).class_wght_cum_pro = numericUpDown7.Value / 100
+        korrel_grp(2).class_wght_cum_pro = numericUpDown8.Value / 100
+        korrel_grp(3).class_wght_cum_pro = numericUpDown9.Value / 100
+        korrel_grp(4).class_wght_cum_pro = numericUpDown10.Value / 100
+        korrel_grp(5).class_wght_cum_pro = numericUpDown11.Value / 100
+        korrel_grp(6).class_wght_cum_pro = numericUpDown12.Value / 100
+        korrel_grp(7).class_wght_cum_pro = numericUpDown13.Value / 100
+
     End Sub
     '-------- Bereken het verlies getal NIET gecorrigeerd -----------
     '----- de input is de GEMIDDELDE korrel grootte-----------
@@ -545,8 +579,7 @@ Public Class Form1
         Dim f1, f2, f3, f4, f, f_used As Double
         Dim dst As Double
 
-        'Dust load dimension is [kg/Am3}
-        dst = NumericUpDown4.Value / 1000
+        dst = NumericUpDown4.Value / 1000 'Dust load dimension is [kg/Am3}
 
         f1 = 0.97833 + 2.918055 * dst - 39.3739 * dst ^ 2 + 472.0149 * dst ^ 3 - 769.586 * dst ^ 4
         f2 = -0.30338 + 21.91961 * dst - 73.5039 * dst ^ 2 + 112.485 * dst ^ 3 - 63.4408 * dst ^ 4
@@ -572,10 +605,6 @@ Public Class Form1
             f_used = 1
         End If
 
-        TextBox43.Text = f1.ToString("0.000")
-        TextBox44.Text = f2.ToString("0.000")
-        TextBox45.Text = f3.ToString("0.000")
-        TextBox46.Text = f4.ToString("0.000")
         TextBox47.Text = f.ToString("0.000")
         TextBox55.Text = f_used.ToString("0.000")
     End Sub
