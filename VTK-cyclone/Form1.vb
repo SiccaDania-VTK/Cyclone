@@ -220,6 +220,7 @@ Public Class Form1
     Private Sub Button1_Click(sender As Object, e As EventArgs) Handles button1.Click, TabPage1.Enter, numericUpDown3.ValueChanged, numericUpDown2.ValueChanged, numericUpDown14.ValueChanged, NumericUpDown1.ValueChanged, numericUpDown5.ValueChanged, NumericUpDown20.ValueChanged, NumericUpDown19.ValueChanged, NumericUpDown18.ValueChanged, ComboBox1.SelectedIndexChanged, numericUpDown9.ValueChanged, numericUpDown8.ValueChanged, numericUpDown7.ValueChanged, numericUpDown6.ValueChanged, numericUpDown12.ValueChanged, numericUpDown11.ValueChanged, numericUpDown10.ValueChanged, numericUpDown13.ValueChanged, CheckBox2.CheckedChanged, NumericUpDown22.ValueChanged
         Dust_load_correction()
         Get_input_and_calc()
+        Calc_loss_gvg()             'Calc according Guus
     End Sub
     Private Sub Get_input_and_calc()
         Dim words() As String
@@ -242,10 +243,6 @@ Public Class Form1
 
         Dim inlet_velos As Double   '[m/s]
         Dim outlet_velos As Double  '[m/s]
-
-        Dim total_loss As Double    'Berekende verlies
-        Dim class_loss As Double    'Loss in [kg] per class
-        Dim effficiency As Double
         Dim total_input_weight As Double
 
         If (ComboBox1.SelectedIndex > -1) Then     'Prevent exceptions
@@ -345,8 +342,6 @@ Public Class Form1
             Next
 
             '--------- overall resultaat --------------------
-            total_loss = 0
-            class_loss = 0
             total_input_weight = 0
 
             For h = 0 To 7
@@ -360,18 +355,11 @@ Public Class Form1
                 DataGridView1.Rows.Item(h).Cells(3).Value = korrel_grp(h).class_wght_kg.ToString("0") '[kg/h]
                 DataGridView1.Rows.Item(h).Cells(4).Value = (korrel_grp(h).class_wght_pro * 100).ToString("0.0") '[%]
                 DataGridView1.Rows.Item(h).Cells(5).Value = (korrel_grp(h).verlies * 100).ToString("0.0") '[%]
-                class_loss = (korrel_grp(h).class_wght_kg * korrel_grp(h).verlies)
-                DataGridView1.Rows.Item(h).Cells(6).Value = class_loss.ToString("0.0") '[kg/hr]
 
-                total_loss += class_loss
                 total_input_weight += korrel_grp(h).class_wght_kg
             Next h
-            DataGridView1.Rows.Item(8).Cells(6).Value = total_loss.ToString("0.0")
             DataGridView1.Rows.Item(8).Cells(3).Value = total_input_weight.ToString("0")
             DataGridView1.AutoResizeColumns()
-
-            '---------- efficiency -----------
-            effficiency = ((tot_kgh - total_loss) / tot_kgh) * 100  '[%]
 
             '---------- Calc diameter with 50% separation ---
             '---------- present -------
@@ -384,8 +372,9 @@ Public Class Form1
 
             TextBox39.Text = kgh.ToString("0")          'Stof inlet
             TextBox40.Text = tot_kgh.ToString("0")      'Stof inlet totaal
-            TextBox25.Text = effficiency.ToString("0.0")
         End If
+
+
     End Sub
     Private Sub Init_groups()
         DataGridView1.ColumnCount = 7
@@ -456,16 +445,6 @@ Public Class Form1
             End If
 
         End If
-
-        If present Then '---------- present------------------
-            TextBox50.Text = ComboBox1.Text
-            TextBox18.Text = dia_krit.ToString("0.0000")        'diameter_kritisch
-            TextBox19.Text = fac_m.ToString("0.0000")           'faktor-m
-            TextBox20.Text = fac_k.ToString("0.0000")           'faktor-kappa
-            TextBox21.Text = fac_a.ToString("0.0000")           'faktor-a
-            TextBox27.Text = (verlies * 100).ToString("0.000")  'verlies NOT coorected
-        End If
-
         Return (verlies)
     End Function
 
@@ -692,7 +671,7 @@ Public Class Form1
         Next h
     End Sub
     Private Sub Button2_Click(sender As Object, e As EventArgs) Handles Button2.Click, TabPage9.Enter
-        Calc_verlies(NumericUpDown15.Value, True)    'Calc verlies + present results
+        ' Calc_verlies(NumericUpDown15.Value, True)    'Calc verlies + present results
         Calc_loss_gvg()             'Calc according Guus
         Present_loss_grid()         'Present the results
     End Sub
@@ -969,7 +948,7 @@ Public Class Form1
 
             '---------------Inlet data-------------------------------
             'Insert a table, fill it with data and change the column widths.
-            oTable = oDoc.Tables.Add(oDoc.Bookmarks.Item("\endofdoc").Range, 14, 3)
+            oTable = oDoc.Tables.Add(oDoc.Bookmarks.Item("\endofdoc").Range, 15, 3)
             oTable.Range.ParagraphFormat.SpaceAfter = 1
             oTable.Range.Font.Size = 11
             oTable.Range.Font.Bold = CInt(False)
@@ -1029,6 +1008,10 @@ Public Class Form1
             oTable.Cell(row, 2).Range.Text = TextBox32.Text
             oTable.Cell(row, 3).Range.Text = "[mu]"
 
+            row += 1
+            oTable.Cell(row, 1).Range.Text = "Emssion"
+            oTable.Cell(row, 2).Range.Text = TextBox18.Text
+            oTable.Cell(row, 3).Range.Text = "[g/Am3]"
 
             oTable.Columns(1).Width = oWord.InchesToPoints(2.0)   'Change width of columns 
             oTable.Columns(2).Width = oWord.InchesToPoints(1)
@@ -1232,6 +1215,9 @@ Public Class Form1
         Dim dia_b, dia_s As Double
         Dim sum_loss As Double
         Dim sum_loss_C As Double
+        Dim sum_psd_diff As Double
+        Dim loss_total As Double
+        Dim perc_smallest_part As Double
 
         guus(i).dia = Calc_dia_particle(1.0)
         guus(i).d_ave = guus(0).dia / 2                                 'Average diameter
@@ -1254,8 +1240,10 @@ Public Class Form1
         guus(i).loss_abs = guus(i).loss_overall * guus(i).psd_dif
         guus(i).loss_abs_C = guus(i).loss_overall_C * guus(i).psd_dif
 
+        sum_psd_diff = guus(i).psd_dif
         sum_loss = guus(i).loss_abs
         sum_loss_C = guus(i).loss_abs_C
+
         '------ increment step --------
         'stapgrootte bij 110-staps logaritmische verdeling van het
         'deeltjesdiameter-bereik van loss=100% tot 0,00000001%
@@ -1263,15 +1251,15 @@ Public Class Form1
         'verliescurve.
 
         '///////////// problem to solved later ///////
+
         dia_b = Calc_dia_particle(1.0)          '=100% loss (biggest particle)
-        dia_s = Calc_dia_particle(0.0000001)   '0.0000001 loss (smallest particle)
+        perc_smallest_part = 0.0000001          'smallest particle [%]
+        dia_s = Calc_dia_particle(perc_smallest_part)   'diameter smallest particle
         ' istep = (dia_b / dia_s) ^ (1 / 110)
         '////////////////////////////////////////////
         istep = (128.31 / 0.6508) ^ (1 / 110)
 
-        TextBox51.Text = dia_s.ToString("0.00000000")
-        TextBox52.Text = dia_b.ToString("0.000000")
-        TextBox53.Text = istep.ToString("0.000000")
+
 
         TextBox24.Text &= "dia_s = " & dia_s.ToString & vbCrLf
         TextBox24.Text &= "dia_b = " & dia_b.ToString & vbCrLf
@@ -1309,22 +1297,27 @@ Public Class Form1
             guus(i).loss_abs = guus(i).loss_overall * guus(i).psd_dif
             guus(i).loss_abs_C = guus(i).loss_overall_C * guus(i).psd_dif
             '----- sum value -----
+            sum_psd_diff += guus(i).psd_dif
             sum_loss += guus(i).loss_abs
             sum_loss_C += guus(i).loss_abs_C
         Next
+        loss_total = sum_loss_C + ((100 - sum_psd_diff) * perc_smallest_part)
 
+        '----------- present -----------
         TextBox56.Text = ComboBox1.Text
         TextBox57.Text = CheckBox2.Checked.ToString
+
         If CheckBox2.Checked Then
-            TextBox58.Text = sum_loss_C.ToString("0.000")    'Corrected
-            TextBox59.Text = (100 - sum_loss_C).ToString("0.000")
-            TextBox60.Text = (NumericUpDown4.Value * sum_loss_C / 100).ToString("0.00")
+            TextBox58.Text = loss_total.ToString("0.000")    'Corrected
+            TextBox59.Text = (100 - loss_total).ToString("0.000")
+            TextBox60.Text = (NumericUpDown4.Value * loss_total / 100).ToString("0.000")
+            TextBox18.Text = TextBox60.Text
         Else
             TextBox58.Text = sum_loss.ToString("0.000")      'NOT Corrected
             TextBox59.Text = (100 - sum_loss).ToString("0.000")
-            TextBox60.Text = (NumericUpDown4.Value * sum_loss / 100).ToString("0.00")
+            TextBox60.Text = (NumericUpDown4.Value * sum_loss / 100).ToString("0.000")
+            TextBox18.Text = TextBox60.Text
         End If
-
     End Sub
     'Determine the particle diameter class upper and lower limits
     Private Function Find_class_limits(dia As Double, noi As Integer) As Double
@@ -1408,10 +1401,4 @@ Public Class Form1
         Return (ret)
     End Function
 
-    Private Sub Button7_Click(sender As Object, e As EventArgs) Handles Button7.Click
-        'Calc_verlies(NumericUpDown15.Value, True)    'Calc verlies + present results
-        'Calc_loss_gvg()             'Calc according Guus
-        ''  Present_loss_grid()         'Present the results
-        'TextBox49.Text = Calc_dia_particle(NumericUpDown23.Value / 100).ToString("0.0000")
-    End Sub
 End Class
