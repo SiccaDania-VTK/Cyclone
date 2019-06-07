@@ -165,7 +165,6 @@ Partial Class Form1
         Me.Chart1 = New System.Windows.Forms.DataVisualization.Charting.Chart()
         Me.GroupBox5 = New System.Windows.Forms.GroupBox()
         Me.Label150 = New System.Windows.Forms.Label()
-        Me.TextBox61 = New System.Windows.Forms.TextBox()
         Me.TextBox60 = New System.Windows.Forms.TextBox()
         Me.Button2 = New System.Windows.Forms.Button()
         Me.Label149 = New System.Windows.Forms.Label()
@@ -179,8 +178,6 @@ Partial Class Form1
         Me.Label145 = New System.Windows.Forms.Label()
         Me.Label146 = New System.Windows.Forms.Label()
         Me.TextBox59 = New System.Windows.Forms.TextBox()
-        Me.Label147 = New System.Windows.Forms.Label()
-        Me.Label148 = New System.Windows.Forms.Label()
         Me.DataGridView2 = New System.Windows.Forms.DataGridView()
         Me.TabPage2 = New System.Windows.Forms.TabPage()
         Me.pictureBox1 = New System.Windows.Forms.PictureBox()
@@ -1686,7 +1683,7 @@ Partial Class Form1
         Me.numericUpDown12.Size = New System.Drawing.Size(65, 20)
         Me.numericUpDown12.TabIndex = 26
         Me.numericUpDown12.TextAlign = System.Windows.Forms.HorizontalAlignment.Center
-        Me.numericUpDown12.Value = New Decimal(New Integer() {47, 0, 0, 65536})
+        Me.numericUpDown12.Value = New Decimal(New Integer() {45, 0, 0, 65536})
         '
         'numericUpDown11
         '
@@ -1886,7 +1883,6 @@ Partial Class Form1
         'GroupBox5
         '
         Me.GroupBox5.Controls.Add(Me.Label150)
-        Me.GroupBox5.Controls.Add(Me.TextBox61)
         Me.GroupBox5.Controls.Add(Me.TextBox60)
         Me.GroupBox5.Controls.Add(Me.Button2)
         Me.GroupBox5.Controls.Add(Me.Label149)
@@ -1900,8 +1896,6 @@ Partial Class Form1
         Me.GroupBox5.Controls.Add(Me.Label145)
         Me.GroupBox5.Controls.Add(Me.Label146)
         Me.GroupBox5.Controls.Add(Me.TextBox59)
-        Me.GroupBox5.Controls.Add(Me.Label147)
-        Me.GroupBox5.Controls.Add(Me.Label148)
         Me.GroupBox5.Dock = System.Windows.Forms.DockStyle.Fill
         Me.GroupBox5.Location = New System.Drawing.Point(775, 3)
         Me.GroupBox5.Name = "GroupBox5"
@@ -1919,14 +1913,6 @@ Partial Class Form1
         Me.Label150.Size = New System.Drawing.Size(40, 18)
         Me.Label150.TabIndex = 109
         Me.Label150.Text = "Type"
-        '
-        'TextBox61
-        '
-        Me.TextBox61.Location = New System.Drawing.Point(101, 176)
-        Me.TextBox61.Name = "TextBox61"
-        Me.TextBox61.Size = New System.Drawing.Size(89, 20)
-        Me.TextBox61.TabIndex = 108
-        Me.TextBox61.TextAlign = System.Windows.Forms.HorizontalAlignment.Center
         '
         'TextBox60
         '
@@ -2046,26 +2032,6 @@ Partial Class Form1
         Me.TextBox59.Size = New System.Drawing.Size(89, 20)
         Me.TextBox59.TabIndex = 102
         Me.TextBox59.TextAlign = System.Windows.Forms.HorizontalAlignment.Center
-        '
-        'Label147
-        '
-        Me.Label147.AutoSize = True
-        Me.Label147.Font = New System.Drawing.Font("Microsoft Sans Serif", 11.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label147.Location = New System.Drawing.Point(196, 168)
-        Me.Label147.Name = "Label147"
-        Me.Label147.Size = New System.Drawing.Size(60, 18)
-        Me.Label147.TabIndex = 104
-        Me.Label147.Text = "[g/Nm3]"
-        '
-        'Label148
-        '
-        Me.Label148.AutoSize = True
-        Me.Label148.Font = New System.Drawing.Font("Microsoft Sans Serif", 11.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label148.Location = New System.Drawing.Point(10, 169)
-        Me.Label148.Name = "Label148"
-        Me.Label148.Size = New System.Drawing.Size(61, 18)
-        Me.Label148.TabIndex = 103
-        Me.Label148.Text = "Emissie"
         '
         'DataGridView2
         '
@@ -3774,7 +3740,6 @@ Partial Class Form1
     Friend WithEvents NumericUpDown23 As NumericUpDown
     Friend WithEvents Button7 As Button
     Private WithEvents Label150 As Label
-    Friend WithEvents TextBox61 As TextBox
     Friend WithEvents TextBox60 As TextBox
     Private WithEvents Label149 As Label
     Private WithEvents Label141 As Label
@@ -3787,6 +3752,4 @@ Partial Class Form1
     Private WithEvents Label145 As Label
     Private WithEvents Label146 As Label
     Friend WithEvents TextBox59 As TextBox
-    Private WithEvents Label147 As Label
-    Private WithEvents Label148 As Label
 End Class

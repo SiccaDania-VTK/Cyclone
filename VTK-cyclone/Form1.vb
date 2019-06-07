@@ -24,6 +24,7 @@ Public Structure GvG_Calc_struct
     Public loss_overall As Double   'Overall Corrected
     Public loss_overall_C As Double 'Overall loss Corrected
     Public catch_chart As Double    '[%] for chart
+    Public i_grp As Double          'Groepnummer
     Public i_d1 As Double           'Interpolatie dia volgens Rosin Rammler
     Public i_d2 As Double           'Interpolatie dia
     Public i_p1 As Double           'Interpolatie
@@ -694,7 +695,6 @@ Public Class Form1
         Calc_verlies(NumericUpDown15.Value, True)    'Calc verlies + present results
         Calc_loss_gvg()             'Calc according Guus
         Present_loss_grid()         'Present the results
-        TextBox49.Text = Calc_dia_particle(NumericUpDown23.Value / 100).ToString("0.0000")
     End Sub
 
     Private Sub Button3_Click(sender As Object, e As EventArgs) Handles Button3.Click
@@ -1171,30 +1171,32 @@ Public Class Form1
         Dim j As Integer
         Dim total_abs_loss_C As Double = 0
         Dim total_abs_loss As Double = 0
+        Dim total_psd_diff As Double = 0
 
-        DataGridView2.ColumnCount = 17
+        DataGridView2.ColumnCount = 18
         DataGridView2.Rows.Clear()
         DataGridView2.Rows.Add(111)
-        ' DataGridView2.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill
+        'DataGridView2.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill
 
         DataGridView2.Columns(0).HeaderText = "Dia class [mu]"
         DataGridView2.Columns(1).HeaderText = "Dia average"
         DataGridView2.Columns(2).HeaderText = "Dia/k"
         DataGridView2.Columns(3).HeaderText = "Loss overall"
         DataGridView2.Columns(4).HeaderText = "Loss overall Corrected"
-        DataGridView2.Columns(5).HeaderText = "Catch chart"
-        DataGridView2.Columns(6).HeaderText = "d1" '"Loss psd cum"
-        DataGridView2.Columns(7).HeaderText = "d2" '"Catch abs"
-        DataGridView2.Columns(8).HeaderText = "p1" '"Catch psd cum"
-        DataGridView2.Columns(9).HeaderText = "p2" 'Grade efficiency"
-        DataGridView2.Columns(10).HeaderText = "k" '"Catch psd cum"
-        DataGridView2.Columns(11).HeaderText = "m" 'Grade efficiency"
+        DataGridView2.Columns(5).HeaderText = "Catch chart"     '
+        DataGridView2.Columns(6).HeaderText = "Groep nummer"    '
+        DataGridView2.Columns(7).HeaderText = "d1 lower dia"    '
+        DataGridView2.Columns(8).HeaderText = "d2 upper dia"    '
+        DataGridView2.Columns(9).HeaderText = "p1 input"        '
+        DataGridView2.Columns(10).HeaderText = "p2 input"       '
+        DataGridView2.Columns(11).HeaderText = "k"              '    
+        DataGridView2.Columns(12).HeaderText = "m"              '
 
-        DataGridView2.Columns(12).HeaderText = "i_psd cum" 'Grade efficiency"
-        DataGridView2.Columns(13).HeaderText = "psd cum [%]" '"Catch psd cum"
-        DataGridView2.Columns(14).HeaderText = "psd diff" 'Grade efficiency"
-        DataGridView2.Columns(15).HeaderText = "loss abs [%]" '"Catch psd cum"
-        DataGridView2.Columns(16).HeaderText = "loss corr abs [%]" '"Catch psd cum"
+        DataGridView2.Columns(13).HeaderText = "i_psd cum"      '
+        DataGridView2.Columns(14).HeaderText = "psd cum [%]"    '
+        DataGridView2.Columns(15).HeaderText = "psd diff"       '
+        DataGridView2.Columns(16).HeaderText = "loss abs [%]"   '
+        DataGridView2.Columns(17).HeaderText = "loss corr abs [%]" '
 
         For row = 1 To 110  'Fill the DataGrid
             j = row - 1
@@ -1204,23 +1206,25 @@ Public Class Form1
             DataGridView2.Rows.Item(j).Cells(3).Value = guus(j).loss_overall.ToString   'Loss 
             DataGridView2.Rows.Item(j).Cells(4).Value = guus(j).loss_overall_C.ToString   'Loss 
             DataGridView2.Rows.Item(j).Cells(5).Value = guus(j).catch_chart.ToString   'Catch
-            DataGridView2.Rows.Item(j).Cells(6).Value = guus(j).i_d1.ToString   'class lower dia limit
-            DataGridView2.Rows.Item(j).Cells(7).Value = guus(j).i_d2.ToString   'class upper dia limit
-            DataGridView2.Rows.Item(j).Cells(8).Value = guus(j).i_p1.ToString   'User input percentage
-            DataGridView2.Rows.Item(j).Cells(9).Value = guus(j).i_p2.ToString   '
-            DataGridView2.Rows.Item(j).Cells(10).Value = guus(j).i_k.ToString   'User input percentage
-            DataGridView2.Rows.Item(j).Cells(11).Value = guus(j).i_m.ToString   '
-            DataGridView2.Rows.Item(j).Cells(12).Value = guus(j).psd_cum.ToString  '
-            DataGridView2.Rows.Item(j).Cells(13).Value = guus(j).psd_cump.ToString("0.0")   '[%]
-            DataGridView2.Rows.Item(j).Cells(14).Value = guus(j).psd_dif.ToString("E4")     '[%]
-            DataGridView2.Rows.Item(j).Cells(15).Value = guus(j).loss_abs.ToString("E4")    '[%]
-            DataGridView2.Rows.Item(j).Cells(16).Value = guus(j).loss_abs_C.ToString("E4")  '[%]
+            DataGridView2.Rows.Item(j).Cells(6).Value = guus(j).i_grp.ToString   'Groep nummer
+            DataGridView2.Rows.Item(j).Cells(7).Value = guus(j).i_d1.ToString   'class lower dia limit
+            DataGridView2.Rows.Item(j).Cells(8).Value = guus(j).i_d2.ToString   'class upper dia limit
+            DataGridView2.Rows.Item(j).Cells(9).Value = guus(j).i_p1.ToString   'User input percentage
+            DataGridView2.Rows.Item(j).Cells(10).Value = guus(j).i_p2.ToString   '
+            DataGridView2.Rows.Item(j).Cells(11).Value = guus(j).i_k.ToString   'User input percentage
+            DataGridView2.Rows.Item(j).Cells(12).Value = guus(j).i_m.ToString   '
+            DataGridView2.Rows.Item(j).Cells(13).Value = guus(j).psd_cum.ToString  '
+            DataGridView2.Rows.Item(j).Cells(14).Value = guus(j).psd_cump.ToString("0.0")   '[%]
+            DataGridView2.Rows.Item(j).Cells(15).Value = guus(j).psd_dif.ToString("E4")     '[%]
+            DataGridView2.Rows.Item(j).Cells(16).Value = guus(j).loss_abs.ToString("E4")    '[%]
+            DataGridView2.Rows.Item(j).Cells(17).Value = guus(j).loss_abs_C.ToString("E4")  '[%]
+            total_psd_diff += guus(j).psd_dif
             total_abs_loss += guus(j).loss_abs
             total_abs_loss_C += guus(j).loss_abs_C
         Next
-        DataGridView2.Rows.Item(111).Cells(14).Value = total_abs_loss.ToString
-        DataGridView2.Rows.Item(111).Cells(15).Value = total_abs_loss_C.ToString
-
+        DataGridView2.Rows.Item(111).Cells(15).Value = total_psd_diff.ToString
+        DataGridView2.Rows.Item(111).Cells(16).Value = total_abs_loss.ToString
+        DataGridView2.Rows.Item(111).Cells(17).Value = total_abs_loss_C.ToString
     End Sub
     Private Sub Calc_loss_gvg()
         Dim i As Integer = 0
@@ -1235,10 +1239,12 @@ Public Class Form1
         guus(i).loss_overall = Calc_verlies(guus(0).d_ave_K, False)     '[-] loss overall
         Calc_verlies_corrected(guus(0))                                 '[-] loss overall corrected
         guus(i).catch_chart = (1 - guus(i).loss_overall_C) * 100        '[%]
-        guus(i).i_d1 = Find_class_limits(guus(i).d_ave, 1)              'Lower limit diameter
-        guus(i).i_d2 = Find_class_limits(guus(i).d_ave, 2)              'Upper limit diameter
-        guus(i).i_p1 = Find_class_limits(guus(i).d_ave, 3)              'Percentage
-        guus(i).i_p2 = Find_class_limits(guus(i).d_ave, 4)              'Percentage
+        guus(i).i_grp = Find_class_limits(guus(i).dia, 5)               'groepnummer
+        guus(i).i_d1 = Find_class_limits(guus(i).dia, 1)                'Lower limit diameter
+        guus(i).i_d2 = Find_class_limits(guus(i).dia, 2)                'Upper limit diameter
+        guus(i).i_p1 = Find_class_limits(guus(i).dia, 3)              'Percentage
+        guus(i).i_p2 = Find_class_limits(guus(i).dia, 4)              'Percentage
+
         guus(i).i_k = Log(Math.Log(guus(i).i_p1) / Math.Log(guus(i).i_p2))
         guus(i).i_k /= Log(guus(i).i_d1 / guus(i).i_d2)
         guus(i).i_m = guus(i).i_d1 / ((-Log(guus(i).i_p1)) ^ (1 / guus(i).i_k))
@@ -1271,7 +1277,7 @@ Public Class Form1
         TextBox24.Text &= "dia_b = " & dia_b.ToString & vbCrLf
         TextBox24.Text &= "istep = " & istep.ToString & vbCrLf
 
-        For i = 1 To 100
+        For i = 1 To 110
             guus(i).dia = guus(i - 1).dia * istep
             guus(i).d_ave = (guus(i - 1).dia + guus(i).dia) / 2         'Average diameter
             guus(i).d_ave_K = guus(i).d_ave / _K_stokes                 'dia/k_stokes
@@ -1282,15 +1288,24 @@ Public Class Form1
             Else
                 guus(i).catch_chart = (1 - guus(i).loss_overall) * 100    '[%] NOT corrected
             End If
-            guus(i).i_d1 = Find_class_limits(guus(i).d_ave, 1)          'Lower diameter limit
-            guus(i).i_d2 = Find_class_limits(guus(i).d_ave, 2)          'Upper diameter limit
-            guus(i).i_p1 = Find_class_limits(guus(i).d_ave, 3)          'Percentage
-            guus(i).i_p2 = Find_class_limits(guus(i).d_ave, 4)          'Percentage
-            guus(i).i_k = Log(Log(guus(i).i_p1) / Log(guus(i).i_p2)) / Log(guus(i).i_d1 / guus(i).i_d2)
-            guus(i).i_m = guus(i).i_d1 / ((-Log(guus(i).i_p1)) ^ (1 / guus(i).i_k))
-            guus(i).psd_cum = Math.E ^ (-((guus(i).dia / guus(i).i_m) ^ guus(i).i_k))
-            guus(i).psd_cump = guus(i).psd_cum * 100
-            guus(i).psd_dif = 100 * (guus(i - 1).psd_cum - guus(i).psd_cum)
+            guus(i).i_grp = Find_class_limits(guus(i).dia, 5)           'groepnummer
+            guus(i).i_d1 = Find_class_limits(guus(i).dia, 1)          'Lower diameter limit
+            guus(i).i_d2 = Find_class_limits(guus(i).dia, 2)          'Upper diameter limit
+            guus(i).i_p1 = Find_class_limits(guus(i).dia, 3)          'Percentage
+            guus(i).i_p2 = Find_class_limits(guus(i).dia, 4)          'Percentage
+            If guus(i).i_p2 > 0.001 Then 'to prevent silly results
+                guus(i).i_k = Log(Log(guus(i).i_p1) / Log(guus(i).i_p2)) / Log(guus(i).i_d1 / guus(i).i_d2)
+                guus(i).i_m = guus(i).i_d1 / ((-Log(guus(i).i_p1)) ^ (1 / guus(i).i_k))
+                guus(i).psd_cum = Math.E ^ (-((guus(i).dia / guus(i).i_m) ^ guus(i).i_k))
+                guus(i).psd_cump = guus(i).psd_cum * 100
+                guus(i).psd_dif = 100 * (guus(i - 1).psd_cum - guus(i).psd_cum)
+            Else
+                guus(i).i_k = 0
+                guus(i).i_m = 0
+                guus(i).psd_cum = 0
+                guus(i).psd_cump = 0
+                guus(i).psd_dif = 0
+            End If
             guus(i).loss_abs = guus(i).loss_overall * guus(i).psd_dif
             guus(i).loss_abs_C = guus(i).loss_overall_C * guus(i).psd_dif
             '----- sum value -----
@@ -1304,16 +1319,11 @@ Public Class Form1
             TextBox58.Text = sum_loss_C.ToString("0.000")    'Corrected
             TextBox59.Text = (100 - sum_loss_C).ToString("0.000")
             TextBox60.Text = (NumericUpDown4.Value * sum_loss_C / 100).ToString("0.00")
-            TextBox61.Text = "61"
         Else
             TextBox58.Text = sum_loss.ToString("0.000")      'NOT Corrected
             TextBox59.Text = (100 - sum_loss).ToString("0.000")
             TextBox60.Text = (NumericUpDown4.Value * sum_loss / 100).ToString("0.00")
-            TextBox61.Text = "61"
         End If
-
-
-
 
     End Sub
     'Determine the particle diameter class upper and lower limits
@@ -1321,54 +1331,64 @@ Public Class Form1
         Dim d1 As Double 'particle diameter [mu]
         Dim d2 As Double 'particle diameter [mu]
         Dim input_p1, input_p2 As Double
+        Dim grp As Double 'groepnummer
 
         Dim ret As Double
         Select Case True
-            Case dia <= 10
+            Case dia < 10
                 d1 = 10
                 d2 = 15
                 input_p1 = numericUpDown6.Value / 100
                 input_p2 = numericUpDown7.Value / 100
-            Case dia > 10 And dia <= 15
-                d1 = 15
-                d2 = 20
+                grp = 0
+            Case dia >= 10 And dia < 15
+                d1 = 10
+                d2 = 15
                 input_p1 = numericUpDown7.Value / 100
                 input_p2 = numericUpDown8.Value / 100
-            Case dia > 15 And dia <= 20
-                d1 = 20
-                d2 = 30
+                grp = 1
+            Case dia >= 15 And dia < 20
+                d1 = 15
+                d2 = 20
                 input_p1 = numericUpDown8.Value / 100
                 input_p2 = numericUpDown9.Value / 100
-            Case dia > 20 And dia <= 30
-                d1 = 30
-                d2 = 40
+                grp = 2
+            Case dia >= 20 And dia < 30
+                d1 = 20
+                d2 = 30
                 input_p1 = numericUpDown9.Value / 100
                 input_p2 = numericUpDown10.Value / 100
-            Case dia > 30 And dia <= 40
-                d1 = 40
-                d2 = 50
+                grp = 3
+            Case dia >= 30 And dia < 40
+                d1 = 30
+                d2 = 40
                 input_p1 = numericUpDown10.Value / 100
                 input_p2 = numericUpDown11.Value / 100
-            Case dia > 40 And dia <= 50
-                d1 = 50
-                d2 = 60
+                grp = 4
+            Case dia >= 40 And dia < 50
+                d1 = 40
+                d2 = 50
                 input_p1 = numericUpDown11.Value / 100
                 input_p2 = numericUpDown12.Value / 100
-            Case dia > 50 And dia <= 60
-                d1 = 60
-                d2 = 80
+                grp = 5
+            Case dia >= 50 And dia < 60
+                d1 = 50
+                d2 = 60
                 input_p1 = numericUpDown12.Value / 100
                 input_p2 = numericUpDown13.Value / 100
-            Case dia > 60 And dia <= 80
-                d1 = 80
-                d2 = 120
+                grp = 6
+            Case dia >= 60 And dia < 80
+                d1 = 60
+                d2 = 80
                 input_p1 = numericUpDown13.Value / 100
                 input_p2 = 0
+                grp = 7
             Case Else
-                d1 = 120
-                d2 = 200
+                d1 = 80
+                d2 = 120
                 input_p1 = 0.0001
                 input_p2 = 0.00001
+                grp = 8
         End Select
 
         '------ select the return variable -------------- 
@@ -1381,15 +1401,17 @@ Public Class Form1
                 ret = input_p1
             Case 4
                 ret = input_p2
+            Case 5
+                ret = grp
         End Select
 
         Return (ret)
     End Function
 
     Private Sub Button7_Click(sender As Object, e As EventArgs) Handles Button7.Click
-        Calc_verlies(NumericUpDown15.Value, True)    'Calc verlies + present results
-        Calc_loss_gvg()             'Calc according Guus
-        Present_loss_grid()         'Present the results
-        TextBox49.Text = Calc_dia_particle(NumericUpDown23.Value / 100).ToString("0.0000")
+        'Calc_verlies(NumericUpDown15.Value, True)    'Calc verlies + present results
+        'Calc_loss_gvg()             'Calc according Guus
+        ''  Present_loss_grid()         'Present the results
+        'TextBox49.Text = Calc_dia_particle(NumericUpDown23.Value / 100).ToString("0.0000")
     End Sub
 End Class
