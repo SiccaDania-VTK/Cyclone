@@ -215,6 +215,11 @@ Public Class Form1
             ComboBox1.Items.Add(words(0))
         Next hh
         ComboBox1.SelectedIndex = 5                 'Select Cyclone type
+
+        TextBox20.Text = "AA cyclone is a AC850 with diameter of 300mm" & vbCrLf
+        TextBox20.Text &= "Load above 5 gr/m3 is considerde a high load" & vbCrLf
+        TextBox20.Text &= "Cyclones can not choke" & vbCrLf
+
     End Sub
 
     Private Sub Button1_Click(sender As Object, e As EventArgs) Handles button1.Click, TabPage1.Enter, numericUpDown3.ValueChanged, numericUpDown2.ValueChanged, numericUpDown14.ValueChanged, NumericUpDown1.ValueChanged, numericUpDown5.ValueChanged, NumericUpDown20.ValueChanged, NumericUpDown19.ValueChanged, NumericUpDown18.ValueChanged, ComboBox1.SelectedIndexChanged, numericUpDown9.ValueChanged, numericUpDown8.ValueChanged, numericUpDown7.ValueChanged, numericUpDown6.ValueChanged, numericUpDown12.ValueChanged, numericUpDown11.ValueChanged, numericUpDown10.ValueChanged, numericUpDown13.ValueChanged, CheckBox2.CheckedChanged, NumericUpDown22.ValueChanged
