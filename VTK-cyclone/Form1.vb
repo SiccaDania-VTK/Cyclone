@@ -229,7 +229,8 @@ Public Class Form1
     End Sub
     Private Sub Get_input_and_calc()
         Dim words() As String
-        Dim cyl_dim(20), db As Double
+        Dim cyl_dim(20) As Double
+        Dim db As Double            'Body diameter
         Dim Flow As Double
         Dim dp_inlet_gas As Double
         Dim dp_inlet_dust As Double
@@ -241,7 +242,6 @@ Public Class Form1
         Dim kgh As Double           'Dust inlet per hour/cycloon 
         Dim kgs As Double           'Dust inlet per second
 
-        Dim body_dia As Double      '[m]
         Dim in_hoog As Double       '[m]
         Dim in_breed As Double      '[m]
         Dim dia_outlet As Double    '[m] gas outlet
@@ -259,11 +259,10 @@ Public Class Form1
                 cyl_dim(hh) = CDbl(words(hh))   'Cyclone dimensions
             Next
             no_cycl = NumericUpDown20.Value     'Paralelle cyclonen
-            db = numericUpDown5.Value           'Body diameter
+            db = numericUpDown5.Value / 1000    '[m] Body diameter
             in_hoog = cyl_dim(1) * db           '[m]
             in_breed = cyl_dim(2) * db          '[m]
             dia_outlet = cyl_dim(6) * db        '[m] 
-            body_dia = numericUpDown5.Value     '[m]
             Flow = NumericUpDown1.Value / 3600  '[m3/s]
             Flow /= no_cycl                     '[m3/s/cycloon]
             ro_gas = numericUpDown3.Value       '[kg/m3]
@@ -342,19 +341,9 @@ Public Class Form1
             '--------- Inlet korrel-groep data -----------
             Init_groups()
 
-
-            '---- determine group weights in [%] and [kg]-----------
-            'For h = 0 To 7
-            '    korrel_grp(h).class_wght_pro = korrel_grp(h).class_wght_cum_pro - korrel_grp(h + 1).class_wght_cum_pro
-            '    korrel_grp(h).class_wght_kg = korrel_grp(h).class_wght_pro * tot_kgh
-            'Next
-
             '--------- overall resultaat --------------------
             total_input_weight = 0
 
-            'For h = 0 To 7
-            '    korrel_grp(h).dia_ave = (korrel_grp(h).dia_small + korrel_grp(h).dia_big) / 2
-            'Next
             DataGridView1.Columns(0).HeaderText = "Dia class"
             DataGridView1.Columns(1).HeaderText = "Feed psd cum"
             DataGridView1.Columns(2).HeaderText = "Feed psd diff"
@@ -1079,7 +1068,7 @@ Public Class Form1
             row += 1
             oTable.Cell(row, 1).Range.Text = "Body diameter"
             oTable.Cell(row, 2).Range.Text = numericUpDown5.Value.ToString
-            oTable.Cell(row, 3).Range.Text = "[m]"
+            oTable.Cell(row, 3).Range.Text = "[mm]"
             row += 1
             oTable.Cell(row, 1).Range.Text = "No parallel"
             oTable.Cell(row, 2).Range.Text = NumericUpDown20.Value.ToString
@@ -1303,8 +1292,6 @@ Public Class Form1
         '////////////////////////////////////////////
         istep = (128.31 / 0.6508) ^ (1 / 110)
 
-
-
         TextBox24.Text &= "dia_s = " & dia_s.ToString & vbCrLf
         TextBox24.Text &= "dia_b = " & dia_b.ToString & vbCrLf
         TextBox24.Text &= "istep = " & istep.ToString & vbCrLf
@@ -1354,11 +1341,13 @@ Public Class Form1
         If CheckBox2.Checked Then
             TextBox58.Text = loss_total.ToString("0.00000")    'Corrected
             TextBox59.Text = (100 - loss_total).ToString("0.000")
+            TextBox21.Text = TextBox59.Text
             TextBox60.Text = (NumericUpDown4.Value * loss_total / 100).ToString("0.000")
             TextBox18.Text = TextBox60.Text
         Else
             TextBox58.Text = sum_loss.ToString("0.00000")      'NOT Corrected
             TextBox59.Text = (100 - sum_loss).ToString("0.000")
+            TextBox21.Text = TextBox59.Text
             TextBox60.Text = (NumericUpDown4.Value * sum_loss / 100).ToString("0.000")
             TextBox18.Text = TextBox60.Text
         End If
