@@ -1,10 +1,10 @@
-﻿Imports System.IO
-Imports System.Math
-Imports System.Globalization
-Imports System.Threading
-Imports System.Text
-Imports Word = Microsoft.Office.Interop.Word
+﻿Imports System.Globalization
+Imports System.IO
 Imports System.Management
+Imports System.Math
+Imports System.Text
+Imports System.Threading
+Imports Word = Microsoft.Office.Interop.Word
 
 '------- Korrel groepen in de inlaat stroom------
 Public Structure Korrel_struct
@@ -383,12 +383,22 @@ Public Class Form1
                 i18 = CDbl(DataGridView1.Rows.Item(h).Cells(2).Value)
                 j18 = CDbl(DataGridView1.Rows.Item(h).Cells(3).Value)
                 DataGridView1.Rows.Item(h).Cells(4).Value = (i18 * j18 / 100).ToString("0.0000")
-                l18 = 1
-                k19 = 1
-                k41 = 1
+                If h > 0 Then
+                    l18 = CDbl(DataGridView1.Rows.Item(h - 1).Cells(5).Value)
+                Else
+                    l18 = 100
+                End If
+                k19 = CDbl(DataGridView1.Rows.Item(h).Cells(4).Value)
+                Double.TryParse(TextBox58.Text, k41)
                 DataGridView1.Rows.Item(h).Cells(5).Value = (l18 - 100 * k19 / k41).ToString("0.0000")
 
                 '---- catch
+                If h > 0 Then
+                    l18 = CDbl(DataGridView1.Rows.Item(h - 1).Cells(5).Value)
+                Else
+                    l18 = 100
+                End If
+
                 DataGridView1.Rows.Item(h).Cells(6).Value = "mm"
                 DataGridView1.Rows.Item(h).Cells(7).Value = "kk"
                 '---- efficiency
@@ -1337,12 +1347,12 @@ Public Class Form1
         TextBox57.Text = CheckBox2.Checked.ToString
 
         If CheckBox2.Checked Then
-            TextBox58.Text = loss_total.ToString("0.000")    'Corrected
+            TextBox58.Text = loss_total.ToString("0.00000")    'Corrected
             TextBox59.Text = (100 - loss_total).ToString("0.000")
             TextBox60.Text = (NumericUpDown4.Value * loss_total / 100).ToString("0.000")
             TextBox18.Text = TextBox60.Text
         Else
-            TextBox58.Text = sum_loss.ToString("0.000")      'NOT Corrected
+            TextBox58.Text = sum_loss.ToString("0.00000")      'NOT Corrected
             TextBox59.Text = (100 - sum_loss).ToString("0.000")
             TextBox60.Text = (NumericUpDown4.Value * sum_loss / 100).ToString("0.000")
             TextBox18.Text = TextBox60.Text
