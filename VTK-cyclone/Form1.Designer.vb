@@ -22,12 +22,12 @@ Partial Class Form1
     'Do not modify it using the code editor.
     <System.Diagnostics.DebuggerStepThrough()>
     Private Sub InitializeComponent()
-        Dim ChartArea3 As System.Windows.Forms.DataVisualization.Charting.ChartArea = New System.Windows.Forms.DataVisualization.Charting.ChartArea()
-        Dim Legend3 As System.Windows.Forms.DataVisualization.Charting.Legend = New System.Windows.Forms.DataVisualization.Charting.Legend()
-        Dim Series3 As System.Windows.Forms.DataVisualization.Charting.Series = New System.Windows.Forms.DataVisualization.Charting.Series()
-        Dim ChartArea4 As System.Windows.Forms.DataVisualization.Charting.ChartArea = New System.Windows.Forms.DataVisualization.Charting.ChartArea()
-        Dim Legend4 As System.Windows.Forms.DataVisualization.Charting.Legend = New System.Windows.Forms.DataVisualization.Charting.Legend()
-        Dim Series4 As System.Windows.Forms.DataVisualization.Charting.Series = New System.Windows.Forms.DataVisualization.Charting.Series()
+        Dim ChartArea1 As System.Windows.Forms.DataVisualization.Charting.ChartArea = New System.Windows.Forms.DataVisualization.Charting.ChartArea()
+        Dim Legend1 As System.Windows.Forms.DataVisualization.Charting.Legend = New System.Windows.Forms.DataVisualization.Charting.Legend()
+        Dim Series1 As System.Windows.Forms.DataVisualization.Charting.Series = New System.Windows.Forms.DataVisualization.Charting.Series()
+        Dim ChartArea2 As System.Windows.Forms.DataVisualization.Charting.ChartArea = New System.Windows.Forms.DataVisualization.Charting.ChartArea()
+        Dim Legend2 As System.Windows.Forms.DataVisualization.Charting.Legend = New System.Windows.Forms.DataVisualization.Charting.Legend()
+        Dim Series2 As System.Windows.Forms.DataVisualization.Charting.Series = New System.Windows.Forms.DataVisualization.Charting.Series()
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(Form1))
         Me.TabControl1 = New System.Windows.Forms.TabControl()
         Me.TabPage1 = New System.Windows.Forms.TabPage()
@@ -179,6 +179,7 @@ Partial Class Form1
         Me.TextBox59 = New System.Windows.Forms.TextBox()
         Me.DataGridView2 = New System.Windows.Forms.DataGridView()
         Me.TabPage3 = New System.Windows.Forms.TabPage()
+        Me.TableLayoutPanel2 = New System.Windows.Forms.TableLayoutPanel()
         Me.PictureBox5 = New System.Windows.Forms.PictureBox()
         Me.TabPage4 = New System.Windows.Forms.TabPage()
         Me.GroupBox8 = New System.Windows.Forms.GroupBox()
@@ -265,7 +266,6 @@ Partial Class Form1
         Me.TextBox24 = New System.Windows.Forms.TextBox()
         Me.TabPage10 = New System.Windows.Forms.TabPage()
         Me.OpenFileDialog1 = New System.Windows.Forms.OpenFileDialog()
-        Me.TableLayoutPanel2 = New System.Windows.Forms.TableLayoutPanel()
         Me.TabControl1.SuspendLayout()
         Me.TabPage1.SuspendLayout()
         Me.GroupBox12.SuspendLayout()
@@ -301,6 +301,7 @@ Partial Class Form1
         Me.GroupBox5.SuspendLayout()
         CType(Me.DataGridView2, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.TabPage3.SuspendLayout()
+        Me.TableLayoutPanel2.SuspendLayout()
         CType(Me.PictureBox5, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.TabPage4.SuspendLayout()
         Me.GroupBox8.SuspendLayout()
@@ -317,7 +318,6 @@ Partial Class Form1
         Me.TabPage7.SuspendLayout()
         Me.groupBox3.SuspendLayout()
         Me.TabPage8.SuspendLayout()
-        Me.TableLayoutPanel2.SuspendLayout()
         Me.SuspendLayout()
         '
         'TabControl1
@@ -491,16 +491,16 @@ Partial Class Form1
         '
         'Chart2
         '
-        ChartArea3.Name = "ChartArea1"
-        Me.Chart2.ChartAreas.Add(ChartArea3)
-        Legend3.Name = "Legend1"
-        Me.Chart2.Legends.Add(Legend3)
+        ChartArea1.Name = "ChartArea1"
+        Me.Chart2.ChartAreas.Add(ChartArea1)
+        Legend1.Name = "Legend1"
+        Me.Chart2.Legends.Add(Legend1)
         Me.Chart2.Location = New System.Drawing.Point(832, 314)
         Me.Chart2.Name = "Chart2"
-        Series3.ChartArea = "ChartArea1"
-        Series3.Legend = "Legend1"
-        Series3.Name = "Series1"
-        Me.Chart2.Series.Add(Series3)
+        Series1.ChartArea = "ChartArea1"
+        Series1.Legend = "Legend1"
+        Series1.Name = "Series1"
+        Me.Chart2.Series.Add(Series1)
         Me.Chart2.Size = New System.Drawing.Size(198, 178)
         Me.Chart2.TabIndex = 80
         Me.Chart2.Text = "Chart2"
@@ -1581,27 +1581,27 @@ Partial Class Form1
         '
         Me.DataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
         Me.DataGridView1.Dock = System.Windows.Forms.DockStyle.Right
-        Me.DataGridView1.Location = New System.Drawing.Point(178, 16)
+        Me.DataGridView1.Location = New System.Drawing.Point(154, 16)
         Me.DataGridView1.Name = "DataGridView1"
         Me.DataGridView1.RowHeadersWidth = 51
-        Me.DataGridView1.Size = New System.Drawing.Size(512, 269)
+        Me.DataGridView1.Size = New System.Drawing.Size(536, 269)
         Me.DataGridView1.TabIndex = 79
         '
         'Label70
         '
         Me.Label70.AutoSize = True
         Me.Label70.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label70.Location = New System.Drawing.Point(97, 15)
+        Me.Label70.Location = New System.Drawing.Point(17, 17)
         Me.Label70.Name = "Label70"
-        Me.Label70.Size = New System.Drawing.Size(75, 15)
+        Me.Label70.Size = New System.Drawing.Size(119, 15)
         Me.Label70.TabIndex = 75
-        Me.Label70.Text = "Weight [%]"
+        Me.Label70.Text = "% of Total Weight"
         '
         'numericUpDown13
         '
         Me.numericUpDown13.DecimalPlaces = 1
         Me.numericUpDown13.Increment = New Decimal(New Integer() {1, 0, 0, 65536})
-        Me.numericUpDown13.Location = New System.Drawing.Point(98, 220)
+        Me.numericUpDown13.Location = New System.Drawing.Point(74, 220)
         Me.numericUpDown13.Minimum = New Decimal(New Integer() {100, 0, 0, -2147483648})
         Me.numericUpDown13.Name = "numericUpDown13"
         Me.numericUpDown13.Size = New System.Drawing.Size(65, 20)
@@ -1613,7 +1613,7 @@ Partial Class Form1
         '
         Me.numericUpDown12.DecimalPlaces = 1
         Me.numericUpDown12.Increment = New Decimal(New Integer() {1, 0, 0, 65536})
-        Me.numericUpDown12.Location = New System.Drawing.Point(98, 194)
+        Me.numericUpDown12.Location = New System.Drawing.Point(74, 194)
         Me.numericUpDown12.Name = "numericUpDown12"
         Me.numericUpDown12.Size = New System.Drawing.Size(65, 20)
         Me.numericUpDown12.TabIndex = 26
@@ -1624,7 +1624,7 @@ Partial Class Form1
         '
         Me.numericUpDown11.DecimalPlaces = 1
         Me.numericUpDown11.Increment = New Decimal(New Integer() {1, 0, 0, 65536})
-        Me.numericUpDown11.Location = New System.Drawing.Point(98, 168)
+        Me.numericUpDown11.Location = New System.Drawing.Point(74, 168)
         Me.numericUpDown11.Name = "numericUpDown11"
         Me.numericUpDown11.Size = New System.Drawing.Size(65, 20)
         Me.numericUpDown11.TabIndex = 25
@@ -1635,7 +1635,7 @@ Partial Class Form1
         '
         Me.numericUpDown10.DecimalPlaces = 1
         Me.numericUpDown10.Increment = New Decimal(New Integer() {1, 0, 0, 65536})
-        Me.numericUpDown10.Location = New System.Drawing.Point(98, 142)
+        Me.numericUpDown10.Location = New System.Drawing.Point(74, 142)
         Me.numericUpDown10.Name = "numericUpDown10"
         Me.numericUpDown10.Size = New System.Drawing.Size(65, 20)
         Me.numericUpDown10.TabIndex = 24
@@ -1646,7 +1646,7 @@ Partial Class Form1
         '
         Me.numericUpDown9.DecimalPlaces = 1
         Me.numericUpDown9.Increment = New Decimal(New Integer() {1, 0, 0, 65536})
-        Me.numericUpDown9.Location = New System.Drawing.Point(98, 116)
+        Me.numericUpDown9.Location = New System.Drawing.Point(74, 116)
         Me.numericUpDown9.Name = "numericUpDown9"
         Me.numericUpDown9.Size = New System.Drawing.Size(65, 20)
         Me.numericUpDown9.TabIndex = 23
@@ -1657,7 +1657,7 @@ Partial Class Form1
         '
         Me.numericUpDown8.DecimalPlaces = 1
         Me.numericUpDown8.Increment = New Decimal(New Integer() {1, 0, 0, 65536})
-        Me.numericUpDown8.Location = New System.Drawing.Point(98, 90)
+        Me.numericUpDown8.Location = New System.Drawing.Point(74, 90)
         Me.numericUpDown8.Name = "numericUpDown8"
         Me.numericUpDown8.Size = New System.Drawing.Size(65, 20)
         Me.numericUpDown8.TabIndex = 22
@@ -1668,7 +1668,7 @@ Partial Class Form1
         '
         Me.numericUpDown7.DecimalPlaces = 1
         Me.numericUpDown7.Increment = New Decimal(New Integer() {1, 0, 0, 65536})
-        Me.numericUpDown7.Location = New System.Drawing.Point(98, 64)
+        Me.numericUpDown7.Location = New System.Drawing.Point(74, 64)
         Me.numericUpDown7.Name = "numericUpDown7"
         Me.numericUpDown7.Size = New System.Drawing.Size(65, 20)
         Me.numericUpDown7.TabIndex = 21
@@ -1679,7 +1679,7 @@ Partial Class Form1
         '
         Me.numericUpDown6.DecimalPlaces = 1
         Me.numericUpDown6.Increment = New Decimal(New Integer() {1, 0, 0, 65536})
-        Me.numericUpDown6.Location = New System.Drawing.Point(98, 38)
+        Me.numericUpDown6.Location = New System.Drawing.Point(74, 38)
         Me.numericUpDown6.Name = "numericUpDown6"
         Me.numericUpDown6.Size = New System.Drawing.Size(65, 20)
         Me.numericUpDown6.TabIndex = 20
@@ -1692,9 +1692,9 @@ Partial Class Form1
         Me.label16.Font = New System.Drawing.Font("Microsoft Sans Serif", 11.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.label16.Location = New System.Drawing.Point(13, 167)
         Me.label16.Name = "label16"
-        Me.label16.Size = New System.Drawing.Size(78, 18)
+        Me.label16.Size = New System.Drawing.Size(58, 18)
         Me.label16.TabIndex = 10
-        Me.label16.Text = "40 - 50 mu"
+        Me.label16.Text = ">50 mu"
         '
         'label18
         '
@@ -1702,9 +1702,9 @@ Partial Class Form1
         Me.label18.Font = New System.Drawing.Font("Microsoft Sans Serif", 11.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.label18.Location = New System.Drawing.Point(13, 193)
         Me.label18.Name = "label18"
-        Me.label18.Size = New System.Drawing.Size(78, 18)
+        Me.label18.Size = New System.Drawing.Size(58, 18)
         Me.label18.TabIndex = 11
-        Me.label18.Text = "50 - 60 mu"
+        Me.label18.Text = ">60 mu"
         '
         'label19
         '
@@ -1712,9 +1712,9 @@ Partial Class Form1
         Me.label19.Font = New System.Drawing.Font("Microsoft Sans Serif", 11.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.label19.Location = New System.Drawing.Point(13, 219)
         Me.label19.Name = "label19"
-        Me.label19.Size = New System.Drawing.Size(78, 18)
+        Me.label19.Size = New System.Drawing.Size(58, 18)
         Me.label19.TabIndex = 12
-        Me.label19.Text = "68 - 80 mu"
+        Me.label19.Text = ">80 mu"
         '
         'label2
         '
@@ -1722,9 +1722,9 @@ Partial Class Form1
         Me.label2.Font = New System.Drawing.Font("Microsoft Sans Serif", 11.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.label2.Location = New System.Drawing.Point(13, 66)
         Me.label2.Name = "label2"
-        Me.label2.Size = New System.Drawing.Size(78, 18)
+        Me.label2.Size = New System.Drawing.Size(58, 18)
         Me.label2.TabIndex = 2
-        Me.label2.Text = "10 - 15 mu"
+        Me.label2.Text = ">15 mu"
         '
         'label1
         '
@@ -1732,10 +1732,10 @@ Partial Class Form1
         Me.label1.Font = New System.Drawing.Font("Microsoft Sans Serif", 11.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.label1.Location = New System.Drawing.Point(13, 40)
         Me.label1.Name = "label1"
-        Me.label1.Size = New System.Drawing.Size(74, 18)
+        Me.label1.Size = New System.Drawing.Size(58, 18)
         Me.label1.TabIndex = 0
         Me.label1.Tag = ""
-        Me.label1.Text = "0  - 10 mu"
+        Me.label1.Text = ">10 mu"
         '
         'label3
         '
@@ -1743,9 +1743,9 @@ Partial Class Form1
         Me.label3.Font = New System.Drawing.Font("Microsoft Sans Serif", 11.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.label3.Location = New System.Drawing.Point(13, 92)
         Me.label3.Name = "label3"
-        Me.label3.Size = New System.Drawing.Size(78, 18)
+        Me.label3.Size = New System.Drawing.Size(58, 18)
         Me.label3.TabIndex = 4
-        Me.label3.Text = "15 - 20 mu"
+        Me.label3.Text = ">20 mu"
         '
         'label4
         '
@@ -1753,9 +1753,9 @@ Partial Class Form1
         Me.label4.Font = New System.Drawing.Font("Microsoft Sans Serif", 11.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.label4.Location = New System.Drawing.Point(13, 118)
         Me.label4.Name = "label4"
-        Me.label4.Size = New System.Drawing.Size(78, 18)
+        Me.label4.Size = New System.Drawing.Size(58, 18)
         Me.label4.TabIndex = 6
-        Me.label4.Text = "20 - 30 mu"
+        Me.label4.Text = ">30 mu"
         '
         'label5
         '
@@ -1763,9 +1763,9 @@ Partial Class Form1
         Me.label5.Font = New System.Drawing.Font("Microsoft Sans Serif", 11.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.label5.Location = New System.Drawing.Point(13, 144)
         Me.label5.Name = "label5"
-        Me.label5.Size = New System.Drawing.Size(78, 18)
+        Me.label5.Size = New System.Drawing.Size(58, 18)
         Me.label5.TabIndex = 8
-        Me.label5.Text = "30 - 40 mu"
+        Me.label5.Text = ">40 mu"
         '
         'TabPage9
         '
@@ -1801,17 +1801,17 @@ Partial Class Form1
         '
         'Chart1
         '
-        ChartArea4.Name = "ChartArea1"
-        Me.Chart1.ChartAreas.Add(ChartArea4)
+        ChartArea2.Name = "ChartArea1"
+        Me.Chart1.ChartAreas.Add(ChartArea2)
         Me.Chart1.Dock = System.Windows.Forms.DockStyle.Fill
-        Legend4.Name = "Legend1"
-        Me.Chart1.Legends.Add(Legend4)
+        Legend2.Name = "Legend1"
+        Me.Chart1.Legends.Add(Legend2)
         Me.Chart1.Location = New System.Drawing.Point(3, 3)
         Me.Chart1.Name = "Chart1"
-        Series4.ChartArea = "ChartArea1"
-        Series4.Legend = "Legend1"
-        Series4.Name = "Series1"
-        Me.Chart1.Series.Add(Series4)
+        Series2.ChartArea = "ChartArea1"
+        Series2.Legend = "Legend1"
+        Series2.Name = "Series1"
+        Me.Chart1.Series.Add(Series2)
         Me.Chart1.Size = New System.Drawing.Size(766, 416)
         Me.Chart1.TabIndex = 67
         Me.Chart1.Text = "Chart1"
@@ -2000,13 +2000,28 @@ Partial Class Form1
         Me.TabPage3.Text = "VTK Cyclone efficiency"
         Me.TabPage3.UseVisualStyleBackColor = True
         '
+        'TableLayoutPanel2
+        '
+        Me.TableLayoutPanel2.ColumnCount = 2
+        Me.TableLayoutPanel2.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50.0!))
+        Me.TableLayoutPanel2.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50.0!))
+        Me.TableLayoutPanel2.Controls.Add(Me.PictureBox5, 0, 0)
+        Me.TableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.TableLayoutPanel2.Location = New System.Drawing.Point(3, 3)
+        Me.TableLayoutPanel2.Name = "TableLayoutPanel2"
+        Me.TableLayoutPanel2.RowCount = 2
+        Me.TableLayoutPanel2.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 82.17822!))
+        Me.TableLayoutPanel2.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 17.82178!))
+        Me.TableLayoutPanel2.Size = New System.Drawing.Size(1036, 707)
+        Me.TableLayoutPanel2.TabIndex = 2
+        '
         'PictureBox5
         '
         Me.PictureBox5.Dock = System.Windows.Forms.DockStyle.Fill
         Me.PictureBox5.Image = CType(resources.GetObject("PictureBox5.Image"), System.Drawing.Image)
         Me.PictureBox5.Location = New System.Drawing.Point(3, 3)
         Me.PictureBox5.Name = "PictureBox5"
-        Me.PictureBox5.Size = New System.Drawing.Size(512, 574)
+        Me.PictureBox5.Size = New System.Drawing.Size(512, 575)
         Me.PictureBox5.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom
         Me.PictureBox5.TabIndex = 1
         Me.PictureBox5.TabStop = False
@@ -2900,21 +2915,6 @@ Partial Class Form1
         '
         Me.OpenFileDialog1.FileName = "OpenFileDialog1"
         '
-        'TableLayoutPanel2
-        '
-        Me.TableLayoutPanel2.ColumnCount = 2
-        Me.TableLayoutPanel2.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50.0!))
-        Me.TableLayoutPanel2.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50.0!))
-        Me.TableLayoutPanel2.Controls.Add(Me.PictureBox5, 0, 0)
-        Me.TableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.TableLayoutPanel2.Location = New System.Drawing.Point(3, 3)
-        Me.TableLayoutPanel2.Name = "TableLayoutPanel2"
-        Me.TableLayoutPanel2.RowCount = 2
-        Me.TableLayoutPanel2.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 82.17822!))
-        Me.TableLayoutPanel2.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 17.82178!))
-        Me.TableLayoutPanel2.Size = New System.Drawing.Size(1036, 707)
-        Me.TableLayoutPanel2.TabIndex = 2
-        '
         'Form1
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -2967,6 +2967,7 @@ Partial Class Form1
         Me.GroupBox5.PerformLayout()
         CType(Me.DataGridView2, System.ComponentModel.ISupportInitialize).EndInit()
         Me.TabPage3.ResumeLayout(False)
+        Me.TableLayoutPanel2.ResumeLayout(False)
         CType(Me.PictureBox5, System.ComponentModel.ISupportInitialize).EndInit()
         Me.TabPage4.ResumeLayout(False)
         Me.GroupBox8.ResumeLayout(False)
@@ -2989,7 +2990,6 @@ Partial Class Form1
         Me.groupBox3.PerformLayout()
         Me.TabPage8.ResumeLayout(False)
         Me.TabPage8.PerformLayout()
-        Me.TableLayoutPanel2.ResumeLayout(False)
         Me.ResumeLayout(False)
 
     End Sub

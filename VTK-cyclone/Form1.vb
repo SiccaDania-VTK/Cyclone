@@ -221,6 +221,10 @@ Public Class Form1
         Dim h18, h19 As Double
         Dim j18, i18 As Double
         Dim l18, k19, k41 As Double
+        Dim k18 As Double
+        Dim m18, n17, n18 As Double
+        Dim tot_catch_abs As Double
+        Dim o18 As Double
 
         If (ComboBox1.SelectedIndex > -1) Then     'Prevent exceptions
             words = cyl_dimensions(ComboBox1.SelectedIndex).Split(CType(";", Char()))
@@ -324,52 +328,69 @@ Public Class Form1
             DataGridView1.Columns(8).HeaderText = "Grade eff."
 
             For h = 0 To 22
-                '---- diameter
-                DataGridView1.Rows.Item(h).Cells(0).Value = guus(h * 5).d_ave.ToString("0.000")
+                DataGridView1.Rows.Item(h).Cells(0).Value = guus(h * 5).d_ave.ToString("0.000") 'diameter
+                DataGridView1.Rows.Item(h).Cells(1).Value = guus(h * 5).psd_cump.ToString("0.0000") 'feed psd cum
 
-                '---- feed
-                DataGridView1.Rows.Item(h).Cells(1).Value = guus(h * 5).psd_cump.ToString("0.0000")
+
+                'h18 = CDbl(IIf((h > 0), CDbl(DataGridView1.Rows.Item(h - 1).Cells(1).Value), 100))
                 If h > 0 Then
                     h18 = CDbl(DataGridView1.Rows.Item(h - 1).Cells(1).Value)
                 Else
                     h18 = 100
                 End If
-                h19 = CDbl(DataGridView1.Rows.Item(h).Cells(1).Value)
-                DataGridView1.Rows.Item(h).Cells(2).Value = (h18 - h19).ToString("0.000")
+                h19 = CDbl(DataGridView1.Rows.Item(h).Cells(1).Value)   'feed psd cum
+                DataGridView1.Rows.Item(h).Cells(2).Value = (h18 - h19).ToString("0.000")   'feed psd diff
 
-                '---- loss
+                '========= loss ===============
                 If CheckBox1.Checked Then
                     DataGridView1.Rows.Item(h).Cells(3).Value = (guus(h * 5).loss_overall * 100).ToString("0.0000")
                 Else
                     DataGridView1.Rows.Item(h).Cells(3).Value = (guus(h * 5).loss_overall_C * 100).ToString("0.0000")
                 End If
-                i18 = CDbl(DataGridView1.Rows.Item(h).Cells(2).Value)
-                j18 = CDbl(DataGridView1.Rows.Item(h).Cells(3).Value)
-                DataGridView1.Rows.Item(h).Cells(4).Value = (i18 * j18 / 100).ToString("0.0000")
+
+                i18 = CDbl(DataGridView1.Rows.Item(h).Cells(2).Value) 'feed psd diff
+                j18 = CDbl(DataGridView1.Rows.Item(h).Cells(3).Value) 'loss % Of feed
+                DataGridView1.Rows.Item(h).Cells(4).Value = (i18 * j18 / 100).ToString("0.0000") 'Loss abs [%]
                 If h > 0 Then
                     l18 = CDbl(DataGridView1.Rows.Item(h - 1).Cells(5).Value)
                 Else
                     l18 = 100
                 End If
-                k19 = CDbl(DataGridView1.Rows.Item(h).Cells(4).Value)
+                k19 = CDbl(DataGridView1.Rows.Item(h).Cells(4).Value)   'Loss abs [%]
+
+                '========= Catch ===============
                 Double.TryParse(TextBox58.Text, k41)
                 DataGridView1.Rows.Item(h).Cells(5).Value = (l18 - 100 * k19 / k41).ToString("0.0000")
 
-                '---- catch
                 If h > 0 Then
                     l18 = CDbl(DataGridView1.Rows.Item(h - 1).Cells(5).Value)
                 Else
                     l18 = 100
                 End If
 
-                DataGridView1.Rows.Item(h).Cells(6).Value = "mm"
-                DataGridView1.Rows.Item(h).Cells(7).Value = "kk"
-                '---- efficiency
-                DataGridView1.Rows.Item(h).Cells(8).Value = "ll"
+                k18 = CDbl(DataGridView1.Rows.Item(h).Cells(4).Value)   'Loss abs [%]
+                m18 = (i18 - k18)
+                DataGridView1.Rows.Item(h).Cells(6).Value = m18.ToString("0.000") 'Catch abs
+
+                Double.TryParse(TextBox59.Text, tot_catch_abs)      'tot_catch_abs[%]
+
+                If h > 0 Then
+                    n17 = CDbl(DataGridView1.Rows.Item(h - 1).Cells(6).Value)
+                    n18 = m18 - n17 / tot_catch_abs
+                    TextBox24.Text &= "**h= " & h.ToString & ", n17= " & n17.ToString & ", m18= " & m18.ToString & ", n18= " & n18.ToString & vbCrLf
+                Else
+                    n18 = 100
+                End If
+                DataGridView1.Rows.Item(h).Cells(7).Value = n18.ToString("0.000") 'Catch psd cum
+
+                '========= Efficiency ===============
+                o18 = 100 - j18
+                DataGridView1.Rows.Item(h).Cells(8).Value = o18.ToString("0.000")           'Grade eff.
             Next h
             DataGridView1.AutoResizeColumns()
 
-            '---------- Calc diameter with 50% separation ---
+
+            '---------- Calc diameter with x% loss ---
             '---------- present -------
             TextBox42.Text = Calc_dia_particle(1.0).ToString("0.000")     '[mu] @ 100% loss
             TextBox26.Text = Calc_dia_particle(0.95).ToString("0.000")    '[mu] @  95% lost
@@ -388,7 +409,7 @@ Public Class Form1
         DataGridView1.ColumnCount = 10
         DataGridView1.Rows.Clear()
         DataGridView1.Rows.Add(24)
-        DataGridView1.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill
+        ' DataGridView1.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill
 
         '[mu] Class lower particle diameter limit diameter
         korrel_grp(0).dia_small = 0
@@ -489,12 +510,12 @@ Public Class Form1
 
         End If
         If fac_a > 0 Then
-            TextBox24.Text &= "---------------" & grp.ToString & vbCrLf
-            TextBox24.Text &= "cor1 = " & cor1.ToString & ", cor2 = " & cor2.ToString & vbCrLf
-            TextBox24.Text &= "fac_m = " & fac_m.ToString & ", fac_k = " & fac_k.ToString & ", fac_a = " & fac_a.ToString & vbCrLf
-            TextBox24.Text &= "grp.d_ave_K = " & grp.d_ave_K.ToString & vbCrLf
-            TextBox24.Text &= "grp.loss_overall_C = " & grp.loss_overall_C.ToString & vbCrLf
-            TextBox24.Text &= "guus(1).loss_overall_C. = " & guus(1).loss_overall_C.ToString & vbCrLf
+            'TextBox24.Text &= "---------------" & grp.ToString & vbCrLf
+            'TextBox24.Text &= "cor1 = " & cor1.ToString & ", cor2 = " & cor2.ToString & vbCrLf
+            'TextBox24.Text &= "fac_m = " & fac_m.ToString & ", fac_k = " & fac_k.ToString & ", fac_a = " & fac_a.ToString & vbCrLf
+            'TextBox24.Text &= "grp.d_ave_K = " & grp.d_ave_K.ToString & vbCrLf
+            'TextBox24.Text &= "grp.loss_overall_C = " & grp.loss_overall_C.ToString & vbCrLf
+            'TextBox24.Text &= "guus(1).loss_overall_C. = " & guus(1).loss_overall_C.ToString & vbCrLf
         End If
 
     End Sub
