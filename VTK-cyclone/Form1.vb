@@ -56,36 +56,6 @@ Public Class Form1
     "AC-850;0.203;0.457;0.6;0.564;0.3;0.307;0.428;0.892;3.797;1.312;2.485;0.4;0.6;0.6;0.25",
     "AC-1850;0.136;0.31;0.6;0.53;0.3;0.15;0.25;0.892;3.797;1.312;2.485;0.4;0.6;0.6;0.25"}
 
-    'FRACTIONELE VERLIESCIJFERS volgens norm 503
-    'Verlies aan de hand van de deeltjes grootte
-    'min dia[mm];max dia[mm],AC300;AC350;AC435;AC550;AC750;AC850;AC850;AC1850;AC1850
-    Public Shared frac_verlies() As String = {
-     "0;2;97.00;95.00;87.00;80.00;75.00;70.00;60.00;60.00;30.00",
-    "2;4;76.00;70.00;60.00;47.00;40.00;30.00;26.00;20.00;7.00",
-    "4;6;54.00;48.00;40.00;30.00;25.00;16.00;9.00;12.00;3.00",
-    "6;8;45.00;32.00;21.00;17.00;14.00;8.70;3.70;6.50;1.50",
-    "8;10;36.00;22.00;12.00;10.00;8.00;5.15;1.18;4.00;1.00",
-    "10;12;29.00;16.00;8.00;6.50;4.60;3.40;1.10;2.50;0.60",
-    "12;14;20.50;11.00;5.50;3.50;2.70;2.40;0.65;1.70;0.45",
-    "14;16;14.00;7.50;3.00;2.20;1.60;1.60;0.50;1.20;0.35",
-    "16;18;11.00;5.50;2.20;1.40;1.10;1.10;0.35;0.85;0.25",
-    "18;20;8.40;4.00;1.60;0.90;0.75;0.75;0.25;0.60;0.20",
-    "20;25;5.50;2.50;1.00;0.45;0.40;0.40;0.16;0.40;0.15",
-    "25;30;4.20;1.60;0.50;0.18;0.15;0.15;0.10;0.15;0.08",
-    "30;100;3.20;0.80;0.15;0.07;0.06;0.05;0.045;0.05;0.04"}
-
-    'FRACTIONELE VERLIESCIJFERS volgens norm 503 
-    '[mm]; <  2; 2 - 4; 4 - 6; 6 - 8; 8 - 10; 10 - 12; 12 - 14; 14 - 16; 16 - 18; 18 - 20; 20 - 25; 25 - 30; > 30
-    Public Shared frac_verlies2() As String = {
-    "AC300;97.00;76.00;54.00;45.00;36.00;29.00;20.50;14.00;11.00;8.40;5.50;4.20;3.20",
-    "AC350;95.00;70.00;48.00;32.00;22.00;16.00;11.00;7.50;5.50;4.00;2.50;1.60;0.80",
-    "AC435;87.00;60.00;40.00;21.00;12.00;8.00;5.50;3.00;2.20;1.60;1.00;0.50;0.15",
-    "AC550;80.00;47.00;30.00;17.00;10.00;6.50;3.50;2.20;1.40;0.90;0.45;0.18;0.07",
-    "AC750;75.00;40.00;25.00;14.00;8.00;4.60;2.70;1.60;1.10;0.75;0.40;0.15;0.06",
-    "AC850;70.00;30.00;16.00;8.70;5.15;3.40;2.40;1.60;1.10;0.75;0.40;0.15;0.05",
-    "AC850;60.00;26.00;9.00;3.70;1.18;1.10;0.65;0.50;0.35;0.25;0.16;0.10;0.045",
-    "AC1850;60.00;20.00;12.00;6.50;4.00;2.50;1.70;1.20;0.85;0.60;0.40;0.15;0.05",
-    "AC1850;30.00;7.00;3.00;1.50;1.00;0.60;0.45;0.35;0.25;0.20;0.15;0.08;0.04"}
 
     'Nieuwe reken methode, verdeling volgens Weibull verdeling
     'm1,k1,a1 als d < d_krit
@@ -101,7 +71,6 @@ Public Class Form1
     "AC850+afz; 10;     0.5187; 1.6412; 0.8386;     4.2781;     0.06777;0.3315",
     "AC1850;    9.3;    0.50;   1.1927; 0.5983;     -0.196;     1.3687; 0.6173",
     "AC1850+afz;10.45;  0.4617; 0.2921; 0.4560;     -0.2396;    0.1269; 0.3633"}
-
 
     Public weerstand_coef_air(7) As Double      'Inlet-air pressure loss calculation
     Public weerstand_coef_dust(7) As Double     'Inlet-air pressure loss calculation
@@ -222,7 +191,7 @@ Public Class Form1
 
     End Sub
 
-    Private Sub Button1_Click(sender As Object, e As EventArgs) Handles button1.Click, TabPage1.Enter, numericUpDown3.ValueChanged, numericUpDown2.ValueChanged, numericUpDown14.ValueChanged, NumericUpDown1.ValueChanged, numericUpDown5.ValueChanged, NumericUpDown20.ValueChanged, NumericUpDown19.ValueChanged, NumericUpDown18.ValueChanged, ComboBox1.SelectedIndexChanged, numericUpDown9.ValueChanged, numericUpDown8.ValueChanged, numericUpDown7.ValueChanged, numericUpDown6.ValueChanged, numericUpDown12.ValueChanged, numericUpDown11.ValueChanged, numericUpDown10.ValueChanged, numericUpDown13.ValueChanged, CheckBox2.CheckedChanged, NumericUpDown22.ValueChanged
+    Private Sub Button1_Click(sender As Object, e As EventArgs) Handles button1.Click, TabPage1.Enter, numericUpDown3.ValueChanged, numericUpDown2.ValueChanged, numericUpDown14.ValueChanged, NumericUpDown1.ValueChanged, numericUpDown5.ValueChanged, NumericUpDown20.ValueChanged, NumericUpDown19.ValueChanged, NumericUpDown18.ValueChanged, ComboBox1.SelectedIndexChanged, numericUpDown9.ValueChanged, numericUpDown8.ValueChanged, numericUpDown7.ValueChanged, numericUpDown6.ValueChanged, numericUpDown12.ValueChanged, numericUpDown11.ValueChanged, numericUpDown10.ValueChanged, numericUpDown13.ValueChanged, CheckBox2.CheckedChanged, NumericUpDown22.ValueChanged, NumericUpDown4.ValueChanged
         Dust_load_correction()
         Get_input_and_calc()
         Calc_loss_gvg()             'Calc according Guus
@@ -710,10 +679,11 @@ Public Class Form1
             Chart2.Series(0).Points.AddXY(s_points(h, 0), s_points(h, 1))
         Next h
     End Sub
-    Private Sub Button2_Click(sender As Object, e As EventArgs) Handles Button2.Click, TabPage9.Enter
-        ' Calc_verlies(NumericUpDown15.Value, True)    'Calc verlies + present results
+    Private Sub Button2_Click(sender As Object, e As EventArgs) Handles Button2.Click, TabPage9.Enter, CheckBox1.CheckedChanged
+
         Calc_loss_gvg()             'Calc according Guus
         Present_loss_grid()         'Present the results
+        Draw_chart1()
     End Sub
 
     Private Sub Button3_Click(sender As Object, e As EventArgs) Handles Button3.Click
