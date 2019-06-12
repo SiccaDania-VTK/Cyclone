@@ -1421,6 +1421,26 @@ Public Class Form1
                 grp = 8
         End Select
 
+        Dim w(8) As Double
+        w(0) = numericUpDown13.Value
+        w(1) = numericUpDown12.Value - w(0)
+        w(2) = numericUpDown11.Value - w(1) - w(0)
+        w(3) = numericUpDown10.Value - w(2) - w(1) - w(0)
+        w(4) = numericUpDown9.Value - w(3) - w(2) - w(1) - w(0)
+        w(5) = numericUpDown8.Value - w(4) - w(3) - w(2) - w(1) - w(0)
+        w(6) = numericUpDown7.Value - w(5) - w(4) - w(3) - w(2) - w(1) - w(0)
+        w(7) = numericUpDown6.Value - w(6) - w(5) - w(4) - w(3) - w(2) - w(1) - w(0)
+
+        TextBox25.Text = w(0).ToString("0.0")
+        TextBox27.Text = w(1).ToString("0.0")
+        TextBox43.Text = w(2).ToString("0.0")
+        TextBox44.Text = w(3).ToString("0.0")
+        TextBox45.Text = w(4).ToString("0.0")
+        TextBox46.Text = w(5).ToString("0.0")
+        TextBox49.Text = w(6).ToString("0.0")
+        TextBox50.Text = w(7).ToString("0.0")
+
+
         '-------- Check -- bigger diameter must have bigger cummulative weight
         NumericUpDown15.BackColor = CType(IIf(NumericUpDown15.Value > 0, Color.LightGreen, Color.Red), Color)
         NumericUpDown23.BackColor = CType(IIf(NumericUpDown23.Value > NumericUpDown15.Value, Color.LightGreen, Color.Red), Color)
