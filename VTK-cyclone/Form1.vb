@@ -191,7 +191,7 @@ Public Class Form1
 
     End Sub
 
-    Private Sub Button1_Click(sender As Object, e As EventArgs) Handles button1.Click, TabPage1.Enter, numericUpDown3.ValueChanged, numericUpDown2.ValueChanged, numericUpDown14.ValueChanged, NumericUpDown1.ValueChanged, numericUpDown5.ValueChanged, NumericUpDown20.ValueChanged, NumericUpDown19.ValueChanged, NumericUpDown18.ValueChanged, ComboBox1.SelectedIndexChanged, numericUpDown9.ValueChanged, numericUpDown8.ValueChanged, numericUpDown7.ValueChanged, numericUpDown6.ValueChanged, numericUpDown12.ValueChanged, numericUpDown11.ValueChanged, numericUpDown10.ValueChanged, numericUpDown13.ValueChanged, CheckBox2.CheckedChanged, NumericUpDown22.ValueChanged, NumericUpDown4.ValueChanged
+    Private Sub Button1_Click(sender As Object, e As EventArgs) Handles button1.Click, TabPage1.Enter, numericUpDown3.ValueChanged, numericUpDown2.ValueChanged, numericUpDown14.ValueChanged, NumericUpDown1.ValueChanged, numericUpDown5.ValueChanged, NumericUpDown20.ValueChanged, NumericUpDown19.ValueChanged, NumericUpDown18.ValueChanged, ComboBox1.SelectedIndexChanged, numericUpDown9.ValueChanged, numericUpDown8.ValueChanged, numericUpDown7.ValueChanged, numericUpDown6.ValueChanged, numericUpDown12.ValueChanged, numericUpDown11.ValueChanged, numericUpDown10.ValueChanged, numericUpDown13.ValueChanged, CheckBox2.CheckedChanged, NumericUpDown22.ValueChanged, NumericUpDown4.ValueChanged, NumericUpDown29.ValueChanged, NumericUpDown28.ValueChanged, NumericUpDown27.ValueChanged, NumericUpDown26.ValueChanged, NumericUpDown25.ValueChanged, NumericUpDown24.ValueChanged, NumericUpDown23.ValueChanged, NumericUpDown15.ValueChanged
         Dust_load_correction()
         Get_input_and_calc()
         Calc_loss_gvg()             'Calc according Guus
@@ -222,7 +222,7 @@ Public Class Form1
         Dim j18, i18 As Double
         Dim l18, k19, k41 As Double
         Dim k18 As Double
-        Dim m18, n17_oud, n17, n18 As Double
+        Dim m18, n17_oud, n18 As Double
         Dim tot_catch_abs As Double
         Dim o18 As Double
 
@@ -325,11 +325,11 @@ Public Class Form1
             DataGridView1.Columns(5).HeaderText = "Loss psd cum"
             DataGridView1.Columns(6).HeaderText = "Catch abs"
             DataGridView1.Columns(7).HeaderText = "Catch psd cum"
-            DataGridView1.Columns(8).HeaderText = "Grade eff."
+            DataGridView1.Columns(8).HeaderText = "Grade class eff."
 
             For h = 0 To 22
                 DataGridView1.Rows.Item(h).Cells(0).Value = guus(h * 5).d_ave.ToString("0.000") 'diameter
-                DataGridView1.Rows.Item(h).Cells(1).Value = guus(h * 5).psd_cump.ToString("0.0000") 'feed psd cum
+                DataGridView1.Rows.Item(h).Cells(1).Value = guus(h * 5).psd_cump.ToString("0.0") 'feed psd cum
 
 
                 'h18 = CDbl(IIf((h > 0), CDbl(DataGridView1.Rows.Item(h - 1).Cells(1).Value), 100))
@@ -339,7 +339,7 @@ Public Class Form1
                     h18 = 100
                 End If
                 h19 = CDbl(DataGridView1.Rows.Item(h).Cells(1).Value)   'feed psd cum
-                DataGridView1.Rows.Item(h).Cells(2).Value = (h18 - h19).ToString("0.000")   'feed psd diff
+                DataGridView1.Rows.Item(h).Cells(2).Value = (h18 - h19).ToString("0.00")   'feed psd diff
 
                 '========= loss ===============
                 If CheckBox1.Checked Then
@@ -381,6 +381,7 @@ Public Class Form1
                     n18 = 100
                 End If
 
+                n18 = CDbl(IIf(n18 < 0, 0, n18))        'prevent silly results
                 TextBox24.Text &= "**h= " & h.ToString & ", n17_oud= " & n17_oud.ToString
                 TextBox24.Text &= ", m18= " & m18.ToString & ",==> n18= " & n18.ToString & vbCrLf
                 DataGridView1.Rows.Item(h).Cells(7).Value = n18.ToString("0.000") 'Catch psd cum
@@ -410,28 +411,28 @@ Public Class Form1
     Private Sub Init_groups()
         DataGridView1.ColumnCount = 10
         DataGridView1.Rows.Clear()
-        DataGridView1.Rows.Add(24)
-        ' DataGridView1.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill
+        DataGridView1.Rows.Add(23)
+        DataGridView1.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.DisplayedCells
 
         '[mu] Class lower particle diameter limit diameter
-        korrel_grp(0).dia_small = 0
-        korrel_grp(1).dia_small = 10
-        korrel_grp(2).dia_small = 15
-        korrel_grp(3).dia_small = 20
-        korrel_grp(4).dia_small = 30
-        korrel_grp(5).dia_small = 40
-        korrel_grp(6).dia_small = 50
-        korrel_grp(7).dia_small = 60
+        korrel_grp(0).dia_small = 0                     '0
+        korrel_grp(1).dia_small = NumericUpDown15.Value '10
+        korrel_grp(2).dia_small = NumericUpDown23.Value '15
+        korrel_grp(3).dia_small = NumericUpDown24.Value '20
+        korrel_grp(4).dia_small = NumericUpDown25.Value '30
+        korrel_grp(5).dia_small = NumericUpDown26.Value '40
+        korrel_grp(6).dia_small = NumericUpDown27.Value '50
+        korrel_grp(7).dia_small = NumericUpDown28.Value '60
 
         '[mu] Class upper particle diameter limit diameter
-        korrel_grp(0).dia_big = 10
-        korrel_grp(1).dia_big = 15
-        korrel_grp(2).dia_big = 20
-        korrel_grp(3).dia_big = 30
-        korrel_grp(4).dia_big = 40
-        korrel_grp(5).dia_big = 50
-        korrel_grp(6).dia_big = 60
-        korrel_grp(7).dia_big = 80
+        korrel_grp(0).dia_big = NumericUpDown15.Value   '10
+        korrel_grp(1).dia_big = NumericUpDown23.Value   '15
+        korrel_grp(2).dia_big = NumericUpDown24.Value   '20
+        korrel_grp(3).dia_big = NumericUpDown25.Value   '30
+        korrel_grp(4).dia_big = NumericUpDown26.Value   '40
+        korrel_grp(5).dia_big = NumericUpDown27.Value   '50
+        korrel_grp(6).dia_big = NumericUpDown28.Value   '60
+        korrel_grp(7).dia_big = NumericUpDown29.Value   '80
 
         korrel_grp(0).class_wght_cum_pro = numericUpDown6.Value / 100  'Percentale van de inlaat stof belasting
         korrel_grp(1).class_wght_cum_pro = numericUpDown7.Value / 100
@@ -442,6 +443,15 @@ Public Class Form1
         korrel_grp(6).class_wght_cum_pro = numericUpDown12.Value / 100
         korrel_grp(7).class_wght_cum_pro = numericUpDown13.Value / 100
 
+        '-------- Check -- bigger diameter must have bigger cummulative weight
+        numericUpDown6.BackColor = CType(IIf(numericUpDown6.Value > numericUpDown7.Value, Color.LightGreen, Color.Red), Color)
+        numericUpDown7.BackColor = CType(IIf(numericUpDown7.Value > numericUpDown8.Value, Color.LightGreen, Color.Red), Color)
+        numericUpDown8.BackColor = CType(IIf(numericUpDown8.Value > numericUpDown9.Value, Color.LightGreen, Color.Red), Color)
+        numericUpDown9.BackColor = CType(IIf(numericUpDown9.Value > numericUpDown10.Value, Color.LightGreen, Color.Red), Color)
+        numericUpDown10.BackColor = CType(IIf(numericUpDown10.Value > numericUpDown11.Value, Color.LightGreen, Color.Red), Color)
+        numericUpDown11.BackColor = CType(IIf(numericUpDown11.Value > numericUpDown12.Value, Color.LightGreen, Color.Red), Color)
+        numericUpDown12.BackColor = CType(IIf(numericUpDown12.Value > numericUpDown13.Value, Color.LightGreen, Color.Red), Color)
+        numericUpDown13.BackColor = CType(IIf(numericUpDown13.Value > numericUpDown14.Value, Color.LightGreen, Color.Red), Color)
     End Sub
     '-------- Bereken het verlies getal NIET gecorrigeerd -----------
     '----- de input is de GEMIDDELDE korrel grootte-----------
@@ -560,20 +570,12 @@ Public Class Form1
             fac_a = CDbl(words(7))
             d2 = fac_k * _K_stokes * ((-Math.Log(qq ^ (1 / (cor1 * cor2))))) ^ (1 / fac_a) + fac_m * _K_stokes
 
-
-            '=ALS(I56/$B$51<K$41    ,I56,J56)
-            'I56= 87.2
-            'B51= Kstokes= 1.25
-            'K41= 7.8
-
-
             If ((d1 / _K_stokes) < dia_Kcrit) Then
                 dia_result = d1     'diameter kleiner kritisch
             Else
                 dia_result = d2     'diameter groter kritisch
             End If
 
-            'TextBox24.Text &= "_K_stokes" & _K_stokes.ToString & vbCrLf
         End If
         Return (dia_result)
     End Function
@@ -981,7 +983,7 @@ Public Class Form1
 
             '---------------Inlet data-------------------------------
             'Insert a table, fill it with data and change the column widths.
-            oTable = oDoc.Tables.Add(oDoc.Bookmarks.Item("\endofdoc").Range, 15, 3)
+            oTable = oDoc.Tables.Add(oDoc.Bookmarks.Item("\endofdoc").Range, 16, 3)
             oTable.Range.ParagraphFormat.SpaceAfter = 1
             oTable.Range.Font.Size = 11
             oTable.Range.Font.Bold = CInt(False)
@@ -992,7 +994,6 @@ Public Class Form1
             row += 1
             oTable.Cell(row, 1).Range.Text = "Tag nummer "
             oTable.Cell(row, 2).Range.Text = TextBox29.Text
-
             row += 1
             oTable.Cell(row, 1).Range.Text = "Print date"
             oTable.Cell(row, 2).Range.Text = Now().ToString("MM-dd-yyyy")
@@ -1000,51 +1001,46 @@ Public Class Form1
             oTable.Cell(row, 1).Range.Text = "Flow"
             oTable.Cell(row, 2).Range.Text = NumericUpDown1.Value.ToString
             oTable.Cell(row, 3).Range.Text = "[Am3/hr]"
-
             row += 1
             oTable.Cell(row, 1).Range.Text = "Temperature"
             oTable.Cell(row, 2).Range.Text = NumericUpDown18.Value.ToString
             oTable.Cell(row, 3).Range.Text = "[c]"
-
             row += 1
             oTable.Cell(row, 1).Range.Text = "Druk"
             oTable.Cell(row, 2).Range.Text = (NumericUpDown19.Value / 100).ToString("0.0")
             oTable.Cell(row, 3).Range.Text = "[mbar]"
-
             row += 1
             oTable.Cell(row, 1).Range.Text = "Particle density "
             oTable.Cell(row, 2).Range.Text = numericUpDown2.Value.ToString
             oTable.Cell(row, 3).Range.Text = "[kg/m3]"
-
             row += 1
             oTable.Cell(row, 1).Range.Text = "Gas density "
             oTable.Cell(row, 2).Range.Text = numericUpDown3.Value.ToString
             oTable.Cell(row, 3).Range.Text = "[kg/m3]"
-
             row += 1
             oTable.Cell(row, 1).Range.Text = "Air viscosity"
             oTable.Cell(row, 2).Range.Text = numericUpDown14.Value.ToString("0.0000")
             oTable.Cell(row, 3).Range.Text = "[centi Poise]"
-
             row += 1
             oTable.Cell(row, 1).Range.Text = "Dust load"
             oTable.Cell(row, 2).Range.Text = NumericUpDown4.Value.ToString
             oTable.Cell(row, 3).Range.Text = "[gr/Am3]"
-
             row += 1
             oTable.Cell(row, 1).Range.Text = "Dust load (1 cyclone)"
             oTable.Cell(row, 2).Range.Text = TextBox39.Text
             oTable.Cell(row, 3).Range.Text = "[kg/hr]"
-
             row += 1
             oTable.Cell(row, 1).Range.Text = "dp(50) "
             oTable.Cell(row, 2).Range.Text = TextBox32.Text
             oTable.Cell(row, 3).Range.Text = "[mu]"
-
             row += 1
-            oTable.Cell(row, 1).Range.Text = "Emssion"
+            oTable.Cell(row, 1).Range.Text = "Emission"
             oTable.Cell(row, 2).Range.Text = TextBox18.Text
             oTable.Cell(row, 3).Range.Text = "[g/Am3]"
+            row += 1
+            oTable.Cell(row, 1).Range.Text = "Efficiency"
+            oTable.Cell(row, 2).Range.Text = TextBox21.Text
+            oTable.Cell(row, 3).Range.Text = "[&]"
 
             oTable.Columns(1).Width = oWord.InchesToPoints(2.0)   'Change width of columns 
             oTable.Columns(2).Width = oWord.InchesToPoints(1)
@@ -1093,17 +1089,14 @@ Public Class Form1
             oTable.Cell(row, 1).Range.Text = "Inlet speed "
             oTable.Cell(row, 2).Range.Text = TextBox16.Text
             oTable.Cell(row, 3).Range.Text = "[m/s]"
-
             row += 1
             oTable.Cell(row, 1).Range.Text = "Outlet data"
             oTable.Cell(row, 2).Range.Text = TextBox22.Text
             oTable.Cell(row, 3).Range.Text = "[m/s]"
-
             row += 1
             oTable.Cell(row, 1).Range.Text = "Pressure loss"
             oTable.Cell(row, 2).Range.Text = TextBox17.Text
             oTable.Cell(row, 3).Range.Text = "[Pa]"
-
             oTable.Columns(1).Width = oWord.InchesToPoints(2.0)   'Change width of columns 
             oTable.Columns(2).Width = oWord.InchesToPoints(1)
             oTable.Columns(3).Width = oWord.InchesToPoints(2)
@@ -1113,7 +1106,7 @@ Public Class Form1
 
             '---------------Calculation date-------------------------------
             'Insert a table, fill it with data and change the column widths.
-            oTable = oDoc.Tables.Add(oDoc.Bookmarks.Item("\endofdoc").Range, 11, 8)
+            oTable = oDoc.Tables.Add(oDoc.Bookmarks.Item("\endofdoc").Range, 24, 10)
             oTable.Range.ParagraphFormat.SpaceAfter = 1
             oTable.Range.Font.Size = 10
             oTable.Range.Font.Bold = CInt(False)
@@ -1122,15 +1115,17 @@ Public Class Form1
             oTable.Cell(row, 1).Range.Text = "Calc.data"
             row += 1
 
-            oTable.Cell(row, 1).Range.Text = "Lower dia [mu]"
-            oTable.Cell(row, 2).Range.Text = "Upper dia [mu]"
-            oTable.Cell(row, 3).Range.Text = "Average dia [mu]"
-            oTable.Cell(row, 4).Range.Text = "Wght [kg/hr]"
-            oTable.Cell(row, 5).Range.Text = "Wght [%]"
-            oTable.Cell(row, 6).Range.Text = "Loss [%]"
-            oTable.Cell(row, 7).Range.Text = "Loss [kg/hr]"
+            oTable.Cell(row, 1).Range.Text = "Dia class[mu]"
+            oTable.Cell(row, 2).Range.Text = "Feed psd cumm [%]"
+            oTable.Cell(row, 3).Range.Text = "Feed psd diff [%]"
+            oTable.Cell(row, 4).Range.Text = "Loss of feed [%]"
+            oTable.Cell(row, 5).Range.Text = "Loss abs [%]"
+            oTable.Cell(row, 6).Range.Text = "Loss cum [%]"
+            oTable.Cell(row, 7).Range.Text = "Catch abs [%]"
+            oTable.Cell(row, 8).Range.Text = "Catch cum [%]"
+            oTable.Cell(row, 9).Range.Text = "Efficiency [%]"
 
-            For j = 0 To 8
+            For j = 0 To 22
                 row += 1
                 oTable.Cell(row, 1).Range.Text = CType(DataGridView1.Rows.Item(j).Cells(0).Value, String)
                 oTable.Cell(row, 2).Range.Text = CType(DataGridView1.Rows.Item(j).Cells(1).Value, String)
@@ -1139,6 +1134,8 @@ Public Class Form1
                 oTable.Cell(row, 5).Range.Text = CType(DataGridView1.Rows.Item(j).Cells(4).Value, String)
                 oTable.Cell(row, 6).Range.Text = CType(DataGridView1.Rows.Item(j).Cells(5).Value, String)
                 oTable.Cell(row, 7).Range.Text = CType(DataGridView1.Rows.Item(j).Cells(6).Value, String)
+                oTable.Cell(row, 8).Range.Text = CType(DataGridView1.Rows.Item(j).Cells(7).Value, String)
+                oTable.Cell(row, 9).Range.Text = CType(DataGridView1.Rows.Item(j).Cells(8).Value, String)
             Next
 
             For j = 1 To 8
@@ -1296,8 +1293,8 @@ Public Class Form1
 
         perc_smallest_part = 0.0000001                      'smallest particle [%]
         dia_max = Calc_dia_particle(perc_smallest_part)     '=100% loss (biggest particle)
-        dia_min = _K_stokes * fac_m                 'diameter smallest particle caught
-        istep = (dia_max / dia_min) ^ (1 / 110)     'Calculation step
+        dia_min = _K_stokes * fac_m                         'diameter smallest particle caught
+        istep = (dia_max / dia_min) ^ (1 / 110)             'Calculation step
 
         'TextBox24.Text &= "dia_min = " & dia_min.ToString & vbCrLf
         'TextBox24.Text &= "dia_max = " & dia_max.ToString & vbCrLf
@@ -1368,61 +1365,72 @@ Public Class Form1
 
         Dim ret As Double
         Select Case True
-            Case dia < 10
-                d1 = 10
-                d2 = 15
+            Case dia < NumericUpDown15.Value    '0-10 mu
+                d1 = NumericUpDown15.Value      '10 mu
+                d2 = NumericUpDown23.Value      '15 mu
                 input_p1 = numericUpDown6.Value / 100
                 input_p2 = numericUpDown7.Value / 100
                 grp = 0
-            Case dia >= 10 And dia < 15
-                d1 = 10
-                d2 = 15
+            Case dia >= NumericUpDown15.Value And dia < NumericUpDown23.Value   '>=10 and < 15
+                d1 = NumericUpDown15.Value      '10 mu
+                d2 = NumericUpDown23.Value      '15 mu
                 input_p1 = numericUpDown6.Value / 100
                 input_p2 = numericUpDown7.Value / 100
                 grp = 1
-            Case dia >= 15 And dia < 20
-                d1 = 15
-                d2 = 20
+            Case dia >= NumericUpDown23.Value And dia < NumericUpDown24.Value
+                d1 = NumericUpDown23.Value      '15 mu
+                d2 = NumericUpDown24.Value      '20 mu
                 input_p1 = numericUpDown7.Value / 100
                 input_p2 = numericUpDown8.Value / 100
                 grp = 2
-            Case dia >= 20 And dia < 30
-                d1 = 20
-                d2 = 30
+            Case dia >= NumericUpDown24.Value And dia < NumericUpDown25.Value
+                d1 = NumericUpDown24.Value '20
+                d2 = NumericUpDown25.Value '30
                 input_p1 = numericUpDown8.Value / 100
                 input_p2 = numericUpDown9.Value / 100
                 grp = 3
-            Case dia >= 30 And dia < 40
-                d1 = 30
-                d2 = 40
+            Case dia >= NumericUpDown25.Value And dia < NumericUpDown26.Value
+                d1 = NumericUpDown25.Value '30
+                d2 = NumericUpDown26.Value '40
                 input_p1 = numericUpDown9.Value / 100
                 input_p2 = numericUpDown10.Value / 100
                 grp = 4
-            Case dia >= 40 And dia < 50
-                d1 = 40
-                d2 = 50
+            Case dia >= NumericUpDown26.Value And dia < NumericUpDown27.Value
+                d1 = NumericUpDown26.Value '40
+                d2 = NumericUpDown27.Value '50
                 input_p1 = numericUpDown10.Value / 100
                 input_p2 = numericUpDown11.Value / 100
                 grp = 5
-            Case dia >= 50 And dia < 60
-                d1 = 50
-                d2 = 60
+            Case dia >= NumericUpDown27.Value And dia < NumericUpDown28.Value
+                d1 = NumericUpDown27.Value   '50
+                d2 = NumericUpDown28.Value '60
                 input_p1 = numericUpDown11.Value / 100
                 input_p2 = numericUpDown12.Value / 100
                 grp = 6
-            Case dia >= 60 And dia < 80
-                d1 = 60
-                d2 = 80
+            Case dia >= NumericUpDown28.Value And dia < NumericUpDown29.Value
+                d1 = NumericUpDown28.Value '60
+                d2 = NumericUpDown29.Value '80
                 input_p1 = numericUpDown12.Value / 100
                 input_p2 = numericUpDown13.Value / 100
                 grp = 7
             Case Else
-                d1 = 80
-                d2 = 120
+                d1 = NumericUpDown29.Value '80
+                d2 = d1 * 1.5                   '120
                 input_p1 = 0.0001
                 input_p2 = 0.00001
                 grp = 8
         End Select
+
+        '-------- Check -- bigger diameter must have bigger cummulative weight
+        NumericUpDown15.BackColor = CType(IIf(NumericUpDown15.Value > 0, Color.LightGreen, Color.Red), Color)
+        NumericUpDown23.BackColor = CType(IIf(NumericUpDown23.Value > NumericUpDown15.Value, Color.LightGreen, Color.Red), Color)
+        NumericUpDown24.BackColor = CType(IIf(NumericUpDown24.Value > NumericUpDown23.Value, Color.LightGreen, Color.Red), Color)
+        NumericUpDown25.BackColor = CType(IIf(NumericUpDown25.Value > NumericUpDown24.Value, Color.LightGreen, Color.Red), Color)
+        NumericUpDown26.BackColor = CType(IIf(NumericUpDown26.Value > NumericUpDown25.Value, Color.LightGreen, Color.Red), Color)
+        NumericUpDown27.BackColor = CType(IIf(NumericUpDown27.Value > NumericUpDown26.Value, Color.LightGreen, Color.Red), Color)
+        NumericUpDown28.BackColor = CType(IIf(NumericUpDown28.Value > NumericUpDown27.Value, Color.LightGreen, Color.Red), Color)
+        NumericUpDown29.BackColor = CType(IIf(NumericUpDown29.Value > NumericUpDown28.Value, Color.LightGreen, Color.Red), Color)
+
 
         '------ select the return variable -------------- 
         Select Case noi
