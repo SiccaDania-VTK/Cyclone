@@ -1296,6 +1296,9 @@ Public Class Form1
         dia_min = _K_stokes * fac_m                         'diameter smallest particle caught
         istep = (dia_max / dia_min) ^ (1 / 110)             'Calculation step
 
+        TextBox51.Text = dia_max.ToString("0")              'diameter [mu] 100% catch
+        TextBox52.Text = dia_min.ToString("0.00")           'diameter [mu] 100% loss
+
         'TextBox24.Text &= "dia_min = " & dia_min.ToString & vbCrLf
         'TextBox24.Text &= "dia_max = " & dia_max.ToString & vbCrLf
         'TextBox24.Text &= "istep = " & istep.ToString & vbCrLf
@@ -1415,7 +1418,7 @@ Public Class Form1
                 grp = 7
             Case Else
                 d1 = NumericUpDown29.Value '80
-                d2 = d1 * 1.5                   '120
+                d2 = d1 * 10                    '120
                 input_p1 = 0.0001
                 input_p2 = 0.00001
                 grp = 8
