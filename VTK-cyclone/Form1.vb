@@ -222,7 +222,7 @@ Public Class Form1
         Dim j18, i18 As Double
         Dim l18, k19, k41 As Double
         Dim k18 As Double
-        Dim m18, n17, n18 As Double
+        Dim m18, n17_oud, n17, n18 As Double
         Dim tot_catch_abs As Double
         Dim o18 As Double
 
@@ -375,12 +375,14 @@ Public Class Form1
                 Double.TryParse(TextBox59.Text, tot_catch_abs)      'tot_catch_abs[%]
 
                 If h > 0 Then
-                    n17 = CDbl(DataGridView1.Rows.Item(h - 1).Cells(6).Value)
-                    n18 = m18 - n17 / tot_catch_abs
-                    TextBox24.Text &= "**h= " & h.ToString & ", n17= " & n17.ToString & ", m18= " & m18.ToString & ", n18= " & n18.ToString & vbCrLf
+                    n17_oud = CDbl(DataGridView1.Rows.Item(h - 1).Cells(7).Value)
+                    n18 = n17_oud - m18 / (tot_catch_abs / 100)
                 Else
                     n18 = 100
                 End If
+
+                TextBox24.Text &= "**h= " & h.ToString & ", n17_oud= " & n17_oud.ToString
+                TextBox24.Text &= ", m18= " & m18.ToString & ",==> n18= " & n18.ToString & vbCrLf
                 DataGridView1.Rows.Item(h).Cells(7).Value = n18.ToString("0.000") 'Catch psd cum
 
                 '========= Efficiency ===============
