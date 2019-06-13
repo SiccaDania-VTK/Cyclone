@@ -5,17 +5,27 @@ Imports System.Math
 Imports System.Text
 Imports System.Threading
 Imports Word = Microsoft.Office.Interop.Word
+'------- Input data------
+Public Structure Input_struct
+    Public Flow As Double           'Air flow
+    Public stofb As Double          'Dust load inlet
+    Public Ct As Double             'Cyclone type
+    Public db As Double             'Diameter cyclone body
+    Public tot_kgh As Double        'Dust inlet per hour totaal 
+    Public ro_gas As Double         'Density [kg/hr]
+    Public ro_solid As Double       'Density [kg/hr]
+    Public visco As Double          'Visco in Centi Poise
+    Public Temp As Double           'Temperature [c]
+    Public Druk As Double           'Temperature [mbar]
+End Structure
 
 '------- Korrel groepen in de inlaat stroom------
 Public Structure Korrel_struct
     Public dia_small As Double          'Particle diameter [mu]
     Public dia_big As Double            'Particle diameter [mu]
-    Public dia_ave As Double            'Particle diameter [mu]
     Public class_wght_cum_pro As Double 'group_weight_cum in de inlaat stroom [% weight]
-    Public class_wght_pro As Double     'group_weight in de inlaat stroom [% weight]
-    Public class_wght_kg As Double      'group_weight in de inlaat stroom [kg]
-    Public verlies As Double            'verlies (niet gevangen) [-]
 End Structure
+
 'Variables used by GvG in calculation
 Public Structure GvG_Calc_struct
     Public dia As Double            'Particle diameter [mu]
@@ -25,23 +35,24 @@ Public Structure GvG_Calc_struct
     Public loss_overall_C As Double 'Overall loss Corrected
     Public catch_chart As Double    '[%] for chart
     Public i_grp As Double          'Groepnummer
-    Public i_d1 As Double           'Interpolatie dia volgens Rosin Rammler
-    Public i_d2 As Double           'Interpolatie dia
+    Public i_d1 As Double           'Class diameter lower[mu]
+    Public i_d2 As Double           'Class diameter upper[mu]
     Public i_p1 As Double           'Interpolatie
     Public i_p2 As Double           'Interpolatie
-    Public i_k As Double            'Interpolatie
-    Public i_m As Double            'Interpolatie
+    Public i_k As Double            'Parameter k
+    Public i_m As Double            'Parameter m
     Public psd_cum As Double        'Partice Size Distribution cummulatief
     Public psd_cump As Double       '[%] PSD cummulatief
     Public psd_dif As Double        '[%] PSD diff
-    Public loss_abs As Double       '
-    Public loss_abs_C As Double     '
+    Public loss_abs As Double       '[&] loss abs
+    Public loss_abs_C As Double     '[&] loss abs compensated
 End Structure
 
 Public Class Form1
-    Public korrel_grp(22) As Korrel_struct    '22 korrel groepen
-    Public guus(150) As GvG_Calc_struct
-    Public _K_stokes As Double
+    Public korrel_grp(8) As Korrel_struct   'korrel.groepen
+    Public Ic(3) As Input_struct            'Input data
+    Public guus(150) As GvG_Calc_struct     'tbv calculatie
+    Public _K_stokes As Double              'Stokes getal
 
     'Type AC;Inlaatbreedte;Inlaathoogte;Inlaatlengte;Inlaat hartmaat;Inlaat afschuining;
     'Uitlaat keeldia inw.;Uitlaat flensdiameter inw.;Lengte insteekpijp inw.;
@@ -81,7 +92,6 @@ Public Class Form1
     Dim dirpath_tmp As String = "C:\Tmp\"
     Dim ProcID As Integer = Process.GetCurrentProcess.Id
     Dim dirpath_Temp As String = "C:\Temp\" & ProcID.ToString
-
 
     Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         Dim hh, life_time, i As Integer
@@ -197,19 +207,28 @@ Public Class Form1
         Calc_loss_gvg()             'Calc according Guus
     End Sub
     Private Sub Get_input_and_calc()
-        Dim words() As String
-        Dim cyl_dim(20) As Double
-        Dim db As Double            'Body diameter
-        Dim Flow As Double
-        Dim dp_inlet_gas As Double
-        Dim dp_inlet_dust As Double
-        Dim ro_gas, ro_particle, visco As Double
-        Dim wc_air, wc_dust As Double
-        Dim no_cycl As Double   'Number cyclones
-        Dim stofb As Double
+
+        '===Input parameter ===
+        Dim Flow As Double          'Air flow
+        Dim stofb As Double         'Dust load inlet
         Dim tot_kgh As Double       'Dust inlet per hour totaal 
+        Dim ro_gas As Double        'Density [kg/hr]
+        Dim ro_solid As Double      'Density [kg/hr]
+        Dim visco As Double         'Visco in Centi Poise
+
+        '==== data ======
+        Dim words() As String
+        Dim wc_dust As Double       'weerstand_coef_air
+        Dim wc_air As Double        'weerstand_coef_air
+        Dim no_cycl As Double       'Number cyclones
+        Dim cyl_dim(20) As Double   'Cyclone dimensions
+        Dim db As Double            'Body diameter
+
+        '==== results ===
         Dim kgh As Double           'Dust inlet per hour/cycloon 
         Dim kgs As Double           'Dust inlet per second
+        Dim dp_inlet_gas As Double  'Pressure loss air
+        Dim dp_inlet_dust As Double
 
         Dim in_hoog As Double       '[m]
         Dim in_breed As Double      '[m]
@@ -239,7 +258,7 @@ Public Class Form1
             Flow = NumericUpDown1.Value / 3600  '[m3/s]
             Flow /= no_cycl                     '[m3/s/cycloon]
             ro_gas = numericUpDown3.Value       '[kg/m3]
-            ro_particle = numericUpDown2.Value  '[kg/m3]
+            ro_solid = numericUpDown2.Value  '[kg/m3]
             visco = numericUpDown14.Value       '[cPoise]
             stofb = NumericUpDown4.Value        '[g/Am3]
 
@@ -261,7 +280,7 @@ Public Class Form1
             tot_kgh = kgh * no_cycl                 '[kg/h] total
 
             '----------- K_stokes-----------------------------------
-            _K_stokes = db * 2000 * visco * 16 / (ro_particle * 0.0181 * inlet_velos)
+            _K_stokes = db * 2000 * visco * 16 / (ro_solid * 0.0181 * inlet_velos)
             _K_stokes = Sqrt(_K_stokes)
 
             '----------- presenteren ----------------------------------
