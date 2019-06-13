@@ -6,9 +6,15 @@ Imports System.Text
 Imports System.Threading
 Imports Word = Microsoft.Office.Interop.Word
 '------- Input data------
+'This structure is required for the different operating cases of a cyclone
+'Therefore the struct does only contain  the input information
+'If the calculation is modified the new result will be found 
 Public Structure Input_struct
     Public Flow As Double           'Air flow
     Public stofb As Double          'Dust load inlet
+    'Public dia_small() As Double    'Particle diameter inlet [mu]
+    Public dia_big() As Double      'Particle diameter inlet [mu]
+    Public class_load() As Double   'group_weight_cum in de inlaat stroom [% weight]
     Public Ct As Double             'Cyclone type
     Public db As Double             'Diameter cyclone body
     Public tot_kgh As Double        'Dust inlet per hour totaal 
@@ -17,13 +23,6 @@ Public Structure Input_struct
     Public visco As Double          'Visco in Centi Poise
     Public Temp As Double           'Temperature [c]
     Public Druk As Double           'Temperature [mbar]
-End Structure
-
-'------- Korrel groepen in de inlaat stroom------
-Public Structure Korrel_struct
-    Public dia_small As Double          'Particle diameter [mu]
-    Public dia_big As Double            'Particle diameter [mu]
-    Public class_wght_cum_pro As Double 'group_weight_cum in de inlaat stroom [% weight]
 End Structure
 
 'Variables used by GvG in calculation
@@ -49,7 +48,6 @@ Public Structure GvG_Calc_struct
 End Structure
 
 Public Class Form1
-    Public korrel_grp(8) As Korrel_struct   'korrel.groepen
     Public Ic(3) As Input_struct            'Input data
     Public guus(150) As GvG_Calc_struct     'tbv calculatie
     Public _K_stokes As Double              'Stokes getal
@@ -66,7 +64,6 @@ Public Class Form1
     "AC-750;0.216;0.486;0.6;0.57;0.3;0.365;0.56;0.892;3.36;1.312;2.048;0.4;0.6;0.6;0.25",
     "AC-850;0.203;0.457;0.6;0.564;0.3;0.307;0.428;0.892;3.797;1.312;2.485;0.4;0.6;0.6;0.25",
     "AC-1850;0.136;0.31;0.6;0.53;0.3;0.15;0.25;0.892;3.797;1.312;2.485;0.4;0.6;0.6;0.25"}
-
 
     'Nieuwe reken methode, verdeling volgens Weibull verdeling
     'm1,k1,a1 als d < d_krit
@@ -255,7 +252,7 @@ Public Class Form1
             in_hoog = cyl_dim(1) * db           '[m]
             in_breed = cyl_dim(2) * db          '[m]
             dia_outlet = cyl_dim(6) * db        '[m] 
-            Flow = NumericUpDown1.Value / 3600  '[m3/s]
+            flow = NumericUpDown1.Value / 3600  '[m3/s]
             Flow /= no_cycl                     '[m3/s/cycloon]
             ro_gas = numericUpDown3.Value       '[kg/m3]
             ro_solid = numericUpDown2.Value  '[kg/m3]
@@ -428,39 +425,57 @@ Public Class Form1
 
     End Sub
     Private Sub Init_groups()
+        Dim c_nr As Integer = 0
+
         DataGridView1.ColumnCount = 10
         DataGridView1.Rows.Clear()
         DataGridView1.Rows.Add(23)
         DataGridView1.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.DisplayedCells
 
         '[mu] Class lower particle diameter limit diameter
-        korrel_grp(0).dia_small = 0                     '0
-        korrel_grp(1).dia_small = NumericUpDown15.Value '10
-        korrel_grp(2).dia_small = NumericUpDown23.Value '15
-        korrel_grp(3).dia_small = NumericUpDown24.Value '20
-        korrel_grp(4).dia_small = NumericUpDown25.Value '30
-        korrel_grp(5).dia_small = NumericUpDown26.Value '40
-        korrel_grp(6).dia_small = NumericUpDown27.Value '50
-        korrel_grp(7).dia_small = NumericUpDown28.Value '60
+        'Ic(c_nr).dia_small = {0, 0, 0, 0, 0, 0, 0, 0}  'Initialize
+        'Ic(c_nr).dia_small(0) = 0                     '0
+        'Ic(c_nr).dia_small(1) = NumericUpDown15.Value '10
+        'Ic(c_nr).dia_small(2) = NumericUpDown23.Value '15
+        'Ic(c_nr).dia_small(3) = NumericUpDown24.Value '20
+        'Ic(c_nr).dia_small(4) = NumericUpDown25.Value '30
+        'Ic(c_nr).dia_small(5) = NumericUpDown26.Value '40
+        'Ic(c_nr).dia_small(6) = NumericUpDown27.Value '50
+        'Ic(c_nr).dia_small(7) = NumericUpDown28.Value '60
 
         '[mu] Class upper particle diameter limit diameter
-        korrel_grp(0).dia_big = NumericUpDown15.Value   '10
-        korrel_grp(1).dia_big = NumericUpDown23.Value   '15
-        korrel_grp(2).dia_big = NumericUpDown24.Value   '20
-        korrel_grp(3).dia_big = NumericUpDown25.Value   '30
-        korrel_grp(4).dia_big = NumericUpDown26.Value   '40
-        korrel_grp(5).dia_big = NumericUpDown27.Value   '50
-        korrel_grp(6).dia_big = NumericUpDown28.Value   '60
-        korrel_grp(7).dia_big = NumericUpDown29.Value   '80
+        Ic(c_nr).dia_big = {0, 0, 0, 0, 0, 0, 0, 0}  'Initialize
+        Ic(c_nr).dia_big(0) = NumericUpDown15.Value   '10
+        Ic(c_nr).dia_big(1) = NumericUpDown23.Value   '15
+        Ic(c_nr).dia_big(2) = NumericUpDown24.Value   '20
+        Ic(c_nr).dia_big(3) = NumericUpDown25.Value   '30
+        Ic(c_nr).dia_big(4) = NumericUpDown26.Value   '40
+        Ic(c_nr).dia_big(5) = NumericUpDown27.Value   '50
+        Ic(c_nr).dia_big(6) = NumericUpDown28.Value   '60
+        Ic(c_nr).dia_big(7) = NumericUpDown29.Value   '80
 
-        korrel_grp(0).class_wght_cum_pro = numericUpDown6.Value / 100  'Percentale van de inlaat stof belasting
-        korrel_grp(1).class_wght_cum_pro = numericUpDown7.Value / 100
-        korrel_grp(2).class_wght_cum_pro = numericUpDown8.Value / 100
-        korrel_grp(3).class_wght_cum_pro = numericUpDown9.Value / 100
-        korrel_grp(4).class_wght_cum_pro = numericUpDown10.Value / 100
-        korrel_grp(5).class_wght_cum_pro = numericUpDown11.Value / 100
-        korrel_grp(6).class_wght_cum_pro = numericUpDown12.Value / 100
-        korrel_grp(7).class_wght_cum_pro = numericUpDown13.Value / 100
+        'Percentale van de inlaat stof belasting
+        Ic(c_nr).class_load = {0, 0, 0, 0, 0, 0, 0, 0}  'Initialize
+        Ic(c_nr).class_load(0) = numericUpDown6.Value / 100
+        Ic(c_nr).class_load(1) = numericUpDown7.Value / 100
+        Ic(c_nr).class_load(2) = numericUpDown8.Value / 100
+        Ic(c_nr).class_load(3) = numericUpDown9.Value / 100
+        Ic(c_nr).class_load(4) = numericUpDown10.Value / 100
+        Ic(c_nr).class_load(5) = numericUpDown11.Value / 100
+        Ic(c_nr).class_load(6) = numericUpDown12.Value / 100
+        Ic(c_nr).class_load(7) = numericUpDown13.Value / 100
+
+        Ic(c_nr).Flow = NumericUpDown1.Value            'Air flow
+        Ic(c_nr).stofb = NumericUpDown4.Value           'Dust load inlet
+        Ic(c_nr).Ct = ComboBox1.SelectedIndex           'Cyclone type
+        Ic(c_nr).db = numericUpDown13.Value             'Diameter cyclone body
+        Ic(c_nr).tot_kgh = NumericUpDown4.Value         'Dust inlet per hour totaal 
+        Ic(c_nr).ro_gas = numericUpDown3.Value          'Density [kg/hr]
+        Ic(c_nr).ro_solid = numericUpDown2.Value        'Density [kg/hr]
+        Ic(c_nr).visco = numericUpDown14.Value          'Visco in Centi Poise
+        Ic(c_nr).Temp = NumericUpDown18.Value           'Temperature [c]
+        Ic(c_nr).Druk = NumericUpDown19.Value           'Pressure [mbar]
+
 
         '-------- Check -- bigger diameter must have bigger cummulative weight
         numericUpDown6.BackColor = CType(IIf(numericUpDown6.Value > numericUpDown7.Value, Color.LightGreen, Color.Red), Color)
@@ -1490,5 +1505,11 @@ Public Class Form1
 
         Return (ret)
     End Function
+
+    Private Sub writeRead_case(c_nr As Integer)
+        c_nr = 0
+
+    End Sub
+
 
 End Class
