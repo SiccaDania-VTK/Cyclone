@@ -109,6 +109,7 @@ Public Class Form1
             _input(i).class_load = {0, 0, 0, 0, 0, 0, 0, 0}  'Initialize
         Next
 
+
         '------ allowed users with hard disc id's -----
         user_list.Add("user")
         hard_disk_list.Add("058F63646471")      'Privee PC, graslaan25
@@ -197,8 +198,10 @@ Public Class Form1
         For hh = 0 To (cyl_dimensions.Length - 1)  'Fill combobox1 cyclone types
             words = cyl_dimensions(hh).Split(CType(";", Char()))
             ComboBox1.Items.Add(words(0))
+            ComboBox2.Items.Add(words(0))
         Next hh
         ComboBox1.SelectedIndex = 5                 'Select Cyclone type
+        ComboBox2.SelectedIndex = 5                 'Select Cyclone type
 
         TextBox20.Text = "AA cyclone is a AC850 with diameter of 300mm" & vbCrLf
         TextBox20.Text &= "Load above 5 gr/m3 is considerde a high load" & vbCrLf
@@ -1653,5 +1656,6 @@ Public Class Form1
             'MessageBox.Show(ex.Message & vbcrlf &  "Line 1586")  
         End Try
     End Sub
+
 
 End Class
