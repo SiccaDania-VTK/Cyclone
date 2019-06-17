@@ -15,7 +15,7 @@ Public Structure Input_struct
     Public stofb As Double          'Dust load inlet [g/Am3]
     Public dia_big() As Double      'Particle diameter inlet [mu]
     Public class_load() As Double   'group_weight_cum in de inlaat stroom [% weight]
-    Public Ct As Double             'Cyclone type
+    Public Ct As Integer            'Cyclone type (eg AC435)
     Public No_parallel As Integer   'Number paralle Cyclones
     Public db As Double             'Diameter cyclone body
     Public ro_gas As Double         'Density [kg/hr]
@@ -50,7 +50,7 @@ End Structure
 Public Class Form1
     Public _cyl_dim(20) As Double           'Cyclone dimensions
     Public _db As Double                    'Body diameter
-    Public _input(20) As Input_struct        'Input data
+    Public _input(20) As Input_struct       'Input data
     Public guus(150) As GvG_Calc_struct     'tbv calculatie
     Public _K_stokes As Double              'Stokes getal
 
@@ -102,6 +102,12 @@ Public Class Form1
         Dim hard_disk_list As New List(Of String)
         Dim pass_name As Boolean = False
         Dim pass_disc As Boolean = False
+
+        'Initialize the arrays in the struct
+        For i = 0 To _input.Length - 1
+            _input(i).dia_big = {0, 0, 0, 0, 0, 0, 0, 0}
+            _input(i).class_load = {0, 0, 0, 0, 0, 0, 0, 0}  'Initialize
+        Next
 
         '------ allowed users with hard disc id's -----
         user_list.Add("user")
@@ -248,10 +254,10 @@ Public Class Form1
                 _cyl_dim(hh) = CDbl(words(hh))   'Cyclone dimensions
             Next
             no_cycl = NumericUpDown20.Value     'Paralelle cyclonen
-            _db = numericUpDown5.Value / 1000    '[m] Body diameter
-            in_hoog = _cyl_dim(1) * _db           '[m]
-            in_breed = _cyl_dim(2) * _db          '[m]
-            dia_outlet = _cyl_dim(6) * _db        '[m] 
+            _db = numericUpDown5.Value / 1000   '[m] Body diameter
+            in_hoog = _cyl_dim(1) * _db         '[m]
+            in_breed = _cyl_dim(2) * _db        '[m]
+            dia_outlet = _cyl_dim(6) * _db      '[m] 
             Flow = NumericUpDown1.Value / 3600  '[m3/s]
             Flow /= no_cycl                     '[m3/s/cycloon]
             ro_gas = numericUpDown3.Value       '[kg/m3]
@@ -329,7 +335,7 @@ Public Class Form1
 
             '--------- Get Inlet korrel-groep data ----------
             'Save data of screen into the _input array
-            Fill_ic(CInt(NumericUpDown30.Value))
+            Fill_input_array(CInt(NumericUpDown30.Value))
 
             '--------- overall resultaat --------------------
             total_input_weight = 0
@@ -348,8 +354,6 @@ Public Class Form1
                 DataGridView1.Rows.Item(h).Cells(0).Value = guus(h * 5).d_ave.ToString("0.000") 'diameter
                 DataGridView1.Rows.Item(h).Cells(1).Value = guus(h * 5).psd_cump.ToString("0.0") 'feed psd cum
 
-
-                'h18 = CDbl(IIf((h > 0), CDbl(DataGridView1.Rows.Item(h - 1).Cells(1).Value), 100))
                 If h > 0 Then
                     h18 = CDbl(DataGridView1.Rows.Item(h - 1).Cells(1).Value)
                 Else
@@ -425,8 +429,7 @@ Public Class Form1
 
 
     End Sub
-    Private Sub Fill_ic(c_nr As Integer)
-
+    Private Sub Fill_input_array(c_nr As Integer)
         DataGridView1.ColumnCount = 10
         DataGridView1.Rows.Clear()
         DataGridView1.Rows.Add(23)
@@ -435,7 +438,6 @@ Public Class Form1
         _input(c_nr).case_name = TextBox53.Text          'The case name
 
         '[mu] Class upper particle diameter limit diameter
-        _input(c_nr).dia_big = {0, 0, 0, 0, 0, 0, 0, 0}  'Initialize
         _input(c_nr).dia_big(0) = NumericUpDown15.Value   '10
         _input(c_nr).dia_big(1) = NumericUpDown23.Value   '15
         _input(c_nr).dia_big(2) = NumericUpDown24.Value   '20
@@ -446,7 +448,6 @@ Public Class Form1
         _input(c_nr).dia_big(7) = NumericUpDown29.Value   '80
 
         'Percentale van de inlaat stof belasting
-        _input(c_nr).class_load = {0, 0, 0, 0, 0, 0, 0, 0}  'Initialize
         _input(c_nr).class_load(0) = numericUpDown6.Value / 100
         _input(c_nr).class_load(1) = numericUpDown7.Value / 100
         _input(c_nr).class_load(2) = numericUpDown8.Value / 100
@@ -760,6 +761,28 @@ Public Class Form1
 
         '-------- Project information -----------------
         temp_string = TextBox28.Text & ";" & TextBox29.Text & ";"
+
+        '-------- Case information -----------------
+        For j = 0 To _input.GetLength(0) - 2             '20 elements
+            temp_string &= _input(j).Flow.ToString & ";"        'Air flow
+            temp_string &= _input(j).stofb.ToString & ";"       'Dust inlet [g/Am3] 
+            temp_string &= _input(j).Ct.ToString & ";"          'Cyclone type
+            temp_string &= _input(j).No_parallel.ToString & ";" 'Cyclone in parallel
+            temp_string &= _input(j).db.ToString & ";"          'Diameter cyclone body
+            temp_string &= _input(j).ro_gas.ToString & ";"      'Density [kg/hr]
+            temp_string &= _input(j).ro_solid.ToString & ";"    'Density [kg/hr]
+            temp_string &= _input(j).visco.ToString & ";"       'Visco in Centi Poise
+            temp_string &= _input(j).Temp.ToString & ";"        'Temperature [c]
+            temp_string &= _input(j).Druk.ToString & ";"        'Pressure [mbar]
+
+            For k = 0 To 7         '8 elements
+                temp_string &= _input(j).dia_big(k).ToString & ";"   'Write all variables
+            Next
+
+            For k = 0 To 7         '8 elements
+                temp_string &= _input(j).class_load(k).ToString & ";"   'Write all variables
+            Next
+        Next
         temp_string &= vbCrLf & "BREAK" & vbCrLf & ";"
 
         '-------- find all numeric controls -----------------
@@ -838,6 +861,7 @@ Public Class Form1
         Dim all_num, all_combo, all_check, all_radio As New List(Of Control)
         Dim separators() As String = {";"}
         Dim separators1() As String = {"BREAK"}
+        Dim count As Integer
 
         OpenFileDialog1.FileName = "Cyclone_select_*"
 
@@ -856,6 +880,48 @@ Public Class Form1
             words = control_words(0).Split(separators, StringSplitOptions.None) 'Split the read file content
             TextBox28.Text = words(0)                  'Project number
             TextBox29.Text = words(1)                  'Tag no
+
+            count = 2
+            Try
+                '-------- Case information -----------------
+                For j = 0 To _input.GetLength(0) - 2
+
+                    _input(j).Flow = CDbl(words(count))     'Air flow
+                    count += 1
+                    _input(j).stofb = CDbl(words(count))    'Dust inlet [g/Am3] 
+                    count += 1
+                    _input(j).Ct = CInt(words(count))       'Cyclone type
+                    count += 1
+                    _input(j).No_parallel = CInt(words(count))    'Cyclone in parallel
+                    count += 1
+                    _input(j).db = CDbl(words(count))       'Diameter cyclone body
+                    count += 1
+                    _input(j).ro_gas = CDbl(words(count))   'Density [kg/hr]
+                    count += 1
+                    _input(j).ro_solid = CDbl(words(count)) 'Density [kg/hr]
+                    count += 1
+                    _input(j).visco = CDbl(words(count))    'Visco in Centi Poise
+                    count += 1
+                    _input(j).Temp = CDbl(words(count))     'Temperature [c]
+                    count += 1
+                    _input(j).Druk = CDbl(words(count))     'Pressure [mbar]
+                    count += 1
+
+                    For k = 0 To 7         '8 elements
+                        _input(j).dia_big(k) = CDbl(words(count))    'Write all variables
+                        count += 1
+                    Next
+
+                    For k = 0 To 7         '8 elements
+                        _input(j).class_load(k) = CDbl(words(count))     'Write all variables
+                        count += 1
+                    Next
+                Next
+
+
+            Catch ex As Exception
+                MessageBox.Show("Line 923, " & ex.Message)
+            End Try
 
             '---------- Retrieve Numeric controls from disk-----------------
             FindControlRecursive(all_num, Me, GetType(NumericUpDown))               'Find the numericupdowns
@@ -1537,7 +1603,7 @@ Public Class Form1
         'Save data of screen into the _input array
 
         c = CInt(NumericUpDown30.Value)       'Case number
-        Fill_ic(c)
+        Fill_input_array(c)
     End Sub
 
     Private Sub NumericUpDown30_ValueChanged(sender As Object, e As EventArgs) Handles NumericUpDown30.ValueChanged
@@ -1573,7 +1639,7 @@ Public Class Form1
 
                 NumericUpDown1.Value = CDec(_input(zz).Flow)        'Air flow
                 NumericUpDown4.Value = CDec(_input(zz).stofb)       'Dust inlet [g/Am3] 
-                ComboBox1.SelectedIndex = CInt(_input(zz).Ct)       'Cyclone type
+                ComboBox1.SelectedIndex = _input(zz).Ct             'Cyclone type
                 NumericUpDown20.Value = _input(zz).No_parallel      'Cyclone in parallel
                 numericUpDown13.Value = CDec(_input(zz).db)         'Diameter cyclone body
                 numericUpDown3.Value = CDec(_input(zz).ro_gas)      'Density [kg/hr]
