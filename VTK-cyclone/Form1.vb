@@ -209,7 +209,7 @@ Public Class Form1
 
     End Sub
 
-    Private Sub Button1_Click(sender As Object, e As EventArgs) Handles button1.Click, TabPage1.Enter, numericUpDown3.ValueChanged, numericUpDown2.ValueChanged, numericUpDown14.ValueChanged, NumericUpDown1.ValueChanged, numericUpDown5.ValueChanged, NumericUpDown20.ValueChanged, NumericUpDown19.ValueChanged, NumericUpDown18.ValueChanged, ComboBox1.SelectedIndexChanged, numericUpDown9.ValueChanged, numericUpDown8.ValueChanged, numericUpDown7.ValueChanged, numericUpDown6.ValueChanged, numericUpDown12.ValueChanged, numericUpDown11.ValueChanged, numericUpDown10.ValueChanged, numericUpDown13.ValueChanged, CheckBox2.CheckedChanged, NumericUpDown22.ValueChanged, NumericUpDown4.ValueChanged, NumericUpDown29.ValueChanged, NumericUpDown28.ValueChanged, NumericUpDown27.ValueChanged, NumericUpDown26.ValueChanged, NumericUpDown25.ValueChanged, NumericUpDown24.ValueChanged, NumericUpDown23.ValueChanged, NumericUpDown15.ValueChanged
+    Private Sub Button1_Click(sender As Object, e As EventArgs) Handles button1.Click, TabPage1.Enter, numericUpDown3.ValueChanged, numericUpDown2.ValueChanged, numericUpDown14.ValueChanged, NumericUpDown1.ValueChanged, numericUpDown5.ValueChanged, NumericUpDown20.ValueChanged, NumericUpDown19.ValueChanged, NumericUpDown18.ValueChanged, ComboBox1.SelectedIndexChanged, numericUpDown9.ValueChanged, numericUpDown8.ValueChanged, numericUpDown7.ValueChanged, numericUpDown6.ValueChanged, numericUpDown12.ValueChanged, numericUpDown11.ValueChanged, numericUpDown10.ValueChanged, numericUpDown13.ValueChanged, NumericUpDown4.ValueChanged, NumericUpDown29.ValueChanged, NumericUpDown28.ValueChanged, NumericUpDown27.ValueChanged, NumericUpDown26.ValueChanged, NumericUpDown25.ValueChanged, NumericUpDown24.ValueChanged, NumericUpDown23.ValueChanged, NumericUpDown15.ValueChanged
         Dust_load_correction()
         Get_input_and_calc()
         Calc_loss_gvg()             'Calc according Guus
@@ -302,12 +302,14 @@ Public Class Form1
             TextBox7.Text = (_cyl_dim(7) * _db).ToString("0.000")    'Uitlaat flensdiameter inw.
             TextBox8.Text = (_cyl_dim(8) * _db).ToString("0.000")    'Lengte insteekpijp inw.
             TextBox9.Text = (_cyl_dim(9) * _db).ToString("0.000")    'Lengte romp + conus
+
             TextBox10.Text = (_cyl_dim(10) * _db).ToString("0.000")  'Lengte romp
             TextBox11.Text = (_cyl_dim(11) * _db).ToString("0.000")  'Lengte çonus
             TextBox12.Text = (_cyl_dim(12) * _db).ToString("0.000")  'Dia_conus / 3P-pijp
             TextBox13.Text = (_cyl_dim(13) * _db).ToString("0.000")  'Lengte 3P-pijp
-            TextBox14.Text = (_cyl_dim(14) * _db).ToString("0.000")  'Dia_conus / 3P-pijp
-            TextBox15.Text = (_cyl_dim(15) * _db).ToString("0.000")  'Lengte 3P-pijp
+            TextBox14.Text = (_cyl_dim(14) * _db).ToString("0.000")  'Lengte 3P conus
+            TextBox15.Text = (_cyl_dim(15) * _db).ToString("0.000")  'Kleine dia 3P-conus
+
             TextBox16.Text = inlet_velos.ToString("0.0")             'inlaat snelheid
             TextBox17.Text = dp_inlet_gas.ToString("0")              '[Pa] Pressure loss inlet-gas
             TextBox19.Text = (dp_inlet_gas / 100).ToString("0.0")    '[mbar] Pressure loss inlet-gas
@@ -1569,14 +1571,13 @@ Public Class Form1
     End Sub
     'Calculate cyclone weight
     Private Sub Button7_Click(sender As Object, e As EventArgs) Handles Button7.Click, TabPage7.Enter, NumericUpDown32.ValueChanged, NumericUpDown31.ValueChanged
-        Dim w1, w2, w3, w4, wt As Double
+        Dim w1, w2, w3, w4, w5, w6, wt As Double
         Dim plt_body, plt_top As Double
         Dim ro_steel As Double = 7850       'Density steel
-        Dim hh, hj As Double                'Height
-        'Dim slant_height As Double          'Slant Height cone
+        Dim hh, hj, hk As Double            'Dimensions
 
         plt_top = NumericUpDown32.Value     '[mm] top plate
-        plt_body = NumericUpDown31.Value    '[mm]rest of the cyclone
+        plt_body = NumericUpDown31.Value    '[mm] rest of the cyclone
 
 
         'weight top plate
@@ -1587,18 +1588,33 @@ Public Class Form1
         w2 = PI * _db * hh * plt_body * ro_steel        '[kg] weight romp
 
         'weight cone
-        hh = _cyl_dim(11) * _db / 1000                  '[m] Length cone
-        hj = Sqrt(hh ^ 2 + (_db / 2) ^ 2)               '[m] slant_height cone 
-        w3 = PI * hh / 2 * hj * plt_body * ro_steel     '[kg] weight romp
+        hh = _cyl_dim(11) * _db / 1000                      '[m] Length cone
+        hj = _db                                     '[m] grote diameter cone 
+        hk = _cyl_dim(12) * _db / 1000                      '[m] kleine diameter cone 
+        w3 = PI * (hj + hk) / 2 * hh * plt_body * ro_steel  '[kg] weight cone
 
-        'weight outlet pipe
-        hh = _cyl_dim(8) * _db / 1000                   '[m] Length insteekpijp
-        hj = _cyl_dim(7) * _db / 1000                   '[m] Uitlaat flensdiameter inw.
-        w4 = PI * hh / 2 * hj * plt_body * ro_steel     '[kg] weight romp
+        'weight gas outlet pipe
+        hh = _cyl_dim(8) * _db / 1000                       '[m] Length insteekpijp
+        hj = _cyl_dim(7) * _db / 1000                       '[m] Uitlaat flensdiameter inw.
+        w4 = PI * hh * hj * plt_body * ro_steel             '[kg] weight insteekpijp
 
-        wt = w1 + w2 + w3 + w4                          'Total weight
-        wt *= 1.1                                       '10% safety
-        TextBox61.Text = wt.ToString("0")               'Total weight
+        'weight 3P pipe
+        hh = _cyl_dim(13) * _db / 1000                      '[m] Length 3P pijp
+        hj = _cyl_dim(12) * _db / 1000                      '[m] diameter 3P inw.
+        w5 = PI * hj * hh * plt_body * ro_steel             '[kg] weight 3P pipe
+
+        'weight 3P cone
+        hh = _cyl_dim(14) * _db / 1000                      '[m] Length 3P cone
+        hj = _cyl_dim(12) * _db / 1000                      '[m] grote diameter 3P pijp
+        hk = _cyl_dim(15) * _db / 1000                      '[m] kleine diameter 3P pijp
+        w6 = PI * (hj + hk) / 2 * hh * plt_body * ro_steel  '[kg] weight 3P pipe
+
+        wt = w1 + w2 + w3 + w4 + w5 + w6                    'Total weight
+        wt *= 1.1                                           '10% safety
+        TextBox61.Text = wt.ToString()                      'Total weight
+        TextBox72.Text = w2.ToString("0")                      'romp
+        TextBox73.Text = w3.ToString("0")                      'Cone
+        TextBox74.Text = w4.ToString("0")                      'Cone
     End Sub
 
     Private Sub Button8_Click(sender As Object, e As EventArgs) Handles Button8.Click
