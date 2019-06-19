@@ -4,6 +4,7 @@ Imports System.Management
 Imports System.Math
 Imports System.Text
 Imports System.Threading
+Imports System.Windows.Forms.DataVisualization.Charting
 Imports Word = Microsoft.Office.Interop.Word
 '------- Input data------
 'This structure is required for the different operating cases of a cyclone
@@ -320,8 +321,8 @@ Public Class Form1
             TextBox37.Text = numericUpDown5.Value.ToString           'Cycloone diameter
             TextBox38.Text = CType(ComboBox1.SelectedItem, String)   'Cycloon type
 
-            Draw_chart1()
-            Draw_chart2()
+            Draw_chart1(Chart1)
+            Draw_chart2(Chart2)
             '---------- Check speed ---------------
             If inlet_velos < 10 Or inlet_velos > 30 Then
                 TextBox16.BackColor = Color.Red
@@ -645,43 +646,43 @@ Public Class Form1
         TextBox55.Text = f_used.ToString("0.000")
     End Sub
 
-    Private Sub Draw_chart1()
+    Private Sub Draw_chart1(ch As Chart)
         '-------
         Dim s_points(100, 2) As Double
         Dim h As Integer
         Dim sdia As Integer
 
-        Chart1.Series.Clear()
-        Chart1.ChartAreas.Clear()
-        Chart1.Titles.Clear()
-        Chart1.ChartAreas.Add("ChartArea0")
+        ch.Series.Clear()
+        ch.ChartAreas.Clear()
+        ch.Titles.Clear()
+        ch.ChartAreas.Add("ChartArea0")
 
-        Chart1.Series.Add("Series" & h.ToString)
-        Chart1.Series(h).ChartArea = "ChartArea0"
-        Chart1.Series(h).ChartType = DataVisualization.Charting.SeriesChartType.Line
-        Chart1.Series(h).BorderWidth = 2
-        Chart1.Series(h).IsVisibleInLegend = False
+        ch.Series.Add("Series" & h.ToString)
+        ch.Series(h).ChartArea = "ChartArea0"
+        ch.Series(h).ChartType = DataVisualization.Charting.SeriesChartType.Line
+        ch.Series(h).BorderWidth = 2
+        ch.Series(h).IsVisibleInLegend = False
 
-        Chart1.Titles.Add("Loss Curve")
-        Chart1.ChartAreas("ChartArea0").AxisX.Title = "particle dia [mu]"
+        ch.Titles.Add("Loss Curve")
+        ch.ChartAreas("ChartArea0").AxisX.Title = "particle dia [mu]"
 
-        Chart1.ChartAreas("ChartArea0").AxisY.Title = "Loss [%] (niet gevangen)"
-        Chart1.ChartAreas("ChartArea0").AxisY.Minimum = 0       'Loss
-        Chart1.ChartAreas("ChartArea0").AxisY.Maximum = 100     'Loss
-        Chart1.ChartAreas("ChartArea0").AxisY.Interval = 10     'Interval
-        Chart1.ChartAreas("ChartArea0").AxisX.MinorTickMark.Enabled = True
-        Chart1.ChartAreas("ChartArea0").AxisY.MinorTickMark.Enabled = True
-        Chart1.ChartAreas("ChartArea0").AxisX.MinorGrid.Enabled = True
-        Chart1.ChartAreas("ChartArea0").AxisY.MinorGrid.Enabled = True
+        ch.ChartAreas("ChartArea0").AxisY.Title = "Loss [%] (niet gevangen)"
+        ch.ChartAreas("ChartArea0").AxisY.Minimum = 0       'Loss
+        ch.ChartAreas("ChartArea0").AxisY.Maximum = 100     'Loss
+        ch.ChartAreas("ChartArea0").AxisY.Interval = 10     'Interval
+        ch.ChartAreas("ChartArea0").AxisX.MinorTickMark.Enabled = True
+        ch.ChartAreas("ChartArea0").AxisY.MinorTickMark.Enabled = True
+        ch.ChartAreas("ChartArea0").AxisX.MinorGrid.Enabled = True
+        ch.ChartAreas("ChartArea0").AxisY.MinorGrid.Enabled = True
 
         If CheckBox1.Checked Then
-            Chart1.ChartAreas("ChartArea0").AxisX.IsLogarithmic = True
-            Chart1.ChartAreas("ChartArea0").AxisX.Minimum = 1     'Particle size
-            Chart1.ChartAreas("ChartArea0").AxisX.Maximum = 100   'Particle size
+            ch.ChartAreas("ChartArea0").AxisX.IsLogarithmic = True
+            ch.ChartAreas("ChartArea0").AxisX.Minimum = 1     'Particle size
+            ch.ChartAreas("ChartArea0").AxisX.Maximum = 100   'Particle size
         Else
-            Chart1.ChartAreas("ChartArea0").AxisX.IsLogarithmic = False
-            Chart1.ChartAreas("ChartArea0").AxisX.Minimum = 0     'Particle size
-            Chart1.ChartAreas("ChartArea0").AxisX.Maximum = 20    'Particle size
+            ch.ChartAreas("ChartArea0").AxisX.IsLogarithmic = False
+            ch.ChartAreas("ChartArea0").AxisX.Minimum = 0     'Particle size
+            ch.ChartAreas("ChartArea0").AxisX.Maximum = 20    'Particle size
         End If
 
         '----- now calc chart points --------------------------
@@ -695,31 +696,32 @@ Public Class Form1
 
         '------ now present-------------
         For h = 0 To 40 - 1   'Fill line chart
-            Chart1.Series(0).Points.AddXY(s_points(h, 0), s_points(h, 1))
+            ch.Series(0).Points.AddXY(s_points(h, 0), s_points(h, 1))
         Next h
     End Sub
-    Private Sub Draw_chart2()
+    Private Sub Draw_chart2(ch As Chart)
+        'Small chart on the first tab
         Dim s_points(100, 2) As Double
         Dim h As Integer
         Dim sdia As Integer
 
-        Chart2.Series.Clear()
-        Chart2.ChartAreas.Clear()
-        Chart2.Titles.Clear()
-        Chart2.ChartAreas.Add("ChartArea0")
+        ch.Series.Clear()
+        ch.ChartAreas.Clear()
+        ch.Titles.Clear()
+        ch.ChartAreas.Add("ChartArea0")
 
-        Chart2.Series.Add("Series" & h.ToString)
-        Chart2.Series(h).ChartArea = "ChartArea0"
-        Chart2.Series(h).ChartType = DataVisualization.Charting.SeriesChartType.Line
-        Chart2.Series(h).BorderWidth = 2
-        Chart2.Series(h).IsVisibleInLegend = False
+        ch.Series.Add("Series" & h.ToString)
+        ch.Series(h).ChartArea = "ChartArea0"
+        ch.Series(h).ChartType = DataVisualization.Charting.SeriesChartType.Line
+        ch.Series(h).BorderWidth = 2
+        ch.Series(h).IsVisibleInLegend = False
 
-        Chart2.Titles.Add("Loss Curve")
-        Chart2.ChartAreas("ChartArea0").AxisX.Title = "particle dia [mu]"
-        Chart2.ChartAreas("ChartArea0").AxisY.Minimum = 0     'Loss
-        Chart2.ChartAreas("ChartArea0").AxisY.Maximum = 100   'Loss
-        Chart2.ChartAreas("ChartArea0").AxisX.Minimum = 0     'Particle size
-        Chart2.ChartAreas("ChartArea0").AxisX.Maximum = 20    'Particle size
+        ch.Titles.Add("Loss Curve")
+        ch.ChartAreas("ChartArea0").AxisX.Title = "particle dia [mu]"
+        ch.ChartAreas("ChartArea0").AxisY.Minimum = 0     'Loss
+        ch.ChartAreas("ChartArea0").AxisY.Maximum = 100   'Loss
+        ch.ChartAreas("ChartArea0").AxisX.Minimum = 0     'Particle size
+        ch.ChartAreas("ChartArea0").AxisX.Maximum = 20    'Particle size
 
         '----- now calc chart poins --------------------------
         Integer.TryParse(TextBox42.Text, sdia)
@@ -732,14 +734,14 @@ Public Class Form1
 
         '------ now present-------------
         For h = 0 To 40 - 1   'Fill line chart
-            Chart2.Series(0).Points.AddXY(s_points(h, 0), s_points(h, 1))
+            ch.Series(0).Points.AddXY(s_points(h, 0), s_points(h, 1))
         Next h
     End Sub
     Private Sub Button2_Click(sender As Object, e As EventArgs) Handles Button2.Click, TabPage9.Enter, CheckBox1.CheckedChanged
 
         Calc_loss_gvg()             'Calc according Guus
         Present_loss_grid()         'Present the results
-        Draw_chart1()
+        Draw_chart1(Chart1)
     End Sub
 
     Private Sub Button3_Click(sender As Object, e As EventArgs) Handles Button3.Click
@@ -1240,8 +1242,8 @@ Public Class Form1
             oTable.Rows.Item(1).Range.Font.Bold = CInt(True)
             oDoc.Bookmarks.Item("\endofdoc").Range.InsertParagraphAfter()
 
-            '------------------save Chart1 (Loss curve)---------------- 
-            Draw_chart2()
+            '------------------save Chart2 (Loss curve)---------------- 
+            Draw_chart2(Chart2)
             file_name = dirpath_Temp & "Chart_loss.Jpeg"
             Chart2.SaveImage(file_name, System.Drawing.Imaging.ImageFormat.Jpeg)
             oPara4 = oDoc.Content.Paragraphs.Add
