@@ -16,21 +16,33 @@ Public Structure Input_struct
     Public stofb As Double          'Dust load inlet [g/Am3]
     Public dia_big() As Double      'Particle diameter inlet [mu]
     Public class_load() As Double   'group_weight_cum in de inlaat stroom [% weight]
-    Public db As Double             '[m] Diameter cyclone body
+
     Public ro_gas As Double         '[kg/hr] Density 
     Public ro_solid As Double       '[kg/hr] Density 
     Public visco As Double          '[Centi Poise] Visco in 
     Public Temp As Double           '[c] Temperature 
 
-    '===== stages ======
-    Public Druk1 As Double           '[mbar] druk
-    Public Ct1 As Integer            'Cyclone type (eg AC435)
-    Public No_par1 As Integer        '[-] Number paralle Cyclones
-    Public in_h1 As Double           '[m] inlet hoogte
-    Public in_b1 As Double           '[m] inlet breedte
-    Public dia_out1 As Double        '[m] diameter zakbuis
-    Public in_v1 As Double           '[m/s] Inlet velocity cyclone
-    Public out_v1 As Double          '[m/s] Outlet velocity cyclone
+    '===== stage #1 ======
+    Public Druk1 As Double          '[mbar] druk
+    Public Ct1 As Integer           '[-] Cyclone type (eg AC435)
+    Public Noc1 As Integer          '[-] Number paralle Cyclones
+    Public db1 As Double            '[m] Diameter cyclone body
+    Public inh1 As Double           '[m] inlet hoogte
+    Public inb1 As Double           '[m] inlet breedte
+    Public dout1 As Double          '[m] diameter zakbuis
+    Public inv1 As Double           '[m/s] Inlet velocity cyclone
+    Public outv1 As Double          '[m/s] Outlet velocity cyclone
+
+    '===== stage #2 ======
+    Public Druk2 As Double          '[mbar] druk
+    Public Ct2 As Integer           '[-] Cyclone type (eg AC435)
+    Public Noc2 As Integer          '[-] Number paralle Cyclones
+    Public db2 As Double            '[m] Diameter cyclone body
+    Public inh2 As Double           '[m] inlet hoogte
+    Public inb2 As Double           '[m] inlet breedte
+    Public dout2 As Double          '[m] diameter zakbuis
+    Public inv2 As Double           '[m/s] Inlet velocity cyclone
+    Public outv2 As Double          '[m/s] Outlet velocity cyclone
 End Structure
 
 'Variables used by GvG in calculation
@@ -123,45 +135,45 @@ Public Class Form1
         hard_disk_list.Add("058F63646471")      'Privee PC, graslaan25
 
         user_list.Add("GerritP")
-        hard_disk_list.Add("S2R6NX0H740154H")  'VTK PC, GP
+        hard_disk_list.Add("S2R6NX0H740154H")       'VTK PC, GP
 
         user_list.Add("GerritP")
-        hard_disk_list.Add("0008_0D02_003E_0FBB.")       'VTK laptop, GP
+        hard_disk_list.Add("0008_0D02_003E_0FBB.")  'VTK laptop, GP
 
         user_list.Add("FredKo")
-        hard_disk_list.Add("JR10006P02Y6EE")    'VTK laptop, FKo
+        hard_disk_list.Add("JR10006P02Y6EE")        'VTK laptop, FKo
 
         user_list.Add("VittorioS")
-        hard_disk_list.Add("002427108605")      'VTK laptop, Vittorio
+        hard_disk_list.Add("002427108605")          'VTK laptop, Vittorio
 
         user_list.Add("keess")
-        hard_disk_list.Add("002410146654")      'VTK laptop, KeesS
+        hard_disk_list.Add("002410146654")          'VTK laptop, KeesS
 
         user_list.Add("JanK")
-        hard_disk_list.Add("0025_38B4_71B4_88FC.") 'VTK laptop, Jank
+        hard_disk_list.Add("0025_38B4_71B4_88FC.")  'VTK laptop, Jank
 
         user_list.Add("JeroenA")
-        hard_disk_list.Add("171095402070")       'VTK desktop, Jeroen
+        hard_disk_list.Add("171095402070")          'VTK desktop, Jeroen
 
         user_list.Add("JeroenA")
-        hard_disk_list.Add("170228801578")       'VTK laptop, Jeroen disk 1
-        hard_disk_list.Add("MCDBM1M4F3QRBEH6")   'VTK laptop, Jeroen disk 2
-        hard_disk_list.Add("0025_388A_81BB_14B5.")   'Zweet kamer, Jeroen 
+        hard_disk_list.Add("170228801578")          'VTK laptop, Jeroen disk 1
+        hard_disk_list.Add("MCDBM1M4F3QRBEH6")      'VTK laptop, Jeroen disk 2
+        hard_disk_list.Add("0025_388A_81BB_14B5.")  'Zweet kamer, Jeroen 
 
         user_list.Add("lennardh")
-        hard_disk_list.Add("141190402709")       'VTK PC, Lennard Hubert
+        hard_disk_list.Add("141190402709")          'VTK PC, Lennard Hubert
 
         user_list.Add("Peterdw")
-        hard_disk_list.Add("134309552747")       'VTK PC, Peter de Wild
+        hard_disk_list.Add("134309552747")          'VTK PC, Peter de Wild
 
         user_list.Add("Jeffreyvdz")
-        hard_disk_list.Add("ACE4_2E81_7006_2BD9.")     'VTK Laptop, Jeffrey van der Zwart
+        hard_disk_list.Add("ACE4_2E81_7006_2BD9.")  'VTK Laptop, Jeffrey van der Zwart
 
         user_list.Add("Twana")
-        hard_disk_list.Add("ACE4_2E81_7006_2BD7.")     'VTK Laptop, Twan Akbheis
+        hard_disk_list.Add("ACE4_2E81_7006_2BD7.")  'VTK Laptop, Twan Akbheis
 
         user_list.Add("robru")
-        hard_disk_list.Add("174741803447")      'VTK Laptop, Rob Ruiter
+        hard_disk_list.Add("174741803447")          'VTK Laptop, Rob Ruiter
 
         nu = Now()
         nu2 = CDate("2019-12-01 00:00:00")
@@ -261,9 +273,9 @@ Public Class Form1
             Next
             no_cycl = NumericUpDown20.Value             'Paralelle cyclonen
             _db = numericUpDown5.Value / 1000           '[m] Body diameter
-            _cees(ks).in_h1 = _cyl_dim(1) * _db    '[m]
-            _cees(ks).in_b1 = _cyl_dim(2) * _db   '[m]
-            _cees(ks).dia_out1 = _cyl_dim(6) * _db '[m] 
+            _cees(ks).inh1 = _cyl_dim(1) * _db    '[m]
+            _cees(ks).inb1 = _cyl_dim(2) * _db   '[m]
+            _cees(ks).dout1 = _cyl_dim(6) * _db '[m] 
             Flow = NumericUpDown1.Value / 3600          '[m3/s]
             Flow /= no_cycl                             '[m3/s/cycloon]
             ro_gas = numericUpDown3.Value               '[kg/m3]
@@ -272,16 +284,16 @@ Public Class Form1
             stofb = NumericUpDown4.Value                '[g/Am3]
 
             '----------- inlaat snelheid ---------------------
-            _cees(ks).in_v1 = Flow / (_cees(ks).in_b1 * _cees(ks).in_h1)
+            _cees(ks).inv1 = Flow / (_cees(ks).inb1 * _cees(ks).inh1)
 
             '----------- uitlaat snelheid ---------------------
-            _cees(ks).out_v1 = Flow / ((PI / 4) * _cees(ks).dia_out1 ^ 2)   '[m/s]
+            _cees(ks).outv1 = Flow / ((PI / 4) * _cees(ks).dout1 ^ 2)   '[m/s]
 
             '----------- Pressure loss cyclone----------------------
             wc_air = weerstand_coef_air(ComboBox1.SelectedIndex)
             wc_dust = weerstand_coef_dust(ComboBox1.SelectedIndex)
-            dp_inlet_gas = 0.5 * ro_gas * _cees(ks).out_v1 ^ 2 * wc_air
-            dp_inlet_dust = 0.5 * ro_gas * _cees(ks).out_v1 ^ 2 * wc_dust
+            dp_inlet_gas = 0.5 * ro_gas * _cees(ks).outv1 ^ 2 * wc_air
+            dp_inlet_dust = 0.5 * ro_gas * _cees(ks).outv1 ^ 2 * wc_dust
 
             '----------- stof belasting ------------
             kgs = Flow * stofb / 1000               '[kg/s/cycloon]
@@ -289,15 +301,15 @@ Public Class Form1
             tot_kgh = kgh * no_cycl                 'Dust inlet [g/Am3] 
 
             '----------- K_stokes-----------------------------------
-            _K_stokes = _db * 2000 * visco * 16 / (ro_solid * 0.0181 * _cees(ks).in_v1)
+            _K_stokes = _db * 2000 * visco * 16 / (ro_solid * 0.0181 * _cees(ks).inv1)
             _K_stokes = Sqrt(_K_stokes)
 
             '----------- presenteren ----------------------------------
             TextBox36.Text = Flow.ToString("0.000")                 '[m3/s] flow
 
             '----------- presenteren afmetingen ------------------------------
-            TextBox1.Text = (_cees(ks).in_h1).ToString("0.000") 'inlaat breedte
-            TextBox2.Text = (_cees(ks).in_b1).ToString("0.000") 'Inlaat hoogte
+            TextBox1.Text = (_cees(ks).inh1).ToString("0.000") 'inlaat breedte
+            TextBox2.Text = (_cees(ks).inb1).ToString("0.000") 'Inlaat hoogte
             TextBox3.Text = (_cyl_dim(3) * _db).ToString("0.000")    'Inlaat lengte
             TextBox4.Text = (_cyl_dim(4) * _db).ToString("0.000")    'Inlaat hartmaat
             TextBox5.Text = (_cyl_dim(5) * _db).ToString("0.000")    'Inlaat afschuining
@@ -313,12 +325,12 @@ Public Class Form1
             TextBox14.Text = (_cyl_dim(14) * _db).ToString("0.000")  'Lengte 3P conus
             TextBox15.Text = (_cyl_dim(15) * _db).ToString("0.000")  'Kleine dia 3P-conus
 
-            TextBox16.Text = _cees(ks).in_v1.ToString("0.0")         'inlaat snelheid
+            TextBox16.Text = _cees(ks).inv1.ToString("0.0")         'inlaat snelheid
             TextBox17.Text = dp_inlet_gas.ToString("0")              '[Pa] Pressure loss inlet-gas
             TextBox19.Text = (dp_inlet_gas / 100).ToString("0.0")    '[mbar] Pressure loss inlet-gas
             TextBox48.Text = dp_inlet_dust.ToString("0")             '[Pa]Pressure loss inlet-dust
 
-            TextBox22.Text = _cees(ks).out_v1.ToString("0.0")   'uitlaat snelheid
+            TextBox22.Text = _cees(ks).outv1.ToString("0.0")   'uitlaat snelheid
             TextBox23.Text = _K_stokes.ToString("0.000")             'Stokes waarde tov Standaard cycloon
             TextBox37.Text = numericUpDown5.Value.ToString           'Cycloone diameter
             TextBox38.Text = CType(ComboBox1.SelectedItem, String)   'Cycloon type
@@ -326,7 +338,7 @@ Public Class Form1
             Draw_chart1(Chart1)
             Draw_chart2(Chart2)
             '---------- Check speed ---------------
-            If _cees(ks).in_v1 < 10 Or _cees(ks).in_v1 > 30 Then
+            If _cees(ks).inv1 < 10 Or _cees(ks).inv1 > 30 Then
                 TextBox16.BackColor = Color.Red
             Else
                 TextBox16.BackColor = Color.LightGreen
@@ -466,8 +478,8 @@ Public Class Form1
         _cees(c_nr).Flow = NumericUpDown1.Value            'Air flow
         _cees(c_nr).stofb = NumericUpDown4.Value           'Dust inlet [g/Am3] 
         _cees(c_nr).Ct1 = ComboBox1.SelectedIndex           'Cyclone type
-        _cees(c_nr).No_par1 = CInt(NumericUpDown20.Value) 'Cyclone in parallel
-        _cees(c_nr).db = numericUpDown13.Value             'Diameter cyclone body
+        _cees(c_nr).Noc1 = CInt(NumericUpDown20.Value) 'Cyclone in parallel
+        _cees(c_nr).db1 = numericUpDown13.Value             'Diameter cyclone body
         _cees(c_nr).ro_gas = numericUpDown3.Value          'Density [kg/hr]
         _cees(c_nr).ro_solid = numericUpDown2.Value        'Density [kg/hr]
         _cees(c_nr).visco = numericUpDown14.Value          'Visco in Centi Poise
@@ -774,8 +786,8 @@ Public Class Form1
             temp_string &= _cees(j).Flow.ToString & ";"        'Air flow
             temp_string &= _cees(j).stofb.ToString & ";"       'Dust inlet [g/Am3] 
             temp_string &= _cees(j).Ct1.ToString & ";"          'Cyclone type
-            temp_string &= _cees(j).No_par1.ToString & ";" 'Cyclone in parallel
-            temp_string &= _cees(j).db.ToString & ";"          'Diameter cyclone body
+            temp_string &= _cees(j).Noc1.ToString & ";" 'Cyclone in parallel
+            temp_string &= _cees(j).db1.ToString & ";"          'Diameter cyclone body
             temp_string &= _cees(j).ro_gas.ToString & ";"      'Density [kg/hr]
             temp_string &= _cees(j).ro_solid.ToString & ";"    'Density [kg/hr]
             temp_string &= _cees(j).visco.ToString & ";"       'Visco in Centi Poise
@@ -899,9 +911,9 @@ Public Class Form1
                     count += 1
                     _cees(j).Ct1 = CInt(words(count))       'Cyclone type
                     count += 1
-                    _cees(j).No_par1 = CInt(words(count))    'Cyclone in parallel
+                    _cees(j).Noc1 = CInt(words(count))    'Cyclone in parallel
                     count += 1
-                    _cees(j).db = CDbl(words(count))       'Diameter cyclone body
+                    _cees(j).db1 = CDbl(words(count))       'Diameter cyclone body
                     count += 1
                     _cees(j).ro_gas = CDbl(words(count))   'Density [kg/hr]
                     count += 1
@@ -1661,8 +1673,8 @@ Public Class Form1
                 NumericUpDown1.Value = CDec(_cees(zz).Flow)        'Air flow
                 NumericUpDown4.Value = CDec(_cees(zz).stofb)       'Dust inlet [g/Am3] 
                 ComboBox1.SelectedIndex = _cees(zz).Ct1             'Cyclone type
-                NumericUpDown20.Value = _cees(zz).No_par1      'Cyclone in parallel
-                numericUpDown13.Value = CDec(_cees(zz).db)         'Diameter cyclone body
+                NumericUpDown20.Value = _cees(zz).Noc1      'Cyclone in parallel
+                numericUpDown13.Value = CDec(_cees(zz).db1)         'Diameter cyclone body
                 numericUpDown3.Value = CDec(_cees(zz).ro_gas)      'Density [kg/hr]
                 numericUpDown2.Value = CDec(_cees(zz).ro_solid)    'Density [kg/hr]
                 numericUpDown14.Value = CDec(_cees(zz).visco)      'Visco in Centi Poise
