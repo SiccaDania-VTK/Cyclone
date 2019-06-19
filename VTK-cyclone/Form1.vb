@@ -16,14 +16,21 @@ Public Structure Input_struct
     Public stofb As Double          'Dust load inlet [g/Am3]
     Public dia_big() As Double      'Particle diameter inlet [mu]
     Public class_load() As Double   'group_weight_cum in de inlaat stroom [% weight]
-    Public Ct As Integer            'Cyclone type (eg AC435)
-    Public No_parallel As Integer   'Number paralle Cyclones
-    Public db As Double             'Diameter cyclone body
-    Public ro_gas As Double         'Density [kg/hr]
-    Public ro_solid As Double       'Density [kg/hr]
-    Public visco As Double          'Visco in Centi Poise
-    Public Temp As Double           'Temperature [c]
-    Public Druk As Double           'Temperature [mbar]
+    Public db As Double             '[m] Diameter cyclone body
+    Public ro_gas As Double         '[kg/hr] Density 
+    Public ro_solid As Double       '[kg/hr] Density 
+    Public visco As Double          '[Centi Poise] Visco in 
+    Public Temp As Double           '[c] Temperature 
+
+    '===== stages ======
+    Public Druk1 As Double           '[mbar] druk
+    Public Ct1 As Integer            'Cyclone type (eg AC435)
+    Public No_par1 As Integer        '[-] Number paralle Cyclones
+    Public in_h1 As Double           '[m] inlet hoogte
+    Public in_b1 As Double           '[m] inlet breedte
+    Public dia_out1 As Double        '[m] diameter zakbuis
+    Public in_v1 As Double           '[m/s] Inlet velocity cyclone
+    Public out_v1 As Double          '[m/s] Outlet velocity cyclone
 End Structure
 
 'Variables used by GvG in calculation
@@ -34,7 +41,7 @@ Public Structure GvG_Calc_struct
     Public loss_overall As Double   'Overall Corrected
     Public loss_overall_C As Double 'Overall loss Corrected
     Public catch_chart As Double    '[%] for chart
-    Public i_grp As Double          'Groepnummer
+    Public i_grp As Double          'Particle Groepnummer
     Public i_d1 As Double           'Class diameter lower[mu]
     Public i_d2 As Double           'Class diameter upper[mu]
     Public i_p1 As Double           'Interpolatie
@@ -51,7 +58,7 @@ End Structure
 Public Class Form1
     Public _cyl_dim(20) As Double           'Cyclone dimensions
     Public _db As Double                    'Body diameter
-    Public _input(20) As Input_struct       'Input data
+    Public _cees(20) As Input_struct        '20 Case's data
     Public guus(150) As GvG_Calc_struct     'tbv calculatie
     Public _K_stokes As Double              'Stokes getal
 
@@ -87,7 +94,7 @@ Public Class Form1
     Public weerstand_coef_dust(7) As Double     'Inlet-air pressure loss calculation
 
     '----------- directory's-----------
-    Dim dirpath_Eng As String = "N:\Engineering\VBasic\Cyclone_sizing_input\"
+    Dim dirpath_Eng As String = "N:\Engineering\VBasic\Cyclone_sizing_cees\"
     Dim dirpath_Rap As String = "N:\Engineering\VBasic\Cyclone_rapport_copy\"
     Dim dirpath_tmp As String = "C:\Tmp\"
     Dim ProcID As Integer = Process.GetCurrentProcess.Id
@@ -105,9 +112,9 @@ Public Class Form1
         Dim pass_disc As Boolean = False
 
         'Initialize the arrays in the struct
-        For i = 0 To _input.Length - 1
-            _input(i).dia_big = {0, 0, 0, 0, 0, 0, 0, 0}
-            _input(i).class_load = {0, 0, 0, 0, 0, 0, 0, 0}  'Initialize
+        For i = 0 To _cees.Length - 1
+            _cees(i).dia_big = {0, 0, 0, 0, 0, 0, 0, 0}
+            _cees(i).class_load = {0, 0, 0, 0, 0, 0, 0, 0}  'Initialize
         Next
 
 
@@ -201,21 +208,22 @@ Public Class Form1
             ComboBox1.Items.Add(words(0))
             ComboBox2.Items.Add(words(0))
         Next hh
-        ComboBox1.SelectedIndex = 5                 'Select Cyclone type
-        ComboBox2.SelectedIndex = 5                 'Select Cyclone type
+        ComboBox1.SelectedIndex = 2                 'Select Cyclone type AC_435
+        ComboBox2.SelectedIndex = 5                 'Select Cyclone type AC_850
 
         TextBox20.Text = "AA cyclone is a AC850 with diameter of 300mm" & vbCrLf
         TextBox20.Text &= "Load above 5 gr/m3 is considerde a high load" & vbCrLf
         TextBox20.Text &= "Cyclones can not choke" & vbCrLf
-
     End Sub
 
     Private Sub Button1_Click(sender As Object, e As EventArgs) Handles button1.Click, TabPage1.Enter, numericUpDown3.ValueChanged, numericUpDown2.ValueChanged, numericUpDown14.ValueChanged, NumericUpDown1.ValueChanged, numericUpDown5.ValueChanged, NumericUpDown20.ValueChanged, NumericUpDown19.ValueChanged, NumericUpDown18.ValueChanged, ComboBox1.SelectedIndexChanged, numericUpDown9.ValueChanged, numericUpDown8.ValueChanged, numericUpDown7.ValueChanged, numericUpDown6.ValueChanged, numericUpDown12.ValueChanged, numericUpDown11.ValueChanged, numericUpDown10.ValueChanged, numericUpDown13.ValueChanged, NumericUpDown4.ValueChanged, NumericUpDown29.ValueChanged, NumericUpDown28.ValueChanged, NumericUpDown27.ValueChanged, NumericUpDown26.ValueChanged, NumericUpDown25.ValueChanged, NumericUpDown24.ValueChanged, NumericUpDown23.ValueChanged, NumericUpDown15.ValueChanged
+
         Dust_load_correction()
-        Get_input_and_calc()
+        Get_cees_and_calc(CInt(NumericUpDown30.Value))    'This is the CASE number
         Calc_loss_gvg()             'Calc according Guus
     End Sub
-    Private Sub Get_input_and_calc()
+    Private Sub Get_cees_and_calc(ks As Integer)
+        '   
 
         '===Input parameter ===
         Dim Flow As Double          'Air flow
@@ -237,13 +245,7 @@ Public Class Form1
         Dim dp_inlet_gas As Double  'Pressure loss air
         Dim dp_inlet_dust As Double
 
-        Dim in_hoog As Double       '[m]
-        Dim in_breed As Double      '[m]
-        Dim dia_outlet As Double    '[m] gas outlet
-
-        Dim inlet_velos As Double   '[m/s]
-        Dim outlet_velos As Double  '[m/s]
-        Dim total_input_weight As Double
+        '==== stage 1 ====
         Dim h18, h19 As Double
         Dim j18, i18 As Double
         Dim l18, k19, k41 As Double
@@ -255,31 +257,31 @@ Public Class Form1
         If (ComboBox1.SelectedIndex > -1) Then     'Prevent exceptions
             words = cyl_dimensions(ComboBox1.SelectedIndex).Split(CType(";", Char()))
             For hh = 1 To 15
-                _cyl_dim(hh) = CDbl(words(hh))   'Cyclone dimensions
+                _cyl_dim(hh) = CDbl(words(hh))          'Cyclone dimensions
             Next
-            no_cycl = NumericUpDown20.Value     'Paralelle cyclonen
-            _db = numericUpDown5.Value / 1000   '[m] Body diameter
-            in_hoog = _cyl_dim(1) * _db         '[m]
-            in_breed = _cyl_dim(2) * _db        '[m]
-            dia_outlet = _cyl_dim(6) * _db      '[m] 
-            Flow = NumericUpDown1.Value / 3600  '[m3/s]
-            Flow /= no_cycl                     '[m3/s/cycloon]
-            ro_gas = numericUpDown3.Value       '[kg/m3]
-            ro_solid = numericUpDown2.Value     '[kg/m3]
-            visco = numericUpDown14.Value       '[cPoise]
-            stofb = NumericUpDown4.Value        '[g/Am3]
+            no_cycl = NumericUpDown20.Value             'Paralelle cyclonen
+            _db = numericUpDown5.Value / 1000           '[m] Body diameter
+            _cees(ks).in_h1 = _cyl_dim(1) * _db    '[m]
+            _cees(ks).in_b1 = _cyl_dim(2) * _db   '[m]
+            _cees(ks).dia_out1 = _cyl_dim(6) * _db '[m] 
+            Flow = NumericUpDown1.Value / 3600          '[m3/s]
+            Flow /= no_cycl                             '[m3/s/cycloon]
+            ro_gas = numericUpDown3.Value               '[kg/m3]
+            ro_solid = numericUpDown2.Value             '[kg/m3]
+            visco = numericUpDown14.Value               '[cPoise]
+            stofb = NumericUpDown4.Value                '[g/Am3]
 
             '----------- inlaat snelheid ---------------------
-            inlet_velos = Flow / (in_breed * in_hoog)
+            _cees(ks).in_v1 = Flow / (_cees(ks).in_b1 * _cees(ks).in_h1)
 
             '----------- uitlaat snelheid ---------------------
-            outlet_velos = Flow / ((PI / 4) * dia_outlet ^ 2)   '[m/s]
+            _cees(ks).out_v1 = Flow / ((PI / 4) * _cees(ks).dia_out1 ^ 2)   '[m/s]
 
             '----------- Pressure loss cyclone----------------------
             wc_air = weerstand_coef_air(ComboBox1.SelectedIndex)
             wc_dust = weerstand_coef_dust(ComboBox1.SelectedIndex)
-            dp_inlet_gas = 0.5 * ro_gas * inlet_velos ^ 2 * wc_air
-            dp_inlet_dust = 0.5 * ro_gas * inlet_velos ^ 2 * wc_dust
+            dp_inlet_gas = 0.5 * ro_gas * _cees(ks).out_v1 ^ 2 * wc_air
+            dp_inlet_dust = 0.5 * ro_gas * _cees(ks).out_v1 ^ 2 * wc_dust
 
             '----------- stof belasting ------------
             kgs = Flow * stofb / 1000               '[kg/s/cycloon]
@@ -287,15 +289,15 @@ Public Class Form1
             tot_kgh = kgh * no_cycl                 'Dust inlet [g/Am3] 
 
             '----------- K_stokes-----------------------------------
-            _K_stokes = _db * 2000 * visco * 16 / (ro_solid * 0.0181 * inlet_velos)
+            _K_stokes = _db * 2000 * visco * 16 / (ro_solid * 0.0181 * _cees(ks).in_v1)
             _K_stokes = Sqrt(_K_stokes)
 
             '----------- presenteren ----------------------------------
             TextBox36.Text = Flow.ToString("0.000")                 '[m3/s] flow
 
             '----------- presenteren afmetingen ------------------------------
-            TextBox1.Text = (in_hoog).ToString("0.000")              'inlaat breedte
-            TextBox2.Text = (in_breed).ToString("0.000")             'Inlaat hoogte
+            TextBox1.Text = (_cees(ks).in_h1).ToString("0.000") 'inlaat breedte
+            TextBox2.Text = (_cees(ks).in_b1).ToString("0.000") 'Inlaat hoogte
             TextBox3.Text = (_cyl_dim(3) * _db).ToString("0.000")    'Inlaat lengte
             TextBox4.Text = (_cyl_dim(4) * _db).ToString("0.000")    'Inlaat hartmaat
             TextBox5.Text = (_cyl_dim(5) * _db).ToString("0.000")    'Inlaat afschuining
@@ -311,12 +313,12 @@ Public Class Form1
             TextBox14.Text = (_cyl_dim(14) * _db).ToString("0.000")  'Lengte 3P conus
             TextBox15.Text = (_cyl_dim(15) * _db).ToString("0.000")  'Kleine dia 3P-conus
 
-            TextBox16.Text = inlet_velos.ToString("0.0")             'inlaat snelheid
+            TextBox16.Text = _cees(ks).in_v1.ToString("0.0")         'inlaat snelheid
             TextBox17.Text = dp_inlet_gas.ToString("0")              '[Pa] Pressure loss inlet-gas
             TextBox19.Text = (dp_inlet_gas / 100).ToString("0.0")    '[mbar] Pressure loss inlet-gas
             TextBox48.Text = dp_inlet_dust.ToString("0")             '[Pa]Pressure loss inlet-dust
 
-            TextBox22.Text = outlet_velos.ToString("0.0")            'uitlaat snelheid
+            TextBox22.Text = _cees(ks).out_v1.ToString("0.0")   'uitlaat snelheid
             TextBox23.Text = _K_stokes.ToString("0.000")             'Stokes waarde tov Standaard cycloon
             TextBox37.Text = numericUpDown5.Value.ToString           'Cycloone diameter
             TextBox38.Text = CType(ComboBox1.SelectedItem, String)   'Cycloon type
@@ -324,7 +326,7 @@ Public Class Form1
             Draw_chart1(Chart1)
             Draw_chart2(Chart2)
             '---------- Check speed ---------------
-            If inlet_velos < 10 Or inlet_velos > 30 Then
+            If _cees(ks).in_v1 < 10 Or _cees(ks).in_v1 > 30 Then
                 TextBox16.BackColor = Color.Red
             Else
                 TextBox16.BackColor = Color.LightGreen
@@ -340,12 +342,10 @@ Public Class Form1
             End If
 
             '--------- Get Inlet korrel-groep data ----------
-            'Save data of screen into the _input array
-            Fill_input_array(CInt(NumericUpDown30.Value))
+            'Save data of screen into the _cees array
+            Fill_cees_array(CInt(NumericUpDown30.Value))
 
             '--------- overall resultaat --------------------
-            total_input_weight = 0
-
             DataGridView1.Columns(0).HeaderText = "Dia class"
             DataGridView1.Columns(1).HeaderText = "Feed psd cum"
             DataGridView1.Columns(2).HeaderText = "Feed psd diff"
@@ -435,44 +435,44 @@ Public Class Form1
 
 
     End Sub
-    Private Sub Fill_input_array(c_nr As Integer)
+    Private Sub Fill_cees_array(c_nr As Integer)
         DataGridView1.ColumnCount = 10
         DataGridView1.Rows.Clear()
         DataGridView1.Rows.Add(23)
         DataGridView1.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.DisplayedCells
 
-        _input(c_nr).case_name = TextBox53.Text          'The case name
+        _cees(c_nr).case_name = TextBox53.Text          'The case name
 
         '[mu] Class upper particle diameter limit diameter
-        _input(c_nr).dia_big(0) = NumericUpDown15.Value   '10
-        _input(c_nr).dia_big(1) = NumericUpDown23.Value   '15
-        _input(c_nr).dia_big(2) = NumericUpDown24.Value   '20
-        _input(c_nr).dia_big(3) = NumericUpDown25.Value   '30
-        _input(c_nr).dia_big(4) = NumericUpDown26.Value   '40
-        _input(c_nr).dia_big(5) = NumericUpDown27.Value   '50
-        _input(c_nr).dia_big(6) = NumericUpDown28.Value   '60
-        _input(c_nr).dia_big(7) = NumericUpDown29.Value   '80
+        _cees(c_nr).dia_big(0) = NumericUpDown15.Value   '10
+        _cees(c_nr).dia_big(1) = NumericUpDown23.Value   '15
+        _cees(c_nr).dia_big(2) = NumericUpDown24.Value   '20
+        _cees(c_nr).dia_big(3) = NumericUpDown25.Value   '30
+        _cees(c_nr).dia_big(4) = NumericUpDown26.Value   '40
+        _cees(c_nr).dia_big(5) = NumericUpDown27.Value   '50
+        _cees(c_nr).dia_big(6) = NumericUpDown28.Value   '60
+        _cees(c_nr).dia_big(7) = NumericUpDown29.Value   '80
 
         'Percentale van de inlaat stof belasting
-        _input(c_nr).class_load(0) = numericUpDown6.Value / 100
-        _input(c_nr).class_load(1) = numericUpDown7.Value / 100
-        _input(c_nr).class_load(2) = numericUpDown8.Value / 100
-        _input(c_nr).class_load(3) = numericUpDown9.Value / 100
-        _input(c_nr).class_load(4) = numericUpDown10.Value / 100
-        _input(c_nr).class_load(5) = numericUpDown11.Value / 100
-        _input(c_nr).class_load(6) = numericUpDown12.Value / 100
-        _input(c_nr).class_load(7) = numericUpDown13.Value / 100
+        _cees(c_nr).class_load(0) = numericUpDown6.Value / 100
+        _cees(c_nr).class_load(1) = numericUpDown7.Value / 100
+        _cees(c_nr).class_load(2) = numericUpDown8.Value / 100
+        _cees(c_nr).class_load(3) = numericUpDown9.Value / 100
+        _cees(c_nr).class_load(4) = numericUpDown10.Value / 100
+        _cees(c_nr).class_load(5) = numericUpDown11.Value / 100
+        _cees(c_nr).class_load(6) = numericUpDown12.Value / 100
+        _cees(c_nr).class_load(7) = numericUpDown13.Value / 100
 
-        _input(c_nr).Flow = NumericUpDown1.Value            'Air flow
-        _input(c_nr).stofb = NumericUpDown4.Value           'Dust inlet [g/Am3] 
-        _input(c_nr).Ct = ComboBox1.SelectedIndex           'Cyclone type
-        _input(c_nr).No_parallel = CInt(NumericUpDown20.Value) 'Cyclone in parallel
-        _input(c_nr).db = numericUpDown13.Value             'Diameter cyclone body
-        _input(c_nr).ro_gas = numericUpDown3.Value          'Density [kg/hr]
-        _input(c_nr).ro_solid = numericUpDown2.Value        'Density [kg/hr]
-        _input(c_nr).visco = numericUpDown14.Value          'Visco in Centi Poise
-        _input(c_nr).Temp = NumericUpDown18.Value           'Temperature [c]
-        _input(c_nr).Druk = NumericUpDown19.Value           'Pressure [mbar]
+        _cees(c_nr).Flow = NumericUpDown1.Value            'Air flow
+        _cees(c_nr).stofb = NumericUpDown4.Value           'Dust inlet [g/Am3] 
+        _cees(c_nr).Ct1 = ComboBox1.SelectedIndex           'Cyclone type
+        _cees(c_nr).No_par1 = CInt(NumericUpDown20.Value) 'Cyclone in parallel
+        _cees(c_nr).db = numericUpDown13.Value             'Diameter cyclone body
+        _cees(c_nr).ro_gas = numericUpDown3.Value          'Density [kg/hr]
+        _cees(c_nr).ro_solid = numericUpDown2.Value        'Density [kg/hr]
+        _cees(c_nr).visco = numericUpDown14.Value          'Visco in Centi Poise
+        _cees(c_nr).Temp = NumericUpDown18.Value           'Temperature [c]
+        _cees(c_nr).Druk1 = NumericUpDown19.Value           'Pressure [mbar]
 
 
         '-------- Check -- bigger diameter must have bigger cummulative weight
@@ -770,24 +770,24 @@ Public Class Form1
         temp_string = TextBox28.Text & ";" & TextBox29.Text & ";"
 
         '-------- Case information -----------------
-        For j = 0 To _input.GetLength(0) - 2             '20 elements
-            temp_string &= _input(j).Flow.ToString & ";"        'Air flow
-            temp_string &= _input(j).stofb.ToString & ";"       'Dust inlet [g/Am3] 
-            temp_string &= _input(j).Ct.ToString & ";"          'Cyclone type
-            temp_string &= _input(j).No_parallel.ToString & ";" 'Cyclone in parallel
-            temp_string &= _input(j).db.ToString & ";"          'Diameter cyclone body
-            temp_string &= _input(j).ro_gas.ToString & ";"      'Density [kg/hr]
-            temp_string &= _input(j).ro_solid.ToString & ";"    'Density [kg/hr]
-            temp_string &= _input(j).visco.ToString & ";"       'Visco in Centi Poise
-            temp_string &= _input(j).Temp.ToString & ";"        'Temperature [c]
-            temp_string &= _input(j).Druk.ToString & ";"        'Pressure [mbar]
+        For j = 0 To _cees.GetLength(0) - 2             '20 elements
+            temp_string &= _cees(j).Flow.ToString & ";"        'Air flow
+            temp_string &= _cees(j).stofb.ToString & ";"       'Dust inlet [g/Am3] 
+            temp_string &= _cees(j).Ct1.ToString & ";"          'Cyclone type
+            temp_string &= _cees(j).No_par1.ToString & ";" 'Cyclone in parallel
+            temp_string &= _cees(j).db.ToString & ";"          'Diameter cyclone body
+            temp_string &= _cees(j).ro_gas.ToString & ";"      'Density [kg/hr]
+            temp_string &= _cees(j).ro_solid.ToString & ";"    'Density [kg/hr]
+            temp_string &= _cees(j).visco.ToString & ";"       'Visco in Centi Poise
+            temp_string &= _cees(j).Temp.ToString & ";"        'Temperature [c]
+            temp_string &= _cees(j).Druk1.ToString & ";"        'Pressure [mbar]
 
             For k = 0 To 7         '8 elements
-                temp_string &= _input(j).dia_big(k).ToString & ";"   'Write all variables
+                temp_string &= _cees(j).dia_big(k).ToString & ";"   'Write all variables
             Next
 
             For k = 0 To 7         '8 elements
-                temp_string &= _input(j).class_load(k).ToString & ";"   'Write all variables
+                temp_string &= _cees(j).class_load(k).ToString & ";"   'Write all variables
             Next
         Next
         temp_string &= vbCrLf & "BREAK" & vbCrLf & ";"
@@ -891,36 +891,36 @@ Public Class Form1
             count = 2
             Try
                 '-------- Case information -----------------
-                For j = 0 To _input.GetLength(0) - 2
+                For j = 0 To _cees.GetLength(0) - 2
 
-                    _input(j).Flow = CDbl(words(count))     'Air flow
+                    _cees(j).Flow = CDbl(words(count))     'Air flow
                     count += 1
-                    _input(j).stofb = CDbl(words(count))    'Dust inlet [g/Am3] 
+                    _cees(j).stofb = CDbl(words(count))    'Dust inlet [g/Am3] 
                     count += 1
-                    _input(j).Ct = CInt(words(count))       'Cyclone type
+                    _cees(j).Ct1 = CInt(words(count))       'Cyclone type
                     count += 1
-                    _input(j).No_parallel = CInt(words(count))    'Cyclone in parallel
+                    _cees(j).No_par1 = CInt(words(count))    'Cyclone in parallel
                     count += 1
-                    _input(j).db = CDbl(words(count))       'Diameter cyclone body
+                    _cees(j).db = CDbl(words(count))       'Diameter cyclone body
                     count += 1
-                    _input(j).ro_gas = CDbl(words(count))   'Density [kg/hr]
+                    _cees(j).ro_gas = CDbl(words(count))   'Density [kg/hr]
                     count += 1
-                    _input(j).ro_solid = CDbl(words(count)) 'Density [kg/hr]
+                    _cees(j).ro_solid = CDbl(words(count)) 'Density [kg/hr]
                     count += 1
-                    _input(j).visco = CDbl(words(count))    'Visco in Centi Poise
+                    _cees(j).visco = CDbl(words(count))    'Visco in Centi Poise
                     count += 1
-                    _input(j).Temp = CDbl(words(count))     'Temperature [c]
+                    _cees(j).Temp = CDbl(words(count))     'Temperature [c]
                     count += 1
-                    _input(j).Druk = CDbl(words(count))     'Pressure [mbar]
+                    _cees(j).Druk1 = CDbl(words(count))     'Pressure [mbar]
                     count += 1
 
                     For k = 0 To 7         '8 elements
-                        _input(j).dia_big(k) = CDbl(words(count))    'Write all variables
+                        _cees(j).dia_big(k) = CDbl(words(count))    'Write all variables
                         count += 1
                     Next
 
                     For k = 0 To 7         '8 elements
-                        _input(j).class_load(k) = CDbl(words(count))     'Write all variables
+                        _cees(j).class_load(k) = CDbl(words(count))     'Write all variables
                         count += 1
                     Next
                 Next
@@ -1039,7 +1039,7 @@ Public Class Form1
 
     Private Sub Button5_Click(sender As Object, e As EventArgs) Handles Button5.Click
         If TextBox28.Text.Trim.Length > 0 Then
-            Get_input_and_calc()
+            Get_cees_and_calc(CInt(NumericUpDown30.Value))
             Write_to_word_com() 'Commercial data to Word
         Else
             MessageBox.Show("Enter Quote nummer and Tag, then Export sizing data to Word")
@@ -1621,10 +1621,10 @@ Public Class Form1
 
     Private Sub Button8_Click(sender As Object, e As EventArgs) Handles Button8.Click
         Dim c As Integer
-        'Save data of screen into the _input array
+        'Save data of screen into the _cees array
 
         c = CInt(NumericUpDown30.Value)       'Case number
-        Fill_input_array(c)
+        Fill_cees_array(c)
     End Sub
 
     Private Sub NumericUpDown30_ValueChanged(sender As Object, e As EventArgs) Handles NumericUpDown30.ValueChanged
@@ -1634,40 +1634,40 @@ Public Class Form1
         Dim zz As Integer = CInt(NumericUpDown30.Value)    'Case number
         Try
             '----------- general (not calculated) data------------------
-            TextBox53.Text = _input(zz).case_name            'Case name
-            If _input(zz).case_name.Length > 0 Then
+            TextBox53.Text = _cees(zz).case_name            'Case name
+            If _cees(zz).case_name.Length > 0 Then
 
                 '[mu] Class upper particle diameter limit diameter
 
-                NumericUpDown15.Value = CDec(_input(zz).dia_big(0))   '10
-                NumericUpDown23.Value = CDec(_input(zz).dia_big(1))   '15
-                NumericUpDown24.Value = CDec(_input(zz).dia_big(2))   '20
-                NumericUpDown25.Value = CDec(_input(zz).dia_big(3))  '30
-                NumericUpDown26.Value = CDec(_input(zz).dia_big(4))   '40
-                NumericUpDown27.Value = CDec(_input(zz).dia_big(5))  '50
-                NumericUpDown28.Value = CDec(_input(zz).dia_big(6))   '60
-                NumericUpDown29.Value = CDec(_input(zz).dia_big(7))   '80
+                NumericUpDown15.Value = CDec(_cees(zz).dia_big(0))   '10
+                NumericUpDown23.Value = CDec(_cees(zz).dia_big(1))   '15
+                NumericUpDown24.Value = CDec(_cees(zz).dia_big(2))   '20
+                NumericUpDown25.Value = CDec(_cees(zz).dia_big(3))   '30
+                NumericUpDown26.Value = CDec(_cees(zz).dia_big(4))   '40
+                NumericUpDown27.Value = CDec(_cees(zz).dia_big(5))  '50
+                NumericUpDown28.Value = CDec(_cees(zz).dia_big(6))   '60
+                NumericUpDown29.Value = CDec(_cees(zz).dia_big(7))   '80
 
                 'Percentale van de inlaat stof belasting
-                numericUpDown6.Value = CDec(_input(zz).class_load(0) * 100)
-                numericUpDown7.Value = CDec(_input(zz).class_load(1) * 100)
-                numericUpDown8.Value = CDec(_input(zz).class_load(2) * 100)
-                numericUpDown9.Value = CDec(_input(zz).class_load(3) * 100)
-                numericUpDown10.Value = CDec(_input(zz).class_load(4) * 100)
-                numericUpDown11.Value = CDec(_input(zz).class_load(5) * 100)
-                numericUpDown12.Value = CDec(_input(zz).class_load(6) * 100)
-                numericUpDown13.Value = CDec(_input(zz).class_load(7) * 100)
+                numericUpDown6.Value = CDec(_cees(zz).class_load(0) * 100)
+                numericUpDown7.Value = CDec(_cees(zz).class_load(1) * 100)
+                numericUpDown8.Value = CDec(_cees(zz).class_load(2) * 100)
+                numericUpDown9.Value = CDec(_cees(zz).class_load(3) * 100)
+                numericUpDown10.Value = CDec(_cees(zz).class_load(4) * 100)
+                numericUpDown11.Value = CDec(_cees(zz).class_load(5) * 100)
+                numericUpDown12.Value = CDec(_cees(zz).class_load(6) * 100)
+                numericUpDown13.Value = CDec(_cees(zz).class_load(7) * 100)
 
-                NumericUpDown1.Value = CDec(_input(zz).Flow)        'Air flow
-                NumericUpDown4.Value = CDec(_input(zz).stofb)       'Dust inlet [g/Am3] 
-                ComboBox1.SelectedIndex = _input(zz).Ct             'Cyclone type
-                NumericUpDown20.Value = _input(zz).No_parallel      'Cyclone in parallel
-                numericUpDown13.Value = CDec(_input(zz).db)         'Diameter cyclone body
-                numericUpDown3.Value = CDec(_input(zz).ro_gas)      'Density [kg/hr]
-                numericUpDown2.Value = CDec(_input(zz).ro_solid)    'Density [kg/hr]
-                numericUpDown14.Value = CDec(_input(zz).visco)      'Visco in Centi Poise
-                NumericUpDown18.Value = CDec(_input(zz).Temp)       'Temperature [c]
-                NumericUpDown19.Value = CDec(_input(zz).Druk)       'Pressure [mbar]
+                NumericUpDown1.Value = CDec(_cees(zz).Flow)        'Air flow
+                NumericUpDown4.Value = CDec(_cees(zz).stofb)       'Dust inlet [g/Am3] 
+                ComboBox1.SelectedIndex = _cees(zz).Ct1             'Cyclone type
+                NumericUpDown20.Value = _cees(zz).No_par1      'Cyclone in parallel
+                numericUpDown13.Value = CDec(_cees(zz).db)         'Diameter cyclone body
+                numericUpDown3.Value = CDec(_cees(zz).ro_gas)      'Density [kg/hr]
+                numericUpDown2.Value = CDec(_cees(zz).ro_solid)    'Density [kg/hr]
+                numericUpDown14.Value = CDec(_cees(zz).visco)      'Visco in Centi Poise
+                NumericUpDown18.Value = CDec(_cees(zz).Temp)       'Temperature [c]
+                NumericUpDown19.Value = CDec(_cees(zz).Druk1)       'Pressure [mbar]
             End If
 
         Catch ex As Exception
