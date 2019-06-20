@@ -97,25 +97,24 @@ Public Class Form1
     "AC-550;0.25;0.57;0.6;0.58;0.3;0.45;0.56;0.892;3.36;1.312;2.048;0.4;0.6;0.6;0.25",
     "AC-750;0.216;0.486;0.6;0.57;0.3;0.365;0.56;0.892;3.36;1.312;2.048;0.4;0.6;0.6;0.25",
     "AC-850;0.203;0.457;0.6;0.564;0.3;0.307;0.428;0.892;3.797;1.312;2.485;0.4;0.6;0.6;0.25",
-    "AC-1850;0.136;0.31;0.6;0.53;0.3;0.15;0.25;0.892;3.797;1.312;2.485;0.4;0.6;0.6;0.25"}
+    "AC-850+afz;0.203;0.457;0.6;0.564;0.3;0.307;0.428;0.892;3.797;1.312;2.485;0.4;0.6;0.6;0.25",
+    "AC-1850;0.136;0.31;0.6;0.53;0.3;0.15;0.25;0.892;3.797;1.312;2.485;0.4;0.6;0.6;0.25",
+    "AC-1850+afz;0.136;0.31;0.6;0.53;0.3;0.15;0.25;0.892;3.797;1.312;2.485;0.4;0.6;0.6;0.25"}
 
     'Nieuwe reken methode, verdeling volgens Weibull verdeling
     'm1,k1,a1 als d < d_krit
     'm2,k2,a2 als d > d_krit
-    'type; d/krit; m1; k1; a1; m2; k2; a2
+    'type; d/krit; m1; k1; a1; m2; k2; a2; drukcoef air;drukcoef dust
     Public Shared rekenlijnen() As String = {
-    "AC300;     12.2;   1.15;   7.457;  1.005;      8.5308;     1.6102; 0.4789",
-    "AC350;     10.2;   1.0;    5.3515; 1.0474;     4.4862;     2.4257; 0.6472",
-    "AC435;     8.93;   0.69;   4.344;  1.139;      4.2902;     1.3452; 0.5890",
-    "AC550;     8.62;   0.527;  3.4708; 0.9163;     3.3211;     1.7857; 0.7104",
-    "AC750;     8.3;    0.50;   2.8803; 0.8355;     4.0940;     1.0519; 0.6010",
-    "AC850;     7.8;    0.52;   1.9418; 0.73705;    -0.1060;    2.0197; 0.7077",
-    "AC850+afz; 10;     0.5187; 1.6412; 0.8386;     4.2781;     0.06777;0.3315",
-    "AC1850;    9.3;    0.50;   1.1927; 0.5983;     -0.196;     1.3687; 0.6173",
-    "AC1850+afz;10.45;  0.4617; 0.2921; 0.4560;     -0.2396;    0.1269; 0.3633"}
-
-    Public weerstand_coef_air(7) As Double      'Inlet-air pressure loss calculation
-    Public weerstand_coef_dust(7) As Double     'Inlet-air pressure loss calculation
+    "AC300;     12.2;   1.15;   7.457;  1.005;      8.5308;     1.6102; 0.4789; 7;      0",
+    "AC350;     10.2;   1.0;    5.3515; 1.0474;     4.4862;     2.4257; 0.6472; 7;      7.927",
+    "AC435;     8.93;   0.69;   4.344;  1.139;      4.2902;     1.3452; 0.5890; 7;      8.26",
+    "AC550;     8.62;   0.527;  3.4708; 0.9163;     3.3211;     1.7857; 0.7104; 7;      7.615",
+    "AC750;     8.3;    0.50;   2.8803; 0.8355;     4.0940;     1.0519; 0.6010; 7.5;    6.606",
+    "AC850;     7.8;    0.52;   1.9418; 0.73705;    -0.1060;    2.0197; 0.7077; 9.5;    6.172",
+    "AC850+afz; 10;     0.5187; 1.6412; 0.8386;     4.2781;     0.06777;0.3315; 0;      0",
+    "AC1850;    9.3;    0.50;   1.1927; 0.5983;     -0.196;     1.3687; 0.6173; 14.5;   0",
+    "AC1850+afz;10.45;  0.4617; 0.2921; 0.4560;     -0.2396;    0.1269; 0.3633; 0;      0"}
 
     '----------- directory's-----------
     Dim dirpath_Eng As String = "N:\Engineering\VBasic\Cyclone_sizing_cees\"
@@ -137,10 +136,9 @@ Public Class Form1
 
         'Initialize the arrays in the struct
         For i = 0 To _cees.Length - 1
-            _cees(i).dia_big = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
+            _cees(i).dia_big = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}     'Initialize
             _cees(i).class_load = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}  'Initialize
         Next
-
 
         '------ allowed users with hard disc id's -----
         user_list.Add("user")
@@ -223,10 +221,6 @@ Public Class Form1
         Thread.CurrentThread.CurrentCulture = New CultureInfo("en-US")
         Thread.CurrentThread.CurrentUICulture = New CultureInfo("en-US")
 
-        'De weerstandscoefficient inlet-air volgt uit het cycloon type
-        weerstand_coef_air = {7, 7, 7, 7, 7.5, 9.5, 14.5}
-        weerstand_coef_dust = {0, 7.927, 8.26, 7.615, 6.606, 6.175, 0}
-
         For hh = 0 To (cyl_dimensions.Length - 1)  'Fill combobox1 cyclone types
             words = cyl_dimensions(hh).Split(CType(";", Char()))
             ComboBox1.Items.Add(words(0))
@@ -245,8 +239,8 @@ Public Class Form1
 
         Dust_load_correction()
         Get_case_input_and_calc(case_nr)    'This is the CASE number
-        Calc_stage1(case_nr)             'Calc according guus1
-        Calc_stage2(case_nr)             'Calc according guus1
+        Calc_stage1(case_nr)                'Calc according guus1
+        Calc_stage2(case_nr)                'Calc according guus1
     End Sub
     Private Sub Get_case_input_and_calc(ks As Integer)
         Dim db1 As Double           'Body diameter stage #1
@@ -320,17 +314,22 @@ Public Class Form1
             _cees(ks).outv2 = _cees(ks).Flow2 / ((PI / 4) * _cees(ks).dout2 ^ 2)   '[m/s]
 
             '----------- Pressure loss cyclone stage #1----------------------
-            wc_air1 = weerstand_coef_air(ComboBox1.SelectedIndex)
-            wc_dust1 = weerstand_coef_dust(ComboBox1.SelectedIndex)
-            _cees(ks).dpgas1 = 0.5 * ro_gas * _cees(ks).outv1 ^ 2 * wc_air1
-            _cees(ks).dpdust1 = 0.5 * ro_gas * _cees(ks).outv1 ^ 2 * wc_dust1
+            If ComboBox1.SelectedIndex > -1 Then
+                words = rekenlijnen(ComboBox1.SelectedIndex).Split(CType(";", Char()))
+                wc_air1 = CDbl(words(8))
+                wc_dust1 = CDbl(words(9))
+            End If
+            _cees(ks).dpgas1 = 0.5 * ro_gas * _cees(ks).inv1 ^ 2 * wc_air1
+            _cees(ks).dpdust1 = 0.5 * ro_gas * _cees(ks).inv1 ^ 2 * wc_dust1
 
             '----------- Pressure loss cyclone stage #2----------------------
-            wc_air2 = weerstand_coef_air(ComboBox2.SelectedIndex)
-            wc_dust2 = weerstand_coef_dust(ComboBox2.SelectedIndex)
-            _cees(ks).dpgas2 = 0.5 * ro_gas * _cees(ks).outv2 ^ 2 * wc_air2
-            _cees(ks).dpdust2 = 0.5 * ro_gas * _cees(ks).outv2 ^ 2 * wc_dust2
-
+            If ComboBox2.SelectedIndex > -1 Then
+                words = rekenlijnen(ComboBox2.SelectedIndex).Split(CType(";", Char()))
+                wc_air2 = CDbl(words(8))
+                wc_dust2 = CDbl(words(9))
+            End If
+            _cees(ks).dpgas2 = 0.5 * ro_gas * _cees(ks).inv2 ^ 2 * wc_air2
+            _cees(ks).dpdust2 = 0.5 * ro_gas * _cees(ks).inv2 ^ 2 * wc_dust2
 
             '----------- stof belasting ------------
             kgs = _cees(ks).Flow1 * _cees(ks).stofb1 / 1000     '[kg/s/cycloon]
@@ -342,7 +341,7 @@ Public Class Form1
             _cees(ks).Kstokes2 = Sqrt(db2 * 2000 * visco * 16 / (ro_solid * 0.0181 * _cees(ks).inv2))
 
             '----------- presenteren ----------------------------------
-            TextBox36.Text = _cees(ks).Flow1.ToString("0.000")                 '[m3/s] flow
+            TextBox36.Text = (_cees(ks).FlowT / 3600).ToString("0.0")                 '[m3/s] flow
 
             '----------- presenteren afmetingen ------------------------------
             TextBox1.Text = (_cees(ks).inh1).ToString("0.000")          'inlaat breedte
@@ -361,23 +360,21 @@ Public Class Form1
             TextBox14.Text = (_cyl1_dim(14) * db1).ToString("0.000")    'Lengte 3P conus
             TextBox15.Text = (_cyl1_dim(15) * db1).ToString("0.000")    'Kleine dia 3P-conus
 
-            TextBox84.Text = (_cees(ks).inh2).ToString("0.000")          'inlaat breedte
-            TextBox85.Text = (_cees(ks).inb2).ToString("0.000")          'Inlaat hoogte
-            TextBox86.Text = (_cyl1_dim(3) * db2).ToString("0.000")      'Inlaat lengte
-            TextBox87.Text = (_cyl1_dim(4) * db2).ToString("0.000")      'Inlaat hartmaat
-            TextBox88.Text = (_cyl1_dim(5) * db2).ToString("0.000")      'Inlaat afschuining
-            TextBox89.Text = (_cyl1_dim(6) * db2).ToString("0.000")      'Uitlaat keeldia inw.
-            TextBox90.Text = (_cyl1_dim(7) * db2).ToString("0.000")      'Uitlaat flensdiameter inw.
-            TextBox91.Text = (_cyl1_dim(8) * db2).ToString("0.000")      'Lengte insteekpijp inw.
-            TextBox92.Text = (_cyl1_dim(9) * db2).ToString("0.000")      'Lengte romp + conus
+            TextBox84.Text = (_cees(ks).inh2).ToString("0.000")         'inlaat breedte
+            TextBox85.Text = (_cees(ks).inb2).ToString("0.000")         'Inlaat hoogte
+            TextBox86.Text = (_cyl1_dim(3) * db2).ToString("0.000")     'Inlaat lengte
+            TextBox87.Text = (_cyl1_dim(4) * db2).ToString("0.000")     'Inlaat hartmaat
+            TextBox88.Text = (_cyl1_dim(5) * db2).ToString("0.000")     'Inlaat afschuining
+            TextBox89.Text = (_cyl1_dim(6) * db2).ToString("0.000")     'Uitlaat keeldia inw.
+            TextBox90.Text = (_cyl1_dim(7) * db2).ToString("0.000")     'Uitlaat flensdiameter inw.
+            TextBox91.Text = (_cyl1_dim(8) * db2).ToString("0.000")     'Lengte insteekpijp inw.
+            TextBox92.Text = (_cyl1_dim(9) * db2).ToString("0.000")     'Lengte romp + conus
             TextBox93.Text = (_cyl1_dim(10) * db2).ToString("0.000")    'Lengte romp
             TextBox94.Text = (_cyl1_dim(11) * db2).ToString("0.000")    'Lengte çonus
             TextBox95.Text = (_cyl1_dim(12) * db2).ToString("0.000")    'Dia_conus / 3P-pijp
             TextBox96.Text = (_cyl1_dim(13) * db2).ToString("0.000")    'Lengte 3P-pijp
             TextBox97.Text = (_cyl1_dim(14) * db2).ToString("0.000")    'Lengte 3P conus
             TextBox98.Text = (_cyl1_dim(15) * db2).ToString("0.000")    'Kleine dia 3P-conus
-
-
 
             TextBox16.Text = _cees(ks).inv1.ToString("0.0")             'inlaat snelheid
             TextBox80.Text = _cees(ks).inv2.ToString("0.0")             'inlaat snelheid
@@ -395,8 +392,8 @@ Public Class Form1
             TextBox23.Text = _cees(ks).Kstokes1.ToString("0.000")       'Stokes waarde 
             TextBox78.Text = _cees(ks).Kstokes2.ToString("0.000")       'Stokes waarde 
 
-            TextBox37.Text = _cees(ks).db1.ToString              'Cycloone diameter
-            TextBox74.Text = _cees(ks).db2.ToString            'Cycloone diameter
+            TextBox37.Text = _cees(ks).db1.ToString                     'Cycloone diameter
+            TextBox74.Text = _cees(ks).db2.ToString                     'Cycloone diameter
 
             TextBox38.Text = CType(ComboBox1.SelectedItem, String)      'Cycloon type
             TextBox73.Text = CType(ComboBox2.SelectedItem, String)      'Cycloon type
@@ -509,7 +506,9 @@ Public Class Form1
 
             TextBox39.Text = kgh.ToString("0")          'Stof inlet
             TextBox40.Text = tot_kgh.ToString("0")      'Dust inlet [g/Am3] 
-            TextBox71.Text = _cees(ks).stofb1.ToString  'Dust inlet [g/Am3] 
+            TextBox71.Text = _cees(ks).stofb1.ToString  'Dust inlet [g/Am3]
+
+            TextBox102.Text = Calc_dia_particle(1.0, _cees(ks).Kstokes2).ToString("0.000")     '[mu] @ 100% loss
         End If
 
 
@@ -563,7 +562,6 @@ Public Class Form1
         _cees(c_nr).visco = numericUpDown14.Value           'Visco in Centi Poise
         _cees(c_nr).Temp = NumericUpDown18.Value            'Temperature [c]
         _cees(c_nr).Druk1 = NumericUpDown19.Value           'Pressure [mbar]
-
 
         '-------- Check -- bigger diameter must have bigger cummulative weight
         numericUpDown6.BackColor = CType(IIf(numericUpDown6.Value > numericUpDown7.Value, Color.LightGreen, Color.Red), Color)
