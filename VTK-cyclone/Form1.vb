@@ -81,7 +81,8 @@ Public Class Form1
     Public _cyl2_dim(20) As Double          'Cyclone stage #2 dimensions
 
     Public _cees(20) As Input_struct        '20 Case's data
-    Public guus1(150) As GvG_Calc_struct    'tbv calculatie
+    Public guus1(150) As GvG_Calc_struct    'tbv calculatie stage #1
+    Public guus2(150) As GvG_Calc_struct    'tbv calculatie stage #1
 
     'Type AC;Inlaatbreedte;Inlaathoogte;Inlaatlengte;Inlaat hartmaat;Inlaat afschuining;
     'Uitlaat keeldia inw.;Uitlaat flensdiameter inw.;Lengte insteekpijp inw.;
@@ -242,7 +243,7 @@ Public Class Form1
 
         Dust_load_correction()
         Get_case_input_and_calc(case_nr)    'This is the CASE number
-        Calc_loss_gvg(case_nr)             'Calc according guus1
+        Calc_loss_gvg1(case_nr)             'Calc according guus1
     End Sub
     Private Sub Get_case_input_and_calc(ks As Integer)
         Dim db1 As Double           'Body diameter stage #1
@@ -505,6 +506,7 @@ Public Class Form1
 
             TextBox39.Text = kgh.ToString("0")          'Stof inlet
             TextBox40.Text = tot_kgh.ToString("0")      'Dust inlet [g/Am3] 
+            TextBox71.Text = _cees(ks).stofb1.ToString  'Dust inlet [g/Am3] 
         End If
 
 
@@ -701,8 +703,38 @@ Public Class Form1
         Dim f1, f2, f3, f4, f, f_used As Double
         Dim dst As Double
 
+        '============ stage 1 cyclone ==========
         dst = NumericUpDown4.Value / 1000 'Dust load dimension is [kg/Am3}
+        f1 = 0.97833 + 2.918055 * dst - 39.3739 * dst ^ 2 + 472.0149 * dst ^ 3 - 769.586 * dst ^ 4
+        f2 = -0.30338 + 21.91961 * dst - 73.5039 * dst ^ 2 + 112.485 * dst ^ 3 - 63.4408 * dst ^ 4
+        f3 = 2.043212 + 0.725352 * dst - 0.2663 * dst ^ 2 + 0.04299 * dst ^ 3 - 0.00233 * dst ^ 4
+        f4 = 2.853325 + 0.019026 * dst - 0.00036 * dst ^ 2 + 0.000003 * dst ^ 3 - 0.0000000065 * dst ^ 4
 
+        Select Case dst
+            Case < 0.02
+                f = 1
+            Case < 0.14
+                f = f1
+            Case < 0.7
+                f = f2
+            Case < 9.1
+                f = f3
+            Case Else
+                f = f4
+        End Select
+
+        If (CheckBox2.Checked) Then
+            f_used = f
+        Else
+            f_used = 1
+        End If
+
+        TextBox47.Text = f.ToString("0.000")
+        TextBox55.Text = f_used.ToString("0.000")
+
+
+        '============ stage 2 cyclone ==========
+        dst = NumericUpDown4.Value / 1000 'Dust load dimension is [kg/Am3}
         f1 = 0.97833 + 2.918055 * dst - 39.3739 * dst ^ 2 + 472.0149 * dst ^ 3 - 769.586 * dst ^ 4
         f2 = -0.30338 + 21.91961 * dst - 73.5039 * dst ^ 2 + 112.485 * dst ^ 3 - 63.4408 * dst ^ 4
         f3 = 2.043212 + 0.725352 * dst - 0.2663 * dst ^ 2 + 0.04299 * dst ^ 3 - 0.00233 * dst ^ 4
@@ -829,7 +861,7 @@ Public Class Form1
     Private Sub Button2_Click(sender As Object, e As EventArgs) Handles Button2.Click, TabPage9.Enter, CheckBox1.CheckedChanged
         Dim case_nr As Integer = CInt(NumericUpDown30.Value)
 
-        Calc_loss_gvg(case_nr)      'Calc according guus1
+        Calc_loss_gvg1(case_nr)      'Calc according guus1
         Present_loss_grid()         'Present the results
         Draw_chart1(Chart1)
     End Sub
@@ -1427,7 +1459,7 @@ Public Class Form1
         DataGridView2.Rows.Item(111).Cells(16).Value = total_abs_loss.ToString
         DataGridView2.Rows.Item(111).Cells(17).Value = total_abs_loss_C.ToString
     End Sub
-    Private Sub Calc_loss_gvg(ks As Integer)
+    Private Sub Calc_loss_gvg1(ks As Integer)
         'This is the standard VTK cyclone calculation 
         Dim i As Integer = 0
         Dim dia_max As Double         'Above this diameter everything is caught
@@ -1526,6 +1558,127 @@ Public Class Form1
             sum_psd_diff += guus1(i).psd_dif
             sum_loss += guus1(i).loss_abs
             sum_loss_C += guus1(i).loss_abs_C
+        Next
+        loss_total = sum_loss_C + ((100 - sum_psd_diff) * perc_smallest_part)
+
+        '----------- present -----------
+        TextBox56.Text = ComboBox1.Text
+        TextBox57.Text = CheckBox2.Checked.ToString
+
+        If CheckBox2.Checked Then
+            TextBox58.Text = loss_total.ToString("0.00000")    'Corrected
+            TextBox59.Text = (100 - loss_total).ToString("0.000")
+            TextBox21.Text = TextBox59.Text
+            TextBox60.Text = (NumericUpDown4.Value * loss_total / 100).ToString("0.000")
+            TextBox18.Text = TextBox60.Text
+        Else
+            TextBox58.Text = sum_loss.ToString("0.00000")      'NOT Corrected
+            TextBox59.Text = (100 - sum_loss).ToString("0.000")
+            TextBox21.Text = TextBox59.Text
+            TextBox60.Text = (NumericUpDown4.Value * sum_loss / 100).ToString("0.000")
+            TextBox18.Text = TextBox60.Text
+        End If
+    End Sub
+
+    Private Sub Calc_loss_gvg2(ks As Integer)
+        'This is the standard VTK cyclone calculation 
+        Dim i As Integer = 0
+        Dim dia_max As Double         'Above this diameter everything is caught
+        Dim dia_min As Double       'Below this diameter nothing is caught
+        Dim istep As Double         'Particle diameter step
+        Dim sum_loss As Double
+        Dim sum_loss_C As Double
+        Dim sum_psd_diff As Double
+        Dim loss_total As Double
+        Dim perc_smallest_part As Double
+        Dim fac_m As Double
+        Dim words() As String
+
+        guus2(i).dia = Calc_dia_particle(1.0, _cees(ks).Kstokes1)
+        guus2(i).d_ave = guus2(0).dia / 2                                 'Average diameter
+        guus2(i).d_ave_K = guus2(0).d_ave / _cees(ks).Kstokes1            'dia/k_stokes
+        guus2(i).loss_overall = Calc_verlies(guus2(0).d_ave_K, False, _cees(ks).Kstokes1)     '[-] loss overall
+        Calc_verlies_corrected(guus2(0))                                 '[-] loss overall corrected
+        guus2(i).catch_chart = (1 - guus2(i).loss_overall_C) * 100        '[%]
+        guus2(i).i_grp = Find_class_limits(guus2(i).dia, 5)               'groepnummer
+        guus2(i).i_d1 = Find_class_limits(guus2(i).dia, 1)                'Lower limit diameter
+        guus2(i).i_d2 = Find_class_limits(guus2(i).dia, 2)                'Upper limit diameter
+        guus2(i).i_p1 = Find_class_limits(guus2(i).dia, 3)                'Percentage
+        guus2(i).i_p2 = Find_class_limits(guus2(i).dia, 4)                'Percentage
+
+        guus2(i).i_k = Log(Math.Log(guus2(i).i_p1) / Math.Log(guus2(i).i_p2))
+        guus2(i).i_k /= Log(guus2(i).i_d1 / guus2(i).i_d2)
+        guus2(i).i_m = guus2(i).i_d1 / ((-Log(guus2(i).i_p1)) ^ (1 / guus2(i).i_k))
+        guus2(i).psd_cum = Math.E ^ (-((guus2(i).dia / guus2(i).i_m) ^ guus2(i).i_k))
+        guus2(i).psd_cump = guus2(i).psd_cum * 100
+        guus2(i).psd_dif = 100 * (1 - guus2(i).psd_cum)
+        guus2(i).loss_abs = guus2(i).loss_overall * guus2(i).psd_dif
+        guus2(i).loss_abs_C = guus2(i).loss_overall_C * guus2(i).psd_dif
+
+        sum_psd_diff = guus2(i).psd_dif
+        sum_loss = guus2(i).loss_abs
+        sum_loss_C = guus2(i).loss_abs_C
+
+        '------ increment step --------
+        'stapgrootte bij 110-staps logaritmische verdeling van het
+        'deeltjesdiameter-bereik van loss=100% tot 0,00000001%
+        'Deze wordt gebruikt voor het opstellen van de gefractioneerde
+        'verliescurve.
+
+        '-------------- korrelgrootte factoren ------
+        If ComboBox1.SelectedIndex > -1 Then
+            words = rekenlijnen(ComboBox1.SelectedIndex).Split(CType(";", Char()))
+            '---- diameter kleiner dan dia kritisch
+            fac_m = CDbl(words(2))
+        End If
+
+        perc_smallest_part = 0.0000001                      'smallest particle [%]
+        dia_max = Calc_dia_particle(perc_smallest_part, _cees(ks).Kstokes1)     '=100% loss (biggest particle)
+        dia_min = _cees(ks).Kstokes1 * fac_m                'diameter smallest particle caught
+        istep = (dia_max / dia_min) ^ (1 / 110)             'Calculation step
+
+        TextBox51.Text = dia_max.ToString("0")              'diameter [mu] 100% catch
+        TextBox52.Text = dia_min.ToString("0.00")           'diameter [mu] 100% loss
+
+        'TextBox24.Text &= "dia_min = " & dia_min.ToString & vbCrLf
+        'TextBox24.Text &= "dia_max = " & dia_max.ToString & vbCrLf
+        'TextBox24.Text &= "istep = " & istep.ToString & vbCrLf
+
+        For i = 1 To 110
+            guus2(i).dia = guus2(i - 1).dia * istep
+            guus2(i).d_ave = (guus2(i - 1).dia + guus2(i).dia) / 2         'Average diameter
+            guus2(i).d_ave_K = guus2(i).d_ave / _cees(ks).Kstokes1         'dia/k_stokes
+            guus2(i).loss_overall = Calc_verlies(guus2(i).d_ave, False, _cees(ks).Kstokes1)   '[-] loss overall
+            Calc_verlies_corrected(guus2(i))                             '[-] loss overall corrected
+            If CheckBox2.Checked Then
+                guus2(i).catch_chart = (1 - guus2(i).loss_overall_C) * 100  '[%] Corrected
+            Else
+                guus2(i).catch_chart = (1 - guus2(i).loss_overall) * 100    '[%] NOT corrected
+            End If
+            guus2(i).i_grp = Find_class_limits(guus2(i).dia, 5)         'groepnummer
+            guus2(i).i_d1 = Find_class_limits(guus2(i).dia, 1)          'Lower diameter limit
+            guus2(i).i_d2 = Find_class_limits(guus2(i).dia, 2)          'Upper diameter limit
+            guus2(i).i_p1 = Find_class_limits(guus2(i).dia, 3)          'Percentage
+            guus2(i).i_p2 = Find_class_limits(guus2(i).dia, 4)          'Percentage
+            If guus2(i).i_p2 > 0.001 Then 'to prevent silly results
+                guus2(i).i_k = Log(Log(guus2(i).i_p1) / Log(guus2(i).i_p2)) / Log(guus2(i).i_d1 / guus2(i).i_d2)
+                guus2(i).i_m = guus2(i).i_d1 / ((-Log(guus2(i).i_p1)) ^ (1 / guus2(i).i_k))
+                guus2(i).psd_cum = Math.E ^ (-((guus2(i).dia / guus2(i).i_m) ^ guus2(i).i_k))
+                guus2(i).psd_cump = guus2(i).psd_cum * 100
+                guus2(i).psd_dif = 100 * (guus2(i - 1).psd_cum - guus2(i).psd_cum)
+            Else
+                guus2(i).i_k = 0
+                guus2(i).i_m = 0
+                guus2(i).psd_cum = 0
+                guus2(i).psd_cump = 0
+                guus2(i).psd_dif = 0
+            End If
+            guus2(i).loss_abs = guus2(i).loss_overall * guus2(i).psd_dif
+            guus2(i).loss_abs_C = guus2(i).loss_overall_C * guus2(i).psd_dif
+            '----- sum value -----
+            sum_psd_diff += guus2(i).psd_dif
+            sum_loss += guus2(i).loss_abs
+            sum_loss_C += guus2(i).loss_abs_C
         Next
         loss_total = sum_loss_C + ((100 - sum_psd_diff) * perc_smallest_part)
 
