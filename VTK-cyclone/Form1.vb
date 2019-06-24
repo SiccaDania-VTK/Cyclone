@@ -33,9 +33,10 @@ Public Structure Input_struct
     Public dout1 As Double          '[m] diameter zakbuis
     Public inv1 As Double           '[m/s] Inlet velocity cyclone
     Public outv1 As Double          '[m/s] Outlet velocity cyclone
-    Public Kstokes1 As Double
+    Public Kstokes1 As Double       'Stokes getal
     Public dpgas1 As Double         '[Pa] pressure loss gas
     Public dpdust1 As Double        '[Pa] pressure loss dust
+    Public m1 As Double             'm factor loss curve d< dia critical
 
     '===== stage #2 ======
     Public Flow2 As Double          '[Am3/s] Air flow per cyclone 
@@ -53,7 +54,7 @@ Public Structure Input_struct
     Public Kstokes2 As Double
     Public dpgas2 As Double         '[Pa] pressure loss gas
     Public dpdust2 As Double        '[Pa] pressure loss dust
-
+    Public m2 As Double             'm factor loss curve d< dia critical
 End Structure
 
 'Variables used by GvG in calculation
@@ -285,6 +286,7 @@ Public Class Form1
 
             _cees(ks).Noc1 = CInt(NumericUpDown20.Value) 'Paralelle cyclonen
             _cees(ks).Noc2 = CInt(NumericUpDown33.Value) 'Paralelle cyclonen
+            _cees(ks).Druk1 = NumericUpDown19.Value + 1013.25  'Pressure [mbar]
 
             db1 = numericUpDown5.Value / 1000            '[m] Body diameter
             db2 = NumericUpDown34.Value / 1000           '[m] Body diameter
@@ -299,28 +301,33 @@ Public Class Form1
 
             _cees(ks).stofb1 = NumericUpDown4.Value     '[g/Am3]
             _cees(ks).FlowT = NumericUpDown1.Value      '[m3/h] 
-            _cees(ks).Flow1 = _cees(ks).FlowT / (3600 * _cees(ks).Noc1) '[m3/s/cycloon]
-            _cees(ks).Flow2 = _cees(ks).FlowT / (3600 * _cees(ks).Noc2) '[m3/s/cycloon]
+            _cees(ks).Flow1 = _cees(ks).FlowT / (3600 * _cees(ks).Noc1) '[Am3/s/cycloon]
+
             ro_gas = numericUpDown3.Value               '[kg/m3]
             ro_solid = numericUpDown2.Value             '[kg/m3]
             visco = numericUpDown14.Value               '[cPoise]
 
-            '----------- inlaat snelheid stage #1 and #2 ---------------------
+            '=========== Stage #1 ==============
             _cees(ks).inv1 = _cees(ks).Flow1 / (_cees(ks).inb1 * _cees(ks).inh1)
-            _cees(ks).inv2 = _cees(ks).Flow2 / (_cees(ks).inb2 * _cees(ks).inh2)
-
-            '----------- uitlaat snelheid ---------------------
             _cees(ks).outv1 = _cees(ks).Flow1 / ((PI / 4) * _cees(ks).dout1 ^ 2)   '[m/s]
-            _cees(ks).outv2 = _cees(ks).Flow2 / ((PI / 4) * _cees(ks).dout2 ^ 2)   '[m/s]
 
-            '----------- Pressure loss cyclone stage #1----------------------
             If ComboBox1.SelectedIndex > -1 Then
                 words = rekenlijnen(ComboBox1.SelectedIndex).Split(CType(";", Char()))
-                wc_air1 = CDbl(words(8))
-                wc_dust1 = CDbl(words(9))
+                wc_air1 = CDbl(words(8))        'Resistance Coefficient air
+                wc_dust1 = CDbl(words(9))       'Resistance Coefficient dust
             End If
             _cees(ks).dpgas1 = 0.5 * ro_gas * _cees(ks).inv1 ^ 2 * wc_air1
             _cees(ks).dpdust1 = 0.5 * ro_gas * _cees(ks).inv1 ^ 2 * wc_dust1
+
+            '=========== Stage #2 ==============
+            _cees(ks).Druk2 = _cees(ks).Druk1 - _cees(ks).dpgas1 / 100 '[mbar]
+            _cees(ks).Flow2 = _cees(ks).FlowT / (3600 * _cees(ks).Noc2) '[Am3/s/cycloon]
+
+            '---- Compensate for the Flow for the pressure loss in stage #1 ----
+            _cees(ks).Flow2 *= _cees(ks).Druk1 / _cees(ks).Druk2
+            _cees(ks).inv2 = _cees(ks).Flow2 / (_cees(ks).inb2 * _cees(ks).inh2)
+            _cees(ks).outv2 = _cees(ks).Flow2 / ((PI / 4) * _cees(ks).dout2 ^ 2)   '[m/s]
+
 
             '----------- Pressure loss cyclone stage #2----------------------
             If ComboBox2.SelectedIndex > -1 Then
@@ -376,6 +383,9 @@ Public Class Form1
             TextBox97.Text = (_cyl1_dim(14) * db2).ToString("0.000")    'Lengte 3P conus
             TextBox98.Text = (_cyl1_dim(15) * db2).ToString("0.000")    'Kleine dia 3P-conus
 
+            TextBox113.Text = (_cees(ks).Flow1 * 3600).ToString("0")          '[Am3/s] Cycloone Flow
+            TextBox112.Text = (_cees(ks).Flow2 * 3600).ToString("0")          '[Am3/s] Cycloone Flow
+
             TextBox16.Text = _cees(ks).inv1.ToString("0.0")             'inlaat snelheid
             TextBox80.Text = _cees(ks).inv2.ToString("0.0")             'inlaat snelheid
             TextBox17.Text = _cees(ks).dpgas1.ToString("0")             '[Pa] Pressure loss inlet-gas
@@ -389,14 +399,17 @@ Public Class Form1
             TextBox22.Text = _cees(ks).outv1.ToString("0.0")            'uitlaat snelheid
             TextBox77.Text = _cees(ks).outv2.ToString("0.0")            'uitlaat snelheid
 
-            TextBox23.Text = _cees(ks).Kstokes1.ToString("0.000")       'Stokes waarde 
-            TextBox78.Text = _cees(ks).Kstokes2.ToString("0.000")       'Stokes waarde 
+            TextBox23.Text = _cees(ks).Kstokes1.ToString("0.0000")       'Stokes waarde stage#1
+            TextBox78.Text = _cees(ks).Kstokes2.ToString("0.00000")       'Stokes waarde stage#1
 
             TextBox37.Text = _cees(ks).db1.ToString                     'Cycloone diameter
             TextBox74.Text = _cees(ks).db2.ToString                     'Cycloone diameter
 
             TextBox38.Text = CType(ComboBox1.SelectedItem, String)      'Cycloon type
             TextBox73.Text = CType(ComboBox2.SelectedItem, String)      'Cycloon type
+
+
+
 
             Draw_chart1(Chart1)
             Draw_chart2(Chart2)
@@ -508,7 +521,7 @@ Public Class Form1
             TextBox40.Text = tot_kgh.ToString("0")      'Dust inlet [g/Am3] 
             TextBox71.Text = _cees(ks).stofb1.ToString  'Dust inlet [g/Am3]
 
-            TextBox102.Text = Calc_dia_particle(1.0, _cees(ks).Kstokes2).ToString("0.000")     '[mu] @ 100% loss
+            TextBox102.Text = Calc_dia_particle(1.0, _cees(ks).Kstokes2).ToString("0.0000")     '[mu] @ 100% loss
         End If
 
 
@@ -547,7 +560,6 @@ Public Class Form1
         _cees(c_nr).class_load(8) = NumericUpDown38.Value / 100
         _cees(c_nr).class_load(9) = NumericUpDown39.Value / 100
         _cees(c_nr).class_load(10) = NumericUpDown40.Value / 100
-
 
         _cees(c_nr).FlowT = NumericUpDown1.Value         'Air flow
         _cees(c_nr).stofb1 = NumericUpDown4.Value            'Dust inlet [g/Am3] 
@@ -660,7 +672,8 @@ Public Class Form1
         Dim dia_Kcrit As Double
         Dim d1, d2 As Double
         Dim cor1, cor2 As Double 'Insteek pijp
-        Dim fac_m, fac_k, fac_a As Double
+        Dim fac_m1, fac_k1, fac_a1 As Double
+        Dim fac_m2, fac_k2, fac_a2 As Double
 
         If qq > 1 Then MessageBox.Show("Loss > 100% is impossible, Line 486, qq= " & qq.ToString)
 
@@ -679,22 +692,23 @@ Public Class Form1
             '=$K$38*$B$51*((-LN(H56^(1/($B$54*$B$64))))^(1/$K$40))+$K$36*$B$51
 
             '---- diameter particle kleiner dan de diameter kritisch
-            fac_m = CDbl(words(2))
-            fac_k = CDbl(words(3))
-            fac_a = CDbl(words(4))
-            d1 = fac_k * stokes * ((-Math.Log(qq ^ (1 / (cor1 * cor2))))) ^ (1 / fac_a) + fac_m * stokes
+            fac_m1 = CDbl(words(2))
+            fac_k1 = CDbl(words(3))
+            fac_a1 = CDbl(words(4))
+            d1 = fac_k1 * stokes * ((-Math.Log(qq ^ (1 / (cor1 * cor2))))) ^ (1 / fac_a1) + fac_m1 * stokes
 
             '---- diameter particle groter dan de diameter kritisch
-            fac_m = CDbl(words(5))
-            fac_k = CDbl(words(6))
-            fac_a = CDbl(words(7))
-            d2 = fac_k * stokes * ((-Math.Log(qq ^ (1 / (cor1 * cor2))))) ^ (1 / fac_a) + fac_m * stokes
+            fac_m2 = CDbl(words(5))
+            fac_k2 = CDbl(words(6))
+            fac_a2 = CDbl(words(7))
+            d2 = fac_k2 * stokes * ((-Math.Log(qq ^ (1 / (cor1 * cor2))))) ^ (1 / fac_a2) + fac_m2 * stokes
 
             If ((d1 / stokes) < dia_Kcrit) Then
                 dia_result = d1     'diameter kleiner kritisch
             Else
                 dia_result = d2     'diameter groter kritisch
             End If
+
 
         End If
         Return (dia_result)
@@ -1039,7 +1053,7 @@ Public Class Form1
                     count += 1
                     _cees(j).Temp = CDbl(words(count))     'Temperature [c]
                     count += 1
-                    _cees(j).Druk1 = CDbl(words(count))     'Pressure [mbar]
+                    _cees(j).Druk1 = CDbl(words(count))    'Pressure [mbar]
                     count += 1
 
                     For k = 0 To 7         '8 elements
