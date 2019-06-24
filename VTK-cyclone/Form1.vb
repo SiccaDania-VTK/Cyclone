@@ -509,7 +509,7 @@ Public Class Form1
 
 
             '---------- Calc diameter with x% loss ---
-            '---------- present -------
+            '---------- present stage #1 -------
             TextBox42.Text = Calc_dia_particle(1.0, _cees(ks).Kstokes1).ToString("0.000")     '[mu] @ 100% loss
             TextBox26.Text = Calc_dia_particle(0.95, _cees(ks).Kstokes1).ToString("0.000")    '[mu] @  95% lost
             TextBox31.Text = Calc_dia_particle(0.9, _cees(ks).Kstokes1).ToString("0.000")     '[mu] @  90% lost
@@ -521,7 +521,14 @@ Public Class Form1
             TextBox40.Text = tot_kgh.ToString("0")      'Dust inlet [g/Am3] 
             TextBox71.Text = _cees(ks).stofb1.ToString  'Dust inlet [g/Am3]
 
-            TextBox102.Text = Calc_dia_particle(1.0, _cees(ks).Kstokes2).ToString("0.0000")     '[mu] @ 100% loss
+            '---------- present stage #2 -------
+            TextBox102.Text = Calc_dia_particle(1.0, _cees(ks).Kstokes2).ToString("0.000")    '[mu] @  95% lost
+            TextBox103.Text = Calc_dia_particle(0.95, _cees(ks).Kstokes2).ToString("0.000")    '[mu] @  95% lost
+            TextBox104.Text = Calc_dia_particle(0.9, _cees(ks).Kstokes2).ToString("0.000")     '[mu] @  90% lost
+            TextBox105.Text = Calc_dia_particle(0.5, _cees(ks).Kstokes2).ToString("0.000")     '[mu] @  50% lost
+            TextBox106.Text = Calc_dia_particle(0.1, _cees(ks).Kstokes2).ToString("0.000")     '[mu] @  10% lost
+            TextBox107.Text = Calc_dia_particle(0.05, _cees(ks).Kstokes2).ToString("0.000")    '[mu] @   5% lost
+
         End If
 
 
@@ -674,6 +681,7 @@ Public Class Form1
         Dim cor1, cor2 As Double 'Insteek pijp
         Dim fac_m1, fac_k1, fac_a1 As Double
         Dim fac_m2, fac_k2, fac_a2 As Double
+
 
         If qq > 1 Then MessageBox.Show("Loss > 100% is impossible, Line 486, qq= " & qq.ToString)
 
@@ -1592,17 +1600,12 @@ Public Class Form1
             fac_m = CDbl(words(2))
         End If
 
+
         perc_smallest_part = 0.0000001                      'smallest particle [%]
         dia_max = Calc_dia_particle(perc_smallest_part, _cees(ks).Kstokes1)     '=100% loss (biggest particle)
         dia_min = _cees(ks).Kstokes1 * fac_m                'diameter smallest particle caught
+
         istep = (dia_max / dia_min) ^ (1 / 110)             'Calculation step
-
-        TextBox51.Text = dia_max.ToString("0")              'diameter [mu] 100% catch
-        TextBox52.Text = dia_min.ToString("0.00")           'diameter [mu] 100% loss
-
-        'TextBox24.Text &= "dia_min = " & dia_min.ToString & vbCrLf
-        'TextBox24.Text &= "dia_max = " & dia_max.ToString & vbCrLf
-        'TextBox24.Text &= "istep = " & istep.ToString & vbCrLf
 
         For i = 1 To 110
             guus1(i).dia = guus1(i - 1).dia * istep
@@ -1646,6 +1649,8 @@ Public Class Form1
 
 
         '----------- present -----------
+        TextBox51.Text = dia_max.ToString("0")              'diameter [mu] 100% catch
+        TextBox52.Text = dia_min.ToString("0.00")           'diameter [mu] 100% loss
         TextBox56.Text = ComboBox1.Text
         TextBox57.Text = CheckBox2.Checked.ToString
         TextBox70.Text = _cees(ks).stofb2.ToString("0.000")
@@ -1720,23 +1725,16 @@ Public Class Form1
         'verliescurve.
 
         '-------------- korrelgrootte factoren ------
-        If ComboBox1.SelectedIndex > -1 Then
-            words = rekenlijnen(ComboBox1.SelectedIndex).Split(CType(";", Char()))
+        If ComboBox2.SelectedIndex > -1 Then
+            words = rekenlijnen(ComboBox2.SelectedIndex).Split(CType(";", Char()))
             '---- diameter kleiner dan dia kritisch
             fac_m = CDbl(words(2))
         End If
 
         perc_smallest_part = 0.0000001                      'smallest particle [%]
-        dia_max = Calc_dia_particle(perc_smallest_part, _cees(ks).Kstokes1)     '=100% loss (biggest particle)
-        dia_min = _cees(ks).Kstokes1 * fac_m                'diameter smallest particle caught
+        dia_max = Calc_dia_particle(perc_smallest_part, _cees(ks).Kstokes2)     '=100% loss (biggest particle)
+        dia_min = _cees(ks).Kstokes2 * fac_m                'diameter smallest particle caught
         istep = (dia_max / dia_min) ^ (1 / 110)             'Calculation step
-
-        TextBox51.Text = dia_max.ToString("0")              'diameter [mu] 100% catch
-        TextBox52.Text = dia_min.ToString("0.00")           'diameter [mu] 100% loss
-
-        'TextBox24.Text &= "dia_min = " & dia_min.ToString & vbCrLf
-        'TextBox24.Text &= "dia_max = " & dia_max.ToString & vbCrLf
-        'TextBox24.Text &= "istep = " & istep.ToString & vbCrLf
 
         For i = 1 To 110
             guus2(i).dia = guus1(i).dia
@@ -1781,6 +1779,9 @@ Public Class Form1
         '----------- present -----------
         TextBox63.Text = ComboBox2.Text
         TextBox64.Text = CheckBox3.Checked.ToString
+        TextBox110.Text = dia_max.ToString("0")              'diameter [mu] 100% catch
+        TextBox111.Text = dia_min.ToString("0.00")           'diameter [mu] 100% loss
+
 
         If CheckBox2.Checked Then
             TextBox65.Text = loss_total.ToString("0.00000")    'Corrected
