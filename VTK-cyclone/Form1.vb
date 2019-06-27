@@ -71,8 +71,8 @@ Public Structure GvG_Calc_struct
     Public i_grp As Double          'Particle Groepnummer
     Public i_d1 As Double           'Class diameter lower[mu]
     Public i_d2 As Double           'Class diameter upper[mu]
-    Public i_p1 As Double           'Interpolatie
-    Public i_p2 As Double           'Interpolatie
+    Public i_p1 As Double           'Interpolatie 1
+    Public i_p2 As Double           'Interpolatie 2
     Public i_k As Double            'Parameter k
     Public i_m As Double            'Parameter m
     Public psd_cum As Double        'Partice Size Distribution cummulatief
@@ -887,8 +887,10 @@ Public Class Form1
 
         Dust_load_correction()
         If ComboBox1.SelectedIndex > -1 And ComboBox2.SelectedIndex > -1 Then
+
             Get_input_calc_1(case_nr)   'This is the CASE number
             Calc_stage1(case_nr)        'Calc according stage1
+            'MessageBox.Show()
             Calc_stage2(case_nr)        'Calc according stage1
             Present_loss_grid1()        'Present the results
             Present_loss_grid2()        'Present the results
@@ -1554,7 +1556,7 @@ Public Class Form1
         DataGridView3.Rows.Item(111).Cells(17).Value = total_abs_loss_C.ToString
     End Sub
 
-    Private Sub Calc_k_and_m(g As GvG_Calc_struct)
+    Private Sub Calc_k_and_m(ByRef g As GvG_Calc_struct)
         g.i_k = Log(Log(g.i_p1) / Log(g.i_p2)) / Log(g.i_d1 / g.i_d2)   '====== k ===========
         g.i_m = g.i_d1 / ((-Log(g.i_p1)) ^ (1 / g.i_k))                 '====== m ===========
     End Sub
@@ -1574,35 +1576,33 @@ Public Class Form1
         Dim fac_m As Double
         Dim words() As String
 
-
-
         '------ the idea is that the smallest diameter cyclone determines
         '------ the smallest particle diameter used in the calculation
         If numericUpDown5.Value > NumericUpDown35.Value Then
-                _cees(ks).stage1(0).dia = Calc_dia_particle(1.0, _cees(ks).Kstokes2, ComboBox2)
-            Else
-                _cees(ks).stage1(0).dia = Calc_dia_particle(1.0, _cees(ks).Kstokes1, ComboBox1)
-            End If
+            _cees(ks).stage1(0).dia = Calc_dia_particle(1.0, _cees(ks).Kstokes2, ComboBox2)
+        Else
+            _cees(ks).stage1(0).dia = Calc_dia_particle(1.0, _cees(ks).Kstokes1, ComboBox1)
+        End If
 
-            _cees(ks).stage1(0).d_ave = _cees(ks).stage1(0).dia / 2                              'Average diameter
-            _cees(ks).stage1(0).d_ave_K = _cees(ks).stage1(0).d_ave / _cees(ks).Kstokes1         'dia/k_stokes
-            _cees(ks).stage1(0).loss_overall = Calc_verlies(_cees(ks).stage1(0).d_ave_K, False, _cees(ks).Kstokes1)     '[-] loss overall
-            Calc_verlies_corrected(_cees(ks).stage1(0))                                '[-] loss overall corrected
-            _cees(ks).stage1(0).catch_chart = (1 - _cees(ks).stage1(i).loss_overall_C) * 100     '[%]
-            Size_classification(_cees(ks).stage1(0))                                   'Classify this part size
+        _cees(ks).stage1(0).d_ave = _cees(ks).stage1(0).dia / 2                              'Average diameter
+        _cees(ks).stage1(0).d_ave_K = _cees(ks).stage1(0).d_ave / _cees(ks).Kstokes1         'dia/k_stokes
+        _cees(ks).stage1(0).loss_overall = Calc_verlies(_cees(ks).stage1(0).d_ave_K, False, _cees(ks).Kstokes1)     '[-] loss overall
+        Calc_verlies_corrected(_cees(ks).stage1(0))                                '[-] loss overall corrected
+        _cees(ks).stage1(0).catch_chart = (1 - _cees(ks).stage1(i).loss_overall_C) * 100     '[%]
 
-            Calc_k_and_m(_cees(ks).stage1(0))
+        Size_classification(_cees(ks).stage1(0))                                   'Classify this part size
+        Calc_k_and_m(_cees(ks).stage1(0))
 
-            TextBox24.Text &= "stage1(0).dia=" & _cees(ks).stage1(0).dia.ToString
-            TextBox24.Text &= "   stage1(0).i_d1=" & _cees(ks).stage1(0).i_d1.ToString
-            TextBox24.Text &= ",  stage1(0).i_d2=" & _cees(ks).stage1(0).i_d2.ToString
-            TextBox24.Text &= ",  stage1(0).i_p1=" & _cees(ks).stage1(0).i_p1.ToString
-            TextBox24.Text &= ",  stage1(0).i_p2=" & _cees(ks).stage1(0).i_p1.ToString
-            TextBox24.Text &= ",  stage1(0).i_k=" & _cees(ks).stage1(0).i_k.ToString
-            TextBox24.Text &= ",  stage1(0).i_grp=" & _cees(ks).stage1(0).i_grp.ToString & vbCrLf
+        TextBox24.Text &= "stage1(0).dia=" & _cees(ks).stage1(0).dia.ToString
+        TextBox24.Text &= "   stage1(0).i_d1=" & _cees(ks).stage1(0).i_d1.ToString
+        TextBox24.Text &= ",  stage1(0).i_d2=" & _cees(ks).stage1(0).i_d2.ToString
+        TextBox24.Text &= ",  stage1(0).i_p1=" & _cees(ks).stage1(0).i_p1.ToString
+        TextBox24.Text &= ",  stage1(0).i_p2=" & _cees(ks).stage1(0).i_p1.ToString
+        TextBox24.Text &= ",  stage1(0).i_k=" & _cees(ks).stage1(0).i_k.ToString
+        TextBox24.Text &= ",  stage1(0).i_grp=" & _cees(ks).stage1(0).i_grp.ToString & vbCrLf
 
-            _cees(ks).stage1(0).psd_cum = Math.E ^ (-((_cees(ks).stage1(i).dia / _cees(ks).stage1(i).i_m) ^ _cees(ks).stage1(i).i_k))
-            _cees(ks).stage1(0).psd_cump = _cees(ks).stage1(i).psd_cum * 100
+        _cees(ks).stage1(0).psd_cum = Math.E ^ (-((_cees(ks).stage1(i).dia / _cees(ks).stage1(i).i_m) ^ _cees(ks).stage1(i).i_k))
+        _cees(ks).stage1(0).psd_cump = _cees(ks).stage1(i).psd_cum * 100
             _cees(ks).stage1(0).psd_dif = 100 * (1 - _cees(ks).stage1(i).psd_cum)
             _cees(ks).stage1(0).loss_abs = _cees(ks).stage1(i).loss_overall * _cees(ks).stage1(i).psd_dif
             _cees(ks).stage1(0).loss_abs_C = _cees(ks).stage1(i).loss_overall_C * _cees(ks).stage1(i).psd_dif
@@ -1820,8 +1820,12 @@ Public Class Form1
     End Sub
     'Determine the particle diameter class upper and lower limits
     ' Private Function Size_classification(dia As Double, noi As Integer) As Double
-    Private Sub Size_classification(g As GvG_Calc_struct)
-        ' Dim per_sum As Double = 0
+    Public Sub Size_classification(ByRef g As GvG_Calc_struct)
+
+        '' MessageBox.Show(g.ToString)
+        '_cees(0).stage1(0).i_grp = 888
+        'g.i_grp = 887
+        ''mmm  _cees(ks).stage2(i).i_d1
 
         If g.dia > 0 Then
 
@@ -1934,8 +1938,10 @@ Public Class Form1
             NumericUpDown28.BackColor = CType(IIf(NumericUpDown28.Value >= NumericUpDown27.Value, Color.LightGreen, Color.Red), Color)
             NumericUpDown29.BackColor = CType(IIf(NumericUpDown29.Value >= NumericUpDown28.Value, Color.LightGreen, Color.Red), Color)
         Else
-            g.i_grp = 77
+            g.i_grp = 9999
         End If
+
+
     End Sub
 
     'Calculate cyclone weight
