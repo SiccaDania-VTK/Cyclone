@@ -5,6 +5,7 @@ Imports System.Math
 Imports System.Text
 Imports System.Threading
 Imports System.Windows.Forms.DataVisualization.Charting
+Imports VTK_cyclone
 Imports Word = Microsoft.Office.Interop.Word
 '------- Input data------
 'This structure is required for the different operating cases of a cyclone
@@ -20,7 +21,7 @@ Public Structure Input_struct
     Public visco As Double          '[Centi Poise] Visco in 
     Public Temp As Double           '[c] Temperature 
 
-    '===== stage #1 ======
+    '===== stage #1 parameter ======
     Public Flow1 As Double          '[Am3/s] Air flow per cyclone 
     Public stofb1 As Double         '[g/Am3] Dust load inlet 
     Public emmis1 As Double         '[g/Am3] Dust emission 
@@ -37,8 +38,9 @@ Public Structure Input_struct
     Public dpgas1 As Double         '[Pa] pressure loss gas
     Public dpdust1 As Double        '[Pa] pressure loss dust
     Public m1 As Double             'm factor loss curve d< dia critical
+    Public stage1() As GvG_Calc_struct   'tbv calculatie stage #1
 
-    '===== stage #2 ======
+    '===== stage #2 parameters ======
     Public Flow2 As Double          '[Am3/s] Air flow per cyclone 
     Public stofb2 As Double         '[g/Am3] Dust load inlet 
     Public emmis2 As Double         '[g/Am3] Dust emission 
@@ -55,6 +57,7 @@ Public Structure Input_struct
     Public dpgas2 As Double         '[Pa] pressure loss gas
     Public dpdust2 As Double        '[Pa] pressure loss dust
     Public m2 As Double             'm factor loss curve d< dia critical
+    Public stage2() As GvG_Calc_struct   'tbv calculatie stage #2
 End Structure
 
 'Variables used by GvG in calculation
@@ -77,15 +80,17 @@ Public Structure GvG_Calc_struct
     Public psd_dif As Double        '[%] PSD diff
     Public loss_abs As Double       '[&] loss abs
     Public loss_abs_C As Double     '[&] loss abs compensated
+
+    Public Shared Widening Operator CType(v As Integer) As GvG_Calc_struct
+        Throw New NotImplementedException()
+    End Operator
 End Structure
 
 Public Class Form1
     Public _cyl1_dim(20) As Double          'Cyclone stage #1 dimensions
     Public _cyl2_dim(20) As Double          'Cyclone stage #2 dimensions
-
     Public _cees(20) As Input_struct        '20 Case's data
-    Public guus1(150) As GvG_Calc_struct    'tbv calculatie stage #1
-    Public guus2(150) As GvG_Calc_struct    'tbv calculatie stage #1
+
 
     'Type AC;Inlaatbreedte;Inlaathoogte;Inlaatlengte;Inlaat hartmaat;Inlaat afschuining;
     'Uitlaat keeldia inw.;Uitlaat flensdiameter inw.;Lengte insteekpijp inw.;
@@ -137,8 +142,10 @@ Public Class Form1
 
         'Initialize the arrays in the struct
         For i = 0 To _cees.Length - 1
-            _cees(i).dia_big = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}     'Initialize
-            _cees(i).class_load = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}  'Initialize
+            ReDim _cees(i).dia_big(11)          'Initialize
+            ReDim _cees(i).class_load(11)       'Initialize
+            ReDim _cees(i).stage1(150)          'Initialize
+            ReDim _cees(i).stage2(150)          'Initialize
         Next
 
         '------ allowed users with hard disc id's -----
@@ -231,19 +238,14 @@ Public Class Form1
         ComboBox2.SelectedIndex = 5                 'Select Cyclone type AC_850
 
         TextBox20.Text = "AA cyclone is a AC850 with diameter of 300mm" & vbCrLf
-        TextBox20.Text &= "Load above 5 gr/m3 is considerde a high load" & vbCrLf
+        TextBox20.Text &= "Load above 5 gr/m3 is considered a high load" & vbCrLf
         TextBox20.Text &= "Cyclones can not choke" & vbCrLf
     End Sub
 
-    Private Sub Button1_Click(sender As Object, e As EventArgs) Handles button1.Click, TabPage1.Enter, numericUpDown3.ValueChanged, numericUpDown2.ValueChanged, numericUpDown14.ValueChanged, NumericUpDown1.ValueChanged, numericUpDown5.ValueChanged, NumericUpDown20.ValueChanged, NumericUpDown19.ValueChanged, NumericUpDown18.ValueChanged, ComboBox1.SelectedIndexChanged, numericUpDown9.ValueChanged, numericUpDown8.ValueChanged, numericUpDown7.ValueChanged, numericUpDown6.ValueChanged, numericUpDown12.ValueChanged, numericUpDown11.ValueChanged, numericUpDown10.ValueChanged, numericUpDown13.ValueChanged, NumericUpDown4.ValueChanged, NumericUpDown29.ValueChanged, NumericUpDown28.ValueChanged, NumericUpDown27.ValueChanged, NumericUpDown26.ValueChanged, NumericUpDown25.ValueChanged, NumericUpDown24.ValueChanged, NumericUpDown23.ValueChanged, NumericUpDown15.ValueChanged, NumericUpDown34.ValueChanged, NumericUpDown33.ValueChanged, ComboBox2.SelectedIndexChanged
-        Dim case_nr As Integer = CInt(NumericUpDown30.Value)
-
-        Dust_load_correction()
-        Get_case_input_and_calc(case_nr)    'This is the CASE number
-        Calc_stage1(case_nr)                'Calc according guus1
-        Calc_stage2(case_nr)                'Calc according guus1
+    Private Sub Button1_Click(sender As Object, e As EventArgs) Handles button1.Click, TabPage1.Enter, numericUpDown3.ValueChanged, numericUpDown2.ValueChanged, numericUpDown14.ValueChanged, NumericUpDown1.ValueChanged, numericUpDown5.ValueChanged, NumericUpDown20.ValueChanged, NumericUpDown19.ValueChanged, NumericUpDown18.ValueChanged, ComboBox1.SelectedIndexChanged, numericUpDown9.ValueChanged, numericUpDown8.ValueChanged, numericUpDown7.ValueChanged, numericUpDown6.ValueChanged, numericUpDown12.ValueChanged, numericUpDown11.ValueChanged, numericUpDown10.ValueChanged, numericUpDown13.ValueChanged, NumericUpDown4.ValueChanged, NumericUpDown29.ValueChanged, NumericUpDown28.ValueChanged, NumericUpDown27.ValueChanged, NumericUpDown26.ValueChanged, NumericUpDown25.ValueChanged, NumericUpDown24.ValueChanged, NumericUpDown23.ValueChanged, NumericUpDown15.ValueChanged, NumericUpDown34.ValueChanged, NumericUpDown33.ValueChanged, ComboBox2.SelectedIndexChanged, NumericUpDown40.ValueChanged, NumericUpDown39.ValueChanged, NumericUpDown38.ValueChanged, NumericUpDown37.ValueChanged, NumericUpDown36.ValueChanged, NumericUpDown35.ValueChanged
+        Calc_sequence()
     End Sub
-    Private Sub Get_case_input_and_calc(ks As Integer)
+    Private Sub Get_input_calc_1(ks As Integer)
         Dim db1 As Double           'Body diameter stage #1
         Dim db2 As Double           'Body diameter stage #2
         Dim words() As String
@@ -383,8 +385,8 @@ Public Class Form1
             TextBox97.Text = (_cyl1_dim(14) * db2).ToString("0.000")    'Lengte 3P conus
             TextBox98.Text = (_cyl1_dim(15) * db2).ToString("0.000")    'Kleine dia 3P-conus
 
-            TextBox113.Text = (_cees(ks).Flow1 * 3600).ToString("0")          '[Am3/s] Cycloone Flow
-            TextBox112.Text = (_cees(ks).Flow2 * 3600).ToString("0")          '[Am3/s] Cycloone Flow
+            TextBox113.Text = (_cees(ks).Flow1 * 3600).ToString("0")    '[Am3/s] Cycloone Flow
+            TextBox112.Text = (_cees(ks).Flow2 * 3600).ToString("0")    '[Am3/s] Cycloone Flow
 
             TextBox16.Text = _cees(ks).inv1.ToString("0.0")             'inlaat snelheid
             TextBox80.Text = _cees(ks).inv2.ToString("0.0")             'inlaat snelheid
@@ -442,8 +444,8 @@ Public Class Form1
             DataGridView1.Columns(8).HeaderText = "Grade class eff."
 
             For h = 0 To 22
-                DataGridView1.Rows.Item(h).Cells(0).Value = guus1(h * 5).d_ave.ToString("0.000") 'diameter
-                DataGridView1.Rows.Item(h).Cells(1).Value = guus1(h * 5).psd_cump.ToString("0.0") 'feed psd cum
+                DataGridView1.Rows.Item(h).Cells(0).Value = _cees(ks).stage1(h * 5).d_ave.ToString("0.000") 'diameter
+                DataGridView1.Rows.Item(h).Cells(1).Value = _cees(ks).stage1(h * 5).psd_cump.ToString("0.0") 'feed psd cum
 
                 If h > 0 Then
                     h18 = CDbl(DataGridView1.Rows.Item(h - 1).Cells(1).Value)
@@ -455,9 +457,9 @@ Public Class Form1
 
                 '========= loss ===============
                 If CheckBox1.Checked Then
-                    DataGridView1.Rows.Item(h).Cells(3).Value = (guus1(h * 5).loss_overall * 100).ToString("0.0000")
+                    DataGridView1.Rows.Item(h).Cells(3).Value = (_cees(ks).stage1(h * 5).loss_overall * 100).ToString("0.0000")
                 Else
-                    DataGridView1.Rows.Item(h).Cells(3).Value = (guus1(h * 5).loss_overall_C * 100).ToString("0.0000")
+                    DataGridView1.Rows.Item(h).Cells(3).Value = (_cees(ks).stage1(h * 5).loss_overall_C * 100).ToString("0.0000")
                 End If
 
                 i18 = CDbl(DataGridView1.Rows.Item(h).Cells(2).Value) 'feed psd diff
@@ -494,8 +496,8 @@ Public Class Form1
                 End If
 
                 n18 = CDbl(IIf(n18 < 0, 0, n18))        'prevent silly results
-                TextBox24.Text &= "**h= " & h.ToString & ", n17_oud= " & n17_oud.ToString
-                TextBox24.Text &= ", m18= " & m18.ToString & ",==> n18= " & n18.ToString & vbCrLf
+                'TextBox24.Text &= "**h= " & h.ToString & ", n17_oud= " & n17_oud.ToString
+                'TextBox24.Text &= ", m18= " & m18.ToString & ",==> n18= " & n18.ToString & vbCrLf
                 DataGridView1.Rows.Item(h).Cells(7).Value = n18.ToString("0.000") 'Catch psd cum
 
                 '========= Efficiency ===============
@@ -585,7 +587,11 @@ Public Class Form1
         numericUpDown10.BackColor = CType(IIf(numericUpDown10.Value > numericUpDown11.Value, Color.LightGreen, Color.Red), Color)
         numericUpDown11.BackColor = CType(IIf(numericUpDown11.Value > numericUpDown12.Value, Color.LightGreen, Color.Red), Color)
         numericUpDown12.BackColor = CType(IIf(numericUpDown12.Value > numericUpDown13.Value, Color.LightGreen, Color.Red), Color)
-        numericUpDown13.BackColor = CType(IIf(numericUpDown13.Value > numericUpDown14.Value, Color.LightGreen, Color.Red), Color)
+        numericUpDown13.BackColor = CType(IIf(numericUpDown13.Value > NumericUpDown38.Value, Color.LightGreen, Color.Red), Color)
+
+        NumericUpDown38.BackColor = CType(IIf(NumericUpDown38.Value > NumericUpDown39.Value, Color.LightGreen, Color.Red), Color)
+        NumericUpDown39.BackColor = CType(IIf(NumericUpDown39.Value > NumericUpDown40.Value, Color.LightGreen, Color.Red), Color)
+        NumericUpDown40.BackColor = CType(IIf(NumericUpDown40.Value >= 0, Color.LightGreen, Color.Red), Color)
     End Sub
     '-------- Bereken het verlies getal NIET gecorrigeerd -----------
     '----- de input is de GEMIDDELDE korrel grootte-----------
@@ -661,7 +667,7 @@ Public Class Form1
             'TextBox24.Text &= "fac_m = " & fac_m.ToString & ", fac_k = " & fac_k.ToString & ", fac_a = " & fac_a.ToString & vbCrLf
             'TextBox24.Text &= "grp.d_ave_K = " & grp.d_ave_K.ToString & vbCrLf
             'TextBox24.Text &= "grp.loss_overall_C = " & grp.loss_overall_C.ToString & vbCrLf
-            'TextBox24.Text &= "guus1(1).loss_overall_C. = " & guus1(1).loss_overall_C.ToString & vbCrLf
+            'TextBox24.Text &= "stage1(1).loss_overall_C. = " & stage1(1).loss_overall_C.ToString & vbCrLf
         End If
 
     End Sub
@@ -878,12 +884,17 @@ Public Class Form1
     End Sub
     Private Sub Calc_sequence()
         Dim case_nr As Integer = CInt(NumericUpDown30.Value)
-        Calc_stage1(case_nr)      'Calc according guus1
-        Calc_stage2(case_nr)      'Calc according guus1
-        Present_loss_grid1()         'Present the results
-        Present_loss_grid2()         'Present the results
-        Draw_chart1(Chart1)
-        'Draw_chart1(Chart2)
+
+        Dust_load_correction()
+        If ComboBox1.SelectedIndex > -1 And ComboBox2.SelectedIndex > -1 Then
+            Get_input_calc_1(case_nr)   'This is the CASE number
+            Calc_stage1(case_nr)        'Calc according stage1
+            Calc_stage2(case_nr)        'Calc according stage1
+            Present_loss_grid1()        'Present the results
+            Present_loss_grid2()        'Present the results
+            Draw_chart1(Chart1)         'Present the results
+            'Draw_chart1(Chart2)
+        End If
     End Sub
 
     Private Sub Button3_Click(sender As Object, e As EventArgs) Handles Button3.Click
@@ -912,20 +923,20 @@ Public Class Form1
         temp_string = TextBox28.Text & ";" & TextBox29.Text & ";"
 
         '-------- Case information -----------------
-        For j = 0 To _cees.GetLength(0) - 2             '20 elements
-            temp_string &= _cees(j).FlowT.ToString & ";"     'Air flow
-            temp_string &= _cees(j).stofb1.ToString & ";"        'Dust inlet [g/Am3] 
+        For j = 0 To _cees.GetLength(0) - 2                     '20 elements
+            temp_string &= _cees(j).FlowT.ToString & ";"        'Air flow
+            temp_string &= _cees(j).stofb1.ToString & ";"       'Dust inlet [g/Am3] 
             temp_string &= _cees(j).Ct1.ToString & ";"          'Cyclone type
             temp_string &= _cees(j).Noc1.ToString & ";"         'Cyclone in parallel
             temp_string &= _cees(j).db1.ToString & ";"          'Diameter cyclone body
             temp_string &= _cees(j).ro_gas.ToString & ";"       'Density [kg/hr]
             temp_string &= _cees(j).ro_solid.ToString & ";"     'Density [kg/hr]
             temp_string &= _cees(j).visco.ToString & ";"        'Visco in Centi Poise
-            temp_string &= _cees(j).Temp.ToString & ";"        'Temperature [c]
+            temp_string &= _cees(j).Temp.ToString & ";"         'Temperature [c]
             temp_string &= _cees(j).Druk1.ToString & ";"        'Pressure [mbar]
 
             For k = 0 To 7         '8 elements
-                temp_string &= _cees(j).dia_big(k).ToString & ";"   'Write all variables
+                temp_string &= _cees(j).dia_big(k).ToString & ";"       'Write all variables
             Next
 
             For k = 0 To 7         '8 elements
@@ -1066,8 +1077,6 @@ Public Class Form1
                         count += 1
                     Next
                 Next
-
-
             Catch ex As Exception
                 MessageBox.Show("Line 923, " & ex.Message)
             End Try
@@ -1181,7 +1190,7 @@ Public Class Form1
 
     Private Sub Button5_Click(sender As Object, e As EventArgs) Handles Button5.Click
         If TextBox28.Text.Trim.Length > 0 Then
-            Get_case_input_and_calc(CInt(NumericUpDown30.Value))
+            Get_input_calc_1(CInt(NumericUpDown30.Value))
             Write_to_word_com() 'Commercial data to Word
         Else
             MessageBox.Show("Enter Quote nummer and Tag, then Export sizing data to Word")
@@ -1421,11 +1430,13 @@ Public Class Form1
     End Function
 
     Private Sub Present_loss_grid1()
+        Dim ks As Integer   'present Case
         Dim j As Integer
         Dim total_abs_loss_C As Double = 0
         Dim total_abs_loss As Double = 0
         Dim total_psd_diff As Double = 0
 
+        ks = CInt(NumericUpDown30.Value)   'present Case
         DataGridView2.ColumnCount = 18
         DataGridView2.Rows.Clear()
         DataGridView2.Rows.Add(111)
@@ -1453,27 +1464,27 @@ Public Class Form1
 
         For row = 1 To 110  'Fill the DataGrid
             j = row - 1
-            DataGridView2.Rows.Item(j).Cells(0).Value = guus1(j).dia.ToString
-            DataGridView2.Rows.Item(j).Cells(1).Value = guus1(j).d_ave.ToString      'Average diameter
-            DataGridView2.Rows.Item(j).Cells(2).Value = guus1(j).d_ave_K.ToString    'Average dia/K stokes
-            DataGridView2.Rows.Item(j).Cells(3).Value = guus1(j).loss_overall.ToString   'Loss 
-            DataGridView2.Rows.Item(j).Cells(4).Value = guus1(j).loss_overall_C.ToString 'Loss 
-            DataGridView2.Rows.Item(j).Cells(5).Value = guus1(j).catch_chart.ToString    'Catch
-            DataGridView2.Rows.Item(j).Cells(6).Value = guus1(j).i_grp.ToString      'Groep nummer
-            DataGridView2.Rows.Item(j).Cells(7).Value = guus1(j).i_d1.ToString       'class lower dia limit
-            DataGridView2.Rows.Item(j).Cells(8).Value = guus1(j).i_d2.ToString       'class upper dia limit
-            DataGridView2.Rows.Item(j).Cells(9).Value = guus1(j).i_p1.ToString       'User input percentage
-            DataGridView2.Rows.Item(j).Cells(10).Value = guus1(j).i_p2.ToString      '
-            DataGridView2.Rows.Item(j).Cells(11).Value = guus1(j).i_k.ToString       'User input percentage
-            DataGridView2.Rows.Item(j).Cells(12).Value = guus1(j).i_m.ToString       '
-            DataGridView2.Rows.Item(j).Cells(13).Value = guus1(j).psd_cum.ToString   '
-            DataGridView2.Rows.Item(j).Cells(14).Value = guus1(j).psd_cump.ToString("0.0")   '[%]
-            DataGridView2.Rows.Item(j).Cells(15).Value = guus1(j).psd_dif.ToString("E3")     '[%]
-            DataGridView2.Rows.Item(j).Cells(16).Value = guus1(j).loss_abs.ToString("E3")    '[%]
-            DataGridView2.Rows.Item(j).Cells(17).Value = guus1(j).loss_abs_C.ToString("E3")  '[%]
-            total_psd_diff += guus1(j).psd_dif
-            total_abs_loss += guus1(j).loss_abs
-            total_abs_loss_C += guus1(j).loss_abs_C
+            DataGridView2.Rows.Item(j).Cells(0).Value = _cees(ks).stage1(j).dia.ToString
+            DataGridView2.Rows.Item(j).Cells(1).Value = _cees(ks).stage1(j).d_ave.ToString      'Average diameter
+            DataGridView2.Rows.Item(j).Cells(2).Value = _cees(ks).stage1(j).d_ave_K.ToString    'Average dia/K stokes
+            DataGridView2.Rows.Item(j).Cells(3).Value = _cees(ks).stage1(j).loss_overall.ToString   'Loss 
+            DataGridView2.Rows.Item(j).Cells(4).Value = _cees(ks).stage1(j).loss_overall_C.ToString 'Loss 
+            DataGridView2.Rows.Item(j).Cells(5).Value = _cees(ks).stage1(j).catch_chart.ToString    'Catch
+            DataGridView2.Rows.Item(j).Cells(6).Value = _cees(ks).stage1(j).i_grp.ToString      'Groep nummer
+            DataGridView2.Rows.Item(j).Cells(7).Value = _cees(ks).stage1(j).i_d1.ToString       'class lower dia limit
+            DataGridView2.Rows.Item(j).Cells(8).Value = _cees(ks).stage1(j).i_d2.ToString       'class upper dia limit
+            DataGridView2.Rows.Item(j).Cells(9).Value = _cees(ks).stage1(j).i_p1.ToString       'User input percentage
+            DataGridView2.Rows.Item(j).Cells(10).Value = _cees(ks).stage1(j).i_p2.ToString      '
+            DataGridView2.Rows.Item(j).Cells(11).Value = _cees(ks).stage1(j).i_k.ToString       'User input percentage
+            DataGridView2.Rows.Item(j).Cells(12).Value = _cees(ks).stage1(j).i_m.ToString       '
+            DataGridView2.Rows.Item(j).Cells(13).Value = _cees(ks).stage1(j).psd_cum.ToString   '
+            DataGridView2.Rows.Item(j).Cells(14).Value = _cees(ks).stage1(j).psd_cump.ToString("0.0")   '[%]
+            DataGridView2.Rows.Item(j).Cells(15).Value = _cees(ks).stage1(j).psd_dif.ToString("E3")     '[%]
+            DataGridView2.Rows.Item(j).Cells(16).Value = _cees(ks).stage1(j).loss_abs.ToString("E3")    '[%]
+            DataGridView2.Rows.Item(j).Cells(17).Value = _cees(ks).stage1(j).loss_abs_C.ToString("E3")  '[%]
+            total_psd_diff += _cees(ks).stage1(j).psd_dif
+            total_abs_loss += _cees(ks).stage1(j).loss_abs
+            total_abs_loss_C += _cees(ks).stage1(j).loss_abs_C
         Next
         DataGridView2.Rows.Item(111).Cells(15).Value = total_psd_diff.ToString
         DataGridView2.Rows.Item(111).Cells(16).Value = total_abs_loss.ToString
@@ -1482,9 +1493,12 @@ Public Class Form1
 
     Private Sub Present_loss_grid2()
         Dim j As Integer
+        Dim ks As Integer 'Present case number
         Dim total_abs_loss_C As Double = 0
         Dim total_abs_loss As Double = 0
         Dim total_psd_diff As Double = 0
+
+        ks = CInt(NumericUpDown30.Value)
 
         DataGridView3.ColumnCount = 18
         DataGridView3.Rows.Clear()
@@ -1513,38 +1527,43 @@ Public Class Form1
 
         For row = 1 To 110  'Fill the DataGrid
             j = row - 1
-            DataGridView3.Rows.Item(j).Cells(0).Value = guus2(j).dia.ToString
-            DataGridView3.Rows.Item(j).Cells(1).Value = guus2(j).d_ave.ToString      'Average diameter
-            DataGridView3.Rows.Item(j).Cells(2).Value = guus2(j).d_ave_K.ToString    'Average dia/K stokes
-            DataGridView3.Rows.Item(j).Cells(3).Value = guus2(j).loss_overall.ToString   'Loss 
-            DataGridView3.Rows.Item(j).Cells(4).Value = guus2(j).loss_overall_C.ToString 'Loss 
-            DataGridView3.Rows.Item(j).Cells(5).Value = guus2(j).catch_chart.ToString    'Catch
-            DataGridView3.Rows.Item(j).Cells(6).Value = guus2(j).i_grp.ToString      'Groep nummer
-            DataGridView3.Rows.Item(j).Cells(7).Value = guus2(j).i_d1.ToString       'class lower dia limit
-            DataGridView3.Rows.Item(j).Cells(8).Value = guus2(j).i_d2.ToString       'class upper dia limit
-            DataGridView3.Rows.Item(j).Cells(9).Value = guus2(j).i_p1.ToString       'User input percentage
-            DataGridView3.Rows.Item(j).Cells(10).Value = guus2(j).i_p2.ToString      '
-            DataGridView3.Rows.Item(j).Cells(11).Value = guus2(j).i_k.ToString       'User input percentage
-            DataGridView3.Rows.Item(j).Cells(12).Value = guus2(j).i_m.ToString       '
-            DataGridView3.Rows.Item(j).Cells(13).Value = guus2(j).psd_cum.ToString   '
-            DataGridView3.Rows.Item(j).Cells(14).Value = guus2(j).psd_cump.ToString("0.0")   '[%]
-            DataGridView3.Rows.Item(j).Cells(15).Value = guus2(j).psd_dif.ToString("E3")     '[%]
-            DataGridView3.Rows.Item(j).Cells(16).Value = guus2(j).loss_abs.ToString("E3")    '[%]
-            DataGridView3.Rows.Item(j).Cells(17).Value = guus2(j).loss_abs_C.ToString("E3")  '[%]
-            total_psd_diff += guus2(j).psd_dif
-            total_abs_loss += guus2(j).loss_abs
-            total_abs_loss_C += guus2(j).loss_abs_C
+            DataGridView3.Rows.Item(j).Cells(0).Value = _cees(ks).stage2(j).dia.ToString
+            DataGridView3.Rows.Item(j).Cells(1).Value = _cees(ks).stage2(j).d_ave.ToString      'Average diameter
+            DataGridView3.Rows.Item(j).Cells(2).Value = _cees(ks).stage2(j).d_ave_K.ToString    'Average dia/K stokes
+            DataGridView3.Rows.Item(j).Cells(3).Value = _cees(ks).stage2(j).loss_overall.ToString   'Loss 
+            DataGridView3.Rows.Item(j).Cells(4).Value = _cees(ks).stage2(j).loss_overall_C.ToString 'Loss 
+            DataGridView3.Rows.Item(j).Cells(5).Value = _cees(ks).stage2(j).catch_chart.ToString    'Catch
+            DataGridView3.Rows.Item(j).Cells(6).Value = _cees(ks).stage2(j).i_grp.ToString      'Groep nummer
+            DataGridView3.Rows.Item(j).Cells(7).Value = _cees(ks).stage2(j).i_d1.ToString       'class lower dia limit
+            DataGridView3.Rows.Item(j).Cells(8).Value = _cees(ks).stage2(j).i_d2.ToString       'class upper dia limit
+            DataGridView3.Rows.Item(j).Cells(9).Value = _cees(ks).stage2(j).i_p1.ToString       'User input percentage
+            DataGridView3.Rows.Item(j).Cells(10).Value = _cees(ks).stage2(j).i_p2.ToString      '
+            DataGridView3.Rows.Item(j).Cells(11).Value = _cees(ks).stage2(j).i_k.ToString       'User input percentage
+            DataGridView3.Rows.Item(j).Cells(12).Value = _cees(ks).stage2(j).i_m.ToString       '
+            DataGridView3.Rows.Item(j).Cells(13).Value = _cees(ks).stage2(j).psd_cum.ToString   '
+            DataGridView3.Rows.Item(j).Cells(14).Value = _cees(ks).stage2(j).psd_cump.ToString("0.0")   '[%]
+            DataGridView3.Rows.Item(j).Cells(15).Value = _cees(ks).stage2(j).psd_dif.ToString("E3")     '[%]
+            DataGridView3.Rows.Item(j).Cells(16).Value = _cees(ks).stage2(j).loss_abs.ToString("E3")    '[%]
+            DataGridView3.Rows.Item(j).Cells(17).Value = _cees(ks).stage2(j).loss_abs_C.ToString("E3")  '[%]
+            total_psd_diff += _cees(ks).stage2(j).psd_dif
+            total_abs_loss += _cees(ks).stage2(j).loss_abs
+            total_abs_loss_C += _cees(ks).stage2(j).loss_abs_C
         Next
         DataGridView3.Rows.Item(111).Cells(15).Value = total_psd_diff.ToString
         DataGridView3.Rows.Item(111).Cells(16).Value = total_abs_loss.ToString
         DataGridView3.Rows.Item(111).Cells(17).Value = total_abs_loss_C.ToString
     End Sub
 
+    Private Sub Calc_k_and_m(g As GvG_Calc_struct)
+        g.i_k = Log(Log(g.i_p1) / Log(g.i_p2)) / Log(g.i_d1 / g.i_d2)   '====== k ===========
+        g.i_m = g.i_d1 / ((-Log(g.i_p1)) ^ (1 / g.i_k))                 '====== m ===========
+    End Sub
+
     Private Sub Calc_stage1(ks As Integer)
         'This is the standard VTK cyclone calculation for case "ks" 
 
         Dim i As Integer = 0
-        Dim dia_max As Double         'Above this diameter everything is caught
+        Dim dia_max As Double       'Above this diameter everything is caught
         Dim dia_min As Double       'Below this diameter nothing is caught
         Dim istep As Double         'Particle diameter step
         Dim sum_loss As Double
@@ -1555,120 +1574,126 @@ Public Class Form1
         Dim fac_m As Double
         Dim words() As String
 
+
+
         '------ the idea is that the smallest diameter cyclone determines
         '------ the smallest particle diameter used in the calculation
         If numericUpDown5.Value > NumericUpDown35.Value Then
-            guus1(i).dia = Calc_dia_particle(1.0, _cees(ks).Kstokes2, ComboBox2)
-        Else
-            guus1(i).dia = Calc_dia_particle(1.0, _cees(ks).Kstokes1, ComboBox1)
-        End If
+                _cees(ks).stage1(0).dia = Calc_dia_particle(1.0, _cees(ks).Kstokes2, ComboBox2)
+            Else
+                _cees(ks).stage1(0).dia = Calc_dia_particle(1.0, _cees(ks).Kstokes1, ComboBox1)
+            End If
 
-        guus1(i).d_ave = guus1(0).dia / 2                                 'Average diameter
-        guus1(i).d_ave_K = guus1(0).d_ave / _cees(ks).Kstokes1            'dia/k_stokes
-        guus1(i).loss_overall = Calc_verlies(guus1(0).d_ave_K, False, _cees(ks).Kstokes1)     '[-] loss overall
-        Calc_verlies_corrected(guus1(0))                                 '[-] loss overall corrected
-        guus1(i).catch_chart = (1 - guus1(i).loss_overall_C) * 100        '[%]
-        guus1(i).i_grp = Find_class_limits(guus1(i).dia, 5)               'groepnummer
-        guus1(i).i_d1 = Find_class_limits(guus1(i).dia, 1)                'Lower limit diameter
-        guus1(i).i_d2 = Find_class_limits(guus1(i).dia, 2)                'Upper limit diameter
-        guus1(i).i_p1 = Find_class_limits(guus1(i).dia, 3)                'Percentage
-        guus1(i).i_p2 = Find_class_limits(guus1(i).dia, 4)                'Percentage
+            _cees(ks).stage1(0).d_ave = _cees(ks).stage1(0).dia / 2                              'Average diameter
+            _cees(ks).stage1(0).d_ave_K = _cees(ks).stage1(0).d_ave / _cees(ks).Kstokes1         'dia/k_stokes
+            _cees(ks).stage1(0).loss_overall = Calc_verlies(_cees(ks).stage1(0).d_ave_K, False, _cees(ks).Kstokes1)     '[-] loss overall
+            Calc_verlies_corrected(_cees(ks).stage1(0))                                '[-] loss overall corrected
+            _cees(ks).stage1(0).catch_chart = (1 - _cees(ks).stage1(i).loss_overall_C) * 100     '[%]
+            Size_classification(_cees(ks).stage1(0))                                   'Classify this part size
 
-        guus1(i).i_k = Log(Math.Log(guus1(i).i_p1) / Math.Log(guus1(i).i_p2))
-        guus1(i).i_k /= Log(guus1(i).i_d1 / guus1(i).i_d2)
-        guus1(i).i_m = guus1(i).i_d1 / ((-Log(guus1(i).i_p1)) ^ (1 / guus1(i).i_k))
-        guus1(i).psd_cum = Math.E ^ (-((guus1(i).dia / guus1(i).i_m) ^ guus1(i).i_k))
-        guus1(i).psd_cump = guus1(i).psd_cum * 100
-        guus1(i).psd_dif = 100 * (1 - guus1(i).psd_cum)
-        guus1(i).loss_abs = guus1(i).loss_overall * guus1(i).psd_dif
-        guus1(i).loss_abs_C = guus1(i).loss_overall_C * guus1(i).psd_dif
+            Calc_k_and_m(_cees(ks).stage1(0))
 
-        sum_psd_diff = guus1(i).psd_dif
-        sum_loss = guus1(i).loss_abs
-        sum_loss_C = guus1(i).loss_abs_C
+            TextBox24.Text &= "stage1(0).dia=" & _cees(ks).stage1(0).dia.ToString
+            TextBox24.Text &= "   stage1(0).i_d1=" & _cees(ks).stage1(0).i_d1.ToString
+            TextBox24.Text &= ",  stage1(0).i_d2=" & _cees(ks).stage1(0).i_d2.ToString
+            TextBox24.Text &= ",  stage1(0).i_p1=" & _cees(ks).stage1(0).i_p1.ToString
+            TextBox24.Text &= ",  stage1(0).i_p2=" & _cees(ks).stage1(0).i_p1.ToString
+            TextBox24.Text &= ",  stage1(0).i_k=" & _cees(ks).stage1(0).i_k.ToString
+            TextBox24.Text &= ",  stage1(0).i_grp=" & _cees(ks).stage1(0).i_grp.ToString & vbCrLf
 
-        '------ increment step --------
-        'stapgrootte bij 110-staps logaritmische verdeling van het
-        'deeltjesdiameter-bereik van loss=100% tot 0,00000001%
-        'Deze wordt gebruikt voor het opstellen van de gefractioneerde
-        'verliescurve.
+            _cees(ks).stage1(0).psd_cum = Math.E ^ (-((_cees(ks).stage1(i).dia / _cees(ks).stage1(i).i_m) ^ _cees(ks).stage1(i).i_k))
+            _cees(ks).stage1(0).psd_cump = _cees(ks).stage1(i).psd_cum * 100
+            _cees(ks).stage1(0).psd_dif = 100 * (1 - _cees(ks).stage1(i).psd_cum)
+            _cees(ks).stage1(0).loss_abs = _cees(ks).stage1(i).loss_overall * _cees(ks).stage1(i).psd_dif
+            _cees(ks).stage1(0).loss_abs_C = _cees(ks).stage1(i).loss_overall_C * _cees(ks).stage1(i).psd_dif
 
-        '-------------- korrelgrootte factoren ------
-        If ComboBox1.SelectedIndex > -1 Then
-            words = rekenlijnen(ComboBox1.SelectedIndex).Split(CType(";", Char()))
-            '---- diameter kleiner dan dia kritisch
-            fac_m = CDbl(words(2))
-        End If
+            sum_psd_diff = _cees(ks).stage1(0).psd_dif
+            sum_loss = _cees(ks).stage1(0).loss_abs
+            sum_loss_C = _cees(ks).stage1(0).loss_abs_C
+
+            '------ increment step --------
+            'stapgrootte bij 110-staps logaritmische verdeling van het
+            'deeltjesdiameter-bereik van loss=100% tot 0,00000001%
+            'Deze wordt gebruikt voor het opstellen van de gefractioneerde
+            'verliescurve.
+
+            '-------------- korrelgrootte factoren ------
+            If ComboBox1.SelectedIndex > -1 Then
+                words = rekenlijnen(ComboBox1.SelectedIndex).Split(CType(";", Char()))
+                '---- diameter kleiner dan dia kritisch
+                fac_m = CDbl(words(2))
+            End If
+
+            perc_smallest_part = 0.0000001                      'smallest particle [%]
+            dia_max = Calc_dia_particle(perc_smallest_part, _cees(ks).Kstokes1, ComboBox1)     '=100% loss (biggest particle)
+            dia_min = _cees(ks).Kstokes1 * fac_m                'diameter smallest particle caught
+
+            istep = (dia_max / dia_min) ^ (1 / 110)             'Calculation step
 
 
-        perc_smallest_part = 0.0000001                      'smallest particle [%]
-        dia_max = Calc_dia_particle(perc_smallest_part, _cees(ks).Kstokes1, ComboBox1)     '=100% loss (biggest particle)
-        dia_min = _cees(ks).Kstokes1 * fac_m                'diameter smallest particle caught
+            For i = 1 To 110
+                _cees(ks).stage1(i).dia = _cees(ks).stage1(i - 1).dia * istep
+                _cees(ks).stage1(i).d_ave = (_cees(ks).stage1(i - 1).dia + _cees(ks).stage1(i).dia) / 2       'Average diameter
+                _cees(ks).stage1(i).d_ave_K = _cees(ks).stage1(i).d_ave / _cees(ks).Kstokes1        'dia/k_stokes
+                _cees(ks).stage1(i).loss_overall = Calc_verlies(_cees(ks).stage1(i).d_ave, False, _cees(ks).Kstokes1)   '[-] loss overall
+                Calc_verlies_corrected(_cees(ks).stage1(i))                               '[-] loss overall corrected
 
-        istep = (dia_max / dia_min) ^ (1 / 110)             'Calculation step
 
-        For i = 1 To 110
-            guus1(i).dia = guus1(i - 1).dia * istep
-            guus1(i).d_ave = (guus1(i - 1).dia + guus1(i).dia) / 2         'Average diameter
-            guus1(i).d_ave_K = guus1(i).d_ave / _cees(ks).Kstokes1         'dia/k_stokes
-            guus1(i).loss_overall = Calc_verlies(guus1(i).d_ave, False, _cees(ks).Kstokes1)   '[-] loss overall
-            Calc_verlies_corrected(guus1(i))                             '[-] loss overall corrected
+                If CheckBox2.Checked Then
+                    _cees(ks).stage1(i).catch_chart = (1 - _cees(ks).stage1(i).loss_overall_C) * 100 '[%] Corrected
+                Else
+                    _cees(ks).stage1(i).catch_chart = (1 - _cees(ks).stage1(i).loss_overall) * 100    '[%] NOT corrected
+                End If
+                Size_classification(_cees(ks).stage1(i))                                   'Classify this part size
+
+                If _cees(ks).stage1(i).i_p2 > 0.001 Then 'to prevent silly results
+                    Calc_k_and_m(_cees(ks).stage1(i))
+                    'stage1(i).i_k = Log(Log(stage1(i).i_p1) / Log(stage1(i).i_p2)) / Log(stage1(i).i_d1 / stage1(i).i_d2)
+                    'stage1(i).i_m = stage1(i).i_d1 / ((-Log(stage1(i).i_p1)) ^ (1 / stage1(i).i_k))
+                    _cees(ks).stage1(i).psd_cum = Math.E ^ (-((_cees(ks).stage1(i).dia / _cees(ks).stage1(i).i_m) ^ _cees(ks).stage1(i).i_k))
+                    _cees(ks).stage1(i).psd_cump = _cees(ks).stage1(i).psd_cum * 100
+                    _cees(ks).stage1(i).psd_dif = 100 * (_cees(ks).stage1(i - 1).psd_cum - _cees(ks).stage1(i).psd_cum)
+                Else
+                    _cees(ks).stage1(i).i_k = 0
+                    _cees(ks).stage1(i).i_m = 0
+                    _cees(ks).stage1(i).psd_cum = 0
+                    _cees(ks).stage1(i).psd_cump = 0
+                    _cees(ks).stage1(i).psd_dif = 0
+                End If
+                _cees(ks).stage1(i).loss_abs = _cees(ks).stage1(i).loss_overall * _cees(ks).stage1(i).psd_dif
+                _cees(ks).stage1(i).loss_abs_C = _cees(ks).stage1(i).loss_overall_C * _cees(ks).stage1(i).psd_dif
+                '----- sum value -----
+                sum_psd_diff += _cees(ks).stage1(i).psd_dif
+                sum_loss += _cees(ks).stage1(i).loss_abs
+                sum_loss_C += _cees(ks).stage1(i).loss_abs_C
+            Next
+            loss_total = sum_loss_C + ((100 - sum_psd_diff) * perc_smallest_part)
+            _cees(ks).emmis1 = NumericUpDown4.Value * loss_total / 100
+            _cees(ks).stofb2 = _cees(ks).emmis1 'Dust load stage #2 in emission stage #1
+            CheckBox3.Checked = CBool(IIf(_cees(ks).stofb2 > 5, True, False))
+
+            '----------- present -----------
+            TextBox51.Text = dia_max.ToString("0")              'diameter [mu] 100% catch
+            TextBox52.Text = dia_min.ToString("0.00")           'diameter [mu] 100% loss
+            TextBox56.Text = ComboBox1.Text
+            TextBox57.Text = CheckBox2.Checked.ToString
+            TextBox70.Text = _cees(ks).stofb2.ToString("0.000")
+
+
             If CheckBox2.Checked Then
-                guus1(i).catch_chart = (1 - guus1(i).loss_overall_C) * 100  '[%] Corrected
+                TextBox58.Text = loss_total.ToString("0.00000")    'Corrected
+                TextBox59.Text = (100 - loss_total).ToString("0.000")
+                TextBox21.Text = TextBox59.Text
+                TextBox60.Text = _cees(ks).emmis1.ToString("0.000")
+                TextBox18.Text = TextBox60.Text
             Else
-                guus1(i).catch_chart = (1 - guus1(i).loss_overall) * 100    '[%] NOT corrected
+                TextBox58.Text = sum_loss.ToString("0.00000")      'NOT Corrected
+                TextBox59.Text = (100 - sum_loss).ToString("0.000")
+                TextBox21.Text = TextBox59.Text
+                TextBox60.Text = (NumericUpDown4.Value * sum_loss / 100).ToString("0.000")
+                TextBox18.Text = TextBox60.Text
             End If
-            guus1(i).i_grp = Find_class_limits(guus1(i).dia, 5)         'groepnummer
-            guus1(i).i_d1 = Find_class_limits(guus1(i).dia, 1)          'Lower diameter limit
-            guus1(i).i_d2 = Find_class_limits(guus1(i).dia, 2)          'Upper diameter limit
-            guus1(i).i_p1 = Find_class_limits(guus1(i).dia, 3)          'Percentage
-            guus1(i).i_p2 = Find_class_limits(guus1(i).dia, 4)          'Percentage
-            If guus1(i).i_p2 > 0.001 Then 'to prevent silly results
-                guus1(i).i_k = Log(Log(guus1(i).i_p1) / Log(guus1(i).i_p2)) / Log(guus1(i).i_d1 / guus1(i).i_d2)
-                guus1(i).i_m = guus1(i).i_d1 / ((-Log(guus1(i).i_p1)) ^ (1 / guus1(i).i_k))
-                guus1(i).psd_cum = Math.E ^ (-((guus1(i).dia / guus1(i).i_m) ^ guus1(i).i_k))
-                guus1(i).psd_cump = guus1(i).psd_cum * 100
-                guus1(i).psd_dif = 100 * (guus1(i - 1).psd_cum - guus1(i).psd_cum)
-            Else
-                guus1(i).i_k = 0
-                guus1(i).i_m = 0
-                guus1(i).psd_cum = 0
-                guus1(i).psd_cump = 0
-                guus1(i).psd_dif = 0
-            End If
-            guus1(i).loss_abs = guus1(i).loss_overall * guus1(i).psd_dif
-            guus1(i).loss_abs_C = guus1(i).loss_overall_C * guus1(i).psd_dif
-            '----- sum value -----
-            sum_psd_diff += guus1(i).psd_dif
-            sum_loss += guus1(i).loss_abs
-            sum_loss_C += guus1(i).loss_abs_C
-        Next
-        loss_total = sum_loss_C + ((100 - sum_psd_diff) * perc_smallest_part)
-        _cees(ks).emmis1 = NumericUpDown4.Value * loss_total / 100
-        _cees(ks).stofb2 = _cees(ks).emmis1 'Dust load stage #2 in emission stage #1
-        CheckBox3.Checked = CBool(IIf(_cees(ks).stofb2 > 5, True, False))
 
-        '----------- present -----------
-        TextBox51.Text = dia_max.ToString("0")              'diameter [mu] 100% catch
-        TextBox52.Text = dia_min.ToString("0.00")           'diameter [mu] 100% loss
-        TextBox56.Text = ComboBox1.Text
-        TextBox57.Text = CheckBox2.Checked.ToString
-        TextBox70.Text = _cees(ks).stofb2.ToString("0.000")
-
-
-        If CheckBox2.Checked Then
-            TextBox58.Text = loss_total.ToString("0.00000")    'Corrected
-            TextBox59.Text = (100 - loss_total).ToString("0.000")
-            TextBox21.Text = TextBox59.Text
-            TextBox60.Text = _cees(ks).emmis1.ToString("0.000")
-            TextBox18.Text = TextBox60.Text
-        Else
-            TextBox58.Text = sum_loss.ToString("0.00000")      'NOT Corrected
-            TextBox59.Text = (100 - sum_loss).ToString("0.000")
-            TextBox21.Text = TextBox59.Text
-            TextBox60.Text = (NumericUpDown4.Value * sum_loss / 100).ToString("0.000")
-            TextBox18.Text = TextBox60.Text
-        End If
     End Sub
 
     Private Sub Calc_stage2(ks As Integer)
@@ -1677,237 +1702,241 @@ Public Class Form1
         Dim dia_max As Double         'Above this diameter everything is caught
         Dim dia_min As Double       'Below this diameter nothing is caught
         Dim istep As Double         'Particle diameter step
-        Dim sum_loss As Double
-        Dim sum_loss_C As Double
-        Dim sum_psd_diff As Double
-        Dim loss_total As Double
+        Dim sum_loss2 As Double
+        Dim sum_loss_C2 As Double
+        Dim sum_psd_diff2 As Double
+        Dim loss_total2 As Double
         Dim perc_smallest_part As Double
         Dim fac_m As Double
         Dim words() As String
         Dim kgh, tot_kgh As Double
 
+
+        'If ComboBox1.SelectedIndex > -1 And ComboBox2.SelectedIndex > -1 Then
+
         '----------- stof belasting ------------
         tot_kgh = _cees(ks).FlowT * _cees(ks).stofb2 / 1000     '[kg/hr] Dust inlet 
-        kgh = tot_kgh / _cees(ks).Noc2                          '[kg/hr/Cy] Dust inlet 
-        TextBox100.Text = kgh.ToString("0")
-        TextBox101.Text = tot_kgh.ToString("0")
+            kgh = tot_kgh / _cees(ks).Noc2                          '[kg/hr/Cy] Dust inlet 
+            TextBox100.Text = kgh.ToString("0")
+            TextBox101.Text = tot_kgh.ToString("0")
 
-        '--------- now the particles ------------
-        guus2(i).dia = guus1(i).dia
-        guus2(i).d_ave = guus2(0).dia / 2                                 'Average diameter
-        guus2(i).d_ave_K = guus2(0).d_ave / _cees(ks).Kstokes2            'dia/k_stokes
-        guus2(i).loss_overall = Calc_verlies(guus2(0).d_ave_K, False, _cees(ks).Kstokes1)     '[-] loss overall
-        Calc_verlies_corrected(guus2(0))                                 '[-] loss overall corrected
-        guus2(i).catch_chart = (1 - guus2(i).loss_overall_C) * 100        '[%]
-        guus2(i).i_grp = Find_class_limits(guus2(i).dia, 5)               'groepnummer
-        guus2(i).i_d1 = Find_class_limits(guus2(i).dia, 1)                'Lower limit diameter
-        guus2(i).i_d2 = Find_class_limits(guus2(i).dia, 2)                'Upper limit diameter
-        guus2(i).i_p1 = Find_class_limits(guus2(i).dia, 3)                'Percentage
-        guus2(i).i_p2 = Find_class_limits(guus2(i).dia, 4)                'Percentage
+            '--------- now the particles ------------
+            _cees(ks).stage2(i).dia = _cees(ks).stage1(i).dia                                   'Copy stage #1
+            _cees(ks).stage2(i).d_ave = _cees(ks).stage2(0).dia / 2                             'Average diameter
+            _cees(ks).stage2(i).d_ave_K = _cees(ks).stage2(0).d_ave / _cees(ks).Kstokes2        'dia/k_stokes
+            _cees(ks).stage2(i).loss_overall = Calc_verlies(_cees(ks).stage2(0).d_ave_K, False, _cees(ks).Kstokes1)     '[-] loss overall
+            Calc_verlies_corrected(_cees(ks).stage2(0))                               '[-] loss overall corrected
+            _cees(ks).stage2(i).catch_chart = (1 - _cees(ks).stage2(i).loss_overall_C) * 100    '[%]
+            Size_classification(_cees(ks).stage2(i))                                  'groepnummer
 
-        guus2(i).i_k = Log(Math.Log(guus2(i).i_p1) / Math.Log(guus2(i).i_p2))
-        guus2(i).i_k /= Log(guus2(i).i_d1 / guus2(i).i_d2)
-        guus2(i).i_m = guus2(i).i_d1 / ((-Log(guus2(i).i_p1)) ^ (1 / guus2(i).i_k))
-        guus2(i).psd_cum = Math.E ^ (-((guus2(i).dia / guus2(i).i_m) ^ guus2(i).i_k))
-        guus2(i).psd_cump = guus2(i).psd_cum * 100
-        guus2(i).psd_dif = 100 * (1 - guus2(i).psd_cum)
-        guus2(i).loss_abs = guus2(i).loss_overall * guus2(i).psd_dif
-        guus2(i).loss_abs_C = guus2(i).loss_overall_C * guus2(i).psd_dif
+            Calc_k_and_m(_cees(ks).stage2(i))
+            _cees(ks).stage2(i).psd_cum = Math.E ^ (-((_cees(ks).stage2(i).dia / _cees(ks).stage2(i).i_m) ^ _cees(ks).stage2(i).i_k))
+            _cees(ks).stage2(i).psd_cump = _cees(ks).stage2(i).psd_cum * 100
+            ' stage2(i).psd_dif = 100 * (1 - stage2(i).psd_cum)
+            _cees(ks).stage2(i).psd_dif = _cees(ks).stage1(i).loss_abs                           'LOSS STAGE #1
+            _cees(ks).stage2(i).loss_abs = _cees(ks).stage2(i).loss_overall * _cees(ks).stage2(i).psd_dif
+            _cees(ks).stage2(i).loss_abs_C = _cees(ks).stage2(i).loss_overall_C * _cees(ks).stage2(i).psd_dif
 
-        sum_psd_diff = guus2(i).psd_dif
-        sum_loss = guus2(i).loss_abs
-        sum_loss_C = guus2(i).loss_abs_C
+            sum_psd_diff2 = _cees(ks).stage2(i).psd_dif
+            sum_loss2 = _cees(ks).stage2(i).loss_abs
+            sum_loss_C2 = _cees(ks).stage2(i).loss_abs_C
 
-        '------ increment step --------
-        'stapgrootte bij 110-staps logaritmische verdeling van het
-        'deeltjesdiameter-bereik van loss=100% tot 0,00000001%
-        'Deze wordt gebruikt voor het opstellen van de gefractioneerde
-        'verliescurve.
+            '------ increment step --------
+            'stapgrootte bij 110-staps logaritmische verdeling van het
+            'deeltjesdiameter-bereik van loss=100% tot 0,00000001%
+            'Deze wordt gebruikt voor het opstellen van de gefractioneerde
+            'verliescurve.
 
-        '-------------- korrelgrootte factoren ------
-        If ComboBox2.SelectedIndex > -1 Then
-            words = rekenlijnen(ComboBox2.SelectedIndex).Split(CType(";", Char()))
-            '---- diameter kleiner dan dia kritisch
-            fac_m = CDbl(words(2))
-        End If
+            '-------------- korrelgrootte factoren ------
+            If ComboBox2.SelectedIndex > -1 Then
+                words = rekenlijnen(ComboBox2.SelectedIndex).Split(CType(";", Char()))
+                '---- diameter kleiner dan dia kritisch
+                fac_m = CDbl(words(2))
+            End If
 
-        perc_smallest_part = 0.0000001                      'smallest particle [%]
-        dia_max = Calc_dia_particle(perc_smallest_part, _cees(ks).Kstokes2, ComboBox2)     '=100% loss (biggest particle)
-        dia_min = _cees(ks).Kstokes2 * fac_m                'diameter smallest particle caught
-        istep = (dia_max / dia_min) ^ (1 / 110)             'Calculation step
+            perc_smallest_part = 0.0000001                      'smallest particle [%]
+            dia_max = Calc_dia_particle(perc_smallest_part, _cees(ks).Kstokes2, ComboBox2)     '=100% loss (biggest particle)
+            dia_min = _cees(ks).Kstokes2 * fac_m                'diameter smallest particle caught
+            istep = (dia_max / dia_min) ^ (1 / 110)             'Calculation step
 
-        For i = 1 To 110
-            guus2(i).dia = guus1(i).dia
-            guus2(i).d_ave = (guus2(i - 1).dia + guus2(i).dia) / 2         'Average diameter
-            guus2(i).d_ave_K = guus2(i).d_ave / _cees(ks).Kstokes1         'dia/k_stokes
-            guus2(i).loss_overall = Calc_verlies(guus2(i).d_ave, False, _cees(ks).Kstokes1)   '[-] loss overall
-            Calc_verlies_corrected(guus2(i))                             '[-] loss overall corrected
+            For i = 1 To 110
+                _cees(ks).stage2(i).dia = _cees(ks).stage1(i).dia                                     'Copy stage #1
+                _cees(ks).stage2(i).d_ave = (_cees(ks).stage2(i - 1).dia + _cees(ks).stage2(i).dia) / 2          'Average diameter
+                _cees(ks).stage2(i).d_ave_K = _cees(ks).stage2(i).d_ave / _cees(ks).Kstokes2          'dia/k_stokes
+                _cees(ks).stage2(i).loss_overall = Calc_verlies(_cees(ks).stage2(i).d_ave, False, _cees(ks).Kstokes2)   '[-] loss overall
+                Calc_verlies_corrected(_cees(ks).stage2(i))                                '[-] loss overall corrected
+                If CheckBox3.Checked Then
+                    _cees(ks).stage2(i).catch_chart = (1 - _cees(ks).stage2(i).loss_overall_C) * 100  '[%] Corrected
+                Else
+                    _cees(ks).stage2(i).catch_chart = (1 - _cees(ks).stage2(i).loss_overall) * 100    '[%] NOT corrected
+                End If
+                Size_classification(_cees(ks).stage2(i))                                     'Calc
+
+                If _cees(ks).stage2(i).i_p2 > 0.001 Then 'to prevent silly results
+                    Calc_k_and_m(_cees(ks).stage2(i))
+                    _cees(ks).stage2(i).i_k = Log(Log(_cees(ks).stage2(i).i_p1) / Log(_cees(ks).stage2(i).i_p2)) / Log(_cees(ks).stage2(i).i_d1 / _cees(ks).stage2(i).i_d2)
+                    _cees(ks).stage2(i).i_m = _cees(ks).stage2(i).i_d1 / ((-Log(_cees(ks).stage2(i).i_p1)) ^ (1 / _cees(ks).stage2(i).i_k))
+                    _cees(ks).stage2(i).psd_cum = Math.E ^ (-((_cees(ks).stage2(i).dia / _cees(ks).stage2(i).i_m) ^ _cees(ks).stage2(i).i_k))
+                    _cees(ks).stage2(i).psd_cump = _cees(ks).stage2(i).psd_cum * 100
+                    'stage2(i).psd_dif = 100 * (stage2(i - 1).psd_cum - stage2(i).psd_cum)
+                    _cees(ks).stage2(i).psd_dif = _cees(ks).stage1(i).loss_abs
+                Else
+                    _cees(ks).stage2(i).i_k = 0
+                    _cees(ks).stage2(i).i_m = 0
+                    _cees(ks).stage2(i).psd_cum = 0
+                    _cees(ks).stage2(i).psd_cump = 0
+                    _cees(ks).stage2(i).psd_dif = 0
+                End If
+                _cees(ks).stage2(i).loss_abs = _cees(ks).stage2(i).loss_overall * _cees(ks).stage2(i).psd_dif
+                _cees(ks).stage2(i).loss_abs_C = _cees(ks).stage2(i).loss_overall_C * _cees(ks).stage2(i).psd_dif
+                '----- sum value -----
+                sum_psd_diff2 += _cees(ks).stage2(i).psd_dif
+                sum_loss2 += _cees(ks).stage2(i).loss_abs
+                sum_loss_C2 += _cees(ks).stage2(i).loss_abs_C
+            Next
+            loss_total2 = sum_loss_C2 + ((100 - sum_psd_diff2) * perc_smallest_part)
+            _cees(ks).emmis2 = _cees(ks).emmis1 * loss_total2 / 100
+
+            '----------- present -----------
+            TextBox63.Text = ComboBox2.Text                     'Cyclone type
+            TextBox64.Text = CheckBox3.Checked.ToString         'Hi load correction
+            TextBox110.Text = dia_max.ToString("0")             'diameter [mu] 100% catch
+            TextBox111.Text = dia_min.ToString("0.00")          'diameter [mu] 100% loss
+
             If CheckBox3.Checked Then
-                guus2(i).catch_chart = (1 - guus2(i).loss_overall_C) * 100  '[%] Corrected
+                TextBox65.Text = loss_total2.ToString("0.00000")    'Corrected
+                TextBox66.Text = (100 - loss_total2).ToString("0.000")
+                TextBox109.Text = TextBox66.Text
+                TextBox62.Text = _cees(ks).emmis2.ToString("0.000")
             Else
-                guus2(i).catch_chart = (1 - guus2(i).loss_overall) * 100    '[%] NOT corrected
+                TextBox65.Text = sum_loss2.ToString("0.00000")      'NOT Corrected
+                TextBox66.Text = (100 - sum_loss2).ToString("0.000")
+                TextBox109.Text = TextBox66.Text
+                TextBox62.Text = _cees(ks).emmis2.ToString("0.000")
+
             End If
-            guus2(i).i_grp = Find_class_limits(guus2(i).dia, 5)         'groepnummer
-            guus2(i).i_d1 = Find_class_limits(guus2(i).dia, 1)          'Lower diameter limit
-            guus2(i).i_d2 = Find_class_limits(guus2(i).dia, 2)          'Upper diameter limit
-            guus2(i).i_p1 = Find_class_limits(guus2(i).dia, 3)          'Percentage
-            guus2(i).i_p2 = Find_class_limits(guus2(i).dia, 4)          'Percentage
-            If guus2(i).i_p2 > 0.001 Then 'to prevent silly results
-                guus2(i).i_k = Log(Log(guus2(i).i_p1) / Log(guus2(i).i_p2)) / Log(guus2(i).i_d1 / guus2(i).i_d2)
-                guus2(i).i_m = guus2(i).i_d1 / ((-Log(guus2(i).i_p1)) ^ (1 / guus2(i).i_k))
-                guus2(i).psd_cum = Math.E ^ (-((guus2(i).dia / guus2(i).i_m) ^ guus2(i).i_k))
-                guus2(i).psd_cump = guus2(i).psd_cum * 100
-                guus2(i).psd_dif = 100 * (guus2(i - 1).psd_cum - guus2(i).psd_cum)
-            Else
-                guus2(i).i_k = 0
-                guus2(i).i_m = 0
-                guus2(i).psd_cum = 0
-                guus2(i).psd_cump = 0
-                guus2(i).psd_dif = 0
-            End If
-            guus2(i).loss_abs = guus2(i).loss_overall * guus2(i).psd_dif
-            guus2(i).loss_abs_C = guus2(i).loss_overall_C * guus2(i).psd_dif
-            '----- sum value -----
-            sum_psd_diff += guus2(i).psd_dif
-            sum_loss += guus2(i).loss_abs
-            sum_loss_C += guus2(i).loss_abs_C
-        Next
-        loss_total = sum_loss_C + ((100 - sum_psd_diff) * perc_smallest_part)
-        _cees(ks).emmis2 = _cees(ks).emmis1 * loss_total / 100
-
-
-        '----------- present -----------
-        TextBox63.Text = ComboBox2.Text
-        TextBox64.Text = CheckBox3.Checked.ToString
-        TextBox110.Text = dia_max.ToString("0")              'diameter [mu] 100% catch
-        TextBox111.Text = dia_min.ToString("0.00")           'diameter [mu] 100% loss
-
-
-        If CheckBox3.Checked Then
-            TextBox65.Text = loss_total.ToString("0.00000")    'Corrected
-            TextBox66.Text = (100 - loss_total).ToString("0.000")
-            TextBox109.Text = TextBox66.Text
-            TextBox62.Text = _cees(ks).emmis2.ToString("0.000")
-        Else
-            TextBox65.Text = sum_loss.ToString("0.00000")      'NOT Corrected
-            TextBox66.Text = (100 - sum_loss).ToString("0.000")
-            TextBox109.Text = TextBox66.Text
-            TextBox62.Text = _cees(ks).emmis2.ToString("0.000")
-
-        End If
-        TextBox108.Text = TextBox62.Text
-
+            TextBox108.Text = TextBox62.Text
+        'End If
     End Sub
     'Determine the particle diameter class upper and lower limits
-    Private Function Find_class_limits(dia As Double, noi As Integer) As Double
-        Dim d1 As Double 'particle diameter [mu]
-        Dim d2 As Double 'particle diameter [mu]
-        Dim input_p1, input_p2 As Double
-        Dim grp As Double 'groepnummer
+    ' Private Function Size_classification(dia As Double, noi As Integer) As Double
+    Private Sub Size_classification(g As GvG_Calc_struct)
+        ' Dim per_sum As Double = 0
 
-        Dim ret As Double
-        Select Case True
-            Case dia < NumericUpDown15.Value    '0-10 mu
-                d1 = NumericUpDown15.Value      '10 mu
-                d2 = NumericUpDown23.Value      '15 mu
-                input_p1 = numericUpDown6.Value / 100
-                input_p2 = numericUpDown7.Value / 100
-                grp = 0
-            Case dia >= NumericUpDown15.Value And dia < NumericUpDown23.Value   '>=10 and < 15
-                d1 = NumericUpDown15.Value      '10 mu
-                d2 = NumericUpDown23.Value      '15 mu
-                input_p1 = numericUpDown6.Value / 100
-                input_p2 = numericUpDown7.Value / 100
-                grp = 1
-            Case dia >= NumericUpDown23.Value And dia < NumericUpDown24.Value
-                d1 = NumericUpDown23.Value      '15 mu
-                d2 = NumericUpDown24.Value      '20 mu
-                input_p1 = numericUpDown7.Value / 100
-                input_p2 = numericUpDown8.Value / 100
-                grp = 2
-            Case dia >= NumericUpDown24.Value And dia < NumericUpDown25.Value
-                d1 = NumericUpDown24.Value '20
-                d2 = NumericUpDown25.Value '30
-                input_p1 = numericUpDown8.Value / 100
-                input_p2 = numericUpDown9.Value / 100
-                grp = 3
-            Case dia >= NumericUpDown25.Value And dia < NumericUpDown26.Value
-                d1 = NumericUpDown25.Value '30
-                d2 = NumericUpDown26.Value '40
-                input_p1 = numericUpDown9.Value / 100
-                input_p2 = numericUpDown10.Value / 100
-                grp = 4
-            Case dia >= NumericUpDown26.Value And dia < NumericUpDown27.Value
-                d1 = NumericUpDown26.Value '40
-                d2 = NumericUpDown27.Value '50
-                input_p1 = numericUpDown10.Value / 100
-                input_p2 = numericUpDown11.Value / 100
-                grp = 5
-            Case dia >= NumericUpDown27.Value And dia < NumericUpDown28.Value
-                d1 = NumericUpDown27.Value   '50
-                d2 = NumericUpDown28.Value '60
-                input_p1 = numericUpDown11.Value / 100
-                input_p2 = numericUpDown12.Value / 100
-                grp = 6
-            Case dia >= NumericUpDown28.Value And dia < NumericUpDown29.Value
-                d1 = NumericUpDown28.Value '60
-                d2 = NumericUpDown29.Value '80
-                input_p1 = numericUpDown12.Value / 100
-                input_p2 = numericUpDown13.Value / 100
-                grp = 7
-            Case Else
-                d1 = NumericUpDown29.Value '80
-                d2 = d1 * 10                    '120
-                input_p1 = 0.0001
-                input_p2 = 0.00001
-                grp = 8
-        End Select
+        If g.dia > 0 Then
 
-        Dim w(8) As Double  'Individual particle calss weights
-        w(0) = numericUpDown13.Value
-        w(1) = numericUpDown12.Value - w(0)
-        w(2) = numericUpDown11.Value - w(1) - w(0)
-        w(3) = numericUpDown10.Value - w(2) - w(1) - w(0)
-        w(4) = numericUpDown9.Value - w(3) - w(2) - w(1) - w(0)
-        w(5) = numericUpDown8.Value - w(4) - w(3) - w(2) - w(1) - w(0)
-        w(6) = numericUpDown7.Value - w(5) - w(4) - w(3) - w(2) - w(1) - w(0)
-        w(7) = numericUpDown6.Value - w(6) - w(5) - w(4) - w(3) - w(2) - w(1) - w(0)
+            Select Case True
+                Case g.dia < NumericUpDown15.Value      '0-10 mu
+                    g.i_d1 = NumericUpDown15.Value      '10 mu
+                    g.i_d2 = NumericUpDown23.Value      '15 mu
+                    g.i_p1 = numericUpDown6.Value / 100
+                    g.i_p1 = numericUpDown7.Value / 100
+                    g.i_grp = 0
+                Case g.dia >= NumericUpDown15.Value And g.dia < NumericUpDown23.Value   '>=10 and < 15
+                    g.i_d1 = NumericUpDown15.Value      '10 mu
+                    g.i_d2 = NumericUpDown23.Value      '15 mu
+                    g.i_p1 = numericUpDown6.Value / 100
+                    g.i_p2 = numericUpDown7.Value / 100
+                    g.i_grp = 1
+                Case g.dia >= NumericUpDown23.Value And g.dia < NumericUpDown24.Value
+                    g.i_d1 = NumericUpDown23.Value      '15 mu
+                    g.i_d2 = NumericUpDown24.Value      '20 mu
+                    g.i_p1 = numericUpDown7.Value / 100
+                    g.i_p2 = numericUpDown8.Value / 100
+                    g.i_grp = 2
+                Case g.dia >= NumericUpDown24.Value And g.dia < NumericUpDown25.Value
+                    g.i_d1 = NumericUpDown24.Value '20
+                    g.i_d2 = NumericUpDown25.Value '30
+                    g.i_p1 = numericUpDown8.Value / 100
+                    g.i_p2 = numericUpDown9.Value / 100
+                    g.i_grp = 3
+                Case g.dia >= NumericUpDown25.Value And g.dia < NumericUpDown26.Value
+                    g.i_d1 = NumericUpDown25.Value '30
+                    g.i_d2 = NumericUpDown26.Value '40
+                    g.i_p1 = numericUpDown9.Value / 100
+                    g.i_p2 = numericUpDown10.Value / 100
+                    g.i_grp = 4
+                Case g.dia >= NumericUpDown26.Value And g.dia < NumericUpDown27.Value
+                    g.i_d1 = NumericUpDown26.Value '40
+                    g.i_d2 = NumericUpDown27.Value '50
+                    g.i_p1 = numericUpDown10.Value / 100
+                    g.i_p2 = numericUpDown11.Value / 100
+                    g.i_grp = 5
+                Case g.dia >= NumericUpDown27.Value And g.dia < NumericUpDown28.Value
+                    g.i_d1 = NumericUpDown27.Value   '50
+                    g.i_d2 = NumericUpDown28.Value '60
+                    g.i_p1 = numericUpDown11.Value / 100
+                    g.i_p2 = numericUpDown12.Value / 100
+                    g.i_grp = 6
+                Case g.dia >= NumericUpDown28.Value And g.dia < NumericUpDown29.Value
+                    g.i_d1 = NumericUpDown28.Value '60
+                    g.i_d2 = NumericUpDown29.Value '80
+                    g.i_p1 = numericUpDown12.Value / 100
+                    g.i_p2 = numericUpDown13.Value / 100
+                    g.i_grp = 7
+                Case g.dia >= NumericUpDown29.Value And g.dia < NumericUpDown35.Value
+                    g.i_d1 = NumericUpDown29.Value      '
+                    g.i_d2 = NumericUpDown35.Value      '
+                    g.i_p1 = numericUpDown13.Value / 100
+                    g.i_p2 = NumericUpDown38.Value / 100
+                    g.i_grp = 8
+                Case g.dia >= NumericUpDown35.Value And g.dia < NumericUpDown36.Value
+                    g.i_d1 = NumericUpDown35.Value  '
+                    g.i_d2 = NumericUpDown36.Value  '
+                    g.i_p1 = NumericUpDown38.Value / 100
+                    g.i_p2 = NumericUpDown39.Value / 100
+                    g.i_grp = 9
+                Case g.dia >= NumericUpDown36.Value
+                    g.i_d1 = NumericUpDown35.Value  '
+                    g.i_d2 = NumericUpDown36.Value  '
+                    g.i_p1 = NumericUpDown39.Value / 100
+                    g.i_p2 = NumericUpDown40.Value / 100
+                    g.i_grp = 10
 
-        TextBox25.Text = w(0).ToString("0.0")
-        TextBox27.Text = w(1).ToString("0.0")
-        TextBox43.Text = w(2).ToString("0.0")
-        TextBox44.Text = w(3).ToString("0.0")
-        TextBox45.Text = w(4).ToString("0.0")
-        TextBox46.Text = w(5).ToString("0.0")
-        TextBox49.Text = w(6).ToString("0.0")
-        TextBox50.Text = w(7).ToString("0.0")
+                Case Else
+                    MessageBox.Show("Problem in line 1882")
+            End Select
 
-        '-------- Check -- bigger diameter must have bigger cummulative weight
-        NumericUpDown15.BackColor = CType(IIf(NumericUpDown15.Value > 0, Color.LightGreen, Color.Red), Color)
-        NumericUpDown23.BackColor = CType(IIf(NumericUpDown23.Value > NumericUpDown15.Value, Color.LightGreen, Color.Red), Color)
-        NumericUpDown24.BackColor = CType(IIf(NumericUpDown24.Value > NumericUpDown23.Value, Color.LightGreen, Color.Red), Color)
-        NumericUpDown25.BackColor = CType(IIf(NumericUpDown25.Value > NumericUpDown24.Value, Color.LightGreen, Color.Red), Color)
-        NumericUpDown26.BackColor = CType(IIf(NumericUpDown26.Value > NumericUpDown25.Value, Color.LightGreen, Color.Red), Color)
-        NumericUpDown27.BackColor = CType(IIf(NumericUpDown27.Value > NumericUpDown26.Value, Color.LightGreen, Color.Red), Color)
-        NumericUpDown28.BackColor = CType(IIf(NumericUpDown28.Value > NumericUpDown27.Value, Color.LightGreen, Color.Red), Color)
-        NumericUpDown29.BackColor = CType(IIf(NumericUpDown29.Value > NumericUpDown28.Value, Color.LightGreen, Color.Red), Color)
+            TextBox24.Text &= "Size_classification OK, dia= " & g.ToString
+            TextBox24.Text &= " group= " & g.i_grp.ToString & vbCrLf
 
-        '------ select the return variable -------------- 
-        Select Case noi
-            Case 1
-                ret = d1
-            Case 2
-                ret = d2
-            Case 3
-                ret = input_p1
-            Case 4
-                ret = input_p2
-            Case 5
-                ret = grp
-        End Select
+            Dim w(11) As Double  'Individual particle class weights
+            w(0) = NumericUpDown40.Value
+            w(1) = NumericUpDown39.Value - w(0)
+            w(2) = NumericUpDown38.Value - w(1) - w(0)
+            w(3) = numericUpDown13.Value - w(2) - w(1) - w(0)
+            w(4) = numericUpDown12.Value - w(3) - w(2) - w(1) - w(0)
+            w(5) = numericUpDown11.Value - w(4) - w(3) - w(2) - w(1) - w(0)
+            w(6) = numericUpDown10.Value - w(5) - w(4) - w(3) - w(2) - w(1) - w(0)
+            w(7) = numericUpDown9.Value - w(6) - w(5) - w(4) - w(3) - w(2) - w(1) - w(0)
+            w(8) = numericUpDown8.Value - w(7) - w(6) - w(5) - w(4) - w(3) - w(2) - w(1) - w(0)
+            w(9) = numericUpDown7.Value - w(8) - w(7) - w(6) - w(5) - w(4) - w(3) - w(2) - w(1) - w(0)
+            w(10) = numericUpDown6.Value - w(9) - w(8) - w(7) - w(6) - w(5) - w(4) - w(3) - w(2) - w(1) - w(0)
 
-        Return (ret)
-    End Function
+            TextBox50.Text = w(10).ToString("0.0")
+            TextBox49.Text = w(9).ToString("0.0")
+            TextBox46.Text = w(8).ToString("0.0")
+            TextBox45.Text = w(7).ToString("0.0")
+            TextBox44.Text = w(6).ToString("0.0")
+            TextBox43.Text = w(5).ToString("0.0")
+            TextBox27.Text = w(4).ToString("0.0")
+            TextBox25.Text = w(3).ToString("0.0")
+            TextBox81.Text = w(2).ToString("0.0")
+            TextBox82.Text = w(1).ToString("0.0")
+
+            '-------- Check -- bigger diameter must have bigger cummulative weight
+            NumericUpDown15.BackColor = CType(IIf(NumericUpDown15.Value > 0, Color.LightGreen, Color.Red), Color)
+            NumericUpDown23.BackColor = CType(IIf(NumericUpDown23.Value >= NumericUpDown15.Value, Color.LightGreen, Color.Red), Color)
+            NumericUpDown24.BackColor = CType(IIf(NumericUpDown24.Value >= NumericUpDown23.Value, Color.LightGreen, Color.Red), Color)
+            NumericUpDown25.BackColor = CType(IIf(NumericUpDown25.Value >= NumericUpDown24.Value, Color.LightGreen, Color.Red), Color)
+            NumericUpDown26.BackColor = CType(IIf(NumericUpDown26.Value >= NumericUpDown25.Value, Color.LightGreen, Color.Red), Color)
+            NumericUpDown27.BackColor = CType(IIf(NumericUpDown27.Value >= NumericUpDown26.Value, Color.LightGreen, Color.Red), Color)
+            NumericUpDown28.BackColor = CType(IIf(NumericUpDown28.Value >= NumericUpDown27.Value, Color.LightGreen, Color.Red), Color)
+            NumericUpDown29.BackColor = CType(IIf(NumericUpDown29.Value >= NumericUpDown28.Value, Color.LightGreen, Color.Red), Color)
+        Else
+            g.i_grp = 77
+        End If
+    End Sub
 
     'Calculate cyclone weight
     Private Sub Button7_Click(sender As Object, e As EventArgs) Handles Button7.Click, TabPage7.Enter, NumericUpDown32.ValueChanged, NumericUpDown31.ValueChanged
