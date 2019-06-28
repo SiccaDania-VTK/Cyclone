@@ -327,13 +327,18 @@ Public Class Form1
             _cees(ks).dpdust1 = 0.5 * ro_gas * _cees(ks).inv1 ^ 2 * wc_dust1
 
             '=========== Stage #2 ==============
-            _cees(ks).Druk2 = _cees(ks).Druk1 - _cees(ks).dpgas1 / 100 '[mbar]
+            _cees(ks).Druk2 = _cees(ks).Druk1 - _cees(ks).dpgas1 / 100  '[mbar]
             _cees(ks).Flow2 = _cees(ks).FlowT / (3600 * _cees(ks).Noc2) '[Am3/s/cycloon]
+            _cees(ks).Flow2 *= _cees(ks).Druk1 / _cees(ks).Druk2        '[Am3/s/cycloon]
 
             '---- Compensate for the Flow for the pressure loss in stage #1 ----
-            _cees(ks).Flow2 *= _cees(ks).Druk1 / _cees(ks).Druk2
             _cees(ks).inv2 = _cees(ks).Flow2 / (_cees(ks).inb2 * _cees(ks).inh2)
             _cees(ks).outv2 = _cees(ks).Flow2 / ((PI / 4) * _cees(ks).dout2 ^ 2)   '[m/s]
+
+            TextBox24.Text &= "_cees(ks).Flow2= " & _cees(ks).Flow2.ToString
+            TextBox24.Text &= ",  _cees(ks).inb2=" & _cees(ks).inb2.ToString
+            TextBox24.Text &= ",  _cees(ks).inh2=" & _cees(ks).inh2.ToString
+            TextBox24.Text &= ",   _cees(ks).inv2 =" & _cees(ks).inv2.ToString & vbCrLf
 
             '----------- Pressure loss cyclone stage #2----------------------
             If ComboBox2.SelectedIndex > -1 Then
@@ -353,8 +358,16 @@ Public Class Form1
             _cees(ks).Kstokes1 = Sqrt(db1 * 2000 * visco * 16 / (ro_solid * 0.0181 * _cees(ks).inv1))
             _cees(ks).Kstokes2 = Sqrt(db2 * 2000 * visco * 16 / (ro_solid * 0.0181 * _cees(ks).inv2))
 
+            TextBox24.Text &= "db2= " & db2.ToString
+            TextBox24.Text &= ",  visco=" & visco.ToString
+            TextBox24.Text &= ",  ro_solid=" & ro_solid.ToString
+            TextBox24.Text &= ",  _cees(ks).inv2=" & _cees(ks).inv2.ToString
+            TextBox24.Text &= ",  _cees(ks).Kstokes2=" & _cees(ks).Kstokes2.ToString & vbCrLf
+
+            'mmmmm
+
             '----------- presenteren ----------------------------------
-            TextBox36.Text = (_cees(ks).FlowT / 3600).ToString("0.0")                 '[m3/s] flow
+            TextBox36.Text = (_cees(ks).FlowT / 3600).ToString("F4")    '[m3/s] flow
 
             '----------- presenteren afmetingen ------------------------------
             TextBox1.Text = (_cees(ks).inh1).ToString("0.000")          'inlaat breedte
@@ -405,8 +418,8 @@ Public Class Form1
             TextBox22.Text = _cees(ks).outv1.ToString("0.0")            'uitlaat snelheid
             TextBox77.Text = _cees(ks).outv2.ToString("0.0")            'uitlaat snelheid
 
-            TextBox23.Text = _cees(ks).Kstokes1.ToString("0.0000")       'Stokes waarde stage#1
-            TextBox78.Text = _cees(ks).Kstokes2.ToString("0.00000")       'Stokes waarde stage#1
+            TextBox23.Text = _cees(ks).Kstokes1.ToString("F4")       'Stokes waarde stage#1
+            TextBox78.Text = _cees(ks).Kstokes2.ToString("F4")       'Stokes waarde stage#1
 
             TextBox37.Text = _cees(ks).db1.ToString                     'Cycloone diameter
             TextBox74.Text = _cees(ks).db2.ToString                     'Cycloone diameter
@@ -525,7 +538,7 @@ Public Class Form1
             TextBox71.Text = _cees(ks).stofb1.ToString  'Dust inlet [g/Am3]
 
             '---------- present stage #2 -------
-            'MessageBox.Show(_cees(ks).Kstokes2.ToString)
+            ' MessageBox.Show(_cees(ks).Kstokes2.ToString)
             TextBox102.Text = Calc_dia_particle(1.0, _cees(ks).Kstokes2, ComboBox2).ToString("0.00")    '[mu] @  95% lost
             TextBox103.Text = Calc_dia_particle(0.95, _cees(ks).Kstokes2, ComboBox2).ToString("0.00")    '[mu] @  95% lost
             TextBox104.Text = Calc_dia_particle(0.9, _cees(ks).Kstokes2, ComboBox2).ToString("0.00")     '[mu] @  90% lost
@@ -894,7 +907,6 @@ Public Class Form1
 
             Get_input_calc_1(case_nr)   'This is the CASE number
             Calc_stage1(case_nr)        'Calc according stage1
-            'MessageBox.Show()
             Calc_stage2(case_nr)        'Calc according stage1
             Present_loss_grid1()        'Present the results
             Present_loss_grid2()        'Present the results
@@ -1476,52 +1488,52 @@ Public Class Form1
         'DataGridView2.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill
 
         DataGridView2.Columns(0).HeaderText = "Dia class [mu]"
-        DataGridView2.Columns(1).HeaderText = "Dia average"
-        DataGridView2.Columns(2).HeaderText = "Dia/k"
-        DataGridView2.Columns(3).HeaderText = "Loss overall"
+        DataGridView2.Columns(1).HeaderText = "Dia average [mu]"
+        DataGridView2.Columns(2).HeaderText = "Dia/k [-]"
+        DataGridView2.Columns(3).HeaderText = "Loss overall [-]"
         DataGridView2.Columns(4).HeaderText = "Loss overall Corrected"
-        DataGridView2.Columns(5).HeaderText = "Catch chart"     '
-        DataGridView2.Columns(6).HeaderText = "Groep nummer"    '
-        DataGridView2.Columns(7).HeaderText = "d1 lower dia"    '
-        DataGridView2.Columns(8).HeaderText = "d2 upper dia"    '
-        DataGridView2.Columns(9).HeaderText = "p1 input"        '
-        DataGridView2.Columns(10).HeaderText = "p2 input"       '
-        DataGridView2.Columns(11).HeaderText = "k"              '    
-        DataGridView2.Columns(12).HeaderText = "m"              '
+        DataGridView2.Columns(5).HeaderText = "Catch chart [%]"     '
+        DataGridView2.Columns(6).HeaderText = "Groep nummer [-]"    '
+        DataGridView2.Columns(7).HeaderText = "d1 lower dia [mu]"   '
+        DataGridView2.Columns(8).HeaderText = "d2 upper dia [mu]"   '
+        DataGridView2.Columns(9).HeaderText = "p1 input [%]"        '
+        DataGridView2.Columns(10).HeaderText = "p2 input [%]"       '
+        DataGridView2.Columns(11).HeaderText = "k [-]"              '    
+        DataGridView2.Columns(12).HeaderText = "m [-]"              '
 
-        DataGridView2.Columns(13).HeaderText = "i_psd cum"      '
-        DataGridView2.Columns(14).HeaderText = "psd cum [%]"    '
-        DataGridView2.Columns(15).HeaderText = "psd diff"       '
-        DataGridView2.Columns(16).HeaderText = "loss abs [%]"   '
-        DataGridView2.Columns(17).HeaderText = "loss corr abs [%]" '
+        DataGridView2.Columns(13).HeaderText = "i_psd cum [%]"      '
+        DataGridView2.Columns(14).HeaderText = "psd cum [%]"        '
+        DataGridView2.Columns(15).HeaderText = "psd diff [%]"       '
+        DataGridView2.Columns(16).HeaderText = "loss abs [%]"       '
+        DataGridView2.Columns(17).HeaderText = "loss corr abs [%]"  '
 
         For row = 1 To 110  'Fill the DataGrid
             j = row - 1
-            DataGridView2.Rows.Item(j).Cells(0).Value = _cees(ks).stage1(j).dia.ToString
-            DataGridView2.Rows.Item(j).Cells(1).Value = _cees(ks).stage1(j).d_ave.ToString      'Average diameter
-            DataGridView2.Rows.Item(j).Cells(2).Value = _cees(ks).stage1(j).d_ave_K.ToString    'Average dia/K stokes
-            DataGridView2.Rows.Item(j).Cells(3).Value = _cees(ks).stage1(j).loss_overall.ToString   'Loss 
-            DataGridView2.Rows.Item(j).Cells(4).Value = _cees(ks).stage1(j).loss_overall_C.ToString 'Loss 
-            DataGridView2.Rows.Item(j).Cells(5).Value = _cees(ks).stage1(j).catch_chart.ToString    'Catch
+            DataGridView2.Rows.Item(j).Cells(0).Value = _cees(ks).stage1(j).dia.ToString("F5")
+            DataGridView2.Rows.Item(j).Cells(1).Value = _cees(ks).stage1(j).d_ave.ToString("F5")     'Average diameter
+            DataGridView2.Rows.Item(j).Cells(2).Value = _cees(ks).stage1(j).d_ave_K.ToString("F5")   'Average dia/K stokes
+            DataGridView2.Rows.Item(j).Cells(3).Value = _cees(ks).stage1(j).loss_overall.ToString("F5")   'Loss 
+            DataGridView2.Rows.Item(j).Cells(4).Value = _cees(ks).stage1(j).loss_overall_C.ToString("F5") 'Loss 
+            DataGridView2.Rows.Item(j).Cells(5).Value = _cees(ks).stage1(j).catch_chart.ToString("F5")    'Catch
             DataGridView2.Rows.Item(j).Cells(6).Value = _cees(ks).stage1(j).i_grp.ToString      'Groep nummer
-            DataGridView2.Rows.Item(j).Cells(7).Value = _cees(ks).stage1(j).i_d1.ToString       'class lower dia limit
-            DataGridView2.Rows.Item(j).Cells(8).Value = _cees(ks).stage1(j).i_d2.ToString       'class upper dia limit
-            DataGridView2.Rows.Item(j).Cells(9).Value = _cees(ks).stage1(j).i_p1.ToString       'User input percentage
-            DataGridView2.Rows.Item(j).Cells(10).Value = _cees(ks).stage1(j).i_p2.ToString      'User input percentage
-            DataGridView2.Rows.Item(j).Cells(11).Value = _cees(ks).stage1(j).i_k.ToString("0.0000")   '
-            DataGridView2.Rows.Item(j).Cells(12).Value = _cees(ks).stage1(j).i_m.ToString       '
-            DataGridView2.Rows.Item(j).Cells(13).Value = _cees(ks).stage1(j).psd_cum.ToString   '
-            DataGridView2.Rows.Item(j).Cells(14).Value = _cees(ks).stage1(j).psd_cump.ToString("0.000")   '[%]
-            DataGridView2.Rows.Item(j).Cells(15).Value = _cees(ks).stage1(j).psd_dif.ToString("E3")     '[%]
-            DataGridView2.Rows.Item(j).Cells(16).Value = _cees(ks).stage1(j).loss_abs.ToString("E3")    '[%]
-            DataGridView2.Rows.Item(j).Cells(17).Value = _cees(ks).stage1(j).loss_abs_C.ToString("E3")  '[%]
+            DataGridView2.Rows.Item(j).Cells(7).Value = _cees(ks).stage1(j).i_d1.ToString("F5")       'class lower dia limit
+            DataGridView2.Rows.Item(j).Cells(8).Value = _cees(ks).stage1(j).i_d2.ToString("F5")       'class upper dia limit
+            DataGridView2.Rows.Item(j).Cells(9).Value = _cees(ks).stage1(j).i_p1.ToString("F5")     'User input percentage
+            DataGridView2.Rows.Item(j).Cells(10).Value = _cees(ks).stage1(j).i_p2.ToString("F5")    'User input percentage
+            DataGridView2.Rows.Item(j).Cells(11).Value = _cees(ks).stage1(j).i_k.ToString("F3")   '
+            DataGridView2.Rows.Item(j).Cells(12).Value = _cees(ks).stage1(j).i_m.ToString("F5")    '
+            DataGridView2.Rows.Item(j).Cells(13).Value = _cees(ks).stage1(j).psd_cum.ToString("F5")  '
+            DataGridView2.Rows.Item(j).Cells(14).Value = _cees(ks).stage1(j).psd_cump.ToString("F3")   '[%]
+            DataGridView2.Rows.Item(j).Cells(15).Value = _cees(ks).stage1(j).psd_dif.ToString("F3")     '[%]
+            DataGridView2.Rows.Item(j).Cells(16).Value = _cees(ks).stage1(j).loss_abs.ToString("F3")    '[%]
+            DataGridView2.Rows.Item(j).Cells(17).Value = _cees(ks).stage1(j).loss_abs_C.ToString("F3")  '[%]
             total_psd_diff += _cees(ks).stage1(j).psd_dif
             total_abs_loss += _cees(ks).stage1(j).loss_abs
             total_abs_loss_C += _cees(ks).stage1(j).loss_abs_C
         Next
-        DataGridView2.Rows.Item(111).Cells(15).Value = total_psd_diff.ToString
-        DataGridView2.Rows.Item(111).Cells(16).Value = total_abs_loss.ToString
-        DataGridView2.Rows.Item(111).Cells(17).Value = total_abs_loss_C.ToString
+        DataGridView2.Rows.Item(111).Cells(15).Value = total_psd_diff.ToString("F5")
+        DataGridView2.Rows.Item(111).Cells(16).Value = total_abs_loss.ToString("F5")
+        DataGridView2.Rows.Item(111).Cells(17).Value = total_abs_loss_C.ToString("F5")
     End Sub
 
     Private Sub Present_loss_grid2()
@@ -1539,52 +1551,52 @@ Public Class Form1
         'DatagridView3.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill
 
         DataGridView3.Columns(0).HeaderText = "Dia class [mu]"
-        DataGridView3.Columns(1).HeaderText = "Dia average"
-        DataGridView3.Columns(2).HeaderText = "Dia/k"
-        DataGridView3.Columns(3).HeaderText = "Loss overall"
-        DataGridView3.Columns(4).HeaderText = "Loss overall Corrected"
-        DataGridView3.Columns(5).HeaderText = "Catch chart"     '
+        DataGridView3.Columns(1).HeaderText = "Dia average [mu]"
+        DataGridView3.Columns(2).HeaderText = "Dia/k [-]"
+        DataGridView3.Columns(3).HeaderText = "Loss overall [-]"
+        DataGridView3.Columns(4).HeaderText = "Loss overall Corrected [-]"
+        DataGridView3.Columns(5).HeaderText = "Catch chart [%]"     '
         DataGridView3.Columns(6).HeaderText = "Groep nummer"    '
-        DataGridView3.Columns(7).HeaderText = "d1 lower dia"    '
-        DataGridView3.Columns(8).HeaderText = "d2 upper dia"    '
-        DataGridView3.Columns(9).HeaderText = "p1 input"        '
-        DataGridView3.Columns(10).HeaderText = "p2 input"       '
-        DataGridView3.Columns(11).HeaderText = "k"              '    
-        DataGridView3.Columns(12).HeaderText = "m"              '
+        DataGridView3.Columns(7).HeaderText = "d1 lower dia [mu]"    '
+        DataGridView3.Columns(8).HeaderText = "d2 upper dia [mu]"    '
+        DataGridView3.Columns(9).HeaderText = "p1 input [%]"        '
+        DataGridView3.Columns(10).HeaderText = "p2 input [%]"       '
+        DataGridView3.Columns(11).HeaderText = "k [-]"              '    
+        DataGridView3.Columns(12).HeaderText = "m [-]"              '
 
         DataGridView3.Columns(13).HeaderText = "i_psd cum"      '
         DataGridView3.Columns(14).HeaderText = "psd cum [%]"    '
-        DataGridView3.Columns(15).HeaderText = "psd diff"       '
+        DataGridView3.Columns(15).HeaderText = "psd diff [%]"       '
         DataGridView3.Columns(16).HeaderText = "loss abs [%]"   '
         DataGridView3.Columns(17).HeaderText = "loss corr abs [%]" '
 
         For row = 1 To 110  'Fill the DataGrid
             j = row - 1
-            DataGridView3.Rows.Item(j).Cells(0).Value = _cees(ks).stage2(j).dia.ToString
-            DataGridView3.Rows.Item(j).Cells(1).Value = _cees(ks).stage2(j).d_ave.ToString      'Average diameter
-            DataGridView3.Rows.Item(j).Cells(2).Value = _cees(ks).stage2(j).d_ave_K.ToString    'Average dia/K stokes
-            DataGridView3.Rows.Item(j).Cells(3).Value = _cees(ks).stage2(j).loss_overall.ToString   'Loss 
-            DataGridView3.Rows.Item(j).Cells(4).Value = _cees(ks).stage2(j).loss_overall_C.ToString 'Loss 
-            DataGridView3.Rows.Item(j).Cells(5).Value = _cees(ks).stage2(j).catch_chart.ToString    'Catch
+            DataGridView3.Rows.Item(j).Cells(0).Value = _cees(ks).stage2(j).dia.ToString("F5")
+            DataGridView3.Rows.Item(j).Cells(1).Value = _cees(ks).stage2(j).d_ave.ToString("F5")   'Average diameter
+            DataGridView3.Rows.Item(j).Cells(2).Value = _cees(ks).stage2(j).d_ave_K.ToString("F5")   'Average dia/K stokes
+            DataGridView3.Rows.Item(j).Cells(3).Value = _cees(ks).stage2(j).loss_overall.ToString("F5")  'Loss 
+            DataGridView3.Rows.Item(j).Cells(4).Value = _cees(ks).stage2(j).loss_overall_C.ToString("F5") 'Loss 
+            DataGridView3.Rows.Item(j).Cells(5).Value = _cees(ks).stage2(j).catch_chart.ToString("F5")    'Catch
             DataGridView3.Rows.Item(j).Cells(6).Value = _cees(ks).stage2(j).i_grp.ToString      'Groep nummer
-            DataGridView3.Rows.Item(j).Cells(7).Value = _cees(ks).stage2(j).i_d1.ToString       'class lower dia limit
-            DataGridView3.Rows.Item(j).Cells(8).Value = _cees(ks).stage2(j).i_d2.ToString       'class upper dia limit
-            DataGridView3.Rows.Item(j).Cells(9).Value = _cees(ks).stage2(j).i_p1.ToString       'User input percentage
-            DataGridView3.Rows.Item(j).Cells(10).Value = _cees(ks).stage2(j).i_p2.ToString      '
-            DataGridView3.Rows.Item(j).Cells(11).Value = _cees(ks).stage2(j).i_k.ToString       'User input percentage
-            DataGridView3.Rows.Item(j).Cells(12).Value = _cees(ks).stage2(j).i_m.ToString       '
-            DataGridView3.Rows.Item(j).Cells(13).Value = _cees(ks).stage2(j).psd_cum.ToString   '
-            DataGridView3.Rows.Item(j).Cells(14).Value = _cees(ks).stage2(j).psd_cump.ToString("0.0")   '[%]
-            DataGridView3.Rows.Item(j).Cells(15).Value = _cees(ks).stage2(j).psd_dif.ToString("E3")     '[%]
-            DataGridView3.Rows.Item(j).Cells(16).Value = _cees(ks).stage2(j).loss_abs.ToString("E3")    '[%]
-            DataGridView3.Rows.Item(j).Cells(17).Value = _cees(ks).stage2(j).loss_abs_C.ToString("E3")  '[%]
+            DataGridView3.Rows.Item(j).Cells(7).Value = _cees(ks).stage2(j).i_d1.ToString("F5")       'class lower dia limit
+            DataGridView3.Rows.Item(j).Cells(8).Value = _cees(ks).stage2(j).i_d2.ToString("F5")      'class upper dia limit
+            DataGridView3.Rows.Item(j).Cells(9).Value = _cees(ks).stage2(j).i_p1.ToString("F5")       'User input percentage
+            DataGridView3.Rows.Item(j).Cells(10).Value = _cees(ks).stage2(j).i_p2.ToString("F5")    '
+            DataGridView3.Rows.Item(j).Cells(11).Value = _cees(ks).stage2(j).i_k.ToString("F5")    'User input percentage
+            DataGridView3.Rows.Item(j).Cells(12).Value = _cees(ks).stage2(j).i_m.ToString("F5")      '
+            DataGridView3.Rows.Item(j).Cells(13).Value = _cees(ks).stage2(j).psd_cum.ToString("F5")   '
+            DataGridView3.Rows.Item(j).Cells(14).Value = _cees(ks).stage2(j).psd_cump.ToString("F5")  '[%]
+            DataGridView3.Rows.Item(j).Cells(15).Value = _cees(ks).stage2(j).psd_dif.ToString("F5")     '[%]
+            DataGridView3.Rows.Item(j).Cells(16).Value = _cees(ks).stage2(j).loss_abs.ToString("F5")    '[%]
+            DataGridView3.Rows.Item(j).Cells(17).Value = _cees(ks).stage2(j).loss_abs_C.ToString("F5")  '[%]
             total_psd_diff += _cees(ks).stage2(j).psd_dif
             total_abs_loss += _cees(ks).stage2(j).loss_abs
             total_abs_loss_C += _cees(ks).stage2(j).loss_abs_C
         Next
-        DataGridView3.Rows.Item(111).Cells(15).Value = total_psd_diff.ToString
-        DataGridView3.Rows.Item(111).Cells(16).Value = total_abs_loss.ToString
-        DataGridView3.Rows.Item(111).Cells(17).Value = total_abs_loss_C.ToString
+        DataGridView3.Rows.Item(111).Cells(15).Value = total_psd_diff.ToString("F5")
+        DataGridView3.Rows.Item(111).Cells(16).Value = total_abs_loss.ToString("F5")
+        DataGridView3.Rows.Item(111).Cells(17).Value = total_abs_loss_C.ToString("F5")
     End Sub
 
     Private Sub Calc_k_and_m(ByRef g As GvG_Calc_struct)
@@ -1750,7 +1762,7 @@ Public Class Form1
         TextBox100.Text = kgh.ToString("0")
         TextBox101.Text = tot_kgh.ToString("0")
 
-        '--------- now the particles ------------
+        '--------- now the particles (Grid line 0)------------
         _cees(ks).stage2(i).dia = _cees(ks).stage1(i).dia                                   'Copy stage #1
         _cees(ks).stage2(i).d_ave = _cees(ks).stage2(0).dia / 2                             'Average diameter
         _cees(ks).stage2(i).d_ave_K = _cees(ks).stage2(0).d_ave / _cees(ks).Kstokes2        'dia/k_stokes
@@ -1800,7 +1812,8 @@ Public Class Form1
         'TextBox24.Text &= ",  dia_max= " & dia_max.ToString
         'TextBox24.Text &= ",  istep= " & istep.ToString & vbCrLf
 
-        For i = 1 To 110
+
+        For i = 1 To 110    'Grid lines 1... 
             _cees(ks).stage2(i).dia = _cees(ks).stage1(i).dia                                     'Copy stage #1
             _cees(ks).stage2(i).d_ave = (_cees(ks).stage2(i - 1).dia + _cees(ks).stage2(i).dia) / 2          'Average diameter
             _cees(ks).stage2(i).d_ave_K = _cees(ks).stage2(i).d_ave / _cees(ks).Kstokes2          'dia/k_stokes
