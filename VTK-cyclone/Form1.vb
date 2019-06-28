@@ -529,12 +529,12 @@ Public Class Form1
 
             '---------- Calc diameter with x% loss ---
             '---------- present stage #1 -------
-            TextBox42.Text = Calc_dia_particle(1.0, _cees(ks).Kstokes1, ComboBox1).ToString("0.00")     '[mu] @ 100% loss
-            TextBox26.Text = Calc_dia_particle(0.95, _cees(ks).Kstokes1, ComboBox1).ToString("0.00")    '[mu] @  95% lost
-            TextBox31.Text = Calc_dia_particle(0.9, _cees(ks).Kstokes1, ComboBox1).ToString("0.00")     '[mu] @  90% lost
-            TextBox32.Text = Calc_dia_particle(0.5, _cees(ks).Kstokes1, ComboBox1).ToString("0.00")     '[mu] @  50% lost
-            TextBox33.Text = Calc_dia_particle(0.1, _cees(ks).Kstokes1, ComboBox1).ToString("0.00")     '[mu] @  10% lost
-            TextBox41.Text = Calc_dia_particle(0.05, _cees(ks).Kstokes1, ComboBox1).ToString("0.00")    '[mu] @   5% lost
+            TextBox42.Text = Calc_dia_particle(1.0, _cees(ks).Kstokes1, 1).ToString("0.00")     '[mu] @ 100% loss
+            TextBox26.Text = Calc_dia_particle(0.95, _cees(ks).Kstokes1, 1).ToString("0.00")    '[mu] @  95% lost
+            TextBox31.Text = Calc_dia_particle(0.9, _cees(ks).Kstokes1, 1).ToString("0.00")     '[mu] @  90% lost
+            TextBox32.Text = Calc_dia_particle(0.5, _cees(ks).Kstokes1, 1).ToString("0.00")     '[mu] @  50% lost
+            TextBox33.Text = Calc_dia_particle(0.1, _cees(ks).Kstokes1, 1).ToString("0.00")     '[mu] @  10% lost
+            TextBox41.Text = Calc_dia_particle(0.05, _cees(ks).Kstokes1, 1).ToString("0.00")    '[mu] @   5% lost
 
             TextBox39.Text = kgh.ToString("0")          'Stof inlet
             TextBox40.Text = tot_kgh.ToString("0")      'Dust inlet [g/Am3] 
@@ -542,12 +542,12 @@ Public Class Form1
 
             '---------- present stage #2 -------
             ' MessageBox.Show(_cees(ks).Kstokes2.ToString)
-            TextBox102.Text = Calc_dia_particle(1.0, _cees(ks).Kstokes2, ComboBox2).ToString("0.00")    '[mu] @  95% lost
-            TextBox103.Text = Calc_dia_particle(0.95, _cees(ks).Kstokes2, ComboBox2).ToString("0.00")    '[mu] @  95% lost
-            TextBox104.Text = Calc_dia_particle(0.9, _cees(ks).Kstokes2, ComboBox2).ToString("0.00")     '[mu] @  90% lost
-            TextBox105.Text = Calc_dia_particle(0.5, _cees(ks).Kstokes2, ComboBox2).ToString("0.00")     '[mu] @  50% lost
-            TextBox106.Text = Calc_dia_particle(0.1, _cees(ks).Kstokes2, ComboBox2).ToString("0.00")     '[mu] @  10% lost
-            TextBox107.Text = Calc_dia_particle(0.05, _cees(ks).Kstokes2, ComboBox2).ToString("0.00")    '[mu] @   5% lost
+            TextBox102.Text = Calc_dia_particle(1.0, _cees(ks).Kstokes2, 2).ToString("0.00")    '[mu] @  95% lost
+            TextBox103.Text = Calc_dia_particle(0.95, _cees(ks).Kstokes2, 2).ToString("0.00")    '[mu] @  95% lost
+            TextBox104.Text = Calc_dia_particle(0.9, _cees(ks).Kstokes2, 2).ToString("0.00")     '[mu] @  90% lost
+            TextBox105.Text = Calc_dia_particle(0.5, _cees(ks).Kstokes2, 2).ToString("0.00")     '[mu] @  50% lost
+            TextBox106.Text = Calc_dia_particle(0.1, _cees(ks).Kstokes2, 2).ToString("0.00")     '[mu] @  10% lost
+            TextBox107.Text = Calc_dia_particle(0.05, _cees(ks).Kstokes2, 2).ToString("0.00")    '[mu] @   5% lost
         End If
     End Sub
     Private Sub Fill_cees_array(c_nr As Integer)
@@ -650,15 +650,27 @@ Public Class Form1
 
     '-------- Bereken het verlies getal GECORRIGEERD -----------
     '----- de input is de GEMIDDELDE korrel grootte-----------
-    Private Sub Calc_verlies_corrected(ByRef grp As GvG_Calc_struct)
+    Private Sub Calc_verlies_corrected(ByRef grp As GvG_Calc_struct, stage As Integer)
         Dim words() As String
         Dim dia_Kcrit, fac_m, fac_a, fac_k As Double
         Dim cor1, cor2 As Double
 
+        '----- check input ----
+        If stage > 2 Or stage < 1 Then MessageBox.Show("Problem in Line 658")
+
         If (ComboBox1.SelectedIndex > -1) Then
 
+            If (stage = 1) Then 'Prevent exceptions
+                cor1 = NumericUpDown22.Value    'Correctie insteek pijp stage #1
+                Double.TryParse(TextBox55.Text, cor2) 'Hoge stof belasting correctie acc VT-UK
+                words = rekenlijnen(ComboBox1.SelectedIndex).Split(CType(";", Char()))
+            Else
+                cor1 = NumericUpDown43.Value    'Correctie insteek pijp stage #2
+                Double.TryParse(TextBox67.Text, cor2) 'Hoge stof belasting correctie acc VT-UK
+                words = rekenlijnen(ComboBox2.SelectedIndex).Split(CType(";", Char()))
+            End If
+
             '-------------- korrelgrootte factoren ------
-            words = rekenlijnen(ComboBox1.SelectedIndex).Split(CType(";", Char()))
             dia_Kcrit = CDbl(words(1))
 
             '-------- de grafieken zijn in 2 delen gesplits voor hogere nauwkeurigheid----------
@@ -672,11 +684,7 @@ Public Class Form1
                 fac_a = CDbl(words(7))
             End If
 
-            '----- Insteek pijp corectie correctie -------
-            cor1 = NumericUpDown22.Value    'Correctie insteek pijp
 
-            'Hoge stof belasting correctie acc VT-UK
-            Double.TryParse(TextBox47.Text, cor2)
 
             grp.loss_overall_C = grp.loss_overall ^ (cor1 * cor2)
 
@@ -694,7 +702,7 @@ Public Class Form1
 
     'Note dp(95) meaning with this diameter 95% is lost
     'Calculate the diameter at which qq% is lost
-    Private Function Calc_dia_particle(qq As Double, stokes As Double, ct As ComboBox) As Double
+    Private Function Calc_dia_particle(qq As Double, stokes As Double, stage As integer) As Double
         Dim dia_result As Double = 0
         Dim words() As String
         Dim dia_Kcrit As Double
@@ -703,41 +711,42 @@ Public Class Form1
         Dim fac_m1, fac_k1, fac_a1 As Double
         Dim fac_m2, fac_k2, fac_a2 As Double
 
-
+        '--- check input ----
         If qq > 1 Then MessageBox.Show("Loss > 100% is impossible, Line 486, qq= " & qq.ToString)
+        If stage > 2 Or stage < 1 Then MessageBox.Show("Problem in Line 708")
 
-        If (ct.SelectedIndex > -1) Then 'Prevent exceptions
-
-            '----- Insteek pijp corectie correctie -------
-            cor1 = NumericUpDown22.Value    'Correctie insteek pijp
-
-            'Hoge stof belasting correctie acc VT-UK
-            Double.TryParse(TextBox47.Text, cor2)
-
-            '-------------- korrelgrootte factoren ------
-            'words = rekenlijnen(ComboBox1.SelectedIndex).Split(CType(";", Char()))
-            words = rekenlijnen(ct.SelectedIndex).Split(CType(";", Char()))
-            dia_Kcrit = CDbl(words(1))   'Is in fact d/K(crit)
-
-            '---- diameter particle kleiner dan de diameter kritisch
-            fac_m1 = CDbl(words(2))
-            fac_k1 = CDbl(words(3))
-            fac_a1 = CDbl(words(4))
-            d1 = fac_k1 * stokes * ((-Math.Log(qq ^ (1 / (cor1 * cor2))))) ^ (1 / fac_a1) + fac_m1 * stokes
-
-            '---- diameter particle groter dan de diameter kritisch
-            fac_m2 = CDbl(words(5))
-            fac_k2 = CDbl(words(6))
-            fac_a2 = CDbl(words(7))
-            d2 = fac_k2 * stokes * ((-Math.Log(qq ^ (1 / (cor1 * cor2))))) ^ (1 / fac_a2) + fac_m2 * stokes
-
-            If ((d1 / stokes) < dia_Kcrit) Then
-                dia_result = d1     'diameter kleiner kritisch
-            Else
-                dia_result = d2     'diameter groter kritisch
-            End If
-
+        '----- Insteek pijp corectie correctie -------
+        If (stage = 1) Then 'Prevent exceptions
+            cor1 = NumericUpDown22.Value    'Correctie insteek pijp stage #1
+            Double.TryParse(TextBox55.Text, cor2) 'Hoge stof belasting correctie acc VT-UK
+            words = rekenlijnen(ComboBox1.SelectedIndex).Split(CType(";", Char()))
+        Else
+            cor1 = NumericUpDown43.Value    'Correctie insteek pijp stage #2
+            Double.TryParse(TextBox67.Text, cor2) 'Hoge stof belasting correctie acc VT-UK
+            words = rekenlijnen(ComboBox2.SelectedIndex).Split(CType(";", Char()))
         End If
+
+        '-------------- korrelgrootte factoren ------
+        dia_Kcrit = CDbl(words(1))   'Is in fact d/K(crit)
+
+        '---- diameter particle kleiner dan de diameter kritisch
+        fac_m1 = CDbl(words(2))
+        fac_k1 = CDbl(words(3))
+        fac_a1 = CDbl(words(4))
+        d1 = fac_k1 * stokes * ((-Math.Log(qq ^ (1 / (cor1 * cor2))))) ^ (1 / fac_a1) + fac_m1 * stokes
+
+        '---- diameter particle groter dan de diameter kritisch
+        fac_m2 = CDbl(words(5))
+        fac_k2 = CDbl(words(6))
+        fac_a2 = CDbl(words(7))
+        d2 = fac_k2 * stokes * ((-Math.Log(qq ^ (1 / (cor1 * cor2))))) ^ (1 / fac_a2) + fac_m2 * stokes
+
+        If ((d1 / stokes) < dia_Kcrit) Then
+            dia_result = d1     'diameter kleiner kritisch
+        Else
+            dia_result = d2     'diameter groter kritisch
+        End If
+
         Return (dia_result)
     End Function
     '---- According to VT-UK -----
@@ -771,7 +780,6 @@ Public Class Form1
             f_used = 1
         End If
 
-        TextBox47.Text = f.ToString("0.000")
         TextBox55.Text = f_used.ToString("0.000")
 
         '============ stage 2 cyclone ==========
@@ -800,7 +808,6 @@ Public Class Form1
             f_used = 1
         End If
 
-        TextBox69.Text = f.ToString("0.000")
         TextBox67.Text = f_used.ToString("0.000")
     End Sub
 
@@ -1630,15 +1637,15 @@ Public Class Form1
         '------ the idea is that the smallest diameter cyclone determines
         '------ the smallest particle diameter used in the calculation
         If numericUpDown5.Value > NumericUpDown35.Value Then
-            _cees(ks).stage1(0).dia = Calc_dia_particle(1.0, _cees(ks).Kstokes2, ComboBox2)
+            _cees(ks).stage1(0).dia = Calc_dia_particle(1.0, _cees(ks).Kstokes2, 2)
         Else
-            _cees(ks).stage1(0).dia = Calc_dia_particle(1.0, _cees(ks).Kstokes1, ComboBox1)
+            _cees(ks).stage1(0).dia = Calc_dia_particle(1.0, _cees(ks).Kstokes1, 1)
         End If
 
         _cees(ks).stage1(0).d_ave = _cees(ks).stage1(0).dia / 2                              'Average diameter
         _cees(ks).stage1(0).d_ave_K = _cees(ks).stage1(0).d_ave / _cees(ks).Kstokes1         'dia/k_stokes
         _cees(ks).stage1(0).loss_overall = Calc_verlies(_cees(ks).stage1(0).d_ave_K, False, _cees(ks).Kstokes1)     '[-] loss overall
-        Calc_verlies_corrected(_cees(ks).stage1(0))                                '[-] loss overall corrected
+        Calc_verlies_corrected(_cees(ks).stage1(0), 1)                                '[-] loss overall corrected
         _cees(ks).stage1(0).catch_chart = (1 - _cees(ks).stage1(i).loss_overall_C) * 100     '[%]
 
         Size_classification(_cees(ks).stage1(0))                                   'Classify this part size
@@ -1677,7 +1684,7 @@ Public Class Form1
         End If
 
         perc_smallest_part = 0.0000001                      'smallest particle [%]
-        _cees(ks).Dmax1 = Calc_dia_particle(perc_smallest_part, _cees(ks).Kstokes1, ComboBox1)     '=100% loss (biggest particle)
+        _cees(ks).Dmax1 = Calc_dia_particle(perc_smallest_part, _cees(ks).Kstokes1, 1)     '=100% loss (biggest particle)
         _cees(ks).Dmin1 = _cees(ks).Kstokes1 * fac_m                'diameter smallest particle caught
 
         dia_min = CDbl(IIf(_cees(ks).Dmin1 < _cees(ks).Dmin2, _cees(ks).Dmin1, _cees(ks).Dmin2))     '=100% loss (biggest particle)
@@ -1691,8 +1698,7 @@ Public Class Form1
             _cees(ks).stage1(i).d_ave = (_cees(ks).stage1(i - 1).dia + _cees(ks).stage1(i).dia) / 2       'Average diameter
             _cees(ks).stage1(i).d_ave_K = _cees(ks).stage1(i).d_ave / _cees(ks).Kstokes1        'dia/k_stokes
             _cees(ks).stage1(i).loss_overall = Calc_verlies(_cees(ks).stage1(i).d_ave, False, _cees(ks).Kstokes1)   '[-] loss overall
-            Calc_verlies_corrected(_cees(ks).stage1(i))                               '[-] loss overall corrected
-
+            Calc_verlies_corrected(_cees(ks).stage1(i), 1)                               '[-] loss overall corrected
 
             If CheckBox2.Checked Then
                 _cees(ks).stage1(i).catch_chart = (1 - _cees(ks).stage1(i).loss_overall_C) * 100 '[%] Corrected
@@ -1776,7 +1782,7 @@ Public Class Form1
         _cees(ks).stage2(i).d_ave = _cees(ks).stage2(0).dia / 2                             'Average diameter
         _cees(ks).stage2(i).d_ave_K = _cees(ks).stage2(0).d_ave / _cees(ks).Kstokes2        'dia/k_stokes
         _cees(ks).stage2(i).loss_overall = Calc_verlies(_cees(ks).stage2(0).d_ave_K, False, _cees(ks).Kstokes1)     '[-] loss overall
-        Calc_verlies_corrected(_cees(ks).stage2(0))                               '[-] loss overall corrected
+        Calc_verlies_corrected(_cees(ks).stage2(0), 2)                               '[-] loss overall corrected
         _cees(ks).stage2(i).catch_chart = (1 - _cees(ks).stage2(i).loss_overall_C) * 100    '[%]
         Size_classification(_cees(ks).stage2(i))                                  'groepnummer
 
@@ -1810,7 +1816,7 @@ Public Class Form1
 
         '------------ Find the biggest and smallest particle -----
         perc_smallest_part = 0.0000001                      'smallest particle [%]
-        _cees(ks).Dmax2 = Calc_dia_particle(perc_smallest_part, _cees(ks).Kstokes2, ComboBox2)     '=100% loss (biggest particle)
+        _cees(ks).Dmax2 = Calc_dia_particle(perc_smallest_part, _cees(ks).Kstokes2, 2)     '=100% loss (biggest particle)
         _cees(ks).Dmin2 = _cees(ks).Kstokes2 * fac_m                'diameter smallest particle caught
 
         dia_min = CDbl(IIf(_cees(ks).Dmin1 < _cees(ks).Dmin2, _cees(ks).Dmin1, _cees(ks).Dmin2))     '=100% loss (biggest particle)
@@ -1829,7 +1835,7 @@ Public Class Form1
             _cees(ks).stage2(i).d_ave = (_cees(ks).stage2(i - 1).dia + _cees(ks).stage2(i).dia) / 2          'Average diameter
             _cees(ks).stage2(i).d_ave_K = _cees(ks).stage2(i).d_ave / _cees(ks).Kstokes2          'dia/k_stokes
             _cees(ks).stage2(i).loss_overall = Calc_verlies(_cees(ks).stage2(i).d_ave, False, _cees(ks).Kstokes2)   '[-] loss overall
-            Calc_verlies_corrected(_cees(ks).stage2(i))                                '[-] loss overall corrected
+            Calc_verlies_corrected(_cees(ks).stage2(i), 2)                                '[-] loss overall corrected
             If CheckBox3.Checked Then
                 _cees(ks).stage2(i).catch_chart = (1 - _cees(ks).stage2(i).loss_overall_C) * 100  '[%] Corrected
             Else
