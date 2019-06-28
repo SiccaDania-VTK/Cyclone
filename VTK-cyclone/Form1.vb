@@ -11,7 +11,7 @@ Imports Word = Microsoft.Office.Interop.Word
 'This structure is required for the different operating cases of a cyclone
 'Therefore the struct does only contain  the input information
 'If the calculation is modified the new result will be found 
-Public Structure Input_struct
+<Serializable()> Public Structure Input_struct
     Public case_name As String      'The case name
     Public FlowT As Double          'Air flow [Am3/h]
     Public dia_big() As Double      'Particle diameter inlet [mu]
@@ -39,6 +39,8 @@ Public Structure Input_struct
     Public dpdust1 As Double        '[Pa] pressure loss dust
     Public m1 As Double             'm factor loss curve d< dia critical
     Public stage1() As GvG_Calc_struct   'tbv calculatie stage #1
+    Public Dmin1 As Double          'Smallest particle in calculation
+    Public Dmax1 As Double          'Biggest particle in calculation
 
     '===== stage #2 parameters ======
     Public Flow2 As Double          '[Am3/s] Air flow per cyclone 
@@ -58,10 +60,12 @@ Public Structure Input_struct
     Public dpdust2 As Double        '[Pa] pressure loss dust
     Public m2 As Double             'm factor loss curve d< dia critical
     Public stage2() As GvG_Calc_struct   'tbv calculatie stage #2
+    Public Dmin2 As Double          'Smallest particle in calculation
+    Public Dmax2 As Double          'Biggest particle in calculation
 End Structure
 
 'Variables used by GvG in calculation
-Public Structure GvG_Calc_struct
+<Serializable()> Public Structure GvG_Calc_struct
     Public dia As Double            'Particle diameter [mu]
     Public d_ave As Double          'Average diameter [mu]
     Public d_ave_K As Double        'Average diam/K_stokes [-]
@@ -901,13 +905,40 @@ Public Class Form1
 
     Private Sub Button3_Click(sender As Object, e As EventArgs) Handles Button3.Click
         If TextBox28.Text.Trim.Length > 0 And TextBox29.Text.Trim.Length > 0 Then
-            Save_tofile()
+            'Save_tofile()
+            Save_tofile2()
         Else
             MessageBox.Show("Complete Quote and Tag number")
         End If
     End Sub
-    Private Sub Save_tofile()
+    Private Sub Save_tofile2()
+        Dim filename, user As String
+        Dim bf As New System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
 
+        '------------- create filemame ----------
+        user = Trim(Environment.UserName)         'User name on the screen
+        filename = "Cyclone_select_" & TextBox28.Text & "_" & TextBox29.Text & DateTime.Now.ToString("_yyyy_MM_dd_") & user & ".vtk2"
+        filename = Replace(filename, Chr(32), Chr(95)) 'Replace the space's
+
+        MessageBox.Show(filename)
+
+        Try
+            If Directory.Exists(dirpath_Eng) Then
+                filename = dirpath_Eng & filename 'used at VTK with intranet
+            Else
+                filename = dirpath_tmp & filename 'used at VTK with intranet'used at home
+            End If
+            Dim fStream As New FileStream(filename, FileMode.OpenOrCreate)
+            bf.Serialize(fStream, _cees) ' write to file
+        Catch ex As Exception
+            MessageBox.Show("Line 6298, " & ex.Message)  ' Show the exception's message.
+        End Try
+
+        ' fStream.Position = 0 ' reset stream pointer
+        ' _cees = CType(bf.Deserialize(fStream), Input_struct()) ' read from file
+    End Sub
+
+    Private Sub Save_tofile()
         Dim temp_string, user As String
 
         user = Trim(Environment.UserName)         'User name on the screen
@@ -1476,11 +1507,11 @@ Public Class Form1
             DataGridView2.Rows.Item(j).Cells(7).Value = _cees(ks).stage1(j).i_d1.ToString       'class lower dia limit
             DataGridView2.Rows.Item(j).Cells(8).Value = _cees(ks).stage1(j).i_d2.ToString       'class upper dia limit
             DataGridView2.Rows.Item(j).Cells(9).Value = _cees(ks).stage1(j).i_p1.ToString       'User input percentage
-            DataGridView2.Rows.Item(j).Cells(10).Value = _cees(ks).stage1(j).i_p2.ToString      '
-            DataGridView2.Rows.Item(j).Cells(11).Value = _cees(ks).stage1(j).i_k.ToString       'User input percentage
+            DataGridView2.Rows.Item(j).Cells(10).Value = _cees(ks).stage1(j).i_p2.ToString      'User input percentage
+            DataGridView2.Rows.Item(j).Cells(11).Value = _cees(ks).stage1(j).i_k.ToString("0.0000")   '
             DataGridView2.Rows.Item(j).Cells(12).Value = _cees(ks).stage1(j).i_m.ToString       '
             DataGridView2.Rows.Item(j).Cells(13).Value = _cees(ks).stage1(j).psd_cum.ToString   '
-            DataGridView2.Rows.Item(j).Cells(14).Value = _cees(ks).stage1(j).psd_cump.ToString("0.0")   '[%]
+            DataGridView2.Rows.Item(j).Cells(14).Value = _cees(ks).stage1(j).psd_cump.ToString("0.000")   '[%]
             DataGridView2.Rows.Item(j).Cells(15).Value = _cees(ks).stage1(j).psd_dif.ToString("E3")     '[%]
             DataGridView2.Rows.Item(j).Cells(16).Value = _cees(ks).stage1(j).loss_abs.ToString("E3")    '[%]
             DataGridView2.Rows.Item(j).Cells(17).Value = _cees(ks).stage1(j).loss_abs_C.ToString("E3")  '[%]
@@ -1625,10 +1656,14 @@ Public Class Form1
         End If
 
         perc_smallest_part = 0.0000001                      'smallest particle [%]
-        dia_max = Calc_dia_particle(perc_smallest_part, _cees(ks).Kstokes1, ComboBox1)     '=100% loss (biggest particle)
-        dia_min = _cees(ks).Kstokes1 * fac_m                'diameter smallest particle caught
-        istep = (dia_max / dia_min) ^ (1 / 110)             'Calculation step
+        _cees(ks).Dmax1 = Calc_dia_particle(perc_smallest_part, _cees(ks).Kstokes1, ComboBox1)     '=100% loss (biggest particle)
+        _cees(ks).Dmin1 = _cees(ks).Kstokes1 * fac_m                'diameter smallest particle caught
 
+        dia_min = CDbl(IIf(_cees(ks).Dmin1 < _cees(ks).Dmin2, _cees(ks).Dmin1, _cees(ks).Dmin2))     '=100% loss (biggest particle)
+        dia_max = CDbl(IIf(_cees(ks).Dmax1 > _cees(ks).Dmax2, _cees(ks).Dmax1, _cees(ks).Dmax2))     '=100% loss (biggest particle)
+
+        '------------ Particle diameter calculation step -----
+        istep = (dia_max / dia_min) ^ (1 / 110)             'Calculation step
 
         For i = 1 To 110
             _cees(ks).stage1(i).dia = _cees(ks).stage1(i - 1).dia * istep
@@ -1697,7 +1732,7 @@ Public Class Form1
     Private Sub Calc_stage2(ks As Integer)
         'This is the standard VTK cyclone calculation 
         Dim i As Integer = 0
-        Dim dia_max As Double         'Above this diameter everything is caught
+        Dim dia_max As Double       'Above this diameter everything is caught
         Dim dia_min As Double       'Below this diameter nothing is caught
         Dim istep As Double         'Particle diameter step
         Dim sum_loss2 As Double
@@ -1708,9 +1743,6 @@ Public Class Form1
         Dim fac_m As Double
         Dim words() As String
         Dim kgh, tot_kgh As Double
-
-
-        'If ComboBox1.SelectedIndex > -1 And ComboBox2.SelectedIndex > -1 Then
 
         '----------- stof belasting ------------
         tot_kgh = _cees(ks).FlowT * _cees(ks).stofb2 / 1000     '[kg/hr] Dust inlet 
@@ -1752,10 +1784,21 @@ Public Class Form1
             fac_m = CDbl(words(2))
         End If
 
+
+        '------------ Find the biggest and smallest particle -----
         perc_smallest_part = 0.0000001                      'smallest particle [%]
-        dia_max = Calc_dia_particle(perc_smallest_part, _cees(ks).Kstokes2, ComboBox2)     '=100% loss (biggest particle)
-        dia_min = _cees(ks).Kstokes2 * fac_m                'diameter smallest particle caught
+        _cees(ks).Dmax2 = Calc_dia_particle(perc_smallest_part, _cees(ks).Kstokes2, ComboBox2)     '=100% loss (biggest particle)
+        _cees(ks).Dmin2 = _cees(ks).Kstokes2 * fac_m                'diameter smallest particle caught
+
+        dia_min = CDbl(IIf(_cees(ks).Dmin1 < _cees(ks).Dmin2, _cees(ks).Dmin1, _cees(ks).Dmin2))     '=100% loss (biggest particle)
+        dia_max = CDbl(IIf(_cees(ks).Dmax1 > _cees(ks).Dmax2, _cees(ks).Dmax1, _cees(ks).Dmax2))     '=100% loss (biggest particle)
+
+        '------------ Particle diameter calculation step -----
         istep = (dia_max / dia_min) ^ (1 / 110)             'Calculation step
+
+        'TextBox24.Text &= "dia_min= " & dia_min.ToString
+        'TextBox24.Text &= ",  dia_max= " & dia_max.ToString
+        'TextBox24.Text &= ",  istep= " & istep.ToString & vbCrLf
 
         For i = 1 To 110
             _cees(ks).stage2(i).dia = _cees(ks).stage1(i).dia                                     'Copy stage #1
@@ -1798,8 +1841,11 @@ Public Class Form1
         '----------- present -----------
         TextBox63.Text = ComboBox2.Text                     'Cyclone type
         TextBox64.Text = CheckBox3.Checked.ToString         'Hi load correction
-        TextBox110.Text = dia_max.ToString("0")             'diameter [mu] 100% catch
-        TextBox111.Text = dia_min.ToString("0.00")          'diameter [mu] 100% loss
+        TextBox110.Text = dia_max.ToString("0.000")         'diameter [mu] 100% catch
+        TextBox111.Text = dia_min.ToString("0.000000")      'diameter [mu] 100% loss
+        TextBox116.Text = istep.ToString("0.00000")         'Calculation step
+
+
 
         If CheckBox3.Checked Then
             TextBox65.Text = loss_total2.ToString("0.00000")    'Corrected
@@ -1814,7 +1860,7 @@ Public Class Form1
 
         End If
         TextBox108.Text = TextBox62.Text
-        'End If
+
     End Sub
     'Determine the particle diameter class upper and lower limits
     ' Private Function Size_classification(dia As Double, noi As Integer) As Double
@@ -1881,15 +1927,18 @@ Public Class Form1
                     g.i_p1 = NumericUpDown38.Value / 100
                     g.i_p2 = NumericUpDown39.Value / 100
                     g.i_grp = 9
-                Case g.dia >= NumericUpDown36.Value
-                    g.i_d1 = NumericUpDown35.Value  '
-                    g.i_d2 = NumericUpDown36.Value  '
+                Case g.dia >= NumericUpDown36.Value And g.dia < NumericUpDown37.Value
+                    g.i_d1 = NumericUpDown36.Value  '
+                    g.i_d2 = NumericUpDown37.Value  '
                     g.i_p1 = NumericUpDown39.Value / 100
                     g.i_p2 = NumericUpDown40.Value / 100
                     g.i_grp = 10
-
                 Case Else
-                    MessageBox.Show("Problem in line 1882")
+                    g.i_d1 = NumericUpDown37.Value  '
+                    g.i_d2 = g.i_d1 * 2
+                    g.i_p1 = NumericUpDown40.Value / 100
+                    g.i_p2 = g.i_p1 * 2
+                    g.i_grp = 11
             End Select
 
             Dim w(11) As Double  'Individual particle class weights
@@ -2099,4 +2148,6 @@ Public Class Form1
     Private Sub Button9_Click(sender As Object, e As EventArgs) Handles Button9.Click, TabControl1.Enter
         Calc_sequence()
     End Sub
+
+
 End Class
