@@ -1544,7 +1544,8 @@ Public Class Form1
         Dim ks As Integer 'Present case number
         Dim total_abs_loss_C As Double = 0
         Dim total_abs_loss As Double = 0
-        Dim total_psd_diff As Double = 0
+        Dim total_psd_diff1 As Double = 0
+        Dim total_psd_diff2 As Double = 0
 
         ks = CInt(NumericUpDown30.Value)
 
@@ -1595,13 +1596,15 @@ Public Class Form1
             DataGridView3.Rows.Item(j).Cells(16).Value = _cees(ks).stage2(j).psd_dif.ToString("F5")     '[%]
             DataGridView3.Rows.Item(j).Cells(17).Value = _cees(ks).stage2(j).loss_abs.ToString("F5")    '[%]
             DataGridView3.Rows.Item(j).Cells(18).Value = _cees(ks).stage2(j).loss_abs_C.ToString("F5")  '[%]
-            total_psd_diff += _cees(ks).stage2(j).psd_dif
+            total_psd_diff1 += _cees(ks).stage1(j).psd_dif
+            total_psd_diff2 += _cees(ks).stage2(j).psd_dif
             total_abs_loss += _cees(ks).stage2(j).loss_abs
             total_abs_loss_C += _cees(ks).stage2(j).loss_abs_C
         Next
-        DataGridView3.Rows.Item(111).Cells(15).Value = total_psd_diff.ToString("F5")
-        DataGridView3.Rows.Item(111).Cells(16).Value = total_abs_loss.ToString("F5")
-        DataGridView3.Rows.Item(111).Cells(17).Value = total_abs_loss_C.ToString("F5")
+        DataGridView3.Rows.Item(111).Cells(15).Value = total_psd_diff1.ToString("F5")
+        DataGridView3.Rows.Item(111).Cells(16).Value = total_psd_diff2.ToString("F5")
+        DataGridView3.Rows.Item(111).Cells(17).Value = total_abs_loss.ToString("F5")
+        DataGridView3.Rows.Item(111).Cells(18).Value = total_abs_loss_C.ToString("F5")
     End Sub
 
     Private Sub Calc_k_and_m(ByRef g As GvG_Calc_struct)
@@ -1651,6 +1654,7 @@ Public Class Form1
 
         _cees(ks).stage1(0).psd_cum = Math.E ^ (-((_cees(ks).stage1(i).dia / _cees(ks).stage1(i).i_m) ^ _cees(ks).stage1(i).i_k))
         _cees(ks).stage1(0).psd_cump = _cees(ks).stage1(i).psd_cum * 100
+
         _cees(ks).stage1(0).psd_dif = 100 * (1 - _cees(ks).stage1(i).psd_cum)
         _cees(ks).stage1(0).loss_abs = _cees(ks).stage1(i).loss_overall * _cees(ks).stage1(i).psd_dif
         _cees(ks).stage1(0).loss_abs_C = _cees(ks).stage1(i).loss_overall_C * _cees(ks).stage1(i).psd_dif
@@ -1697,10 +1701,9 @@ Public Class Form1
             End If
             Size_classification(_cees(ks).stage1(i))                                   'Classify this part size
 
-            If _cees(ks).stage1(i).i_p2 > 0.001 Then 'to prevent silly results
+            'If _cees(ks).stage1(i).i_p2 > 0.00001 Then 'to prevent silly results
+            If _cees(ks).stage1(i).i_grp <> 11 And _cees(ks).stage2(i).i_grp <> 11 Then 'to prevent silly results
                 Calc_k_and_m(_cees(ks).stage1(i))
-                'stage1(i).i_k = Log(Log(stage1(i).i_p1) / Log(stage1(i).i_p2)) / Log(stage1(i).i_d1 / stage1(i).i_d2)
-                'stage1(i).i_m = stage1(i).i_d1 / ((-Log(stage1(i).i_p1)) ^ (1 / stage1(i).i_k))
                 _cees(ks).stage1(i).psd_cum = Math.E ^ (-((_cees(ks).stage1(i).dia / _cees(ks).stage1(i).i_m) ^ _cees(ks).stage1(i).i_k))
                 _cees(ks).stage1(i).psd_cump = _cees(ks).stage1(i).psd_cum * 100
                 _cees(ks).stage1(i).psd_dif = 100 * (_cees(ks).stage1(i - 1).psd_cum - _cees(ks).stage1(i).psd_cum)
@@ -1866,8 +1869,6 @@ Public Class Form1
         TextBox111.Text = dia_min.ToString("0.000000")      'diameter [mu] 100% loss
         TextBox116.Text = istep.ToString("0.00000")         'Calculation step
 
-
-
         If CheckBox3.Checked Then
             TextBox65.Text = loss_total2.ToString("0.00000")    'Corrected
             TextBox66.Text = (100 - loss_total2).ToString("0.000")
@@ -1881,7 +1882,6 @@ Public Class Form1
 
         End If
         TextBox108.Text = TextBox62.Text
-
     End Sub
     'Determine the particle diameter class upper and lower limits
     ' Private Function Size_classification(dia As Double, noi As Integer) As Double
@@ -1956,9 +1956,9 @@ Public Class Form1
                     g.i_grp = 10
                 Case Else
                     g.i_d1 = NumericUpDown37.Value  '
-                    g.i_d2 = g.i_d1 * 2
+                    g.i_d2 = g.i_d1 * 1.0001
                     g.i_p1 = NumericUpDown40.Value / 100
-                    g.i_p2 = g.i_p1 * 2
+                    g.i_p2 = 1.0
                     g.i_grp = 11
             End Select
 
