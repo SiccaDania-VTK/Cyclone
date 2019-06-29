@@ -742,6 +742,7 @@ Public Class Form1
 
     'Note dp(95) meaning with this diameter 95% is lost
     'Calculate the diameter at which qq% is lost
+    'Separation depends on Stokes
     Private Function Calc_dia_particle(qq As Double, stokes As Double, stage As integer) As Double
         Dim dia_result As Double = 0
         Dim words() As String

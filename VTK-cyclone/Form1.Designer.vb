@@ -3888,7 +3888,7 @@ Partial Class Form1
         Me.groupBox2.Size = New System.Drawing.Size(334, 212)
         Me.groupBox2.TabIndex = 24
         Me.groupBox2.TabStop = False
-        Me.groupBox2.Text = "Gas data inlet"
+        Me.groupBox2.Text = "Gas data inlet stage #1"
         '
         'Label125
         '
@@ -4060,9 +4060,9 @@ Partial Class Form1
         Me.Label83.Font = New System.Drawing.Font("Microsoft Sans Serif", 11.25!)
         Me.Label83.Location = New System.Drawing.Point(21, 90)
         Me.Label83.Name = "Label83"
-        Me.Label83.Size = New System.Drawing.Size(40, 18)
+        Me.Label83.Size = New System.Drawing.Size(68, 18)
         Me.Label83.TabIndex = 29
-        Me.Label83.Text = "Druk"
+        Me.Label83.Text = "Pressure"
         '
         'NumericUpDown19
         '
