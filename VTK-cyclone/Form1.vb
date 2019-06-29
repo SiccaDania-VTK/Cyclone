@@ -244,12 +244,20 @@ Public Class Form1
         ComboBox1.SelectedIndex = 2                 'Select Cyclone type AC_435
         ComboBox2.SelectedIndex = 5                 'Select Cyclone type AC_850
 
-        TextBox20.Text = "AA cyclone is a AC850 with diameter of 300mm" & vbCrLf
+        TextBox20.Text = "All AA cyclones have a diameter of 300mm" & vbCrLf
         TextBox20.Text &= "Load above 5 gr/m3 is considered a high load" & vbCrLf
         TextBox20.Text &= "Cyclones can not choke" & vbCrLf
+
+        TextBox47.Text = "Applications" & vbCrLf
+        TextBox47.Text &= "Fly catcher Venezuela before a gasturbine" & vbCrLf
+        TextBox47.Text &= "Spark catcher (metalic particles)" & vbCrLf
+        TextBox47.Text &= "Droplet catcher" & vbCrLf
+        TextBox47.Text &= "Patato Starch" & vbCrLf
+
+        Calc_sequence()
     End Sub
 
-    Private Sub Button1_Click(sender As Object, e As EventArgs) Handles button1.Click, TabPage1.Enter, numericUpDown3.ValueChanged, numericUpDown2.ValueChanged, numericUpDown14.ValueChanged, NumericUpDown1.ValueChanged, numericUpDown5.ValueChanged, NumericUpDown20.ValueChanged, NumericUpDown19.ValueChanged, NumericUpDown18.ValueChanged, ComboBox1.SelectedIndexChanged, numericUpDown9.ValueChanged, numericUpDown8.ValueChanged, numericUpDown7.ValueChanged, numericUpDown6.ValueChanged, numericUpDown12.ValueChanged, numericUpDown11.ValueChanged, numericUpDown10.ValueChanged, numericUpDown13.ValueChanged, NumericUpDown4.ValueChanged, NumericUpDown29.ValueChanged, NumericUpDown28.ValueChanged, NumericUpDown27.ValueChanged, NumericUpDown26.ValueChanged, NumericUpDown25.ValueChanged, NumericUpDown24.ValueChanged, NumericUpDown23.ValueChanged, NumericUpDown15.ValueChanged, NumericUpDown34.ValueChanged, NumericUpDown33.ValueChanged, ComboBox2.SelectedIndexChanged, NumericUpDown40.ValueChanged, NumericUpDown39.ValueChanged, NumericUpDown38.ValueChanged, NumericUpDown37.ValueChanged, NumericUpDown36.ValueChanged, NumericUpDown35.ValueChanged
+    Private Sub Button1_Click(sender As Object, e As EventArgs) Handles button1.Click, TabPage1.Enter, numericUpDown3.ValueChanged, numericUpDown2.ValueChanged, numericUpDown14.ValueChanged, NumericUpDown1.ValueChanged, numericUpDown5.ValueChanged, NumericUpDown20.ValueChanged, NumericUpDown19.ValueChanged, NumericUpDown18.ValueChanged, ComboBox1.SelectedIndexChanged, numericUpDown9.ValueChanged, numericUpDown8.ValueChanged, numericUpDown7.ValueChanged, numericUpDown6.ValueChanged, numericUpDown12.ValueChanged, numericUpDown11.ValueChanged, numericUpDown10.ValueChanged, numericUpDown13.ValueChanged, NumericUpDown4.ValueChanged, NumericUpDown29.ValueChanged, NumericUpDown28.ValueChanged, NumericUpDown27.ValueChanged, NumericUpDown26.ValueChanged, NumericUpDown25.ValueChanged, NumericUpDown24.ValueChanged, NumericUpDown23.ValueChanged, NumericUpDown15.ValueChanged, NumericUpDown34.ValueChanged, NumericUpDown33.ValueChanged, ComboBox2.SelectedIndexChanged, NumericUpDown40.ValueChanged, NumericUpDown39.ValueChanged, NumericUpDown38.ValueChanged, NumericUpDown37.ValueChanged, NumericUpDown36.ValueChanged, NumericUpDown35.ValueChanged, NumericUpDown43.ValueChanged, NumericUpDown22.ValueChanged
         Calc_sequence()
     End Sub
     Private Sub Get_input_calc_1(ks As Integer)
@@ -271,14 +279,14 @@ Public Class Form1
         Dim kgh As Double           'Dust inlet per hour/cycloon 
         Dim kgs As Double           'Dust inlet per second
 
-        '==== stage 1 ====
-        Dim h18, h19 As Double
-        Dim j18, i18 As Double
-        Dim l18, k19, k41 As Double
-        Dim k18 As Double
-        Dim m18, n17_oud, n18 As Double
-        Dim tot_catch_abs As Double
-        Dim o18 As Double
+        ''==== stage 1 ====
+        'Dim h18, h19 As Double
+        'Dim j18, i18 As Double
+        'Dim l18, k19, k41 As Double
+        'Dim k18 As Double
+        'Dim m18, n17_oud, n18 As Double
+        'Dim tot_catch_abs As Double
+        'Dim o18 As Double
 
         If (ComboBox1.SelectedIndex > -1) And (ComboBox2.SelectedIndex > -1) Then 'Prevent exceptions
             '-------- dimension cyclone stage #1
@@ -367,7 +375,6 @@ Public Class Form1
             TextBox24.Text &= ",  _cees(ks).inv2=" & _cees(ks).inv2.ToString
             TextBox24.Text &= ",  _cees(ks).Kstokes2=" & _cees(ks).Kstokes2.ToString & vbCrLf
 
-            'mmmmm
 
             '----------- presenteren ----------------------------------
             TextBox36.Text = (_cees(ks).FlowT / 3600).ToString("F4")    '[m3/s] flow
@@ -452,104 +459,119 @@ Public Class Form1
             'Save data of screen into the _cees array
             Fill_cees_array(CInt(NumericUpDown30.Value))
 
-            '--------- overall resultaat --------------------
-            DataGridView1.Columns(0).HeaderText = "Dia class"
-            DataGridView1.Columns(1).HeaderText = "Feed psd cum"
-            DataGridView1.Columns(2).HeaderText = "Feed psd diff"
-            DataGridView1.Columns(3).HeaderText = "Loss % of feed"
-            DataGridView1.Columns(4).HeaderText = "Loss abs [%]"
-            DataGridView1.Columns(5).HeaderText = "Loss psd cum"
-            DataGridView1.Columns(6).HeaderText = "Catch abs"
-            DataGridView1.Columns(7).HeaderText = "Catch psd cum"
-            DataGridView1.Columns(8).HeaderText = "Grade class eff."
-
-            For h = 0 To 22
-                DataGridView1.Rows.Item(h).Cells(0).Value = _cees(ks).stage1(h * 5).d_ave.ToString("0.000") 'diameter
-                DataGridView1.Rows.Item(h).Cells(1).Value = _cees(ks).stage1(h * 5).psd_cump.ToString("0.0") 'feed psd cum
-
-                If h > 0 Then
-                    h18 = CDbl(DataGridView1.Rows.Item(h - 1).Cells(1).Value)
-                Else
-                    h18 = 100
-                End If
-                h19 = CDbl(DataGridView1.Rows.Item(h).Cells(1).Value)   'feed psd cum
-                DataGridView1.Rows.Item(h).Cells(2).Value = (h18 - h19).ToString("0.00")   'feed psd diff
-
-                '========= loss ===============
-                If CheckBox1.Checked Then
-                    DataGridView1.Rows.Item(h).Cells(3).Value = (_cees(ks).stage1(h * 5).loss_overall * 100).ToString("0.0000")
-                Else
-                    DataGridView1.Rows.Item(h).Cells(3).Value = (_cees(ks).stage1(h * 5).loss_overall_C * 100).ToString("0.0000")
-                End If
-
-                i18 = CDbl(DataGridView1.Rows.Item(h).Cells(2).Value) 'feed psd diff
-                j18 = CDbl(DataGridView1.Rows.Item(h).Cells(3).Value) 'loss % Of feed
-                DataGridView1.Rows.Item(h).Cells(4).Value = (i18 * j18 / 100).ToString("0.0000") 'Loss abs [%]
-                If h > 0 Then
-                    l18 = CDbl(DataGridView1.Rows.Item(h - 1).Cells(5).Value)
-                Else
-                    l18 = 100
-                End If
-                k19 = CDbl(DataGridView1.Rows.Item(h).Cells(4).Value)   'Loss abs [%]
-
-                '========= Catch ===============
-                Double.TryParse(TextBox58.Text, k41)
-                DataGridView1.Rows.Item(h).Cells(5).Value = (l18 - 100 * k19 / k41).ToString("0.0000")
-
-                If h > 0 Then
-                    l18 = CDbl(DataGridView1.Rows.Item(h - 1).Cells(5).Value)
-                Else
-                    l18 = 100
-                End If
-
-                k18 = CDbl(DataGridView1.Rows.Item(h).Cells(4).Value)   'Loss abs [%]
-                m18 = (i18 - k18)
-                DataGridView1.Rows.Item(h).Cells(6).Value = m18.ToString("0.000") 'Catch abs
-
-                Double.TryParse(TextBox59.Text, tot_catch_abs)      'tot_catch_abs[%]
-
-                If h > 0 Then
-                    n17_oud = CDbl(DataGridView1.Rows.Item(h - 1).Cells(7).Value)
-                    n18 = n17_oud - m18 / (tot_catch_abs / 100)
-                Else
-                    n18 = 100
-                End If
-
-                n18 = CDbl(IIf(n18 < 0, 0, n18))        'prevent silly results
-                'TextBox24.Text &= "**h= " & h.ToString & ", n17_oud= " & n17_oud.ToString
-                'TextBox24.Text &= ", m18= " & m18.ToString & ",==> n18= " & n18.ToString & vbCrLf
-                DataGridView1.Rows.Item(h).Cells(7).Value = n18.ToString("0.000") 'Catch psd cum
-
-                '========= Efficiency ===============
-                o18 = 100 - j18
-                DataGridView1.Rows.Item(h).Cells(8).Value = o18.ToString("0.000")           'Grade eff.
-            Next h
-            DataGridView1.AutoResizeColumns()
-
-
-            '---------- Calc diameter with x% loss ---
-            '---------- present stage #1 -------
-            TextBox42.Text = Calc_dia_particle(1.0, _cees(ks).Kstokes1, 1).ToString("0.00")     '[mu] @ 100% loss
-            TextBox26.Text = Calc_dia_particle(0.95, _cees(ks).Kstokes1, 1).ToString("0.00")    '[mu] @  95% lost
-            TextBox31.Text = Calc_dia_particle(0.9, _cees(ks).Kstokes1, 1).ToString("0.00")     '[mu] @  90% lost
-            TextBox32.Text = Calc_dia_particle(0.5, _cees(ks).Kstokes1, 1).ToString("0.00")     '[mu] @  50% lost
-            TextBox33.Text = Calc_dia_particle(0.1, _cees(ks).Kstokes1, 1).ToString("0.00")     '[mu] @  10% lost
-            TextBox41.Text = Calc_dia_particle(0.05, _cees(ks).Kstokes1, 1).ToString("0.00")    '[mu] @   5% lost
 
             TextBox39.Text = kgh.ToString("0")          'Stof inlet
             TextBox40.Text = tot_kgh.ToString("0")      'Dust inlet [g/Am3] 
             TextBox71.Text = _cees(ks).stofb1.ToString  'Dust inlet [g/Am3]
 
-            '---------- present stage #2 -------
-            ' MessageBox.Show(_cees(ks).Kstokes2.ToString)
-            TextBox102.Text = Calc_dia_particle(1.0, _cees(ks).Kstokes2, 2).ToString("0.00")    '[mu] @  95% lost
-            TextBox103.Text = Calc_dia_particle(0.95, _cees(ks).Kstokes2, 2).ToString("0.00")    '[mu] @  95% lost
-            TextBox104.Text = Calc_dia_particle(0.9, _cees(ks).Kstokes2, 2).ToString("0.00")     '[mu] @  90% lost
-            TextBox105.Text = Calc_dia_particle(0.5, _cees(ks).Kstokes2, 2).ToString("0.00")     '[mu] @  50% lost
-            TextBox106.Text = Calc_dia_particle(0.1, _cees(ks).Kstokes2, 2).ToString("0.00")     '[mu] @  10% lost
-            TextBox107.Text = Calc_dia_particle(0.05, _cees(ks).Kstokes2, 2).ToString("0.00")    '[mu] @   5% lost
         End If
     End Sub
+    Private Sub Present_Datagridview1(ks As Integer)
+        '==== stage 1 ====
+        Dim h18, h19 As Double
+        Dim j18, i18 As Double
+        Dim l18, k19, k41 As Double
+        Dim k18 As Double
+        Dim m18, n17_oud, n18 As Double
+        Dim tot_catch_abs As Double
+        Dim o18 As Double
+
+        '--------- overall resultaat --------------------
+        DataGridView1.Columns(0).HeaderText = "Dia class"
+        DataGridView1.Columns(1).HeaderText = "Feed psd cum"
+        DataGridView1.Columns(2).HeaderText = "Feed psd diff"
+        DataGridView1.Columns(3).HeaderText = "Loss % of feed"
+        DataGridView1.Columns(4).HeaderText = "Loss abs [%]"
+        DataGridView1.Columns(5).HeaderText = "Loss psd cum"
+        DataGridView1.Columns(6).HeaderText = "Catch abs"
+        DataGridView1.Columns(7).HeaderText = "Catch psd cum"
+        DataGridView1.Columns(8).HeaderText = "Grade class eff."
+
+        For h = 0 To 22
+            DataGridView1.Rows.Item(h).Cells(0).Value = _cees(ks).stage1(h * 5).d_ave.ToString("0.000") 'diameter
+            DataGridView1.Rows.Item(h).Cells(1).Value = _cees(ks).stage1(h * 5).psd_cump.ToString("0.0") 'feed psd cum
+
+            If h > 0 Then
+                h18 = CDbl(DataGridView1.Rows.Item(h - 1).Cells(1).Value)
+            Else
+                h18 = 100
+            End If
+            h19 = CDbl(DataGridView1.Rows.Item(h).Cells(1).Value)   'feed psd cum
+            DataGridView1.Rows.Item(h).Cells(2).Value = (h18 - h19).ToString("0.00")   'feed psd diff
+
+            '========= loss ===============
+            If CheckBox1.Checked Then
+                DataGridView1.Rows.Item(h).Cells(3).Value = (_cees(ks).stage1(h * 5).loss_overall * 100).ToString("0.0000")
+            Else
+                DataGridView1.Rows.Item(h).Cells(3).Value = (_cees(ks).stage1(h * 5).loss_overall_C * 100).ToString("0.0000")
+            End If
+
+            i18 = CDbl(DataGridView1.Rows.Item(h).Cells(2).Value) 'feed psd diff
+            j18 = CDbl(DataGridView1.Rows.Item(h).Cells(3).Value) 'loss % Of feed
+            DataGridView1.Rows.Item(h).Cells(4).Value = (i18 * j18 / 100).ToString("0.0000") 'Loss abs [%]
+            If h > 0 Then
+                l18 = CDbl(DataGridView1.Rows.Item(h - 1).Cells(5).Value)
+            Else
+                l18 = 100
+            End If
+            k19 = CDbl(DataGridView1.Rows.Item(h).Cells(4).Value)   'Loss abs [%]
+
+            '========= Catch ===============
+            Double.TryParse(TextBox58.Text, k41)
+            DataGridView1.Rows.Item(h).Cells(5).Value = (l18 - 100 * k19 / k41).ToString("0.0000")
+
+            If h > 0 Then
+                l18 = CDbl(DataGridView1.Rows.Item(h - 1).Cells(5).Value)
+            Else
+                l18 = 100
+            End If
+
+            k18 = CDbl(DataGridView1.Rows.Item(h).Cells(4).Value)   'Loss abs [%]
+            m18 = (i18 - k18)
+            DataGridView1.Rows.Item(h).Cells(6).Value = m18.ToString("0.000") 'Catch abs
+
+            Double.TryParse(TextBox59.Text, tot_catch_abs)      'tot_catch_abs[%]
+
+            If h > 0 Then
+                n17_oud = CDbl(DataGridView1.Rows.Item(h - 1).Cells(7).Value)
+                n18 = n17_oud - m18 / (tot_catch_abs / 100)
+            Else
+                n18 = 100
+            End If
+
+            n18 = CDbl(IIf(n18 < 0, 0, n18))        'prevent silly results
+            'TextBox24.Text &= "**h= " & h.ToString & ", n17_oud= " & n17_oud.ToString
+            'TextBox24.Text &= ", m18= " & m18.ToString & ",==> n18= " & n18.ToString & vbCrLf
+            DataGridView1.Rows.Item(h).Cells(7).Value = n18.ToString("0.000") 'Catch psd cum
+
+            '========= Efficiency ===============
+            o18 = 100 - j18
+            DataGridView1.Rows.Item(h).Cells(8).Value = o18.ToString("0.000")           'Grade eff.
+        Next h
+        DataGridView1.AutoResizeColumns()
+    End Sub
+
+    Private Sub Calc_part_dia_loss(ks As Integer)
+
+        '---------- Calc particle diameter with x% loss ---
+        '---------- present stage #1 -------
+        TextBox42.Text = Calc_dia_particle(1.0, _cees(ks).Kstokes1, 1).ToString("0.00")     '[mu] @ 100% loss
+        TextBox26.Text = Calc_dia_particle(0.95, _cees(ks).Kstokes1, 1).ToString("0.00")    '[mu] @  95% lost
+        TextBox31.Text = Calc_dia_particle(0.9, _cees(ks).Kstokes1, 1).ToString("0.00")     '[mu] @  90% lost
+        TextBox32.Text = Calc_dia_particle(0.5, _cees(ks).Kstokes1, 1).ToString("0.00")     '[mu] @  50% lost
+        TextBox33.Text = Calc_dia_particle(0.1, _cees(ks).Kstokes1, 1).ToString("0.00")     '[mu] @  10% lost
+        TextBox41.Text = Calc_dia_particle(0.05, _cees(ks).Kstokes1, 1).ToString("0.00")    '[mu] @   5% lost
+
+        '---------- present stage #2 -------
+        ' MessageBox.Show(_cees(ks).Kstokes2.ToString)
+        TextBox102.Text = Calc_dia_particle(1.0, _cees(ks).Kstokes2, 2).ToString("0.00")    '[mu] @  95% lost
+        TextBox103.Text = Calc_dia_particle(0.95, _cees(ks).Kstokes2, 2).ToString("0.00")    '[mu] @  95% lost
+        TextBox104.Text = Calc_dia_particle(0.9, _cees(ks).Kstokes2, 2).ToString("0.00")     '[mu] @  90% lost
+        TextBox105.Text = Calc_dia_particle(0.5, _cees(ks).Kstokes2, 2).ToString("0.00")     '[mu] @  50% lost
+        TextBox106.Text = Calc_dia_particle(0.1, _cees(ks).Kstokes2, 2).ToString("0.00")     '[mu] @  10% lost
+        TextBox107.Text = Calc_dia_particle(0.05, _cees(ks).Kstokes2, 2).ToString("0.00")    '[mu] @   5% lost
+    End Sub
+
     Private Sub Fill_cees_array(c_nr As Integer)
         DataGridView1.ColumnCount = 10
         DataGridView1.Rows.Clear()
@@ -783,7 +805,7 @@ Public Class Form1
         TextBox55.Text = f_used.ToString("0.000")
 
         '============ stage 2 cyclone ==========
-        dst = NumericUpDown4.Value / 1000 'Dust load dimension is [kg/Am3}
+        Double.TryParse(TextBox70.Text, dst) 'Dust load dimension is [kg/Am3]
         f1 = 0.97833 + 2.918055 * dst - 39.3739 * dst ^ 2 + 472.0149 * dst ^ 3 - 769.586 * dst ^ 4
         f2 = -0.30338 + 21.91961 * dst - 73.5039 * dst ^ 2 + 112.485 * dst ^ 3 - 63.4408 * dst ^ 4
         f3 = 2.043212 + 0.725352 * dst - 0.2663 * dst ^ 2 + 0.04299 * dst ^ 3 - 0.00233 * dst ^ 4
@@ -912,10 +934,11 @@ Public Class Form1
     Private Sub Calc_sequence()
         Dim case_nr As Integer = CInt(NumericUpDown30.Value)
 
-        Dust_load_correction()
         If ComboBox1.SelectedIndex > -1 And ComboBox2.SelectedIndex > -1 Then
-
+            Dust_load_correction()
             Get_input_calc_1(case_nr)   'This is the CASE number
+            Present_Datagridview1(case_nr)
+            Calc_part_dia_loss(case_nr)
             Calc_stage1(case_nr)        'Calc according stage1
             Calc_stage2(case_nr)        'Calc according stage1
             Present_loss_grid1()        'Present the results
@@ -1245,7 +1268,7 @@ Public Class Form1
 
     Private Sub Button5_Click(sender As Object, e As EventArgs) Handles Button5.Click
         If TextBox28.Text.Trim.Length > 0 Then
-            Get_input_calc_1(CInt(NumericUpDown30.Value))
+            Calc_sequence()
             Write_to_word_com() 'Commercial data to Word
         Else
             MessageBox.Show("Enter Quote nummer and Tag, then Export sizing data to Word")
