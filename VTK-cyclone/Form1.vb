@@ -439,21 +439,39 @@ Public Class Form1
 
             Draw_chart1(Chart1)
             Draw_chart2(Chart2)
-            '---------- Check speed ---------------
+            '---------- Check speed stage #1---------------
             If _cees(ks).inv1 < 10 Or _cees(ks).inv1 > 30 Then
                 TextBox16.BackColor = Color.Red
             Else
                 TextBox16.BackColor = Color.LightGreen
             End If
 
-            '---------- Check dp ---------------
-            If _cees(ks).dpgas1 > 2000 Then
+            '---------- Check speed stage #2---------------
+            If _cees(ks).inv2 < 10 Or _cees(ks).inv2 > 30 Then
+                TextBox80.BackColor = Color.Red
+            Else
+                TextBox80.BackColor = Color.LightGreen
+            End If
+
+            '---------- Check dp stage #1---------------
+            If _cees(ks).dpgas1 > 3000 Then
                 TextBox17.BackColor = Color.Red
                 TextBox19.BackColor = Color.Red
             Else
                 TextBox17.BackColor = Color.LightGreen
                 TextBox19.BackColor = Color.LightGreen
             End If
+
+            '---------- Check dp stage #2---------------
+            If _cees(ks).dpgas2 > 3000 Then
+                TextBox79.BackColor = Color.Red
+                TextBox75.BackColor = Color.Red
+            Else
+                TextBox79.BackColor = Color.LightGreen
+                TextBox75.BackColor = Color.LightGreen
+            End If
+
+
 
             '--------- Get Inlet korrel-groep data ----------
             'Save data of screen into the _cees array
@@ -937,14 +955,13 @@ Public Class Form1
         If ComboBox1.SelectedIndex > -1 And ComboBox2.SelectedIndex > -1 Then
             Dust_load_correction()
             Get_input_calc_1(case_nr)   'This is the CASE number
-            Present_Datagridview1(case_nr)
             Calc_part_dia_loss(case_nr)
             Calc_stage1(case_nr)        'Calc according stage1
             Calc_stage2(case_nr)        'Calc according stage1
-            Present_loss_grid1()        'Present the results
-            Present_loss_grid2()        'Present the results
+            Present_loss_grid1()        'Present the results stage 1
+            Present_loss_grid2()        'Present the results stage 2
             Draw_chart1(Chart1)         'Present the results
-            'Draw_chart1(Chart2)
+            Present_Datagridview1(case_nr)
         End If
     End Sub
 
@@ -1758,20 +1775,20 @@ Public Class Form1
 
         '----------- present -----------
         TextBox51.Text = dia_max.ToString("0")              'diameter [mu] 100% catch
-        TextBox52.Text = dia_min.ToString("0.00")           'diameter [mu] 100% loss
+        TextBox52.Text = dia_min.ToString("F2")           'diameter [mu] 100% loss
         TextBox56.Text = ComboBox1.Text
         TextBox57.Text = CheckBox2.Checked.ToString
         TextBox70.Text = _cees(ks).stofb2.ToString("0.000")
 
 
         If CheckBox2.Checked Then
-            TextBox58.Text = loss_total.ToString("0.00000")    'Corrected
+            TextBox58.Text = loss_total.ToString("F5")    'Corrected
             TextBox59.Text = _cees(ks).Efficiency1.ToString("F3")
             TextBox21.Text = TextBox59.Text
-            TextBox60.Text = _cees(ks).emmis1.ToString("0.000")
+            TextBox60.Text = _cees(ks).emmis1.ToString("F3")
             TextBox18.Text = TextBox60.Text
         Else
-            TextBox58.Text = sum_loss.ToString("0.00000")      'NOT Corrected
+            TextBox58.Text = sum_loss.ToString("F5")      'NOT Corrected
             TextBox59.Text = _cees(ks).Efficiency1.ToString("F3")
             TextBox21.Text = TextBox59.Text
             TextBox60.Text = (NumericUpDown4.Value * sum_loss / 100).ToString("0.000")
@@ -1892,22 +1909,22 @@ Public Class Form1
         _cees(ks).emmis2 = _cees(ks).emmis1 * loss_total2 / 100
 
         '----------- present -----------
-        TextBox63.Text = ComboBox2.Text                     'Cyclone type
-        TextBox64.Text = CheckBox3.Checked.ToString         'Hi load correction
-        TextBox110.Text = dia_max.ToString("0.000")         'diameter [mu] 100% catch
-        TextBox111.Text = dia_min.ToString("0.000000")      'diameter [mu] 100% loss
-        TextBox116.Text = istep.ToString("0.00000")         'Calculation step
+        TextBox63.Text = ComboBox2.Text                 'Cyclone type
+        TextBox64.Text = CheckBox3.Checked.ToString     'Hi load correction
+        TextBox110.Text = dia_max.ToString("F3")        'diameter [mu] 100% catch
+        TextBox111.Text = dia_min.ToString("F5")        'diameter [mu] 100% loss
+        TextBox116.Text = istep.ToString("F5")          'Calculation step
 
         If CheckBox3.Checked Then
-            TextBox65.Text = loss_total2.ToString("0.00000")    'Corrected
-            TextBox66.Text = (100 - loss_total2).ToString("0.000")
+            TextBox65.Text = loss_total2.ToString("F5")    'Corrected
+            TextBox66.Text = (100 - loss_total2).ToString("F3")
             TextBox109.Text = TextBox66.Text
-            TextBox62.Text = _cees(ks).emmis2.ToString("0.000")
+            TextBox62.Text = _cees(ks).emmis2.ToString("F3")
         Else
-            TextBox65.Text = sum_loss2.ToString("0.00000")      'NOT Corrected
-            TextBox66.Text = (100 - sum_loss2).ToString("0.000")
+            TextBox65.Text = sum_loss2.ToString("F5")      'NOT Corrected
+            TextBox66.Text = (100 - sum_loss2).ToString("F3")
             TextBox109.Text = TextBox66.Text
-            TextBox62.Text = _cees(ks).emmis2.ToString("0.000")
+            TextBox62.Text = _cees(ks).emmis2.ToString("F3")
 
         End If
         TextBox108.Text = TextBox62.Text
