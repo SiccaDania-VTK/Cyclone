@@ -696,57 +696,27 @@ Public Class Form1
     '-------- Bereken het verlies getal GECORRIGEERD -----------
     '----- de input is de GEMIDDELDE korrel grootte-----------
     Private Sub Calc_verlies_corrected(ByRef grp As GvG_Calc_struct, stage As Integer)
-        Dim words() As String
-        Dim dia_Kcrit, fac_m, fac_a, fac_k As Double
         Dim cor1, cor2 As Double
 
-        '----- check input ----
-        If stage > 2 Or stage < 1 Then MessageBox.Show("Problem in Line 658")
+        If stage > 2 Or stage < 1 Then MessageBox.Show("Problem in Line 658")  '----- check input ----
 
-        If (ComboBox1.SelectedIndex > -1) Then
-
+        If (ComboBox1.SelectedIndex > -1) And ComboBox2.SelectedIndex > -1 Then
             If (stage = 1) Then     'Stage #1 cyclone
                 cor1 = NumericUpDown22.Value    'Correctie insteek pijp stage #1
                 Double.TryParse(TextBox55.Text, cor2) 'Hoge stof belasting correctie acc VT-UK
-                words = rekenlijnen(ComboBox1.SelectedIndex).Split(CType(";", Char()))
+
             Else                    'Stage #2 cyclone
                 cor1 = NumericUpDown43.Value    'Correctie insteek pijp stage #2
                 Double.TryParse(TextBox67.Text, cor2) 'Hoge stof belasting correctie acc VT-UK
-                words = rekenlijnen(ComboBox2.SelectedIndex).Split(CType(";", Char()))
             End If
-
-            '-------------- korrelgrootte factoren ------
-            dia_Kcrit = CDbl(words(1))
-
-            '-------- de grafieken zijn in 2 delen gesplits voor hogere nauwkeurigheid----------
-            If grp.dia < dia_Kcrit Then
-                fac_m = CDbl(words(2))
-                fac_k = CDbl(words(3))
-                fac_a = CDbl(words(4))
-            Else
-                fac_m = CDbl(words(5))
-                fac_k = CDbl(words(6))
-                fac_a = CDbl(words(7))
-            End If
-
             grp.loss_overall_C = grp.loss_overall ^ (cor1 * cor2)
-
         End If
-        If fac_a > 0 Then
-            'TextBox24.Text &= "---------------" & grp.ToString & vbCrLf
-            'TextBox24.Text &= "cor1 = " & cor1.ToString & ", cor2 = " & cor2.ToString & vbCrLf
-            'TextBox24.Text &= "fac_m = " & fac_m.ToString & ", fac_k = " & fac_k.ToString & ", fac_a = " & fac_a.ToString & vbCrLf
-            'TextBox24.Text &= "grp.d_ave_K = " & grp.d_ave_K.ToString & vbCrLf
-            'TextBox24.Text &= "grp.loss_overall_C = " & grp.loss_overall_C.ToString & vbCrLf
-            'TextBox24.Text &= "stage1(1).loss_overall_C. = " & stage1(1).loss_overall_C.ToString & vbCrLf
-        End If
-
     End Sub
 
     'Note dp(95) meaning with this diameter 95% is lost
     'Calculate the diameter at which qq% is lost
     'Separation depends on Stokes
-    Private Function Calc_dia_particle(qq As Double, stokes As Double, stage As integer) As Double
+    Private Function Calc_dia_particle(qq As Double, stokes As Double, stage As Integer) As Double
         Dim dia_result As Double = 0
         Dim words() As String
         Dim dia_Kcrit As Double
@@ -793,6 +763,7 @@ Public Class Form1
 
         Return (dia_result)
     End Function
+
     '---- According to VT-UK -----
     Private Sub Dust_load_correction(ks As Integer)
         Dim f1, f2, f3, f4, f, f_used As Double
