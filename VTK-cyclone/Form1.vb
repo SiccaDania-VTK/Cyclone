@@ -692,8 +692,9 @@ Public Class Form1
                 verlies = 1.0        '100% loss (very small particle)
             End If
 
-            If CheckBox4.Checked Then
-                verlies = 1.0       'Cyclone stage is bypassed ! (100% loss)
+            '----- Stage #1 is bypassed ------
+            If CheckBox4.Checked And stage = 1 Then
+                verlies = 1.0       'Cyclone stage 1 is bypassed ! (100% loss)
             End If
         End If
         Return (verlies)
@@ -1524,7 +1525,7 @@ Public Class Form1
         DataGridView2.Columns(3).HeaderText = "Loss overall [-]"
         DataGridView2.Columns(4).HeaderText = "Loss overall Corrected"
         DataGridView2.Columns(5).HeaderText = "Catch chart [%]"     '
-        DataGridView2.Columns(6).HeaderText = "Groep nummer [-]"    '
+        DataGridView2.Columns(6).HeaderText = "Group number [-]"    '
         DataGridView2.Columns(7).HeaderText = "d1 lower dia [mu]"   '
         DataGridView2.Columns(8).HeaderText = "d2 upper dia [mu]"   '
         DataGridView2.Columns(9).HeaderText = "p1 input [%]"        '
@@ -1532,7 +1533,7 @@ Public Class Form1
         DataGridView2.Columns(11).HeaderText = "k [-]"              '    
         DataGridView2.Columns(12).HeaderText = "m [-]"              '
 
-        DataGridView2.Columns(13).HeaderText = "i_psd cum [%]"      '
+        DataGridView2.Columns(13).HeaderText = "i_psd cum [-]"      '
         DataGridView2.Columns(14).HeaderText = "psd cum [%]"        '
         DataGridView2.Columns(15).HeaderText = "psd diff [%]"       '
         DataGridView2.Columns(16).HeaderText = "loss abs [%]"       '
@@ -1588,7 +1589,7 @@ Public Class Form1
         DataGridView3.Columns(3).HeaderText = "Loss overall [-]"
         DataGridView3.Columns(4).HeaderText = "Loss overall Corrected [-]"
         DataGridView3.Columns(5).HeaderText = "Catch chart [%]"     '
-        DataGridView3.Columns(6).HeaderText = "Groep nummer"    '
+        DataGridView3.Columns(6).HeaderText = "Group number"    '
         DataGridView3.Columns(7).HeaderText = "d1 lower dia [mu]"    '
         DataGridView3.Columns(8).HeaderText = "d2 upper dia [mu]"    '
         DataGridView3.Columns(9).HeaderText = "p1 input [%]"        '
@@ -1596,7 +1597,7 @@ Public Class Form1
         DataGridView3.Columns(11).HeaderText = "k [-]"              '    
         DataGridView3.Columns(12).HeaderText = "m [-]"              '
 
-        DataGridView3.Columns(13).HeaderText = "i_psd cum"      '
+        DataGridView3.Columns(13).HeaderText = "i_psd cum [-]"      '
         DataGridView3.Columns(14).HeaderText = "psd cum [%] for chart"    '
         DataGridView3.Columns(15).HeaderText = "psd diff [%] of 1-stage"       '
         DataGridView3.Columns(16).HeaderText = "psd diff [%] of 2-stage"       '
@@ -1647,11 +1648,11 @@ Public Class Form1
         Dim dia_max As Double       'Above this diameter everything is caught
         Dim dia_min As Double       'Below this diameter nothing is caught
         Dim istep As Double         'Particle diameter step
-        Dim sum_loss As Double
-        Dim sum_loss_C As Double
-        Dim sum_psd_diff As Double
-        Dim loss_total As Double
-        Dim perc_smallest_part As Double
+        Dim sum_loss1 As Double
+        Dim sum_loss_C1 As Double
+        Dim sum_psd_diff1 As Double
+        Dim loss_total1 As Double
+        Dim perc_smallest_part1 As Double
         Dim fac_m As Double
         Dim words() As String
 
@@ -1688,9 +1689,9 @@ Public Class Form1
         _cees(ks).stage1(0).loss_abs = _cees(ks).stage1(i).loss_overall * _cees(ks).stage1(i).psd_dif
         _cees(ks).stage1(0).loss_abs_C = _cees(ks).stage1(i).loss_overall_C * _cees(ks).stage1(i).psd_dif
 
-        sum_psd_diff = _cees(ks).stage1(0).psd_dif
-        sum_loss = _cees(ks).stage1(0).loss_abs
-        sum_loss_C = _cees(ks).stage1(0).loss_abs_C
+        sum_psd_diff1 = _cees(ks).stage1(0).psd_dif
+        sum_loss1 = _cees(ks).stage1(0).loss_abs
+        sum_loss_C1 = _cees(ks).stage1(0).loss_abs_C
 
         '------ increment step --------
         'stapgrootte bij 110-staps logaritmische verdeling van het
@@ -1705,8 +1706,8 @@ Public Class Form1
             fac_m = CDbl(words(2))
         End If
 
-        perc_smallest_part = 0.0000001                      'smallest particle [%]
-        _cees(ks).Dmax1 = Calc_dia_particle(perc_smallest_part, _cees(ks).Kstokes1, 1)     '=100% loss (biggest particle)
+        perc_smallest_part1 = 0.0000001                      'smallest particle [%]
+        _cees(ks).Dmax1 = Calc_dia_particle(perc_smallest_part1, _cees(ks).Kstokes1, 1)     '=100% loss (biggest particle)
         _cees(ks).Dmin1 = _cees(ks).Kstokes1 * fac_m        'diameter smallest particle caught
 
         dia_min = CDbl(IIf(_cees(ks).Dmin1 < _cees(ks).Dmin2, _cees(ks).Dmin1, _cees(ks).Dmin2))     'smalles particle
@@ -1745,41 +1746,41 @@ Public Class Form1
             _cees(ks).stage1(i).loss_abs_C = _cees(ks).stage1(i).loss_overall_C * _cees(ks).stage1(i).psd_dif
 
             '----- sum value -----
-            sum_psd_diff += _cees(ks).stage1(i).psd_dif
-            sum_loss += _cees(ks).stage1(i).loss_abs
-            sum_loss_C += _cees(ks).stage1(i).loss_abs_C
+            sum_psd_diff1 += _cees(ks).stage1(i).psd_dif
+            sum_loss1 += _cees(ks).stage1(i).loss_abs
+            sum_loss_C1 += _cees(ks).stage1(i).loss_abs_C
         Next
-        loss_total = sum_loss_C + ((100 - sum_psd_diff) * perc_smallest_part)
+        loss_total1 = sum_loss_C1 + ((100 - sum_psd_diff1) * perc_smallest_part1)
 
         If CheckBox4.Checked Then   'Stage #1 is bypassed
             _cees(ks).emmis1 = NumericUpDown4.Value '[g/Am3]
         Else                        'Stage #1 is not bypassed
-            _cees(ks).emmis1 = NumericUpDown4.Value * loss_total / 100  '[g/Am3]
+            _cees(ks).emmis1 = NumericUpDown4.Value * loss_total1 / 100  '[g/Am3]
         End If
 
         _cees(ks).stofb2 = _cees(ks).emmis1 'Dust load stage #2 in emission stage #1
         CheckBox3.Checked = CBool(IIf(_cees(ks).stofb2 > 5, True, False))
-        _cees(ks).Efficiency1 = 100 - loss_total        '[%] Efficiency
+        _cees(ks).Efficiency1 = 100 - loss_total1        '[%] Efficiency
 
         '----------- present -----------
-        TextBox51.Text = dia_max.ToString("0")              'diameter [mu] 100% catch
+        TextBox51.Text = dia_max.ToString("F1")              'diameter [mu] 100% catch
         TextBox52.Text = dia_min.ToString("F2")           'diameter [mu] 100% loss
         TextBox56.Text = ComboBox1.Text
         TextBox57.Text = CheckBox2.Checked.ToString
-        TextBox70.Text = _cees(ks).stofb2.ToString("F3")
+        TextBox70.Text = _cees(ks).stofb2.ToString("F2")
 
 
         If CheckBox2.Checked Then
-            TextBox58.Text = loss_total.ToString("F5")    'Corrected
+            TextBox58.Text = loss_total1.ToString("F5")    'Corrected
             TextBox59.Text = _cees(ks).Efficiency1.ToString("F3")
             TextBox21.Text = TextBox59.Text
             TextBox60.Text = _cees(ks).emmis1.ToString("F3")
             TextBox18.Text = TextBox60.Text
         Else
-            TextBox58.Text = sum_loss.ToString("F5")      'NOT Corrected
+            TextBox58.Text = sum_loss1.ToString("F5")      'NOT Corrected
             TextBox59.Text = _cees(ks).Efficiency1.ToString("F3")
             TextBox21.Text = TextBox59.Text
-            TextBox60.Text = (NumericUpDown4.Value * sum_loss / 100).ToString("0.000")
+            TextBox60.Text = (NumericUpDown4.Value * sum_loss1 / 100).ToString("0.000")
             TextBox18.Text = TextBox60.Text
         End If
     End Sub
@@ -1794,7 +1795,7 @@ Public Class Form1
         Dim sum_loss_C2 As Double
         Dim sum_psd_diff2 As Double
         Dim loss_total2 As Double
-        Dim perc_smallest_part As Double
+        Dim perc_smallest_part2 As Double
         Dim fac_m As Double
         Dim words() As String
         Dim kgh, tot_kgh As Double
@@ -1828,7 +1829,6 @@ Public Class Form1
 
         TextBox24.Text &= "_cees(ks).Efficiency1= " & _cees(ks).Efficiency1.ToString & vbCrLf
 
-
         sum_psd_diff2 = _cees(ks).stage2(i).psd_dif
         sum_loss2 = _cees(ks).stage2(i).loss_abs
         sum_loss_C2 = _cees(ks).stage2(i).loss_abs_C
@@ -1846,10 +1846,9 @@ Public Class Form1
             fac_m = CDbl(words(2))
         End If
 
-
         '------------ Find the biggest and smallest particle -----
-        perc_smallest_part = 0.0000001                      'smallest particle [%]
-        _cees(ks).Dmax2 = Calc_dia_particle(perc_smallest_part, _cees(ks).Kstokes2, 2)     '=100% loss (biggest particle)
+        perc_smallest_part2 = 0.0000001                      'smallest particle [%]
+        _cees(ks).Dmax2 = Calc_dia_particle(perc_smallest_part2, _cees(ks).Kstokes2, 2)     '=100% loss (biggest particle)
         _cees(ks).Dmin2 = _cees(ks).Kstokes2 * fac_m                'diameter smallest particle caught
 
         dia_min = CDbl(IIf(_cees(ks).Dmin1 < _cees(ks).Dmin2, _cees(ks).Dmin1, _cees(ks).Dmin2))     '=100% loss (biggest particle)
@@ -1898,25 +1897,26 @@ Public Class Form1
             sum_loss2 += _cees(ks).stage2(i).loss_abs
             sum_loss_C2 += _cees(ks).stage2(i).loss_abs_C
         Next
-        loss_total2 = sum_loss_C2 + ((100 - sum_psd_diff2) * perc_smallest_part)
+        loss_total2 = sum_loss_C2 + ((100 - sum_psd_diff2) * perc_smallest_part2)
         _cees(ks).emmis2 = _cees(ks).emmis1 * loss_total2 / 100
+        _cees(ks).Efficiency2 = 100 - loss_total2      '[%] Efficiency
 
         '----------- present -----------
         TextBox63.Text = ComboBox2.Text                 'Cyclone type
         TextBox64.Text = CheckBox3.Checked.ToString     'Hi load correction
-        TextBox110.Text = dia_max.ToString("F3")        'diameter [mu] 100% catch
-        TextBox111.Text = dia_min.ToString("F5")        'diameter [mu] 100% loss
+        TextBox110.Text = dia_max.ToString("F1")        'diameter [mu] 100% catch
+        TextBox111.Text = dia_min.ToString("F2")        'diameter [mu] 100% loss
         TextBox116.Text = istep.ToString("F5")          'Calculation step
 
         If CheckBox3.Checked Then
             TextBox65.Text = loss_total2.ToString("F5")    'Corrected
-            TextBox66.Text = (100 - loss_total2).ToString("F3")
-            TextBox109.Text = TextBox66.Text
+            TextBox66.Text = _cees(ks).Efficiency2.ToString("F3")
+            TextBox109.Text = _cees(ks).Efficiency2.ToString("F3")
             TextBox62.Text = _cees(ks).emmis2.ToString("F3")
         Else
             TextBox65.Text = sum_loss2.ToString("F5")      'NOT Corrected
-            TextBox66.Text = (100 - sum_loss2).ToString("F3")
-            TextBox109.Text = TextBox66.Text
+            TextBox66.Text = _cees(ks).Efficiency2.ToString("F3")
+            TextBox109.Text = _cees(ks).Efficiency2.ToString("F3")
             TextBox62.Text = _cees(ks).emmis2.ToString("F3")
 
         End If
