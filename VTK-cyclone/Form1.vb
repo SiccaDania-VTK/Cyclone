@@ -173,6 +173,9 @@ Public Class Form1
         user_list.Add("GerritP")
         hard_disk_list.Add("0008_0D02_003E_0FBB.")  'VTK laptop, GP
 
+        user_list.Add("GP")
+        hard_disk_list.Add("S28ZNXAG521979")  'VTK laptop, GP privee
+
         user_list.Add("FredKo")
         hard_disk_list.Add("JR10006P02Y6EE")        'VTK laptop, FKo
 
