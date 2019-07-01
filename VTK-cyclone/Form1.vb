@@ -1572,13 +1572,10 @@ Public Class Form1
             DataGridView2.Rows.Item(j).Cells(15).Value = _cees(ks).stage1(j).psd_dif.ToString("F3")     '[%]
             DataGridView2.Rows.Item(j).Cells(16).Value = _cees(ks).stage1(j).loss_abs.ToString("F3")    '[%]
             DataGridView2.Rows.Item(j).Cells(17).Value = _cees(ks).stage1(j).loss_abs_C.ToString("F3")  '[%]
-            total_psd_diff += _cees(ks).stage1(j).psd_dif
-            total_abs_loss += _cees(ks).stage1(j).loss_abs
-            total_abs_loss_C += _cees(ks).stage1(j).loss_abs_C
         Next
-        DataGridView2.Rows.Item(111).Cells(15).Value = total_psd_diff.ToString("F5")
-        DataGridView2.Rows.Item(111).Cells(16).Value = total_abs_loss.ToString("F5")
-        DataGridView2.Rows.Item(111).Cells(17).Value = total_abs_loss_C.ToString("F5")
+        DataGridView2.Rows.Item(111).Cells(15).Value = _cees(ks).sum_psd_diff1.ToString("F5")  'total_psd_diff.
+        DataGridView2.Rows.Item(111).Cells(16).Value = _cees(ks).sum_loss1.ToString("F5") 'total_abs_loss.ToString("F5")
+        DataGridView2.Rows.Item(111).Cells(17).Value = _cees(ks).sum_loss_C1.ToString("F5") 'total_abs_loss_C.ToString("F5")
     End Sub
 
     Private Sub Present_loss_grid2()
@@ -1638,15 +1635,13 @@ Public Class Form1
             DataGridView3.Rows.Item(j).Cells(16).Value = _cees(ks).stage2(j).psd_dif.ToString("F5")     '[%]
             DataGridView3.Rows.Item(j).Cells(17).Value = _cees(ks).stage2(j).loss_abs.ToString("F5")    '[%]
             DataGridView3.Rows.Item(j).Cells(18).Value = _cees(ks).stage2(j).loss_abs_C.ToString("F5")  '[%]
-            total_psd_diff1 += _cees(ks).stage1(j).psd_dif
-            total_psd_diff2 += _cees(ks).stage2(j).psd_dif
-            total_abs_loss += _cees(ks).stage2(j).loss_abs
-            total_abs_loss_C += _cees(ks).stage2(j).loss_abs_C
+
         Next
-        DataGridView3.Rows.Item(111).Cells(15).Value = total_psd_diff1.ToString("F5")
-        DataGridView3.Rows.Item(111).Cells(16).Value = total_psd_diff2.ToString("F5")
-        DataGridView3.Rows.Item(111).Cells(17).Value = total_abs_loss.ToString("F5")
-        DataGridView3.Rows.Item(111).Cells(18).Value = total_abs_loss_C.ToString("F5")
+
+        DataGridView3.Rows.Item(111).Cells(15).Value = _cees(ks).sum_psd_diff1.ToString("F5")  'total_psd_diff.
+        DataGridView3.Rows.Item(111).Cells(16).Value = _cees(ks).sum_psd_diff2.ToString("F5")  'total_psd_diff.
+        DataGridView3.Rows.Item(111).Cells(17).Value = _cees(ks).sum_loss2.ToString("F5") 'total_abs_loss.ToString("F5")
+        DataGridView3.Rows.Item(111).Cells(18).Value = _cees(ks).sum_loss_C2.ToString("F5") 'total_abs_loss_C.ToString("F5")
     End Sub
 
     Private Sub Calc_k_and_m(ByRef g As GvG_Calc_struct)
@@ -1783,19 +1778,19 @@ Public Class Form1
         TextBox54.Text = _cees(ks).sum_loss1.ToString("F3")
         TextBox34.Text = _cees(ks).sum_loss_C1.ToString("F3")
 
-        'If CheckBox2.Checked Then
-        TextBox58.Text = _cees(ks).loss_total1.ToString("F5")    'Corrected ??????
+        If CheckBox2.Checked Then
+            TextBox58.Text = _cees(ks).loss_total1.ToString("F5")    'Corrected ??????
             TextBox59.Text = _cees(ks).Efficiency1.ToString("F3")
             TextBox21.Text = TextBox59.Text
             TextBox60.Text = _cees(ks).emmis1.ToString("F3")
             TextBox18.Text = TextBox60.Text
-        'Else
-        '    TextBox58.Text = _cees(ks).sum_loss1.ToString("F5")      'NOT Corrected  ??????
-        '    TextBox59.Text = _cees(ks).Efficiency1.ToString("F3")
-        '    TextBox21.Text = TextBox59.Text
-        '    TextBox60.Text = (NumericUpDown4.Value * _cees(ks).sum_loss1 / 100).ToString("0.000")
-        '    TextBox18.Text = TextBox60.Text
-        'End If
+        Else
+            TextBox58.Text = _cees(ks).sum_loss1.ToString("F5")      'NOT Corrected  ??????
+        TextBox59.Text = _cees(ks).Efficiency1.ToString("F3")
+        TextBox21.Text = TextBox59.Text
+        TextBox60.Text = (NumericUpDown4.Value * _cees(ks).sum_loss1 / 100).ToString("0.000")
+        TextBox18.Text = TextBox60.Text
+        End If
     End Sub
 
     Private Sub Calc_stage2(ks As Integer)
@@ -1914,19 +1909,19 @@ Public Class Form1
         TextBox68.Text = _cees(ks).sum_loss2.ToString("F3")
         TextBox69.Text = _cees(ks).sum_loss_C2.ToString("F3")
 
-        'If CheckBox3.Checked Then
-        TextBox65.Text = _cees(ks).loss_total2.ToString("F5")    'Corrected
+        If CheckBox3.Checked Then
+            TextBox65.Text = _cees(ks).loss_total2.ToString("F5")    'Corrected
             TextBox66.Text = _cees(ks).Efficiency2.ToString("F3")
             TextBox109.Text = _cees(ks).Efficiency2.ToString("F3")
             TextBox62.Text = _cees(ks).emmis2.ToString("F3")
-            'Else
-            '    TextBox65.Text = _cees(ks).sum_loss2.ToString("F5")      'NOT Corrected
-            '    TextBox66.Text = _cees(ks).Efficiency2.ToString("F3")
-            '    TextBox109.Text = _cees(ks).Efficiency2.ToString("F3")
-            '    TextBox62.Text = _cees(ks).emmis2.ToString("F3")
+        Else
+            TextBox65.Text = _cees(ks).sum_loss2.ToString("F5")      'NOT Corrected
+        TextBox66.Text = _cees(ks).Efficiency2.ToString("F3")
+        TextBox109.Text = _cees(ks).Efficiency2.ToString("F3")
+        TextBox62.Text = _cees(ks).emmis2.ToString("F3")
 
-            'End If
-            TextBox108.Text = TextBox62.Text
+        End If
+        TextBox108.Text = TextBox62.Text
     End Sub
     'Determine the particle diameter class upper and lower limits
     ' Private Function Size_classification(dia As Double, noi As Integer) As Double
