@@ -673,6 +673,7 @@ Public Class Form1
         Dim words() As String
         Dim dia_Kcrit, fac_m, fac_a, fac_k As Double
         Dim verlies As Double = 1
+        Dim dia_K As Double
 
         If (ComboBox1.SelectedIndex > -1) Then
             '-------------- korrelgrootte factoren ------
@@ -681,7 +682,6 @@ Public Class Form1
             Else                    'Stage #2 cyclone
                 words = rekenlijnen(ComboBox2.SelectedIndex).Split(CType(";", Char()))
             End If
-
 
             dia_Kcrit = CDbl(words(1))
 
@@ -696,9 +696,10 @@ Public Class Form1
                 fac_a = CDbl(words(7))
             End If
 
-            If ((korrel_g / stokes) - fac_m) > 0 Then
-                verlies = (((korrel_g / stokes) - fac_m) / fac_k) ^ fac_a
-                verlies = Math.E ^ -verlies
+            dia_K = korrel_g / stokes
+            If (dia_K - fac_m) > 0 Then
+                verlies = Math.E ^ -((dia_K - fac_m) / fac_k) ^ fac_a
+                'verlies = verlies
             Else
                 verlies = 1.0        '100% loss (very small particle)
             End If
@@ -788,7 +789,8 @@ Public Class Form1
         Dim dst As Double
 
         '============ stage 1 cyclone ==========
-        dst = _cees(ks).stofb1 'Dust load dimension is [kg/Am3}
+        dst = _cees(ks).stofb1 / 1000 'Dust load dimension is [kg/Am3]
+
         f1 = 0.97833 + 2.918055 * dst - 39.3739 * dst ^ 2 + 472.0149 * dst ^ 3 - 769.586 * dst ^ 4
         f2 = -0.30338 + 21.91961 * dst - 73.5039 * dst ^ 2 + 112.485 * dst ^ 3 - 63.4408 * dst ^ 4
         f3 = 2.043212 + 0.725352 * dst - 0.2663 * dst ^ 2 + 0.04299 * dst ^ 3 - 0.00233 * dst ^ 4
@@ -816,7 +818,7 @@ Public Class Form1
         TextBox55.Text = f_used.ToString("F3")
 
         '============ stage 2 cyclone ==========
-        dst = _cees(ks).stofb2 'Dust load dimension is [kg/Am3]
+        dst = _cees(ks).stofb2 / 1000 'Dust load dimension is [kg/Am3]
         f1 = 0.97833 + 2.918055 * dst - 39.3739 * dst ^ 2 + 472.0149 * dst ^ 3 - 769.586 * dst ^ 4
         f2 = -0.30338 + 21.91961 * dst - 73.5039 * dst ^ 2 + 112.485 * dst ^ 3 - 63.4408 * dst ^ 4
         f3 = 2.043212 + 0.725352 * dst - 0.2663 * dst ^ 2 + 0.04299 * dst ^ 3 - 0.00233 * dst ^ 4
