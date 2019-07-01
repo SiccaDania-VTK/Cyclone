@@ -25,10 +25,10 @@ Imports Word = Microsoft.Office.Interop.Word
     Public Flow1 As Double          '[Am3/s] Air flow per cyclone 
     Public stofb1 As Double         '[g/Am3] Dust load inlet 
     Public emmis1 As Double         '[g/Am3] Dust emission 
-    Public Efficiency1 As Double    'Efficiency Stage #1 [%}
-    Public sum_loss1 As Double
+    Public Efficiency1 As Double    '[%] Efficiency Stage #1 
+    Public sum_loss1 As Double      '[-]Passed trough cyclone 
+    Public sum_loss_C1 As Double    '[-] Passed trough cyclone Corrected
     Public loss_total1 As Double
-    Public sum_loss_C1 As Double
     Public sum_psd_diff1 As Double
     Public Druk1 As Double          '[mbar] druk
     Public Ct1 As Integer           '[-] Cyclone type (eg AC435)
@@ -52,9 +52,9 @@ Imports Word = Microsoft.Office.Interop.Word
     Public Flow2 As Double          '[Am3/s] Air flow per cyclone 
     Public stofb2 As Double         '[g/Am3] Dust load inlet 
     Public emmis2 As Double         '[g/Am3] Dust emission 
-    Public sum_loss2 As Double
+    Public sum_loss2 As Double      'Passed trough cyclone
+    Public sum_loss_C2 As Double    'Passed trough cyclone Corrected
     Public loss_total2 As Double
-    Public sum_loss_C2 As Double
     Public sum_psd_diff2 As Double
     Public Efficiency2 As Double    'Efficiency Stage #1 [%}
     Public Druk2 As Double          '[mbar] druk
@@ -90,8 +90,8 @@ End Structure
     Public i_p2 As Double           'Interpolatie 2
     Public i_k As Double            'Parameter k
     Public i_m As Double            'Parameter m
-    Public psd_cum As Double        'Partice Size Distribution cummulatief
-    Public psd_cump As Double       '[%] PSD cummulatief
+    Public psd_cum As Double        '[-] Partice Size Distribution cummulatief
+    Public psd_cum_pro As Double    '[%] PSD cummulatief
     Public psd_dif As Double        '[%] PSD diff
     Public loss_abs As Double       '[&] loss abs
     Public loss_abs_C As Double     '[&] loss abs compensated
@@ -521,7 +521,7 @@ Public Class Form1
 
         For h = 0 To 22
             DataGridView1.Rows.Item(h).Cells(0).Value = _cees(ks).stage1(h * 5).d_ave.ToString("0.000") 'diameter
-            DataGridView1.Rows.Item(h).Cells(1).Value = _cees(ks).stage1(h * 5).psd_cump.ToString("0.0") 'feed psd cum
+            DataGridView1.Rows.Item(h).Cells(1).Value = _cees(ks).stage1(h * 5).psd_cum_pro.ToString("0.0") 'feed psd cum
 
             If h > 0 Then
                 h18 = CDbl(DataGridView1.Rows.Item(h - 1).Cells(1).Value)
@@ -1566,7 +1566,7 @@ Public Class Form1
             DataGridView2.Rows.Item(j).Cells(11).Value = _cees(ks).stage1(j).i_k.ToString("F3")   '
             DataGridView2.Rows.Item(j).Cells(12).Value = _cees(ks).stage1(j).i_m.ToString("F5")    '
             DataGridView2.Rows.Item(j).Cells(13).Value = _cees(ks).stage1(j).psd_cum.ToString("F5")  '
-            DataGridView2.Rows.Item(j).Cells(14).Value = _cees(ks).stage1(j).psd_cump.ToString("F3")   '[%]
+            DataGridView2.Rows.Item(j).Cells(14).Value = _cees(ks).stage1(j).psd_cum_pro.ToString("F3")   '[%]
             DataGridView2.Rows.Item(j).Cells(15).Value = _cees(ks).stage1(j).psd_dif.ToString("F3")     '[%]
             DataGridView2.Rows.Item(j).Cells(16).Value = _cees(ks).stage1(j).loss_abs.ToString("F3")    '[%]
             DataGridView2.Rows.Item(j).Cells(17).Value = _cees(ks).stage1(j).loss_abs_C.ToString("F3")  '[%]
@@ -1631,7 +1631,7 @@ Public Class Form1
             DataGridView3.Rows.Item(j).Cells(11).Value = _cees(ks).stage2(j).i_k.ToString("F5")         'User input percentage
             DataGridView3.Rows.Item(j).Cells(12).Value = _cees(ks).stage2(j).i_m.ToString("F5")         '
             DataGridView3.Rows.Item(j).Cells(13).Value = _cees(ks).stage2(j).psd_cum.ToString("F5")     '
-            DataGridView3.Rows.Item(j).Cells(14).Value = _cees(ks).stage2(j).psd_cump.ToString("F5")    '[%]
+            DataGridView3.Rows.Item(j).Cells(14).Value = _cees(ks).stage2(j).psd_cum_pro.ToString("F5")    '[%]
             DataGridView3.Rows.Item(j).Cells(15).Value = _cees(ks).stage1(j).psd_dif.ToString("F5")     '[%] (stage 1 !!!!)
             DataGridView3.Rows.Item(j).Cells(16).Value = _cees(ks).stage2(j).psd_dif.ToString("F5")     '[%]
             DataGridView3.Rows.Item(j).Cells(17).Value = _cees(ks).stage2(j).loss_abs.ToString("F5")    '[%]
@@ -1690,7 +1690,7 @@ Public Class Form1
         'TextBox24.Text &= ",  stage1(0).i_grp=" & _cees(ks).stage1(0).i_grp.ToString & vbCrLf
 
         _cees(ks).stage1(0).psd_cum = Math.E ^ (-((_cees(ks).stage1(i).dia / _cees(ks).stage1(i).i_m) ^ _cees(ks).stage1(i).i_k))
-        _cees(ks).stage1(0).psd_cump = _cees(ks).stage1(i).psd_cum * 100
+        _cees(ks).stage1(0).psd_cum_pro = _cees(ks).stage1(i).psd_cum * 100
 
         _cees(ks).stage1(0).psd_dif = 100 * (1 - _cees(ks).stage1(i).psd_cum)
         _cees(ks).stage1(0).loss_abs = _cees(ks).stage1(i).loss_overall * _cees(ks).stage1(i).psd_dif
@@ -1740,13 +1740,13 @@ Public Class Form1
             If _cees(ks).stage1(i).i_grp <> 11 And _cees(ks).stage2(i).i_grp <> 11 Then 'to prevent silly results
                 Calc_k_and_m(_cees(ks).stage1(i))
                 _cees(ks).stage1(i).psd_cum = Math.E ^ (-((_cees(ks).stage1(i).dia / _cees(ks).stage1(i).i_m) ^ _cees(ks).stage1(i).i_k))
-                _cees(ks).stage1(i).psd_cump = _cees(ks).stage1(i).psd_cum * 100
+                _cees(ks).stage1(i).psd_cum_pro = _cees(ks).stage1(i).psd_cum * 100
                 _cees(ks).stage1(i).psd_dif = 100 * (_cees(ks).stage1(i - 1).psd_cum - _cees(ks).stage1(i).psd_cum)
             Else
                 _cees(ks).stage1(i).i_k = 0
                 _cees(ks).stage1(i).i_m = 0
                 _cees(ks).stage1(i).psd_cum = 0
-                _cees(ks).stage1(i).psd_cump = 0
+                _cees(ks).stage1(i).psd_cum_pro = 0
                 _cees(ks).stage1(i).psd_dif = 0
             End If
             _cees(ks).stage1(i).loss_abs = _cees(ks).stage1(i).loss_overall * _cees(ks).stage1(i).psd_dif
@@ -1776,6 +1776,10 @@ Public Class Form1
         TextBox57.Text = CheckBox2.Checked.ToString         'Correction 
         TextBox70.Text = _cees(ks).stofb2.ToString("F2")    'Dust load
 
+
+        TextBox118.Text = _cees(ks).sum_psd_diff1.ToString("F3")
+        TextBox54.Text = _cees(ks).sum_loss1.ToString("F3")
+        TextBox34.Text = _cees(ks).sum_loss_C1.ToString("F3")
 
         'If CheckBox2.Checked Then
         TextBox58.Text = _cees(ks).loss_total1.ToString("F5")    'Corrected ??????
@@ -1825,7 +1829,7 @@ Public Class Form1
 
         Calc_k_and_m(_cees(ks).stage2(i))
         _cees(ks).stage2(i).psd_cum = Math.E ^ (-((_cees(ks).stage2(i).dia / _cees(ks).stage2(i).i_m) ^ _cees(ks).stage2(i).i_k))
-        _cees(ks).stage2(i).psd_cump = _cees(ks).stage2(i).psd_cum * 100
+        _cees(ks).stage2(i).psd_cum_pro = _cees(ks).stage2(i).psd_cum * 100
         _cees(ks).stage2(i).psd_dif = 100 * _cees(ks).stage1(i).loss_abs / (100 - _cees(ks).Efficiency1)              'LOSS STAGE #1
         _cees(ks).stage2(i).loss_abs = _cees(ks).stage1(i).loss_overall * _cees(ks).stage2(i).psd_dif
         _cees(ks).stage2(i).loss_abs_C = _cees(ks).stage1(i).loss_overall_C * _cees(ks).stage2(i).psd_dif
@@ -1866,8 +1870,8 @@ Public Class Form1
 
 
         For i = 1 To 110    '=========Stage #2, Grid lines 1...============ 
-            _cees(ks).stage2(i).dia = _cees(ks).stage1(i).dia                                     'Copy stage #1
-            _cees(ks).stage2(i).d_ave = (_cees(ks).stage2(i - 1).dia + _cees(ks).stage2(i).dia) / 2          'Average diameter
+            _cees(ks).stage2(i).dia = _cees(ks).stage1(i).dia        'Diameter Copy stage #1
+            _cees(ks).stage2(i).d_ave = _cees(ks).stage1(i).d_ave            'Average diameter
             _cees(ks).stage2(i).d_ave_K = _cees(ks).stage2(i).d_ave / _cees(ks).Kstokes2          'dia/k_stokes
             _cees(ks).stage2(i).loss_overall = Calc_verlies(_cees(ks).stage2(i).d_ave, False, _cees(ks).Kstokes2, 2)   '[-] loss overall
             Calc_verlies_corrected(_cees(ks).stage2(i), 2)                                '[-] loss overall corrected
@@ -1878,18 +1882,16 @@ Public Class Form1
             End If
             Size_classification(_cees(ks).stage2(i))                                     'Calc
 
-            If _cees(ks).stage2(i).i_p2 > 0.001 Then 'to prevent silly results
+            If _cees(ks).stage1(i).i_grp <> 11 And _cees(ks).stage2(i).i_grp <> 11 Then 'to prevent silly results 
                 Calc_k_and_m(_cees(ks).stage2(i))
-                _cees(ks).stage2(i).i_k = Log(Log(_cees(ks).stage2(i).i_p1) / Log(_cees(ks).stage2(i).i_p2)) / Log(_cees(ks).stage2(i).i_d1 / _cees(ks).stage2(i).i_d2)
-                _cees(ks).stage2(i).i_m = _cees(ks).stage2(i).i_d1 / ((-Log(_cees(ks).stage2(i).i_p1)) ^ (1 / _cees(ks).stage2(i).i_k))
                 _cees(ks).stage2(i).psd_cum = Math.E ^ (-((_cees(ks).stage2(i).dia / _cees(ks).stage2(i).i_m) ^ _cees(ks).stage2(i).i_k))
-                _cees(ks).stage2(i).psd_cump = _cees(ks).stage2(i).psd_cum * 100
-                _cees(ks).stage2(i).psd_dif = 100 * _cees(ks).stage1(i).loss_abs / (100 - _cees(ks).Efficiency1)
+                _cees(ks).stage2(i).psd_cum_pro = _cees(ks).stage2(i).psd_cum * 100
+                _cees(ks).stage2(i).psd_dif = 100 * (_cees(ks).stage2(i - 1).psd_cum - _cees(ks).stage2(i).psd_cum)
             Else
                 _cees(ks).stage2(i).i_k = 0
                 _cees(ks).stage2(i).i_m = 0
                 _cees(ks).stage2(i).psd_cum = 0
-                _cees(ks).stage2(i).psd_cump = 0
+                _cees(ks).stage2(i).psd_cum_pro = 0
                 _cees(ks).stage2(i).psd_dif = 0
             End If
             _cees(ks).stage2(i).loss_abs = _cees(ks).stage1(i).loss_overall * _cees(ks).stage2(i).psd_dif
@@ -1910,6 +1912,11 @@ Public Class Form1
         TextBox110.Text = dia_max.ToString("F1")        'diameter [mu] 100% catch
         TextBox111.Text = dia_min.ToString("F2")        'diameter [mu] 100% loss
         TextBox116.Text = istep.ToString("F5")          'Calculation step
+
+        TextBox117.Text = _cees(ks).sum_psd_diff2.ToString("F3")
+        TextBox68.Text = _cees(ks).sum_loss2.ToString("F3")
+        TextBox69.Text = _cees(ks).sum_loss_C2.ToString("F3")
+
 
         'If CheckBox3.Checked Then
         TextBox65.Text = _cees(ks).loss_total2.ToString("F5")    'Corrected
@@ -2211,6 +2218,5 @@ Public Class Form1
     Private Sub Button9_Click(sender As Object, e As EventArgs) Handles Button9.Click, TabControl1.Enter
         Calc_sequence()
     End Sub
-
 
 End Class
