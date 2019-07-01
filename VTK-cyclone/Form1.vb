@@ -1612,7 +1612,7 @@ Public Class Form1
 
         DataGridView3.Columns(13).HeaderText = "i_psd cum [-]"      '
         DataGridView3.Columns(14).HeaderText = "psd cum [%] for chart"    '
-        DataGridView3.Columns(15).HeaderText = "psd diff [%] of 1-stage"       '
+        DataGridView3.Columns(15).HeaderText = "Loss abs corr [%] of 1-stage"       '
         DataGridView3.Columns(16).HeaderText = "psd diff [%] of 2-stage"       '
         DataGridView3.Columns(17).HeaderText = "loss abs [%]"   '
         DataGridView3.Columns(18).HeaderText = "loss corr abs [%]" '
@@ -1812,10 +1812,6 @@ Public Class Form1
         '----------- stof belasting ------------
         tot_kgh = _cees(ks).Flow2 * _cees(ks).stofb2 / 1000 * 3600 * _cees(ks).Noc2     '[kg/hr] Dust inlet 
 
-        'TextBox24.Text &= "_cees(ks).stofb2= " & _cees(ks).stofb2.ToString
-        'TextBox24.Text &= ",  _cees(ks).Flow2= " & (_cees(ks).Flow2 * 3600).ToString & vbCrLf
-
-
         kgh = tot_kgh / _cees(ks).Noc2                          '[kg/hr/Cy] Dust inlet 
         TextBox100.Text = kgh.ToString("0")
         TextBox101.Text = tot_kgh.ToString("0")
@@ -1866,11 +1862,6 @@ Public Class Form1
         '------------ Particle diameter calculation step -----
         istep = (dia_max / dia_min) ^ (1 / 110)             'Calculation step
 
-        'TextBox24.Text &= "dia_min= " & dia_min.ToString
-        'TextBox24.Text &= ",  dia_max= " & dia_max.ToString
-        'TextBox24.Text &= ",  istep= " & istep.ToString & vbCrLf
-
-
         For i = 1 To 110    '=========Stage #2, Grid lines 1...============ 
             _cees(ks).stage2(i).dia = _cees(ks).stage1(i).dia        'Diameter Copy stage #1
             _cees(ks).stage2(i).d_ave = _cees(ks).stage1(i).d_ave            'Average diameter
@@ -1888,7 +1879,11 @@ Public Class Form1
                 Calc_k_and_m(_cees(ks).stage2(i))
                 _cees(ks).stage2(i).psd_cum = Math.E ^ (-((_cees(ks).stage2(i).dia / _cees(ks).stage2(i).i_m) ^ _cees(ks).stage2(i).i_k))
                 _cees(ks).stage2(i).psd_cum_pro = _cees(ks).stage2(i).psd_cum * 100
-                _cees(ks).stage2(i).psd_dif = 100 * (_cees(ks).stage2(i - 1).psd_cum - _cees(ks).stage2(i).psd_cum)
+                _cees(ks).stage2(i).psd_dif = 100 * _cees(ks).stage1(i).loss_abs_C / _cees(ks).sum_loss_C1
+
+                TextBox24.Text &= "_cees(ks).stage1(i).psd_dif= " & _cees(ks).stage1(i).psd_dif.ToString("F6")
+                TextBox24.Text &= "  _cees(ks).sum_loss_C1= " & _cees(ks).sum_loss_C1.ToString("F6")
+                TextBox24.Text &= "  _cees(ks).stage2(i).psd_dif= " & _cees(ks).stage2(i).psd_dif.ToString("F6") & vbCrLf
             Else
                 _cees(ks).stage2(i).i_k = 0
                 _cees(ks).stage2(i).i_m = 0
@@ -1918,7 +1913,6 @@ Public Class Form1
         TextBox117.Text = _cees(ks).sum_psd_diff2.ToString("F3")
         TextBox68.Text = _cees(ks).sum_loss2.ToString("F3")
         TextBox69.Text = _cees(ks).sum_loss_C2.ToString("F3")
-
 
         'If CheckBox3.Checked Then
         TextBox65.Text = _cees(ks).loss_total2.ToString("F5")    'Corrected
