@@ -156,6 +156,11 @@ Public Class Form1
         Dim pass_name As Boolean = False
         Dim pass_disc As Boolean = False
 
+        DataGridView1.ColumnCount = 10
+        DataGridView1.Rows.Clear()
+        DataGridView1.Rows.Add(23)
+        DataGridView1.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.DisplayedCells
+
         'Initialize the arrays in the struct
         For i = 0 To _cees.Length - 1
             ReDim _cees(i).dia_big(11)          'Initialize
@@ -600,14 +605,14 @@ Public Class Form1
     End Sub
 
     Private Sub Fill_cees_array(c_nr As Integer)
-        DataGridView1.ColumnCount = 10
-        DataGridView1.Rows.Clear()
-        DataGridView1.Rows.Add(23)
-        DataGridView1.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.DisplayedCells
+
+
 
         _cees(0).Quote_no = TextBox28.Text      'Quote number
         _cees(0).Tag_no = TextBox29.Text        'The Tag number
-        _cees(c_nr).case_name = TextBox53.Text     'The case name
+        _cees(c_nr).case_name = TextBox53.Text  'The case name
+
+
 
         '[mu] Class upper particle diameter limit diameter
         _cees(c_nr).dia_big(0) = NumericUpDown15.Value   '10
