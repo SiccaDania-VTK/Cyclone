@@ -2780,7 +2780,7 @@ Partial Class Form1
         'Label177
         '
         Me.Label177.AutoSize = True
-        Me.Label177.FlatStyle = System.Windows.Forms.FlatStyle.System
+        Me.Label177.FlatStyle = System.Windows.Forms.FlatStyle.Flat
         Me.Label177.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Label177.Location = New System.Drawing.Point(19, 64)
         Me.Label177.Name = "Label177"
@@ -2823,7 +2823,7 @@ Partial Class Form1
         'Label168
         '
         Me.Label168.AutoSize = True
-        Me.Label168.FlatStyle = System.Windows.Forms.FlatStyle.System
+        Me.Label168.FlatStyle = System.Windows.Forms.FlatStyle.Flat
         Me.Label168.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Label168.Location = New System.Drawing.Point(19, 39)
         Me.Label168.Name = "Label168"
@@ -3078,7 +3078,7 @@ Partial Class Form1
         'Label90
         '
         Me.Label90.AutoSize = True
-        Me.Label90.FlatStyle = System.Windows.Forms.FlatStyle.System
+        Me.Label90.FlatStyle = System.Windows.Forms.FlatStyle.Flat
         Me.Label90.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Label90.Location = New System.Drawing.Point(19, 113)
         Me.Label90.Name = "Label90"
@@ -3119,7 +3119,7 @@ Partial Class Form1
         'Label91
         '
         Me.Label91.AutoSize = True
-        Me.Label91.FlatStyle = System.Windows.Forms.FlatStyle.System
+        Me.Label91.FlatStyle = System.Windows.Forms.FlatStyle.Flat
         Me.Label91.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Label91.Location = New System.Drawing.Point(19, 91)
         Me.Label91.Name = "Label91"
@@ -3160,7 +3160,7 @@ Partial Class Form1
         'Label95
         '
         Me.Label95.AutoSize = True
-        Me.Label95.FlatStyle = System.Windows.Forms.FlatStyle.System
+        Me.Label95.FlatStyle = System.Windows.Forms.FlatStyle.Flat
         Me.Label95.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Label95.Location = New System.Drawing.Point(19, 209)
         Me.Label95.Name = "Label95"
@@ -3212,7 +3212,7 @@ Partial Class Form1
         'Label117
         '
         Me.Label117.AutoSize = True
-        Me.Label117.FlatStyle = System.Windows.Forms.FlatStyle.System
+        Me.Label117.FlatStyle = System.Windows.Forms.FlatStyle.Flat
         Me.Label117.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Label117.Location = New System.Drawing.Point(19, 137)
         Me.Label117.Name = "Label117"
@@ -3244,7 +3244,7 @@ Partial Class Form1
         'Label108
         '
         Me.Label108.AutoSize = True
-        Me.Label108.FlatStyle = System.Windows.Forms.FlatStyle.System
+        Me.Label108.FlatStyle = System.Windows.Forms.FlatStyle.Flat
         Me.Label108.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Label108.Location = New System.Drawing.Point(19, 185)
         Me.Label108.Name = "Label108"
@@ -3277,7 +3277,7 @@ Partial Class Form1
         'Label112
         '
         Me.Label112.AutoSize = True
-        Me.Label112.FlatStyle = System.Windows.Forms.FlatStyle.System
+        Me.Label112.FlatStyle = System.Windows.Forms.FlatStyle.Flat
         Me.Label112.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Label112.Location = New System.Drawing.Point(19, 233)
         Me.Label112.Name = "Label112"
@@ -3308,7 +3308,7 @@ Partial Class Form1
         'Label110
         '
         Me.Label110.AutoSize = True
-        Me.Label110.FlatStyle = System.Windows.Forms.FlatStyle.System
+        Me.Label110.FlatStyle = System.Windows.Forms.FlatStyle.Flat
         Me.Label110.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Label110.Location = New System.Drawing.Point(19, 161)
         Me.Label110.Name = "Label110"
@@ -3341,7 +3341,7 @@ Partial Class Form1
         'Label114
         '
         Me.Label114.AutoSize = True
-        Me.Label114.FlatStyle = System.Windows.Forms.FlatStyle.System
+        Me.Label114.FlatStyle = System.Windows.Forms.FlatStyle.Flat
         Me.Label114.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Label114.Location = New System.Drawing.Point(19, 259)
         Me.Label114.Name = "Label114"

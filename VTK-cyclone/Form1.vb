@@ -1645,6 +1645,7 @@ Public Class Form1
     End Sub
 
     Private Sub Calc_k_and_m(ByRef g As GvG_Calc_struct)
+        'k and m are based on diameter and percentages
         g.i_k = Log(Log(g.i_p1) / Log(g.i_p2)) / Log(g.i_d1 / g.i_d2)   '====== k ===========
         g.i_m = g.i_d1 / ((-Log(g.i_p1)) ^ (1 / g.i_k))                 '====== m ===========
     End Sub
@@ -1824,8 +1825,8 @@ Public Class Form1
         _cees(ks).stage2(i).psd_cum = Math.E ^ (-((_cees(ks).stage2(i).dia / _cees(ks).stage2(i).i_m) ^ _cees(ks).stage2(i).i_k))
         _cees(ks).stage2(i).psd_cum_pro = _cees(ks).stage2(i).psd_cum * 100
         _cees(ks).stage2(i).psd_dif = 100 * _cees(ks).stage1(i).loss_abs / (100 - _cees(ks).Efficiency1)              'LOSS STAGE #1
-        _cees(ks).stage2(i).loss_abs = _cees(ks).stage1(i).loss_overall * _cees(ks).stage2(i).psd_dif
-        _cees(ks).stage2(i).loss_abs_C = _cees(ks).stage1(i).loss_overall_C * _cees(ks).stage2(i).psd_dif
+        _cees(ks).stage2(i).loss_abs = _cees(ks).stage2(i).loss_overall * _cees(ks).stage2(i).psd_dif
+        _cees(ks).stage2(i).loss_abs_C = _cees(ks).stage2(i).loss_overall_C * _cees(ks).stage2(i).psd_dif
 
         TextBox24.Text &= "_cees(ks).Efficiency1= " & _cees(ks).Efficiency1.ToString & vbCrLf
 
@@ -1886,8 +1887,8 @@ Public Class Form1
                 _cees(ks).stage2(i).psd_cum_pro = 0
                 _cees(ks).stage2(i).psd_dif = 0
             End If
-            _cees(ks).stage2(i).loss_abs = _cees(ks).stage1(i).loss_overall * _cees(ks).stage2(i).psd_dif
-            _cees(ks).stage2(i).loss_abs_C = _cees(ks).stage1(i).loss_overall_C * _cees(ks).stage2(i).psd_dif
+            _cees(ks).stage2(i).loss_abs = _cees(ks).stage2(i).loss_overall * _cees(ks).stage2(i).psd_dif
+            _cees(ks).stage2(i).loss_abs_C = _cees(ks).stage2(i).loss_overall_C * _cees(ks).stage2(i).psd_dif
 
             '----- sum value -----
             _cees(ks).sum_psd_diff2 += _cees(ks).stage2(i).psd_dif
