@@ -1568,10 +1568,10 @@ Public Class Form1
             DataGridView2.Rows.Item(j).Cells(11).Value = _cees(ks).stage1(j).i_k.ToString("F3")   '
             DataGridView2.Rows.Item(j).Cells(12).Value = _cees(ks).stage1(j).i_m.ToString("F5")    '
             DataGridView2.Rows.Item(j).Cells(13).Value = _cees(ks).stage1(j).psd_cum.ToString("F5")  '
-            DataGridView2.Rows.Item(j).Cells(14).Value = _cees(ks).stage1(j).psd_cum_pro.ToString("F3")   '[%]
-            DataGridView2.Rows.Item(j).Cells(15).Value = _cees(ks).stage1(j).psd_dif.ToString("F3")     '[%]
-            DataGridView2.Rows.Item(j).Cells(16).Value = _cees(ks).stage1(j).loss_abs.ToString("F3")    '[%]
-            DataGridView2.Rows.Item(j).Cells(17).Value = _cees(ks).stage1(j).loss_abs_C.ToString("F3")  '[%]
+            DataGridView2.Rows.Item(j).Cells(14).Value = _cees(ks).stage1(j).psd_cum_pro.ToString("F5")   '[%]
+            DataGridView2.Rows.Item(j).Cells(15).Value = _cees(ks).stage1(j).psd_dif.ToString("F5")     '[%]
+            DataGridView2.Rows.Item(j).Cells(16).Value = _cees(ks).stage1(j).loss_abs.ToString("F5")    '[%]
+            DataGridView2.Rows.Item(j).Cells(17).Value = _cees(ks).stage1(j).loss_abs_C.ToString("F5")  '[%]
         Next
         DataGridView2.Rows.Item(111).Cells(15).Value = _cees(ks).sum_psd_diff1.ToString("F5")  'total_psd_diff.
         DataGridView2.Rows.Item(111).Cells(16).Value = _cees(ks).sum_loss1.ToString("F5") 'total_abs_loss.ToString("F5")
@@ -1609,7 +1609,7 @@ Public Class Form1
 
         DataGridView3.Columns(13).HeaderText = "i_psd cum [-]"      '
         DataGridView3.Columns(14).HeaderText = "psd cum [%] for chart"    '
-        DataGridView3.Columns(15).HeaderText = "Loss abs corr [%] of 1-stage"       '
+        DataGridView3.Columns(15).HeaderText = "psd diff [%] of 1-stage"       '
         DataGridView3.Columns(16).HeaderText = "psd diff [%] of 2-stage"       '
         DataGridView3.Columns(17).HeaderText = "loss abs [%]"   '
         DataGridView3.Columns(18).HeaderText = "loss corr abs [%]" '
@@ -1630,9 +1630,9 @@ Public Class Form1
             DataGridView3.Rows.Item(j).Cells(11).Value = _cees(ks).stage2(j).i_k.ToString("F5")         'User input percentage
             DataGridView3.Rows.Item(j).Cells(12).Value = _cees(ks).stage2(j).i_m.ToString("F5")         '
             DataGridView3.Rows.Item(j).Cells(13).Value = _cees(ks).stage2(j).psd_cum.ToString("F5")     '
-            DataGridView3.Rows.Item(j).Cells(14).Value = _cees(ks).stage2(j).psd_cum_pro.ToString("F5")    '[%]
+            DataGridView3.Rows.Item(j).Cells(14).Value = _cees(ks).stage2(j).psd_cum_pro.ToString("F5") '[%]
             DataGridView3.Rows.Item(j).Cells(15).Value = _cees(ks).stage1(j).psd_dif.ToString("F5")     '[%] (stage 1 !!!!)
-            DataGridView3.Rows.Item(j).Cells(16).Value = _cees(ks).stage2(j).psd_dif.ToString("F5")     '[%]
+            DataGridView3.Rows.Item(j).Cells(16).Value = _cees(ks).stage2(j).psd_dif.ToString("F5")     '[%] (stage 2)
             DataGridView3.Rows.Item(j).Cells(17).Value = _cees(ks).stage2(j).loss_abs.ToString("F5")    '[%]
             DataGridView3.Rows.Item(j).Cells(18).Value = _cees(ks).stage2(j).loss_abs_C.ToString("F5")  '[%]
 
