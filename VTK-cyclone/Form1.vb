@@ -877,15 +877,11 @@ Public Class Form1
         ch.ChartAreas("ChartArea0").AxisX.MinorGrid.Enabled = True
         ch.ChartAreas("ChartArea0").AxisY.MinorGrid.Enabled = True
 
-        If CheckBox1.Checked Then
-            ch.ChartAreas("ChartArea0").AxisX.IsLogarithmic = True
-            ch.ChartAreas("ChartArea0").AxisX.Minimum = 1     'Particle size
-            ch.ChartAreas("ChartArea0").AxisX.Maximum = 100   'Particle size
-        Else
-            ch.ChartAreas("ChartArea0").AxisX.IsLogarithmic = False
-            ch.ChartAreas("ChartArea0").AxisX.Minimum = 0     'Particle size
-            ch.ChartAreas("ChartArea0").AxisX.Maximum = 20    'Particle size
-        End If
+
+        ch.ChartAreas("ChartArea0").AxisX.IsLogarithmic = True
+        ch.ChartAreas("ChartArea0").AxisX.Minimum = 1     'Particle size
+        ch.ChartAreas("ChartArea0").AxisX.Maximum = 100   'Particle size
+
 
         '----- now calc chart points --------------------------
         Integer.TryParse(TextBox42.Text, sdia)
@@ -942,7 +938,7 @@ Public Class Form1
             ch.Series(0).Points.AddXY(s_points(h, 0), s_points(h, 1))
         Next h
     End Sub
-    Private Sub Button2_Click(sender As Object, e As EventArgs) Handles Button2.Click, TabPage9.Enter, CheckBox1.CheckedChanged
+    Private Sub Button2_Click(sender As Object, e As EventArgs) Handles TabPage9.Enter
         Calc_sequence()
     End Sub
     Private Sub Calc_sequence()
@@ -2005,7 +2001,7 @@ Public Class Form1
         End Try
     End Sub
 
-    Private Sub Button9_Click(sender As Object, e As EventArgs) Handles Button9.Click, TabControl1.Enter
+    Private Sub Button9_Click(sender As Object, e As EventArgs) Handles TabControl1.Enter
         Calc_sequence()
     End Sub
 

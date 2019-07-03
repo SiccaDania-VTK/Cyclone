@@ -29,9 +29,6 @@ Partial Class Form1
         Dim ChartArea2 As System.Windows.Forms.DataVisualization.Charting.ChartArea = New System.Windows.Forms.DataVisualization.Charting.ChartArea()
         Dim Legend2 As System.Windows.Forms.DataVisualization.Charting.Legend = New System.Windows.Forms.DataVisualization.Charting.Legend()
         Dim Series2 As System.Windows.Forms.DataVisualization.Charting.Series = New System.Windows.Forms.DataVisualization.Charting.Series()
-        Dim ChartArea3 As System.Windows.Forms.DataVisualization.Charting.ChartArea = New System.Windows.Forms.DataVisualization.Charting.ChartArea()
-        Dim Legend3 As System.Windows.Forms.DataVisualization.Charting.Legend = New System.Windows.Forms.DataVisualization.Charting.Legend()
-        Dim Series3 As System.Windows.Forms.DataVisualization.Charting.Series = New System.Windows.Forms.DataVisualization.Charting.Series()
         Me.OpenFileDialog1 = New System.Windows.Forms.OpenFileDialog()
         Me.TabPage10 = New System.Windows.Forms.TabPage()
         Me.TabPage8 = New System.Windows.Forms.TabPage()
@@ -167,8 +164,6 @@ Partial Class Form1
         Me.PictureBox5 = New System.Windows.Forms.PictureBox()
         Me.TabPage2 = New System.Windows.Forms.TabPage()
         Me.TableLayoutPanel3 = New System.Windows.Forms.TableLayoutPanel()
-        Me.DataGridView3 = New System.Windows.Forms.DataGridView()
-        Me.Chart3 = New System.Windows.Forms.DataVisualization.Charting.Chart()
         Me.GroupBox14 = New System.Windows.Forms.GroupBox()
         Me.Label203 = New System.Windows.Forms.Label()
         Me.Label204 = New System.Windows.Forms.Label()
@@ -192,10 +187,9 @@ Partial Class Form1
         Me.Label159 = New System.Windows.Forms.Label()
         Me.Label160 = New System.Windows.Forms.Label()
         Me.TextBox66 = New System.Windows.Forms.TextBox()
-        Me.Button9 = New System.Windows.Forms.Button()
+        Me.DataGridView3 = New System.Windows.Forms.DataGridView()
         Me.TabPage9 = New System.Windows.Forms.TabPage()
         Me.TableLayoutPanel1 = New System.Windows.Forms.TableLayoutPanel()
-        Me.Chart1 = New System.Windows.Forms.DataVisualization.Charting.Chart()
         Me.GroupBox5 = New System.Windows.Forms.GroupBox()
         Me.Label205 = New System.Windows.Forms.Label()
         Me.Label206 = New System.Windows.Forms.Label()
@@ -214,7 +208,6 @@ Partial Class Form1
         Me.Label161 = New System.Windows.Forms.Label()
         Me.Label139 = New System.Windows.Forms.Label()
         Me.Label129 = New System.Windows.Forms.Label()
-        Me.CheckBox1 = New System.Windows.Forms.CheckBox()
         Me.Label150 = New System.Windows.Forms.Label()
         Me.TextBox60 = New System.Windows.Forms.TextBox()
         Me.Label149 = New System.Windows.Forms.Label()
@@ -229,7 +222,6 @@ Partial Class Form1
         Me.Label146 = New System.Windows.Forms.Label()
         Me.TextBox59 = New System.Windows.Forms.TextBox()
         Me.DataGridView2 = New System.Windows.Forms.DataGridView()
-        Me.Button2 = New System.Windows.Forms.Button()
         Me.TabPage1 = New System.Windows.Forms.TabPage()
         Me.GroupBox13 = New System.Windows.Forms.GroupBox()
         Me.TextBox125 = New System.Windows.Forms.TextBox()
@@ -463,6 +455,11 @@ Partial Class Form1
         Me.label4 = New System.Windows.Forms.Label()
         Me.label5 = New System.Windows.Forms.Label()
         Me.TabControl1 = New System.Windows.Forms.TabControl()
+        Me.TabPage11 = New System.Windows.Forms.TabPage()
+        Me.SplitContainer1 = New System.Windows.Forms.SplitContainer()
+        Me.Chart1 = New System.Windows.Forms.DataVisualization.Charting.Chart()
+        Me.Button2 = New System.Windows.Forms.Button()
+        Me.CheckBox1 = New System.Windows.Forms.CheckBox()
         Me.TabPage8.SuspendLayout()
         Me.TabPage7.SuspendLayout()
         CType(Me.PictureBox1, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -490,12 +487,10 @@ Partial Class Form1
         CType(Me.PictureBox5, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.TabPage2.SuspendLayout()
         Me.TableLayoutPanel3.SuspendLayout()
-        CType(Me.DataGridView3, System.ComponentModel.ISupportInitialize).BeginInit()
-        CType(Me.Chart3, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.GroupBox14.SuspendLayout()
+        CType(Me.DataGridView3, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.TabPage9.SuspendLayout()
         Me.TableLayoutPanel1.SuspendLayout()
-        CType(Me.Chart1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.GroupBox5.SuspendLayout()
         CType(Me.DataGridView2, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.TabPage1.SuspendLayout()
@@ -545,6 +540,12 @@ Partial Class Form1
         CType(Me.numericUpDown7, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.numericUpDown6, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.TabControl1.SuspendLayout()
+        Me.TabPage11.SuspendLayout()
+        CType(Me.SplitContainer1, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.SplitContainer1.Panel1.SuspendLayout()
+        Me.SplitContainer1.Panel2.SuspendLayout()
+        Me.SplitContainer1.SuspendLayout()
+        CType(Me.Chart1, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
         '
         'OpenFileDialog1
@@ -1953,50 +1954,21 @@ Partial Class Form1
         Me.TableLayoutPanel3.ColumnCount = 2
         Me.TableLayoutPanel3.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 76.31373!))
         Me.TableLayoutPanel3.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 23.68627!))
-        Me.TableLayoutPanel3.Controls.Add(Me.DataGridView3, 0, 1)
-        Me.TableLayoutPanel3.Controls.Add(Me.Chart3, 0, 0)
         Me.TableLayoutPanel3.Controls.Add(Me.GroupBox14, 1, 0)
-        Me.TableLayoutPanel3.Controls.Add(Me.Button9, 1, 1)
+        Me.TableLayoutPanel3.Controls.Add(Me.DataGridView3, 0, 0)
         Me.TableLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Fill
         Me.TableLayoutPanel3.Location = New System.Drawing.Point(3, 3)
         Me.TableLayoutPanel3.Name = "TableLayoutPanel3"
-        Me.TableLayoutPanel3.RowCount = 2
+        Me.TableLayoutPanel3.RowCount = 1
         Me.TableLayoutPanel3.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 64.44141!))
-        Me.TableLayoutPanel3.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 35.55858!))
-        Me.TableLayoutPanel3.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20.0!))
-        Me.TableLayoutPanel3.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20.0!))
-        Me.TableLayoutPanel3.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20.0!))
-        Me.TableLayoutPanel3.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20.0!))
-        Me.TableLayoutPanel3.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20.0!))
-        Me.TableLayoutPanel3.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20.0!))
+        Me.TableLayoutPanel3.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 809.0!))
+        Me.TableLayoutPanel3.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 809.0!))
+        Me.TableLayoutPanel3.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 809.0!))
+        Me.TableLayoutPanel3.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 809.0!))
+        Me.TableLayoutPanel3.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 809.0!))
+        Me.TableLayoutPanel3.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 809.0!))
         Me.TableLayoutPanel3.Size = New System.Drawing.Size(1275, 809)
         Me.TableLayoutPanel3.TabIndex = 0
-        '
-        'DataGridView3
-        '
-        Me.DataGridView3.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
-        Me.DataGridView3.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.DataGridView3.Location = New System.Drawing.Point(3, 524)
-        Me.DataGridView3.Name = "DataGridView3"
-        Me.DataGridView3.Size = New System.Drawing.Size(967, 282)
-        Me.DataGridView3.TabIndex = 75
-        '
-        'Chart3
-        '
-        ChartArea1.Name = "ChartArea1"
-        Me.Chart3.ChartAreas.Add(ChartArea1)
-        Me.Chart3.Dock = System.Windows.Forms.DockStyle.Fill
-        Legend1.Name = "Legend1"
-        Me.Chart3.Legends.Add(Legend1)
-        Me.Chart3.Location = New System.Drawing.Point(3, 3)
-        Me.Chart3.Name = "Chart3"
-        Series1.ChartArea = "ChartArea1"
-        Series1.Legend = "Legend1"
-        Series1.Name = "Series1"
-        Me.Chart3.Series.Add(Series1)
-        Me.Chart3.Size = New System.Drawing.Size(967, 515)
-        Me.Chart3.TabIndex = 68
-        Me.Chart3.Text = "Chart3"
         '
         'GroupBox14
         '
@@ -2025,7 +1997,7 @@ Partial Class Form1
         Me.GroupBox14.Dock = System.Windows.Forms.DockStyle.Fill
         Me.GroupBox14.Location = New System.Drawing.Point(976, 3)
         Me.GroupBox14.Name = "GroupBox14"
-        Me.GroupBox14.Size = New System.Drawing.Size(296, 515)
+        Me.GroupBox14.Size = New System.Drawing.Size(296, 803)
         Me.GroupBox14.TabIndex = 76
         Me.GroupBox14.TabStop = False
         Me.GroupBox14.Text = "Stage 2 results"
@@ -2234,14 +2206,14 @@ Partial Class Form1
         Me.TextBox66.TabIndex = 119
         Me.TextBox66.TextAlign = System.Windows.Forms.HorizontalAlignment.Center
         '
-        'Button9
+        'DataGridView3
         '
-        Me.Button9.Location = New System.Drawing.Point(976, 524)
-        Me.Button9.Name = "Button9"
-        Me.Button9.Size = New System.Drawing.Size(75, 23)
-        Me.Button9.TabIndex = 77
-        Me.Button9.Text = "Button9"
-        Me.Button9.UseVisualStyleBackColor = True
+        Me.DataGridView3.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
+        Me.DataGridView3.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.DataGridView3.Location = New System.Drawing.Point(3, 3)
+        Me.DataGridView3.Name = "DataGridView3"
+        Me.DataGridView3.Size = New System.Drawing.Size(967, 803)
+        Me.DataGridView3.TabIndex = 75
         '
         'TabPage9
         '
@@ -2258,40 +2230,20 @@ Partial Class Form1
         '
         Me.TableLayoutPanel1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
         Me.TableLayoutPanel1.ColumnCount = 2
-        Me.TableLayoutPanel1.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 74.6139!))
-        Me.TableLayoutPanel1.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25.3861!))
-        Me.TableLayoutPanel1.Controls.Add(Me.Chart1, 0, 0)
+        Me.TableLayoutPanel1.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 76.31373!))
+        Me.TableLayoutPanel1.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 23.68627!))
         Me.TableLayoutPanel1.Controls.Add(Me.GroupBox5, 1, 0)
-        Me.TableLayoutPanel1.Controls.Add(Me.DataGridView2, 0, 1)
-        Me.TableLayoutPanel1.Controls.Add(Me.Button2, 1, 1)
+        Me.TableLayoutPanel1.Controls.Add(Me.DataGridView2, 0, 0)
         Me.TableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill
         Me.TableLayoutPanel1.Location = New System.Drawing.Point(3, 3)
         Me.TableLayoutPanel1.Name = "TableLayoutPanel1"
-        Me.TableLayoutPanel1.RowCount = 2
+        Me.TableLayoutPanel1.RowCount = 1
         Me.TableLayoutPanel1.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 59.68883!))
-        Me.TableLayoutPanel1.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 40.31117!))
-        Me.TableLayoutPanel1.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20.0!))
-        Me.TableLayoutPanel1.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20.0!))
-        Me.TableLayoutPanel1.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20.0!))
+        Me.TableLayoutPanel1.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 809.0!))
+        Me.TableLayoutPanel1.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 809.0!))
+        Me.TableLayoutPanel1.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 809.0!))
         Me.TableLayoutPanel1.Size = New System.Drawing.Size(1275, 809)
         Me.TableLayoutPanel1.TabIndex = 0
-        '
-        'Chart1
-        '
-        ChartArea2.Name = "ChartArea1"
-        Me.Chart1.ChartAreas.Add(ChartArea2)
-        Me.Chart1.Dock = System.Windows.Forms.DockStyle.Fill
-        Legend2.Name = "Legend1"
-        Me.Chart1.Legends.Add(Legend2)
-        Me.Chart1.Location = New System.Drawing.Point(3, 3)
-        Me.Chart1.Name = "Chart1"
-        Series2.ChartArea = "ChartArea1"
-        Series2.Legend = "Legend1"
-        Series2.Name = "Series1"
-        Me.Chart1.Series.Add(Series2)
-        Me.Chart1.Size = New System.Drawing.Size(945, 476)
-        Me.Chart1.TabIndex = 67
-        Me.Chart1.Text = "Chart1"
         '
         'GroupBox5
         '
@@ -2312,7 +2264,6 @@ Partial Class Form1
         Me.GroupBox5.Controls.Add(Me.Label161)
         Me.GroupBox5.Controls.Add(Me.Label139)
         Me.GroupBox5.Controls.Add(Me.Label129)
-        Me.GroupBox5.Controls.Add(Me.CheckBox1)
         Me.GroupBox5.Controls.Add(Me.Label150)
         Me.GroupBox5.Controls.Add(Me.TextBox60)
         Me.GroupBox5.Controls.Add(Me.Label149)
@@ -2327,9 +2278,9 @@ Partial Class Form1
         Me.GroupBox5.Controls.Add(Me.Label146)
         Me.GroupBox5.Controls.Add(Me.TextBox59)
         Me.GroupBox5.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.GroupBox5.Location = New System.Drawing.Point(954, 3)
+        Me.GroupBox5.Location = New System.Drawing.Point(976, 3)
         Me.GroupBox5.Name = "GroupBox5"
-        Me.GroupBox5.Size = New System.Drawing.Size(318, 476)
+        Me.GroupBox5.Size = New System.Drawing.Size(296, 803)
         Me.GroupBox5.TabIndex = 73
         Me.GroupBox5.TabStop = False
         Me.GroupBox5.Text = "Stage 1 results"
@@ -2491,16 +2442,6 @@ Partial Class Form1
         Me.Label129.TabIndex = 112
         Me.Label129.Text = "PSD= Particle Size Distribution (diameter class)"
         '
-        'CheckBox1
-        '
-        Me.CheckBox1.AutoSize = True
-        Me.CheckBox1.Location = New System.Drawing.Point(6, 235)
-        Me.CheckBox1.Name = "CheckBox1"
-        Me.CheckBox1.Size = New System.Drawing.Size(107, 17)
-        Me.CheckBox1.TabIndex = 111
-        Me.CheckBox1.Text = "Logarithmic chart"
-        Me.CheckBox1.UseVisualStyleBackColor = True
-        '
         'Label150
         '
         Me.Label150.AutoSize = True
@@ -2625,19 +2566,10 @@ Partial Class Form1
         '
         Me.DataGridView2.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
         Me.DataGridView2.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.DataGridView2.Location = New System.Drawing.Point(3, 485)
+        Me.DataGridView2.Location = New System.Drawing.Point(3, 3)
         Me.DataGridView2.Name = "DataGridView2"
-        Me.DataGridView2.Size = New System.Drawing.Size(945, 321)
-        Me.DataGridView2.TabIndex = 74
-        '
-        'Button2
-        '
-        Me.Button2.Location = New System.Drawing.Point(954, 485)
-        Me.Button2.Name = "Button2"
-        Me.Button2.Size = New System.Drawing.Size(53, 23)
-        Me.Button2.TabIndex = 73
-        Me.Button2.Text = "Button2"
-        Me.Button2.UseVisualStyleBackColor = True
+        Me.DataGridView2.Size = New System.Drawing.Size(967, 803)
+        Me.DataGridView2.TabIndex = 75
         '
         'TabPage1
         '
@@ -3464,17 +3396,17 @@ Partial Class Form1
         '
         'Chart2
         '
-        ChartArea3.Name = "ChartArea1"
-        Me.Chart2.ChartAreas.Add(ChartArea3)
-        Legend3.Name = "Legend1"
-        Me.Chart2.Legends.Add(Legend3)
-        Me.Chart2.Location = New System.Drawing.Point(1045, 416)
+        ChartArea1.Name = "ChartArea1"
+        Me.Chart2.ChartAreas.Add(ChartArea1)
+        Legend1.Name = "Legend1"
+        Me.Chart2.Legends.Add(Legend1)
+        Me.Chart2.Location = New System.Drawing.Point(891, 379)
         Me.Chart2.Name = "Chart2"
-        Series3.ChartArea = "ChartArea1"
-        Series3.Legend = "Legend1"
-        Series3.Name = "Series1"
-        Me.Chart2.Series.Add(Series3)
-        Me.Chart2.Size = New System.Drawing.Size(198, 178)
+        Series1.ChartArea = "ChartArea1"
+        Series1.Legend = "Legend1"
+        Series1.Name = "Series1"
+        Me.Chart2.Series.Add(Series1)
+        Me.Chart2.Size = New System.Drawing.Size(382, 224)
         Me.Chart2.TabIndex = 80
         Me.Chart2.Text = "Chart2"
         '
@@ -5246,6 +5178,7 @@ Partial Class Form1
         Me.TabControl1.Controls.Add(Me.TabPage1)
         Me.TabControl1.Controls.Add(Me.TabPage9)
         Me.TabControl1.Controls.Add(Me.TabPage2)
+        Me.TabControl1.Controls.Add(Me.TabPage11)
         Me.TabControl1.Controls.Add(Me.TabPage3)
         Me.TabControl1.Controls.Add(Me.TabPage4)
         Me.TabControl1.Controls.Add(Me.TabPage5)
@@ -5259,6 +5192,71 @@ Partial Class Form1
         Me.TabControl1.SelectedIndex = 0
         Me.TabControl1.Size = New System.Drawing.Size(1289, 841)
         Me.TabControl1.TabIndex = 0
+        '
+        'TabPage11
+        '
+        Me.TabPage11.Controls.Add(Me.SplitContainer1)
+        Me.TabPage11.Location = New System.Drawing.Point(4, 22)
+        Me.TabPage11.Name = "TabPage11"
+        Me.TabPage11.Padding = New System.Windows.Forms.Padding(3)
+        Me.TabPage11.Size = New System.Drawing.Size(1281, 815)
+        Me.TabPage11.TabIndex = 11
+        Me.TabPage11.Text = "Charts"
+        Me.TabPage11.UseVisualStyleBackColor = True
+        '
+        'SplitContainer1
+        '
+        Me.SplitContainer1.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.SplitContainer1.Location = New System.Drawing.Point(3, 3)
+        Me.SplitContainer1.Name = "SplitContainer1"
+        '
+        'SplitContainer1.Panel1
+        '
+        Me.SplitContainer1.Panel1.Controls.Add(Me.Chart1)
+        '
+        'SplitContainer1.Panel2
+        '
+        Me.SplitContainer1.Panel2.Controls.Add(Me.Button2)
+        Me.SplitContainer1.Panel2.Controls.Add(Me.CheckBox1)
+        Me.SplitContainer1.Size = New System.Drawing.Size(1275, 809)
+        Me.SplitContainer1.SplitterDistance = 1026
+        Me.SplitContainer1.TabIndex = 113
+        '
+        'Chart1
+        '
+        ChartArea2.Name = "ChartArea1"
+        Me.Chart1.ChartAreas.Add(ChartArea2)
+        Me.Chart1.Dock = System.Windows.Forms.DockStyle.Fill
+        Legend2.Name = "Legend1"
+        Me.Chart1.Legends.Add(Legend2)
+        Me.Chart1.Location = New System.Drawing.Point(0, 0)
+        Me.Chart1.Name = "Chart1"
+        Series2.ChartArea = "ChartArea1"
+        Series2.Legend = "Legend1"
+        Series2.Name = "Series1"
+        Me.Chart1.Series.Add(Series2)
+        Me.Chart1.Size = New System.Drawing.Size(1026, 809)
+        Me.Chart1.TabIndex = 68
+        Me.Chart1.Text = "Chart1"
+        '
+        'Button2
+        '
+        Me.Button2.Location = New System.Drawing.Point(71, 658)
+        Me.Button2.Name = "Button2"
+        Me.Button2.Size = New System.Drawing.Size(75, 23)
+        Me.Button2.TabIndex = 113
+        Me.Button2.Text = "Button2"
+        Me.Button2.UseVisualStyleBackColor = True
+        '
+        'CheckBox1
+        '
+        Me.CheckBox1.AutoSize = True
+        Me.CheckBox1.Location = New System.Drawing.Point(18, 132)
+        Me.CheckBox1.Name = "CheckBox1"
+        Me.CheckBox1.Size = New System.Drawing.Size(107, 17)
+        Me.CheckBox1.TabIndex = 112
+        Me.CheckBox1.Text = "Logarithmic chart"
+        Me.CheckBox1.UseVisualStyleBackColor = True
         '
         'Form1
         '
@@ -5302,13 +5300,11 @@ Partial Class Form1
         CType(Me.PictureBox5, System.ComponentModel.ISupportInitialize).EndInit()
         Me.TabPage2.ResumeLayout(False)
         Me.TableLayoutPanel3.ResumeLayout(False)
-        CType(Me.DataGridView3, System.ComponentModel.ISupportInitialize).EndInit()
-        CType(Me.Chart3, System.ComponentModel.ISupportInitialize).EndInit()
         Me.GroupBox14.ResumeLayout(False)
         Me.GroupBox14.PerformLayout()
+        CType(Me.DataGridView3, System.ComponentModel.ISupportInitialize).EndInit()
         Me.TabPage9.ResumeLayout(False)
         Me.TableLayoutPanel1.ResumeLayout(False)
-        CType(Me.Chart1, System.ComponentModel.ISupportInitialize).EndInit()
         Me.GroupBox5.ResumeLayout(False)
         Me.GroupBox5.PerformLayout()
         CType(Me.DataGridView2, System.ComponentModel.ISupportInitialize).EndInit()
@@ -5366,6 +5362,13 @@ Partial Class Form1
         CType(Me.numericUpDown7, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.numericUpDown6, System.ComponentModel.ISupportInitialize).EndInit()
         Me.TabControl1.ResumeLayout(False)
+        Me.TabPage11.ResumeLayout(False)
+        Me.SplitContainer1.Panel1.ResumeLayout(False)
+        Me.SplitContainer1.Panel2.ResumeLayout(False)
+        Me.SplitContainer1.Panel2.PerformLayout()
+        CType(Me.SplitContainer1, System.ComponentModel.ISupportInitialize).EndInit()
+        Me.SplitContainer1.ResumeLayout(False)
+        CType(Me.Chart1, System.ComponentModel.ISupportInitialize).EndInit()
         Me.ResumeLayout(False)
 
     End Sub
@@ -5491,27 +5494,9 @@ Partial Class Form1
     Friend WithEvents PictureBox5 As PictureBox
     Friend WithEvents TabPage2 As TabPage
     Friend WithEvents TableLayoutPanel3 As TableLayoutPanel
-    Friend WithEvents DataGridView3 As DataGridView
-    Friend WithEvents Chart3 As DataVisualization.Charting.Chart
-    Friend WithEvents GroupBox14 As GroupBox
-    Private WithEvents Label153 As Label
-    Friend WithEvents TextBox62 As TextBox
-    Private WithEvents Label154 As Label
-    Private WithEvents Label155 As Label
-    Friend WithEvents TextBox63 As TextBox
-    Friend WithEvents TextBox64 As TextBox
-    Private WithEvents Label156 As Label
-    Private WithEvents Label157 As Label
-    Private WithEvents Label158 As Label
-    Friend WithEvents TextBox65 As TextBox
-    Private WithEvents Label159 As Label
-    Private WithEvents Label160 As Label
-    Friend WithEvents TextBox66 As TextBox
     Friend WithEvents TabPage9 As TabPage
     Friend WithEvents TableLayoutPanel1 As TableLayoutPanel
-    Friend WithEvents Chart1 As DataVisualization.Charting.Chart
     Friend WithEvents GroupBox5 As GroupBox
-    Friend WithEvents CheckBox1 As CheckBox
     Private WithEvents Label150 As Label
     Friend WithEvents TextBox60 As TextBox
     Private WithEvents Label149 As Label
@@ -5525,8 +5510,6 @@ Partial Class Form1
     Private WithEvents Label145 As Label
     Private WithEvents Label146 As Label
     Friend WithEvents TextBox59 As TextBox
-    Friend WithEvents DataGridView2 As DataGridView
-    Private WithEvents Button2 As Button
     Friend WithEvents TabPage1 As TabPage
     Friend WithEvents GroupBox13 As GroupBox
     Friend WithEvents TextBox111 As TextBox
@@ -5722,7 +5705,6 @@ Partial Class Form1
     Friend WithEvents TextBox71 As TextBox
     Private WithEvents Label167 As Label
     Private WithEvents Label168 As Label
-    Friend WithEvents Button9 As Button
     Private WithEvents Label73 As Label
     Friend WithEvents TextBox112 As TextBox
     Private WithEvents Label175 As Label
@@ -5780,15 +5762,6 @@ Partial Class Form1
     Private WithEvents Label197 As Label
     Private WithEvents Label198 As Label
     Friend WithEvents TextBox54 As TextBox
-    Private WithEvents Label199 As Label
-    Private WithEvents Label200 As Label
-    Friend WithEvents TextBox68 As TextBox
-    Private WithEvents Label201 As Label
-    Private WithEvents Label202 As Label
-    Friend WithEvents TextBox69 As TextBox
-    Private WithEvents Label203 As Label
-    Private WithEvents Label204 As Label
-    Friend WithEvents TextBox117 As TextBox
     Private WithEvents Label205 As Label
     Private WithEvents Label206 As Label
     Friend WithEvents TextBox118 As TextBox
@@ -5800,4 +5773,34 @@ Partial Class Form1
     Friend WithEvents TextBox122 As TextBox
     Friend WithEvents TextBox123 As TextBox
     Friend WithEvents TextBox124 As TextBox
+    Friend WithEvents DataGridView2 As DataGridView
+    Friend WithEvents TabPage11 As TabPage
+    Friend WithEvents Chart1 As DataVisualization.Charting.Chart
+    Friend WithEvents GroupBox14 As GroupBox
+    Private WithEvents Label203 As Label
+    Private WithEvents Label204 As Label
+    Friend WithEvents TextBox117 As TextBox
+    Private WithEvents Label199 As Label
+    Private WithEvents Label200 As Label
+    Friend WithEvents TextBox68 As TextBox
+    Private WithEvents Label201 As Label
+    Private WithEvents Label202 As Label
+    Friend WithEvents TextBox69 As TextBox
+    Private WithEvents Label153 As Label
+    Friend WithEvents TextBox62 As TextBox
+    Private WithEvents Label154 As Label
+    Private WithEvents Label155 As Label
+    Friend WithEvents TextBox63 As TextBox
+    Friend WithEvents TextBox64 As TextBox
+    Private WithEvents Label156 As Label
+    Private WithEvents Label157 As Label
+    Private WithEvents Label158 As Label
+    Friend WithEvents TextBox65 As TextBox
+    Private WithEvents Label159 As Label
+    Private WithEvents Label160 As Label
+    Friend WithEvents TextBox66 As TextBox
+    Friend WithEvents DataGridView3 As DataGridView
+    Friend WithEvents CheckBox1 As CheckBox
+    Friend WithEvents SplitContainer1 As SplitContainer
+    Friend WithEvents Button2 As Button
 End Class
