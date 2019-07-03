@@ -2,10 +2,8 @@
 Imports System.IO
 Imports System.Management
 Imports System.Math
-Imports System.Text
 Imports System.Threading
 Imports System.Windows.Forms.DataVisualization.Charting
-Imports VTK_cyclone
 Imports Word = Microsoft.Office.Interop.Word
 '------- Input data------
 'This structure is required for the different operating cases of a cyclone
@@ -49,7 +47,6 @@ Imports Word = Microsoft.Office.Interop.Word
     Public Dmin1 As Double          'Smallest particle in calculation
     Public Dmax1 As Double          'Biggest particle in calculation
 
-
     '===== stage #2 parameters ======
     Public Flow2 As Double          '[Am3/s] Air flow per cyclone 
     Public stofb2 As Double         '[g/Am3] Dust load inlet 
@@ -79,22 +76,22 @@ End Structure
 
 'Variables used by GvG in calculation
 <Serializable()> Public Structure GvG_Calc_struct
-    Public dia As Double            'Particle diameter [mu]
-    Public d_ave As Double          'Average diameter [mu]
-    Public d_ave_K As Double        'Average diam/K_stokes [-]
+    Public dia As Double            '[mu] Particle diameter 
+    Public d_ave As Double          '[mu] Average diameter 
+    Public d_ave_K As Double        '[-] Average diam/K_stokes 
     Public loss_overall As Double   'Overall Corrected
     Public loss_overall_C As Double 'Overall loss Corrected
     Public catch_chart As Double    '[%] for chart
     Public i_grp As Double          'Particle Groepnummer
-    Public i_d1 As Double           'Class diameter lower[mu]
-    Public i_d2 As Double           'Class diameter upper[mu]
-    Public i_p1 As Double           'Interpolatie 1
-    Public i_p2 As Double           'Interpolatie 2
-    Public i_k As Double            'Parameter k
-    Public i_m As Double            'Parameter m
-    Public psd_cum As Double        '[-] Partice Size Distribution cummulatief
-    Public psd_cum_pro As Double    '[%] PSD cummulatief
+    Public i_d1 As Double           '[mu] Class diameter lower
+    Public i_d2 As Double           '[mu] Class diameter upper
+    Public i_p1 As Double           '[%] Input percentage 1
+    Public i_p2 As Double           '[&] Input percentage 2
+    Public i_k As Double            '[-] Parameter k
+    Public i_m As Double            '[-] Parameter m
     Public psd_dif As Double        '[%] PSD diff
+    Public psd_cum As Double        '[-] Partice Size Distribution cummulatief
+    Public psd_cum_pro As Double    '[%] PSD cummulatief in [procent]
     Public loss_abs As Double       '[&] loss abs
     Public loss_abs_C As Double     '[&] loss abs compensated
 
@@ -858,7 +855,7 @@ Public Class Form1
         ch.Titles.Clear()
         ch.ChartAreas.Add("ChartArea0")
 
-        For h = 0 To 2
+        For h = 0 To 3
             ch.Series.Add("Series" & h.ToString)
             ch.Series(h).ChartArea = "ChartArea0"
             ch.Series(h).ChartType = DataVisualization.Charting.SeriesChartType.Line
@@ -894,21 +891,34 @@ Public Class Form1
             s_points(h, 1) = Calc_verlies(s_points(h, 0), False, _cees(ks).Kstokes1, 1) * 100  'Loss [%]
         Next
 
-        '------ now present-------------
-        For h = 0 To 40 - 1   'Fill line chart
-            ch.Series(0).Points.AddXY(s_points(h, 0), s_points(h, 1))
-        Next h
+        If CheckBox1.Checked Then
+            '------ now present-------------
+            For h = 0 To 40 - 1   'Fill line chart
+                ch.Series(0).Points.AddXY(s_points(h, 0), s_points(h, 1))
+            Next h
+        End If
 
-        '------ Stage #1 output-------------
-        For h = 0 To 110 - 1   'Fill line chart
-            ch.Series(1).Points.AddXY(_cees(ks).stage1(h).dia, _cees(ks).stage1(h).psd_cum * 100)
-        Next h
+        Dim verschil As Double
 
-        '------ Stage #2 output-------------
-        For h = 0 To 110 - 1   'Fill line chart
-            ch.Series(2).Points.AddXY(_cees(ks).stage2(h).dia, _cees(ks).stage2(h).psd_cum * 100)
-        Next h
+        If CheckBox5.Checked Then
+            '------ Stage #1 output-------------
+            For h = 0 To 110 - 1   'Fill line chart
+                ch.Series(1).Points.AddXY(_cees(ks).stage1(h).dia, _cees(ks).stage1(h).psd_cum_pro)
 
+                verschil = _cees(ks).stage1(h).psd_cum_pro - _cees(ks).stage2(h).psd_cum_pro
+
+                TextBox24.Text &= "h1=" & h.ToString & ", verschil= " & verschil.ToString & vbCrLf
+            Next h
+        End If
+
+
+        If CheckBox6.Checked Then
+            '------ Stage #2 output-------------
+            For h = 0 To 110 - 1   'Fill line chart
+                ch.Series(2).Points.AddXY(_cees(ks).stage2(h).dia, _cees(ks).stage2(h).psd_cum_pro)
+                TextBox24.Text &= "h2=" & h.ToString & ", verschil= " & verschil.ToString & vbCrLf
+            Next h
+        End If
     End Sub
     Private Sub Draw_chart2(ch As Chart)
         'Small chart on the first tab
@@ -950,7 +960,7 @@ Public Class Form1
             ch.Series(0).Points.AddXY(s_points(h, 0), s_points(h, 1))
         Next h
     End Sub
-    Private Sub Button2_Click(sender As Object, e As EventArgs) Handles TabPage9.Enter
+    Private Sub Button2_Click(sender As Object, e As EventArgs) Handles TabPage9.Enter, CheckBox6.CheckedChanged, CheckBox5.CheckedChanged, CheckBox1.CheckedChanged
         Calc_sequence()
     End Sub
     Private Sub Calc_sequence()
@@ -1430,15 +1440,13 @@ Public Class Form1
             DataGridView3.Rows.Item(j).Cells(10).Value = _cees(ks).stage2(j).i_p2.ToString("F5")        '
             DataGridView3.Rows.Item(j).Cells(11).Value = _cees(ks).stage2(j).i_k.ToString("F5")         'User input percentage
             DataGridView3.Rows.Item(j).Cells(12).Value = _cees(ks).stage2(j).i_m.ToString("F5")         '
-            DataGridView3.Rows.Item(j).Cells(13).Value = _cees(ks).stage2(j).psd_cum.ToString("F5")     '
+            DataGridView3.Rows.Item(j).Cells(13).Value = _cees(ks).stage2(j).psd_cum.ToString("F5")     '[-]
             DataGridView3.Rows.Item(j).Cells(14).Value = _cees(ks).stage2(j).psd_cum_pro.ToString("F5") '[%]
             DataGridView3.Rows.Item(j).Cells(15).Value = _cees(ks).stage1(j).psd_dif.ToString("F5")     '[%] (stage 1 !!!!)
             DataGridView3.Rows.Item(j).Cells(16).Value = _cees(ks).stage2(j).psd_dif.ToString("F5")     '[%] (stage 2)
             DataGridView3.Rows.Item(j).Cells(17).Value = _cees(ks).stage2(j).loss_abs.ToString("F5")    '[%]
             DataGridView3.Rows.Item(j).Cells(18).Value = _cees(ks).stage2(j).loss_abs_C.ToString("F5")  '[%]
-
         Next
-
         DataGridView3.Rows.Item(111).Cells(15).Value = _cees(ks).sum_psd_diff1.ToString("F5")  'total_psd_diff.
         DataGridView3.Rows.Item(111).Cells(16).Value = _cees(ks).sum_psd_diff2.ToString("F5")  'total_psd_diff.
         DataGridView3.Rows.Item(111).Cells(17).Value = _cees(ks).sum_loss2.ToString("F5") 'total_abs_loss.ToString("F5")
@@ -1495,6 +1503,7 @@ Public Class Form1
         _cees(ks).stage1(0).loss_abs = _cees(ks).stage1(i).loss_overall * _cees(ks).stage1(i).psd_dif
         _cees(ks).stage1(0).loss_abs_C = _cees(ks).stage1(i).loss_overall_C * _cees(ks).stage1(i).psd_dif
 
+        '----- initial values --------
         _cees(ks).sum_psd_diff1 = _cees(ks).stage1(0).psd_dif
         _cees(ks).sum_loss1 = _cees(ks).stage1(0).loss_abs
         _cees(ks).sum_loss_C1 = _cees(ks).stage1(0).loss_abs_C
@@ -1551,7 +1560,7 @@ Public Class Form1
             _cees(ks).stage1(i).loss_abs = _cees(ks).stage1(i).loss_overall * _cees(ks).stage1(i).psd_dif
             _cees(ks).stage1(i).loss_abs_C = _cees(ks).stage1(i).loss_overall_C * _cees(ks).stage1(i).psd_dif
 
-            '----- sum value -----
+            '----- sum value incremental values -----
             _cees(ks).sum_psd_diff1 += _cees(ks).stage1(i).psd_dif
             _cees(ks).sum_loss1 += _cees(ks).stage1(i).loss_abs
             _cees(ks).sum_loss_C1 += _cees(ks).stage1(i).loss_abs_C
@@ -1588,10 +1597,10 @@ Public Class Form1
             TextBox18.Text = TextBox60.Text
         Else
             TextBox58.Text = _cees(ks).sum_loss1.ToString("F5")      'NOT Corrected  ??????
-        TextBox59.Text = _cees(ks).Efficiency1.ToString("F3")
-        TextBox21.Text = TextBox59.Text
-        TextBox60.Text = (NumericUpDown4.Value * _cees(ks).sum_loss1 / 100).ToString("0.000")
-        TextBox18.Text = TextBox60.Text
+            TextBox59.Text = _cees(ks).Efficiency1.ToString("F3")
+            TextBox21.Text = TextBox59.Text
+            TextBox60.Text = (NumericUpDown4.Value * _cees(ks).sum_loss1 / 100).ToString("0.000")
+            TextBox18.Text = TextBox60.Text
         End If
     End Sub
 
@@ -1615,26 +1624,27 @@ Public Class Form1
         TextBox101.Text = tot_kgh.ToString("0")
 
         '--------- now the particles (====Grid line 0======)------------
-        _cees(ks).stage2(i).dia = _cees(ks).stage1(i).dia                                   'Copy stage #1
-        _cees(ks).stage2(i).d_ave = _cees(ks).stage2(0).dia / 2                             'Average diameter
-        _cees(ks).stage2(i).d_ave_K = _cees(ks).stage2(0).d_ave / _cees(ks).Kstokes2        'dia/k_stokes
-        _cees(ks).stage2(i).loss_overall = Calc_verlies(_cees(ks).stage2(0).d_ave_K, False, _cees(ks).Kstokes2, 2)     '[-] loss overall
+        _cees(ks).stage2(0).dia = _cees(ks).stage1(0).dia                                   'Copy stage #1
+        _cees(ks).stage2(0).d_ave = _cees(ks).stage2(0).dia / 2                             'Average diameter
+        _cees(ks).stage2(0).d_ave_K = _cees(ks).stage2(0).d_ave / _cees(ks).Kstokes2        'dia/k_stokes
+        _cees(ks).stage2(0).loss_overall = Calc_verlies(_cees(ks).stage2(0).d_ave_K, False, _cees(ks).Kstokes2, 2)     '[-] loss overall
         Calc_verlies_corrected(_cees(ks).stage2(0), 2)                               '[-] loss overall corrected
-        _cees(ks).stage2(i).catch_chart = (1 - _cees(ks).stage2(i).loss_overall_C) * 100    '[%]
-        Size_classification(_cees(ks).stage2(i))                                  'groepnummer
+        _cees(ks).stage2(0).catch_chart = (1 - _cees(ks).stage2(0).loss_overall_C) * 100    '[%]
+        Size_classification(_cees(ks).stage2(0))                                  'groepnummer
 
-        Calc_k_and_m(_cees(ks).stage2(i))
-        _cees(ks).stage2(i).psd_cum = Math.E ^ (-((_cees(ks).stage2(i).dia / _cees(ks).stage2(i).i_m) ^ _cees(ks).stage2(i).i_k))
-        _cees(ks).stage2(i).psd_cum_pro = _cees(ks).stage2(i).psd_cum * 100
-        _cees(ks).stage2(i).psd_dif = 100 * _cees(ks).stage1(i).loss_abs / (100 - _cees(ks).Efficiency1)              'LOSS STAGE #1
-        _cees(ks).stage2(i).loss_abs = _cees(ks).stage2(i).loss_overall * _cees(ks).stage2(i).psd_dif
-        _cees(ks).stage2(i).loss_abs_C = _cees(ks).stage2(i).loss_overall_C * _cees(ks).stage2(i).psd_dif
+        Calc_k_and_m(_cees(ks).stage2(0))
+        _cees(ks).stage2(0).psd_cum = Math.E ^ (-((_cees(ks).stage2(0).dia / _cees(ks).stage2(0).i_m) ^ _cees(ks).stage2(0).i_k))
+        _cees(ks).stage2(0).psd_cum_pro = _cees(ks).stage2(0).psd_cum * 100
+        _cees(ks).stage2(0).psd_dif = 100 * _cees(ks).stage1(0).loss_abs / (100 - _cees(ks).Efficiency1)              'LOSS STAGE #1
+        _cees(ks).stage2(0).loss_abs = _cees(ks).stage2(0).loss_overall * _cees(ks).stage2(0).psd_dif
+        _cees(ks).stage2(0).loss_abs_C = _cees(ks).stage2(0).loss_overall_C * _cees(ks).stage2(0).psd_dif
 
         TextBox24.Text &= "_cees(ks).Efficiency1= " & _cees(ks).Efficiency1.ToString & vbCrLf
 
-        _cees(ks).sum_psd_diff2 = _cees(ks).stage2(i).psd_dif
-        _cees(ks).sum_loss2 = _cees(ks).stage2(i).loss_abs
-        _cees(ks).sum_loss_C2 = _cees(ks).stage2(i).loss_abs_C
+        '----- initial values -------
+        _cees(ks).sum_psd_diff2 = _cees(ks).stage2(0).psd_dif
+        _cees(ks).sum_loss2 = _cees(ks).stage2(0).loss_abs
+        _cees(ks).sum_loss_C2 = _cees(ks).stage2(0).loss_abs_C
 
         '------ increment step --------
         'stapgrootte bij 110-staps logaritmische verdeling van het
@@ -1692,7 +1702,7 @@ Public Class Form1
             _cees(ks).stage2(i).loss_abs = _cees(ks).stage2(i).loss_overall * _cees(ks).stage2(i).psd_dif
             _cees(ks).stage2(i).loss_abs_C = _cees(ks).stage2(i).loss_overall_C * _cees(ks).stage2(i).psd_dif
 
-            '----- sum value -----
+            '----- sum value incremental values -----
             _cees(ks).sum_psd_diff2 += _cees(ks).stage2(i).psd_dif
             _cees(ks).sum_loss2 += _cees(ks).stage2(i).loss_abs
             _cees(ks).sum_loss_C2 += _cees(ks).stage2(i).loss_abs_C
@@ -1723,9 +1733,9 @@ Public Class Form1
             TextBox62.Text = _cees(ks).emmis2.ToString("F3")
         Else
             TextBox65.Text = _cees(ks).sum_loss2.ToString("F5")      'NOT Corrected
-        TextBox66.Text = _cees(ks).Efficiency2.ToString("F3")
-        TextBox109.Text = _cees(ks).Efficiency2.ToString("F3")
-        TextBox62.Text = _cees(ks).emmis2.ToString("F3")
+            TextBox66.Text = _cees(ks).Efficiency2.ToString("F3")
+            TextBox109.Text = _cees(ks).Efficiency2.ToString("F3")
+            TextBox62.Text = _cees(ks).emmis2.ToString("F3")
 
         End If
         TextBox108.Text = TextBox62.Text
@@ -2017,4 +2027,7 @@ Public Class Form1
         Calc_sequence()
     End Sub
 
+    Private Sub Button2_Click_1(sender As Object, e As EventArgs) Handles Button2.Click
+        Draw_chart1(Chart1)         'Present the results
+    End Sub
 End Class
