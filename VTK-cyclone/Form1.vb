@@ -534,7 +534,7 @@ Public Class Form1
             DataGridView1.Rows.Item(h).Cells(2).Value = (h18 - h19).ToString("0.00")   'feed psd diff
 
             '========= loss ===============
-            If CheckBox1.Checked Then
+            If CheckBox2.Checked Then
                 DataGridView1.Rows.Item(h).Cells(3).Value = (_cees(ks).stage1(h * 5).loss_overall * 100).ToString("0.0000")
             Else
                 DataGridView1.Rows.Item(h).Cells(3).Value = (_cees(ks).stage1(h * 5).loss_overall_C * 100).ToString("0.0000")
@@ -850,7 +850,6 @@ Public Class Form1
     Private Sub Draw_chart1(ch As Chart)
         '-------
         Dim s_points(100, 2) As Double
-        Dim h As Integer
         Dim sdia As Integer
         Dim ks As Integer
 
@@ -859,15 +858,20 @@ Public Class Form1
         ch.Titles.Clear()
         ch.ChartAreas.Add("ChartArea0")
 
-        ch.Series.Add("Series" & h.ToString)
-        ch.Series(h).ChartArea = "ChartArea0"
-        ch.Series(h).ChartType = DataVisualization.Charting.SeriesChartType.Line
-        ch.Series(h).BorderWidth = 2
-        ch.Series(h).IsVisibleInLegend = False
+        For h = 0 To 2
+            ch.Series.Add("Series" & h.ToString)
+            ch.Series(h).ChartArea = "ChartArea0"
+            ch.Series(h).ChartType = DataVisualization.Charting.SeriesChartType.Line
+            ch.Series(h).BorderWidth = 2
+            ch.Series(h).IsVisibleInLegend = True
+        Next
 
-        ch.Titles.Add("Loss Curve")
+        ch.ChartAreas("ChartArea0").AxisX.TitleFont = New Font("Arial", 11, System.Drawing.FontStyle.Bold)
+        ch.ChartAreas("ChartArea0").AxisY.TitleFont = New Font("Arial", 11, System.Drawing.FontStyle.Bold)
+        ch.Titles.Add("CALCULATED CUMULATIVE PARTICLE SIZE DISTRIBUTIONS")
+        ch.Titles.Item(0).Font = New Font("Arial", 14, System.Drawing.FontStyle.Bold)
+
         ch.ChartAreas("ChartArea0").AxisX.Title = "particle dia [mu]"
-
         ch.ChartAreas("ChartArea0").AxisY.Title = "Loss [%] (niet gevangen)"
         ch.ChartAreas("ChartArea0").AxisY.Minimum = 0       'Loss
         ch.ChartAreas("ChartArea0").AxisY.Maximum = 100     'Loss
@@ -876,12 +880,9 @@ Public Class Form1
         ch.ChartAreas("ChartArea0").AxisY.MinorTickMark.Enabled = True
         ch.ChartAreas("ChartArea0").AxisX.MinorGrid.Enabled = True
         ch.ChartAreas("ChartArea0").AxisY.MinorGrid.Enabled = True
-
-
         ch.ChartAreas("ChartArea0").AxisX.IsLogarithmic = True
         ch.ChartAreas("ChartArea0").AxisX.Minimum = 1     'Particle size
         ch.ChartAreas("ChartArea0").AxisX.Maximum = 100   'Particle size
-
 
         '----- now calc chart points --------------------------
         Integer.TryParse(TextBox42.Text, sdia)
@@ -897,6 +898,17 @@ Public Class Form1
         For h = 0 To 40 - 1   'Fill line chart
             ch.Series(0).Points.AddXY(s_points(h, 0), s_points(h, 1))
         Next h
+
+        '------ Stage #1 output-------------
+        For h = 0 To 110 - 1   'Fill line chart
+            ch.Series(1).Points.AddXY(_cees(ks).stage1(h).dia, _cees(ks).stage1(h).psd_cum * 100)
+        Next h
+
+        '------ Stage #2 output-------------
+        For h = 0 To 110 - 1   'Fill line chart
+            ch.Series(2).Points.AddXY(_cees(ks).stage2(h).dia, _cees(ks).stage2(h).psd_cum * 100)
+        Next h
+
     End Sub
     Private Sub Draw_chart2(ch As Chart)
         'Small chart on the first tab

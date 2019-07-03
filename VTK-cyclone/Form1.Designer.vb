@@ -23,12 +23,12 @@ Partial Class Form1
     <System.Diagnostics.DebuggerStepThrough()>
     Private Sub InitializeComponent()
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(Form1))
-        Dim ChartArea1 As System.Windows.Forms.DataVisualization.Charting.ChartArea = New System.Windows.Forms.DataVisualization.Charting.ChartArea()
-        Dim Legend1 As System.Windows.Forms.DataVisualization.Charting.Legend = New System.Windows.Forms.DataVisualization.Charting.Legend()
-        Dim Series1 As System.Windows.Forms.DataVisualization.Charting.Series = New System.Windows.Forms.DataVisualization.Charting.Series()
-        Dim ChartArea2 As System.Windows.Forms.DataVisualization.Charting.ChartArea = New System.Windows.Forms.DataVisualization.Charting.ChartArea()
-        Dim Legend2 As System.Windows.Forms.DataVisualization.Charting.Legend = New System.Windows.Forms.DataVisualization.Charting.Legend()
-        Dim Series2 As System.Windows.Forms.DataVisualization.Charting.Series = New System.Windows.Forms.DataVisualization.Charting.Series()
+        Dim ChartArea5 As System.Windows.Forms.DataVisualization.Charting.ChartArea = New System.Windows.Forms.DataVisualization.Charting.ChartArea()
+        Dim Legend5 As System.Windows.Forms.DataVisualization.Charting.Legend = New System.Windows.Forms.DataVisualization.Charting.Legend()
+        Dim Series5 As System.Windows.Forms.DataVisualization.Charting.Series = New System.Windows.Forms.DataVisualization.Charting.Series()
+        Dim ChartArea6 As System.Windows.Forms.DataVisualization.Charting.ChartArea = New System.Windows.Forms.DataVisualization.Charting.ChartArea()
+        Dim Legend6 As System.Windows.Forms.DataVisualization.Charting.Legend = New System.Windows.Forms.DataVisualization.Charting.Legend()
+        Dim Series6 As System.Windows.Forms.DataVisualization.Charting.Series = New System.Windows.Forms.DataVisualization.Charting.Series()
         Me.OpenFileDialog1 = New System.Windows.Forms.OpenFileDialog()
         Me.TabPage10 = New System.Windows.Forms.TabPage()
         Me.TabPage8 = New System.Windows.Forms.TabPage()
@@ -459,7 +459,7 @@ Partial Class Form1
         Me.SplitContainer1 = New System.Windows.Forms.SplitContainer()
         Me.Chart1 = New System.Windows.Forms.DataVisualization.Charting.Chart()
         Me.Button2 = New System.Windows.Forms.Button()
-        Me.CheckBox1 = New System.Windows.Forms.CheckBox()
+        Me.GroupBox12 = New System.Windows.Forms.GroupBox()
         Me.TabPage8.SuspendLayout()
         Me.TabPage7.SuspendLayout()
         CType(Me.PictureBox1, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -3396,16 +3396,16 @@ Partial Class Form1
         '
         'Chart2
         '
-        ChartArea1.Name = "ChartArea1"
-        Me.Chart2.ChartAreas.Add(ChartArea1)
-        Legend1.Name = "Legend1"
-        Me.Chart2.Legends.Add(Legend1)
+        ChartArea5.Name = "ChartArea1"
+        Me.Chart2.ChartAreas.Add(ChartArea5)
+        Legend5.Name = "Legend1"
+        Me.Chart2.Legends.Add(Legend5)
         Me.Chart2.Location = New System.Drawing.Point(891, 379)
         Me.Chart2.Name = "Chart2"
-        Series1.ChartArea = "ChartArea1"
-        Series1.Legend = "Legend1"
-        Series1.Name = "Series1"
-        Me.Chart2.Series.Add(Series1)
+        Series5.ChartArea = "ChartArea1"
+        Series5.Legend = "Legend1"
+        Series5.Name = "Series1"
+        Me.Chart2.Series.Add(Series5)
         Me.Chart2.Size = New System.Drawing.Size(382, 224)
         Me.Chart2.TabIndex = 80
         Me.Chart2.Text = "Chart2"
@@ -5216,25 +5216,25 @@ Partial Class Form1
         '
         'SplitContainer1.Panel2
         '
+        Me.SplitContainer1.Panel2.Controls.Add(Me.GroupBox12)
         Me.SplitContainer1.Panel2.Controls.Add(Me.Button2)
-        Me.SplitContainer1.Panel2.Controls.Add(Me.CheckBox1)
         Me.SplitContainer1.Size = New System.Drawing.Size(1275, 809)
         Me.SplitContainer1.SplitterDistance = 1026
         Me.SplitContainer1.TabIndex = 113
         '
         'Chart1
         '
-        ChartArea2.Name = "ChartArea1"
-        Me.Chart1.ChartAreas.Add(ChartArea2)
+        ChartArea6.Name = "ChartArea1"
+        Me.Chart1.ChartAreas.Add(ChartArea6)
         Me.Chart1.Dock = System.Windows.Forms.DockStyle.Fill
-        Legend2.Name = "Legend1"
-        Me.Chart1.Legends.Add(Legend2)
+        Legend6.Name = "Legend1"
+        Me.Chart1.Legends.Add(Legend6)
         Me.Chart1.Location = New System.Drawing.Point(0, 0)
         Me.Chart1.Name = "Chart1"
-        Series2.ChartArea = "ChartArea1"
-        Series2.Legend = "Legend1"
-        Series2.Name = "Series1"
-        Me.Chart1.Series.Add(Series2)
+        Series6.ChartArea = "ChartArea1"
+        Series6.Legend = "Legend1"
+        Series6.Name = "Series1"
+        Me.Chart1.Series.Add(Series6)
         Me.Chart1.Size = New System.Drawing.Size(1026, 809)
         Me.Chart1.TabIndex = 68
         Me.Chart1.Text = "Chart1"
@@ -5248,15 +5248,14 @@ Partial Class Form1
         Me.Button2.Text = "Button2"
         Me.Button2.UseVisualStyleBackColor = True
         '
-        'CheckBox1
+        'GroupBox12
         '
-        Me.CheckBox1.AutoSize = True
-        Me.CheckBox1.Location = New System.Drawing.Point(18, 132)
-        Me.CheckBox1.Name = "CheckBox1"
-        Me.CheckBox1.Size = New System.Drawing.Size(107, 17)
-        Me.CheckBox1.TabIndex = 112
-        Me.CheckBox1.Text = "Logarithmic chart"
-        Me.CheckBox1.UseVisualStyleBackColor = True
+        Me.GroupBox12.Location = New System.Drawing.Point(22, 20)
+        Me.GroupBox12.Name = "GroupBox12"
+        Me.GroupBox12.Size = New System.Drawing.Size(196, 362)
+        Me.GroupBox12.TabIndex = 114
+        Me.GroupBox12.TabStop = False
+        Me.GroupBox12.Text = "GroupBox12"
         '
         'Form1
         '
@@ -5365,7 +5364,6 @@ Partial Class Form1
         Me.TabPage11.ResumeLayout(False)
         Me.SplitContainer1.Panel1.ResumeLayout(False)
         Me.SplitContainer1.Panel2.ResumeLayout(False)
-        Me.SplitContainer1.Panel2.PerformLayout()
         CType(Me.SplitContainer1, System.ComponentModel.ISupportInitialize).EndInit()
         Me.SplitContainer1.ResumeLayout(False)
         CType(Me.Chart1, System.ComponentModel.ISupportInitialize).EndInit()
@@ -5800,7 +5798,7 @@ Partial Class Form1
     Private WithEvents Label160 As Label
     Friend WithEvents TextBox66 As TextBox
     Friend WithEvents DataGridView3 As DataGridView
-    Friend WithEvents CheckBox1 As CheckBox
     Friend WithEvents SplitContainer1 As SplitContainer
     Friend WithEvents Button2 As Button
+    Friend WithEvents GroupBox12 As GroupBox
 End Class
