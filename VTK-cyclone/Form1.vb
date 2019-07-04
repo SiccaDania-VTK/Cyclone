@@ -82,7 +82,7 @@ End Structure
     Public loss_overall As Double   'Overall Corrected
     Public loss_overall_C As Double 'Overall loss Corrected
     Public catch_chart As Double    '[%] for chart
-    Public i_grp As Double          'Particle Groepnummer
+    Public i_grp As Double          'Particle Groepnummer (stage 2= stage 1)
     Public i_d1 As Double           '[mu] Class diameter lower
     Public i_d2 As Double           '[mu] Class diameter upper
     Public i_p1 As Double           '[%] Input percentage 1
@@ -667,6 +667,8 @@ Public Class Form1
     End Sub
     '-------- Bereken het verlies getal NIET gecorrigeerd -----------
     '----- de input is de GEMIDDELDE korrel grootte-----------
+    'Calc_verlies(_cees(ks).stage2(i).d_ave, False, _cees(ks).Kstokes2, 2)
+
     Private Function Calc_verlies(korrel_g As Double, present As Boolean, stokes As Double, stage As Integer) As Double
         Dim words() As String
         Dim dia_Kcrit, fac_m, fac_a, fac_k As Double
@@ -712,6 +714,7 @@ Public Class Form1
 
     '-------- Bereken het verlies getal GECORRIGEERD -----------
     '----- de input is de GEMIDDELDE korrel grootte-----------
+
     Private Sub Calc_verlies_corrected(ByRef grp As GvG_Calc_struct, stage As Integer)
         Dim cor1, cor2 As Double
 
@@ -907,7 +910,12 @@ Public Class Form1
 
                 verschil = _cees(ks).stage1(h).psd_cum_pro - _cees(ks).stage2(h).psd_cum_pro
 
-                TextBox24.Text &= "h1=" & h.ToString & ", verschil= " & verschil.ToString & vbCrLf
+                TextBox24.Text &= "h1=" & h.ToString
+                TextBox24.Text &= "   _cees(ks).stage1(h).i_grp=" & _cees(ks).stage1(h).i_grp.ToString
+                TextBox24.Text &= "   _cees(ks).stage2(h).i_grp=" & _cees(ks).stage2(h).i_grp.ToString
+                TextBox24.Text &= "   _cees(ks).stage1(h).psd_cum_pro=" & _cees(ks).stage1(h).psd_cum_pro.ToString
+                TextBox24.Text &= "   _cees(ks).stage2(h).psd_cum_pro=" & _cees(ks).stage2(h).psd_cum_pro.ToString
+                TextBox24.Text &= "   verschil=" & verschil.ToString & vbCrLf
             Next h
         End If
 
@@ -916,7 +924,6 @@ Public Class Form1
             '------ Stage #2 output-------------
             For h = 0 To 110 - 1   'Fill line chart
                 ch.Series(2).Points.AddXY(_cees(ks).stage2(h).dia, _cees(ks).stage2(h).psd_cum_pro)
-                TextBox24.Text &= "h2=" & h.ToString & ", verschil= " & verschil.ToString & vbCrLf
             Next h
         End If
     End Sub
@@ -1461,7 +1468,6 @@ Public Class Form1
 
     Private Sub Calc_stage1(ks As Integer)
         'This is the standard VTK cyclone calculation for case "ks" 
-
         Dim i As Integer = 0
         Dim dia_max As Double       'Above this diameter everything is caught
         Dim dia_min As Double       'Below this diameter nothing is caught
@@ -1469,6 +1475,8 @@ Public Class Form1
         Dim perc_smallest_part1 As Double
         Dim fac_m As Double
         Dim words() As String
+
+        If Double.IsNaN(_cees(ks).stage1(0).dia) Or Double.IsInfinity(_cees(ks).stage1(0).dia) Then Exit Sub
 
         '------ the idea is that the smallest diameter cyclone determines
         '------ the smallest particle diameter used in the calculation
@@ -1544,8 +1552,8 @@ Public Class Form1
                 _cees(ks).stage1(i).catch_chart = (1 - _cees(ks).stage1(i).loss_overall) * 100    '[%] NOT corrected
             End If
             Size_classification(_cees(ks).stage1(i))                                   'Classify this part size
-
-            If _cees(ks).stage1(i).i_grp <> 11 And _cees(ks).stage2(i).i_grp <> 11 Then 'to prevent silly results
+            '====to prevent silly results====
+            If _cees(ks).stage1(i).i_grp <> 11 And _cees(ks).stage2(i).i_grp <> 11 Then
                 Calc_k_and_m(_cees(ks).stage1(i))
                 _cees(ks).stage1(i).psd_cum = Math.E ^ (-((_cees(ks).stage1(i).dia / _cees(ks).stage1(i).i_m) ^ _cees(ks).stage1(i).i_k))
                 _cees(ks).stage1(i).psd_cum_pro = _cees(ks).stage1(i).psd_cum * 100
@@ -1616,6 +1624,8 @@ Public Class Form1
         Dim kgh, tot_kgh As Double
         Dim Eff_comb As Double      'Efficiency stage #1 and #2
 
+        If Double.IsNaN(_cees(ks).stage2(0).dia) Or Double.IsInfinity(_cees(ks).stage2(0).dia) Then Exit Sub
+
         '----------- stof belasting ------------
         tot_kgh = _cees(ks).Flow2 * _cees(ks).stofb2 / 1000 * 3600 * _cees(ks).Noc2     '[kg/hr] Dust inlet 
 
@@ -1681,24 +1691,20 @@ Public Class Form1
             Else
                 _cees(ks).stage2(i).catch_chart = (1 - _cees(ks).stage2(i).loss_overall) * 100    '[%] NOT corrected
             End If
+
+
             Size_classification(_cees(ks).stage2(i))                                     'Calc
+            _cees(ks).stage2(i).i_grp = _cees(ks).stage1(i).i_grp
 
-            If _cees(ks).stage1(i).i_grp <> 11 And _cees(ks).stage2(i).i_grp <> 11 Then 'to prevent silly results 
-                Calc_k_and_m(_cees(ks).stage2(i))
-                _cees(ks).stage2(i).psd_cum = Math.E ^ (-((_cees(ks).stage2(i).dia / _cees(ks).stage2(i).i_m) ^ _cees(ks).stage2(i).i_k))
-                _cees(ks).stage2(i).psd_cum_pro = _cees(ks).stage2(i).psd_cum * 100
-                _cees(ks).stage2(i).psd_dif = 100 * _cees(ks).stage1(i).loss_abs_C / _cees(ks).sum_loss_C1
+            Calc_k_and_m(_cees(ks).stage2(i))
+            _cees(ks).stage2(i).psd_cum = Math.E ^ (-((_cees(ks).stage2(i).dia / _cees(ks).stage2(i).i_m) ^ _cees(ks).stage2(i).i_k))
+            _cees(ks).stage2(i).psd_cum_pro = _cees(ks).stage2(i).psd_cum * 100
+            _cees(ks).stage2(i).psd_dif = 100 * _cees(ks).stage1(i).loss_abs_C / _cees(ks).sum_loss_C1
 
-                TextBox24.Text &= "_cees(ks).stage1(i).psd_dif= " & _cees(ks).stage1(i).psd_dif.ToString("F6")
-                TextBox24.Text &= "  _cees(ks).sum_loss_C1= " & _cees(ks).sum_loss_C1.ToString("F6")
+            TextBox24.Text &= "_cees(ks).stage1(i).psd_dif= " & _cees(ks).stage1(i).psd_dif.ToString("F6")
+            TextBox24.Text &= "  _cees(ks).sum_loss_C1= " & _cees(ks).sum_loss_C1.ToString("F6")
                 TextBox24.Text &= "  _cees(ks).stage2(i).psd_dif= " & _cees(ks).stage2(i).psd_dif.ToString("F6") & vbCrLf
-            Else
-                _cees(ks).stage2(i).i_k = 0
-                _cees(ks).stage2(i).i_m = 0
-                _cees(ks).stage2(i).psd_cum = 0
-                _cees(ks).stage2(i).psd_cum_pro = 0
-                _cees(ks).stage2(i).psd_dif = 0
-            End If
+
             _cees(ks).stage2(i).loss_abs = _cees(ks).stage2(i).loss_overall * _cees(ks).stage2(i).psd_dif
             _cees(ks).stage2(i).loss_abs_C = _cees(ks).stage2(i).loss_overall_C * _cees(ks).stage2(i).psd_dif
 
