@@ -291,8 +291,7 @@ Public Class Form1
         TextBox126.Text &= "" & vbCrLf
         TextBox126.Text &= "" & vbCrLf
         TextBox126.Text &= "" & vbCrLf
-        TextBox126.Text &= "" & vbCrLf
-        TextBox126.Text &= "Opmerking 1) deeltjes < 0.5-0.7 mu kunnen niet gevangen worden ivm fysysche mechanismen groter dan de centrifugaal kracht."
+        TextBox126.Text &= "Opmerking 1) deeltjes < 0.5-0.7 mu kunnen niet gevangen worden ivm fysische mechanismen groter dan de centrifugaal kracht."
 
         Calc_sequence()
     End Sub
@@ -928,13 +927,6 @@ Public Class Form1
         '    Next h
         'End If
 
-        If CheckBox5.Checked Then
-            '------ Stage #1 output-------------
-            For h = 0 To 110 - 1   'Fill line chart
-                ch.Series(0).Points.AddXY(_cees(ks).stage1(h).dia, (100 - _cees(ks).stage1(h).catch_chart))
-                Log_now(ks, h, "Draw_chart1")  'Log now to textbox24
-            Next h
-        End If
 
         If CheckBox5.Checked Then
             '------ Stage #1 output-------------
@@ -945,10 +937,15 @@ Public Class Form1
             Next h
         End If
 
+
+        'mmm
+        'Dim y As Double
         If CheckBox6.Checked Then
             '------ Stage #2 output-------------
             For h = 0 To 110 - 1   'Fill line chart
                 ch.Series(2).Points.AddXY(_cees(ks).stage2(h).dia, (100 - _cees(ks).stage2(h).catch_chart))
+                'y = CDbl(DataGridView4.Rows.Item(5).Cells(8).Value)
+                'ch.Series(2).Points.AddXY(_cees(ks).stage2(h).dia, y)
             Next h
         End If
     End Sub
@@ -1465,12 +1462,12 @@ Public Class Form1
         DataGridView3.Columns(11).HeaderText = "k [-]"              '    
         DataGridView3.Columns(12).HeaderText = "m [-]"              '
 
-        DataGridView3.Columns(13).HeaderText = "interp. psd cum [-]"      '
+        DataGridView3.Columns(13).HeaderText = "interpol. psd cum [-]"      '
         DataGridView3.Columns(14).HeaderText = "psd_cum_pro for chart"    '
         DataGridView3.Columns(15).HeaderText = "psd diff [%] of 1-stage"       '
         DataGridView3.Columns(16).HeaderText = "psd diff [%] of 2-stage"       '
         DataGridView3.Columns(17).HeaderText = "loss abs [%]"   '
-        DataGridView3.Columns(18).HeaderText = "loss corr abs [%]" '
+        DataGridView3.Columns(18).HeaderText = "loss abs corrected [%]" '
 
         For row = 1 To 110  'Fill the DataGrid
             j = row - 1
@@ -1478,21 +1475,21 @@ Public Class Form1
             DataGridView3.Rows.Item(j).Cells(1).Value = _cees(ks).stage2(j).d_ave.ToString("F5")        'Average diameter
             DataGridView3.Rows.Item(j).Cells(2).Value = _cees(ks).stage2(j).d_ave_K.ToString("F5")      'Average dia/K stokes
             DataGridView3.Rows.Item(j).Cells(3).Value = _cees(ks).stage2(j).loss_overall.ToString("F5")  'Loss 
-            DataGridView3.Rows.Item(j).Cells(4).Value = _cees(ks).stage2(j).loss_overall_C.ToString("F5") 'Loss 
-            DataGridView3.Rows.Item(j).Cells(5).Value = _cees(ks).stage2(j).catch_chart.ToString("F5")  'Catch
+            DataGridView3.Rows.Item(j).Cells(4).Value = _cees(ks).stage2(j).loss_overall_C.ToString("F5") 'Loss corrected 
+            DataGridView3.Rows.Item(j).Cells(5).Value = _cees(ks).stage2(j).catch_chart.ToString("F5")  'Catch for chart
             DataGridView3.Rows.Item(j).Cells(6).Value = _cees(ks).stage2(j).i_grp.ToString              'Groep nummer
             DataGridView3.Rows.Item(j).Cells(7).Value = _cees(ks).stage2(j).i_d1.ToString("F5")         'class lower dia limit
             DataGridView3.Rows.Item(j).Cells(8).Value = _cees(ks).stage2(j).i_d2.ToString("F5")         'class upper dia limit
-            DataGridView3.Rows.Item(j).Cells(9).Value = _cees(ks).stage2(j).i_p1.ToString("F5")         'User input percentage
-            DataGridView3.Rows.Item(j).Cells(10).Value = _cees(ks).stage2(j).i_p2.ToString("F5")        '
-            DataGridView3.Rows.Item(j).Cells(11).Value = _cees(ks).stage2(j).i_k.ToString("F5")         'User input percentage
-            DataGridView3.Rows.Item(j).Cells(12).Value = _cees(ks).stage2(j).i_m.ToString("F5")         '
+            DataGridView3.Rows.Item(j).Cells(9).Value = _cees(ks).stage2(j).i_p1.ToString("F5")         'User lower input percentage
+            DataGridView3.Rows.Item(j).Cells(10).Value = _cees(ks).stage2(j).i_p2.ToString("F5")        'User upper input percentage
+            DataGridView3.Rows.Item(j).Cells(11).Value = _cees(ks).stage2(j).i_k.ToString("F5")         'parameter k
+            DataGridView3.Rows.Item(j).Cells(12).Value = _cees(ks).stage2(j).i_m.ToString("F5")         'parameter m
             DataGridView3.Rows.Item(j).Cells(13).Value = _cees(ks).stage2(j).psd_cum.ToString("F5")     '[-]
             DataGridView3.Rows.Item(j).Cells(14).Value = _cees(ks).stage2(j).psd_cum_pro.ToString("F5") '[%]
-            DataGridView3.Rows.Item(j).Cells(15).Value = _cees(ks).stage1(j).psd_dif.ToString("F5")     '[%] (stage 1 !!!!)
-            DataGridView3.Rows.Item(j).Cells(16).Value = _cees(ks).stage2(j).psd_dif.ToString("F5")     '[%] (stage 2)
-            DataGridView3.Rows.Item(j).Cells(17).Value = _cees(ks).stage2(j).loss_abs.ToString("F5")    '[%]
-            DataGridView3.Rows.Item(j).Cells(18).Value = _cees(ks).stage2(j).loss_abs_C.ToString("F5")  '[%]
+            DataGridView3.Rows.Item(j).Cells(15).Value = _cees(ks).stage1(j).psd_dif.ToString("F5")     '[%] psd diff of 1-stage
+            DataGridView3.Rows.Item(j).Cells(16).Value = _cees(ks).stage2(j).psd_dif.ToString("F5")     '[%] psd diff of 2-stage
+            DataGridView3.Rows.Item(j).Cells(17).Value = _cees(ks).stage2(j).loss_abs.ToString("F5")    '[%] loss abs 
+            DataGridView3.Rows.Item(j).Cells(18).Value = _cees(ks).stage2(j).loss_abs_C.ToString("F5")  '[%] loss abs corrected
         Next
         DataGridView3.Rows.Item(111).Cells(15).Value = _cees(ks).sum_psd_diff1.ToString("F5")  'total_psd_diff.
         DataGridView3.Rows.Item(111).Cells(16).Value = _cees(ks).sum_psd_diff2.ToString("F5")  'total_psd_diff.
@@ -2084,6 +2081,7 @@ Public Class Form1
     Private Sub Init_datagrid4()
         Dim ks As Integer = CInt(NumericUpDown30.Value)
         Dim li(11) As Double
+        Dim i As Integer
 
         DataGridView4.ColumnCount = 10
         DataGridView4.Rows.Clear()
@@ -2103,21 +2101,47 @@ Public Class Form1
         Dim w19 As Double = 1.18485253841823        'Problem onduidelijk
         Dim w20 As Double = 1.0137                  'Problem onduidelijk
 
-        For i = 0 To 110 - 1  'Fill the DataGrid
+        '========== first line =============
+        i = 0
+        li(0) = _cees(ks).stage1(i).d_ave               'Dia aver [mu]"
+        li(1) = _cees(ks).stage1(i).psd_dif * w19       'In abs [g/Am3]" T76 * W19
+        li(3) = _cees(ks).stage1(i).psd_cum_pro         '(1) In psd diff cumm[%]" S76 
+        li(2) = 100 - _cees(ks).stage1(i).psd_cum_pro   'In psd diff [%]
+        li(4) = _cees(ks).stage2(i).psd_dif             '(2) In psd cum [%]
+        li(5) = 100 - _cees(ks).stage2(i).psd_dif       'Loss1 pdscum [%]
+        li(6) = _cees(ks).stage2(i).loss_abs_C / 10 * w20   'Loss abs [g/Am3]
+        li(7) = 100 * li(6) / _cees(ks).sum_loss_C2     'Loss2 pds dif [%]
+        li(8) = 100 - li(7)                             '(3)Loss2 pds.cum [%]
+        li(9) = 100 * (li(1) - li(6)) / li(1)           'Eff stage1&2 [%]
+        If li(9) < 0 Then li(9) = 0                     'making sure
+        If Double.IsNaN(li(9)) Then li(9) = 100         'making sure
+
+        For j = 0 To 9  'Fill the DataGrid
+            DataGridView4.Rows.Item(i).Cells(j).Value = li(j).ToString("F5")
+        Next
+
+        '========- rest of the lines========
+        Dim qq As Double
+        For i = 1 To 110 - 1  'Fill the DataGrid
             li(0) = _cees(ks).stage1(i).d_ave               'Dia aver [mu]"
             li(1) = _cees(ks).stage1(i).psd_dif * w19       'In abs [g/Am3]" T76 * W19
-            li(3) = _cees(ks).stage1(i).psd_cum_pro         'In psd diff [%]" S76 
+            li(3) = _cees(ks).stage1(i).psd_cum_pro         '(1) In psd diff cumm[%]" S76 (works)
             li(2) = 100 - _cees(ks).stage1(i).psd_cum_pro   'In psd diff [%]
-            li(4) = _cees(ks).stage2(i).psd_dif             'In psd cum [%]
-            li(5) = 100 - _cees(ks).stage2(i).psd_dif       'Loss1 pdscum [%]
+            li(4) = _cees(ks).stage2(i).psd_dif             '(2) In psd cum [%]
+
+            qq = CDbl(DataGridView4.Rows.Item(i - 1).Cells(5).Value)
+            li(5) = qq - _cees(ks).stage2(i).psd_dif       'Loss1 pdscum [%] (works)
             li(6) = _cees(ks).stage2(i).loss_abs_C / 10 * w20   'Loss abs [g/Am3]
             li(7) = 100 * li(6) / _cees(ks).sum_loss_C2     'Loss2 pds dif [%]
-            li(8) = 100 - li(7)                             'Loss2 pdscum [%]
+
+            qq = CDbl(DataGridView4.Rows.Item(i - 1).Cells(8).Value)
+            li(8) = qq - li(7)                             '(3)Loss2 pds.cum [%] (works not ywt)
             li(9) = 100 * (li(1) - li(6)) / li(1)           'Eff stage1&2 [%]
-            If li(9) < 0 Then li(9) = 0                     'making sure
+
             If Double.IsNaN(li(9)) Then li(9) = 100         'making sure
 
             For j = 0 To 9  'Fill the DataGrid
+                If li(j) < 0 Then li(j) = 0                 'making sure
                 DataGridView4.Rows.Item(i).Cells(j).Value = li(j).ToString("F5")
             Next
         Next
