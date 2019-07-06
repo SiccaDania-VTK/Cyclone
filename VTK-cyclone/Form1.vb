@@ -1404,7 +1404,7 @@ Public Class Form1
         DataGridView2.Columns(11).HeaderText = "k [-]"              '    
         DataGridView2.Columns(12).HeaderText = "m [-]"              '
 
-        DataGridView2.Columns(13).HeaderText = "i_psd cum [-]"      '
+        DataGridView2.Columns(13).HeaderText = "interpol. psd cum [-]"      '
         DataGridView2.Columns(14).HeaderText = "psd cum [%]"        '
         DataGridView2.Columns(15).HeaderText = "psd diff [%]"       '
         DataGridView2.Columns(16).HeaderText = "loss abs [%]"       '
@@ -1465,7 +1465,7 @@ Public Class Form1
         DataGridView3.Columns(11).HeaderText = "k [-]"              '    
         DataGridView3.Columns(12).HeaderText = "m [-]"              '
 
-        DataGridView3.Columns(13).HeaderText = "i_psd cum [-]"      '
+        DataGridView3.Columns(13).HeaderText = "interp. psd cum [-]"      '
         DataGridView3.Columns(14).HeaderText = "psd_cum_pro for chart"    '
         DataGridView3.Columns(15).HeaderText = "psd diff [%] of 1-stage"       '
         DataGridView3.Columns(16).HeaderText = "psd diff [%] of 2-stage"       '
@@ -2083,37 +2083,39 @@ Public Class Form1
 
     Private Sub Init_datagrid4()
         Dim ks As Integer = CInt(NumericUpDown30.Value)
-        Dim li(10) As Double
+        Dim li(11) As Double
 
         DataGridView4.ColumnCount = 10
         DataGridView4.Rows.Clear()
         DataGridView4.Rows.Add(111)
 
-        DataGridView4.Columns(0).HeaderText = "Eff stage1&2[%]"
-        DataGridView4.Columns(1).HeaderText = "Dia aver [mu]"
-        DataGridView4.Columns(2).HeaderText = "In abs [g/Am3]"
-        DataGridView4.Columns(3).HeaderText = "In psd diff [%]"
-        DataGridView4.Columns(4).HeaderText = "In psd cum [%]"
-        DataGridView4.Columns(5).HeaderText = "Loss1 pds dif [%]"   '
-        DataGridView4.Columns(6).HeaderText = "Loss1 pdscum [%]"    '
-        DataGridView4.Columns(7).HeaderText = "Loss abs [g/Am3]"    '
-        DataGridView4.Columns(8).HeaderText = "Loss2 pds dif [%]"   '
-        DataGridView4.Columns(9).HeaderText = "Loss2 pdscum [%]"    '
+        DataGridView4.Columns(0).HeaderText = "Dia aver [mu]"
+        DataGridView4.Columns(1).HeaderText = "In abs [g/Am3]"
+        DataGridView4.Columns(2).HeaderText = "In psd diff [%]"
+        DataGridView4.Columns(3).HeaderText = "In psd cum [%]"
+        DataGridView4.Columns(4).HeaderText = "Loss1 pds dif [%]"   '
+        DataGridView4.Columns(5).HeaderText = "Loss1 pdscum [%]"    '
+        DataGridView4.Columns(6).HeaderText = "Loss abs [g/Am3]"    '
+        DataGridView4.Columns(7).HeaderText = "Loss2 pds dif [%]"   '
+        DataGridView4.Columns(8).HeaderText = "Loss2 pdscum [%]"    '
+        DataGridView4.Columns(9).HeaderText = "Eff stage1&2 [%]"
 
         Dim w19 As Double = 1.18485253841823        'Problem onduidelijk
         Dim w20 As Double = 1.0137                  'Problem onduidelijk
 
         For i = 0 To 110 - 1  'Fill the DataGrid
-            li(1) = _cees(ks).stage1(i).d_ave           '"Dia aver [mu]"
-            li(2) = _cees(ks).stage1(i).psd_dif * w19   '"In abs [g/Am3]" T76 * W19
-            li(4) = _cees(ks).stage1(i).psd_cum_pro     '"In psd diff [%]" S76 
-            li(3) = 100 - li(4)
-            li(5) = _cees(ks).stage2(i).psd_dif
-            li(6) = 100 - li(5)
-            li(7) = _cees(ks).stage2(i).loss_abs_C / 10 * w20
-            li(8) = 100 * li(7) / _cees(ks).sum_loss_C2
-            li(9) = 100 - li(8)
-            li(0) = 100 * (li(1) - li(7)) / li(1)      'efficiency als laatste
+            li(0) = _cees(ks).stage1(i).d_ave               'Dia aver [mu]"
+            li(1) = _cees(ks).stage1(i).psd_dif * w19       'In abs [g/Am3]" T76 * W19
+            li(3) = _cees(ks).stage1(i).psd_cum_pro         'In psd diff [%]" S76 
+            li(2) = 100 - _cees(ks).stage1(i).psd_cum_pro   'In psd diff [%]
+            li(4) = _cees(ks).stage2(i).psd_dif             'In psd cum [%]
+            li(5) = 100 - _cees(ks).stage2(i).psd_dif       'Loss1 pdscum [%]
+            li(6) = _cees(ks).stage2(i).loss_abs_C / 10 * w20   'Loss abs [g/Am3]
+            li(7) = 100 * li(6) / _cees(ks).sum_loss_C2     'Loss2 pds dif [%]
+            li(8) = 100 - li(7)                             'Loss2 pdscum [%]
+            li(9) = 100 * (li(1) - li(6)) / li(1)           'Eff stage1&2 [%]
+            If li(9) < 0 Then li(9) = 0                     'making sure
+            If Double.IsNaN(li(9)) Then li(9) = 100         'making sure
 
             For j = 0 To 9  'Fill the DataGrid
                 DataGridView4.Rows.Item(i).Cells(j).Value = li(j).ToString("F5")
