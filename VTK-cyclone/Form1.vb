@@ -65,7 +65,7 @@ Imports Word = Microsoft.Office.Interop.Word
     Public dout2 As Double          '[m] diameter zakbuis
     Public inv2 As Double           '[m/s] Inlet velocity cyclone
     Public outv2 As Double          '[m/s] Outlet velocity cyclone
-    Public Kstokes2 As Double
+    Public Kstokes2 As Double       'Stokes of the particle
     Public dpgas2 As Double         '[Pa] pressure loss gas
     Public dpdust2 As Double        '[Pa] pressure loss dust
     Public m2 As Double             'm factor loss curve d< dia critical
@@ -80,21 +80,21 @@ End Structure
     Public dia As Double            '[mu] Particle diameter 
     Public d_ave As Double          '[mu] Average diameter 
     Public d_ave_K As Double        '[-] Average diam/K_stokes 
-    Public loss_overall As Double   'Overall Corrected
-    Public loss_overall_C As Double 'Overall loss Corrected
-    Public catch_chart As Double    '[%] for chart
     Public i_grp As Double          'Particle Groepnummer (stage 2= stage 1)
-    Public i_d1 As Double           '[mu] Class diameter lower
-    Public i_d2 As Double           '[mu] Class diameter upper
-    Public i_p1 As Double           '[%] Input percentage 1
-    Public i_p2 As Double           '[&] Input percentage 2
+    Public i_d1 As Double           '[mu] particle diameter lower Class
+    Public i_d2 As Double           '[mu] particle diameter upper Class
+    Public i_p1 As Double           '[%] User Input percentage 1
+    Public i_p2 As Double           '[%] User Input percentage 2
     Public i_k As Double            '[-] Parameter k
     Public i_m As Double            '[-] Parameter m
     Public psd_dif As Double        '[%] PSD diff
-    Public psd_cum As Double        '[-] Partice Size Distribution cummulatief
+    Public psd_cum As Double        '[-] interpolatie psd cummulatief
     Public psd_cum_pro As Double    '[%] PSD cummulatief in [procent] for chart1
-    Public loss_abs As Double       '[&] loss abs
-    Public loss_abs_C As Double     '[&] loss abs compensated
+    Public loss_abs As Double       '[g/Am3] loss abs
+    Public loss_abs_C As Double     '[g/Am3] loss abs compensated
+    Public loss_overall As Double   'Overall Corrected
+    Public loss_overall_C As Double 'Overall loss Corrected
+    Public catch_chart As Double    '[%] for chart
 End Structure
 
 Public Class Form1
@@ -1415,18 +1415,18 @@ Public Class Form1
             DataGridView2.Rows.Item(j).Cells(3).Value = _cees(ks).stage1(j).loss_overall.ToString("F5")   'Loss 
             DataGridView2.Rows.Item(j).Cells(4).Value = _cees(ks).stage1(j).loss_overall_C.ToString("F5") 'Loss 
             DataGridView2.Rows.Item(j).Cells(5).Value = _cees(ks).stage1(j).catch_chart.ToString("F5")    'Catch
-            DataGridView2.Rows.Item(j).Cells(6).Value = _cees(ks).stage1(j).i_grp.ToString      'Groep nummer
-            DataGridView2.Rows.Item(j).Cells(7).Value = _cees(ks).stage1(j).i_d1.ToString("F5")       'class lower dia limit
-            DataGridView2.Rows.Item(j).Cells(8).Value = _cees(ks).stage1(j).i_d2.ToString("F5")       'class upper dia limit
-            DataGridView2.Rows.Item(j).Cells(9).Value = _cees(ks).stage1(j).i_p1.ToString("F5")     'User input percentage
-            DataGridView2.Rows.Item(j).Cells(10).Value = _cees(ks).stage1(j).i_p2.ToString("F5")    'User input percentage
-            DataGridView2.Rows.Item(j).Cells(11).Value = _cees(ks).stage1(j).i_k.ToString("F3")   '
-            DataGridView2.Rows.Item(j).Cells(12).Value = _cees(ks).stage1(j).i_m.ToString("F5")    '
-            DataGridView2.Rows.Item(j).Cells(13).Value = _cees(ks).stage1(j).psd_cum.ToString("F5")  '
-            DataGridView2.Rows.Item(j).Cells(14).Value = _cees(ks).stage1(j).psd_cum_pro.ToString("F5")   '[%]
-            DataGridView2.Rows.Item(j).Cells(15).Value = _cees(ks).stage1(j).psd_dif.ToString("F5")     '[%]
-            DataGridView2.Rows.Item(j).Cells(16).Value = _cees(ks).stage1(j).loss_abs.ToString("F5")    '[%]
-            DataGridView2.Rows.Item(j).Cells(17).Value = _cees(ks).stage1(j).loss_abs_C.ToString("F5")  '[%]
+            DataGridView2.Rows.Item(j).Cells(6).Value = _cees(ks).stage1(j).i_grp.ToString              'Groep nummer
+            DataGridView2.Rows.Item(j).Cells(7).Value = _cees(ks).stage1(j).i_d1.ToString("F5")         'class lower dia limit
+            DataGridView2.Rows.Item(j).Cells(8).Value = _cees(ks).stage1(j).i_d2.ToString("F5")         'class upper dia limit
+            DataGridView2.Rows.Item(j).Cells(9).Value = _cees(ks).stage1(j).i_p1.ToString("F5")         'User input percentage
+            DataGridView2.Rows.Item(j).Cells(10).Value = _cees(ks).stage1(j).i_p2.ToString("F5")        'User input percentage
+            DataGridView2.Rows.Item(j).Cells(11).Value = _cees(ks).stage1(j).i_k.ToString("F3")         'k [-]
+            DataGridView2.Rows.Item(j).Cells(12).Value = _cees(ks).stage1(j).i_m.ToString("F5")         'm [-]
+            DataGridView2.Rows.Item(j).Cells(13).Value = _cees(ks).stage1(j).psd_cum.ToString("F5")     'interpol. psd cum [-]
+            DataGridView2.Rows.Item(j).Cells(14).Value = _cees(ks).stage1(j).psd_cum_pro.ToString("F5") '[%]psd cum
+            DataGridView2.Rows.Item(j).Cells(15).Value = _cees(ks).stage1(j).psd_dif.ToString("F5")     '[%] psd diff
+            DataGridView2.Rows.Item(j).Cells(16).Value = _cees(ks).stage1(j).loss_abs.ToString("F5")    '[%] loss abs
+            DataGridView2.Rows.Item(j).Cells(17).Value = _cees(ks).stage1(j).loss_abs_C.ToString("F5")  '[%] loss corr abs 
         Next
         DataGridView2.Rows.Item(111).Cells(15).Value = _cees(ks).sum_psd_diff1.ToString("F5")  'total_psd_diff.
         DataGridView2.Rows.Item(111).Cells(16).Value = _cees(ks).sum_loss1.ToString("F5") 'total_abs_loss.ToString("F5")
@@ -1466,7 +1466,7 @@ Public Class Form1
         DataGridView3.Columns(14).HeaderText = "psd_cum_pro for chart"    '
         DataGridView3.Columns(15).HeaderText = "psd diff [%] of 1-stage"       '
         DataGridView3.Columns(16).HeaderText = "psd diff [%] of 2-stage"       '
-        DataGridView3.Columns(17).HeaderText = "loss abs [%]"   '
+        DataGridView3.Columns(17).HeaderText = "catch loss abs [%]"   '
         DataGridView3.Columns(18).HeaderText = "loss abs corrected [%]" '
 
         For row = 1 To 110  'Fill the DataGrid
@@ -1474,7 +1474,7 @@ Public Class Form1
             DataGridView3.Rows.Item(j).Cells(0).Value = _cees(ks).stage2(j).dia.ToString("F5")          'Dia particle
             DataGridView3.Rows.Item(j).Cells(1).Value = _cees(ks).stage2(j).d_ave.ToString("F5")        'Average diameter
             DataGridView3.Rows.Item(j).Cells(2).Value = _cees(ks).stage2(j).d_ave_K.ToString("F5")      'Average dia/K stokes
-            DataGridView3.Rows.Item(j).Cells(3).Value = _cees(ks).stage2(j).loss_overall.ToString("F5")  'Loss 
+            DataGridView3.Rows.Item(j).Cells(3).Value = _cees(ks).stage2(j).loss_overall.ToString("F5") 'Loss 
             DataGridView3.Rows.Item(j).Cells(4).Value = _cees(ks).stage2(j).loss_overall_C.ToString("F5") 'Loss corrected 
             DataGridView3.Rows.Item(j).Cells(5).Value = _cees(ks).stage2(j).catch_chart.ToString("F5")  'Catch for chart
             DataGridView3.Rows.Item(j).Cells(6).Value = _cees(ks).stage2(j).i_grp.ToString              'Groep nummer
@@ -1484,23 +1484,32 @@ Public Class Form1
             DataGridView3.Rows.Item(j).Cells(10).Value = _cees(ks).stage2(j).i_p2.ToString("F5")        'User upper input percentage
             DataGridView3.Rows.Item(j).Cells(11).Value = _cees(ks).stage2(j).i_k.ToString("F5")         'parameter k
             DataGridView3.Rows.Item(j).Cells(12).Value = _cees(ks).stage2(j).i_m.ToString("F5")         'parameter m
-            DataGridView3.Rows.Item(j).Cells(13).Value = _cees(ks).stage2(j).psd_cum.ToString("F5")     '[-]
+            DataGridView3.Rows.Item(j).Cells(13).Value = _cees(ks).stage2(j).psd_cum.ToString("F5")     '[-] interpol. psd cum
             DataGridView3.Rows.Item(j).Cells(14).Value = _cees(ks).stage2(j).psd_cum_pro.ToString("F5") '[%]
             DataGridView3.Rows.Item(j).Cells(15).Value = _cees(ks).stage1(j).psd_dif.ToString("F5")     '[%] psd diff of 1-stage
             DataGridView3.Rows.Item(j).Cells(16).Value = _cees(ks).stage2(j).psd_dif.ToString("F5")     '[%] psd diff of 2-stage
             DataGridView3.Rows.Item(j).Cells(17).Value = _cees(ks).stage2(j).loss_abs.ToString("F5")    '[%] loss abs 
             DataGridView3.Rows.Item(j).Cells(18).Value = _cees(ks).stage2(j).loss_abs_C.ToString("F5")  '[%] loss abs corrected
         Next
-        DataGridView3.Rows.Item(111).Cells(15).Value = _cees(ks).sum_psd_diff1.ToString("F5")  'total_psd_diff.
-        DataGridView3.Rows.Item(111).Cells(16).Value = _cees(ks).sum_psd_diff2.ToString("F5")  'total_psd_diff.
-        DataGridView3.Rows.Item(111).Cells(17).Value = _cees(ks).sum_loss2.ToString("F5") 'total_abs_loss.ToString("F5")
-        DataGridView3.Rows.Item(111).Cells(18).Value = _cees(ks).sum_loss_C2.ToString("F5") 'total_abs_loss_C.ToString("F5")
+        DataGridView3.Rows.Item(111).Cells(15).Value = _cees(ks).sum_psd_diff1.ToString("F5")   'total_psd_diff.
+        DataGridView3.Rows.Item(111).Cells(16).Value = _cees(ks).sum_psd_diff2.ToString("F5")   'total_psd_diff.
+        DataGridView3.Rows.Item(111).Cells(17).Value = _cees(ks).sum_loss2.ToString("F5")       'total_abs_loss.ToString("F5")
+        DataGridView3.Rows.Item(111).Cells(18).Value = _cees(ks).sum_loss_C2.ToString("F5")     'total_abs_loss_C.ToString("F5")
     End Sub
 
     Private Sub Calc_k_and_m(ByRef g As GvG_Calc_struct)
+        Dim k, m As Double
         'k and m are based on particle diameter and percentages
-        g.i_k = Log(Log(g.i_p1) / Log(g.i_p2)) / Log(g.i_d1 / g.i_d2)   '====== k ===========
-        g.i_m = g.i_d1 / ((-Log(g.i_p1)) ^ (1 / g.i_k))                 '====== m ===========
+
+        k = Log(Log(g.i_p1) / Log(g.i_p2)) / Log(g.i_d1 / g.i_d2)   '====== k ===========
+        m = g.i_d1 / ((-Log(g.i_p1)) ^ (1 / g.i_k))                 '====== m ===========
+
+        '==== preventing errors =====
+        If Double.IsNaN(k) Then k = 0
+        If Double.IsNaN(m) Then m = 0
+
+        g.i_k = k
+        g.i_m = m
     End Sub
 
     Private Sub Calc_stage1(ks As Integer)
