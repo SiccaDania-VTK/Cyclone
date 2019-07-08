@@ -498,8 +498,6 @@ Public Class Form1
             TextBox75.Text = _cees(ks).Ro_gas1.ToString("F3")
             TextBox19.Text = _cees(ks).Ro_gas2.ToString("F3")
 
-            Draw_chart1(Chart1)
-            Draw_chart2(Chart2)
 
             '---------- Check speed stage #1---------------
             If _cees(ks).inv1 < 10 Or _cees(ks).inv1 > 30 Then
@@ -957,7 +955,7 @@ Public Class Form1
         If CheckBox6.Checked Then
             '------ Stage #2 output-------------
             For h = 0 To DataGridView4.Rows.Count - 1                 'Fill line chart
-                x = CDbl((DataGridView4.Rows(h).Cells(0).Value))        'Particle size
+                x = CDbl((DataGridView4.Rows(h).Cells(0).Value))       'Particle size
                 y(5) = CDbl((DataGridView4.Rows(h).Cells(5).Value))    'Loss 1
                 y(8) = CDbl((DataGridView4.Rows(h).Cells(8).Value))    'Loss 2
                 y(9) = CDbl((DataGridView4.Rows(h).Cells(9).Value))    'Eff 1&2
@@ -1952,9 +1950,7 @@ Public Class Form1
             MessageBox.Show("Error in line 1946")
         End If
     End Sub
-
-    'Calculate cyclone weight
-    Private Sub Button7_Click(sender As Object, e As EventArgs) Handles Button7.Click, TabPage7.Enter, NumericUpDown32.ValueChanged, NumericUpDown31.ValueChanged
+    Private Sub Calc_cycl_weight()
         Dim w1, w2, w3, w4, w5, w6 As Double
         Dim c_weight1 As Double             '[kg] cyclone weight
         Dim C_weight2 As Double             '[kg] cyclone weight
@@ -2057,16 +2053,21 @@ Public Class Form1
         TextBox114.Text = p304.ToString("0")
         TextBox115.Text = p316.ToString("0")
     End Sub
-
+    'Calculate cyclone weight
+    Private Sub Button7_Click(sender As Object, e As EventArgs) Handles Button7.Click, TabPage7.Enter, NumericUpDown32.ValueChanged, NumericUpDown31.ValueChanged
+        Calc_cycl_weight()
+    End Sub
     Private Sub Button8_Click(sender As Object, e As EventArgs) Handles Button8.Click
         Dim cc As Integer
         'Save data of screen into the _cees array
         cc = CInt(NumericUpDown30.Value)       'Case number
         Fill_cees_array(cc)
+        'Calc_sequence()
     End Sub
 
     Private Sub NumericUpDown30_ValueChanged(sender As Object, e As EventArgs) Handles NumericUpDown30.ValueChanged
         Case_number_changed()
+        'Calc_sequence()
     End Sub
     Private Sub Case_number_changed()
         Dim zz As Integer = CInt(NumericUpDown30.Value)    'Case number
@@ -2117,7 +2118,7 @@ Public Class Form1
     End Sub
 
     Private Sub Button2_Click_1(sender As Object, e As EventArgs) Handles Button2.Click
-        Draw_chart1(Chart1)         'Present the results
+        Calc_sequence()
     End Sub
 
     Private Sub Init_datagrid4()
@@ -2136,26 +2137,26 @@ Public Class Form1
             DataGridView4.Columns(2).HeaderText = "In psd diff [%]"
             DataGridView4.Columns(3).HeaderText = "In psd cum [%]"
             DataGridView4.Columns(4).HeaderText = "Loss1 pds dif [%]"   '
-            DataGridView4.Columns(5).HeaderText = "Loss1 pdscum [%]"    '
-            DataGridView4.Columns(6).HeaderText = "Loss abs [g/Am3]"    '
+            DataGridView4.Columns(5).HeaderText = "LOSS1 (chart) pdscum [%]"    '
+            DataGridView4.Columns(6).HeaderText = "Loss abs [g/Nm3]"    '
             DataGridView4.Columns(7).HeaderText = "Loss2 pds dif [%]"   '
-            DataGridView4.Columns(8).HeaderText = "Loss2 pdscum [%]"    '
-            DataGridView4.Columns(9).HeaderText = "Eff stage1&2 [%]"
+            DataGridView4.Columns(8).HeaderText = "LOSS2 (chart) pdscum [%]"    '
+            DataGridView4.Columns(9).HeaderText = "Eff stage1&2 [%]"    '
 
-            Dim w19 As Double = 1.18485253841823        'Problem onduidelijk
-            Dim w20 As Double = 1.0137                  'Problem onduidelijk
+            Dim w19 As Double = 0.118485253841823        'Dust load [kg/Nm3] 1stage
+            Dim w20 As Double = 0.010137                 'Dust load [kg/Nm3] 2stage
 
             '========== first line =============
             i = 0
             li(0) = _cees(ks).stage1(i).d_ave                   'Dia aver [mu]"
-            li(1) = _cees(ks).stage1(i).psd_dif * w19           'In abs [g/Nm3]" T76 * W19
+            li(1) = _cees(ks).stage1(i).psd_dif * 10 * w19      'In abs [g/Nm3]" T76 * W19
             li(2) = 100 * li(1) / _cees(ks).dust1_n             'In psd diff [%]
             li(3) = 100 - li(2)                                 'In psd diff cumm[%]" S76 
 
             li(4) = _cees(ks).stage2(i).psd_dif                 'In psd cum [%]
             li(5) = 100 - _cees(ks).stage2(i).psd_dif           'Loss1 pdscum [%]
-            li(6) = _cees(ks).stage2(i).loss_abs_C / 10 * w20   'Loss abs [g/Nm3]
-            li(7) = 100 * li(6) / _cees(ks).sum_loss_C2         'Loss2 pds dif [%]
+            li(6) = _cees(ks).stage2(i).loss_abs_C * 10 * w20   'Loss abs [g/Nm3]
+            li(7) = 1000 * li(6) / _cees(ks).sum_loss_C2         'Loss2 pds dif [%]
             li(8) = 100 - li(7)                                 'Loss2 pds.cum [%]
             li(9) = 100 * (li(1) - li(6)) / li(1)               'Eff stage1&2 [%]
 
@@ -2169,22 +2170,22 @@ Public Class Form1
             Dim qq As Double
             For i = 1 To DataGridView4.Rows.Count - 1               'Fill the DataGrid
                 li(0) = _cees(ks).stage1(i).d_ave                   'Dia aver [mu]
-                li(1) = _cees(ks).stage1(i).psd_dif * w19           'In abs [g/Am3]" T76 * W19
+                li(1) = _cees(ks).stage1(i).psd_dif * 10 * w19      'In abs [g/Am3]" T76 * W19
                 li(2) = 100 * li(1) / _cees(ks).dust1_n             'In psd diff [%]
                 li(3) = _cees(ks).stage1(i - 1).psd_cum_pro - li(2) 'In psd diff cumm[%]
                 li(4) = _cees(ks).stage2(i).psd_dif                 'In psd cum [%]
 
                 qq = CDbl(DataGridView4.Rows(i - 1).Cells(5).Value)
                 li(5) = qq - _cees(ks).stage2(i).psd_dif            'Loss1 pdscum [%] 
-                li(6) = _cees(ks).stage2(i).loss_abs_C / 10 * w20   'Loss abs [g/Am3]
-                li(7) = 100 * li(6) / _cees(ks).sum_loss_C2         'Loss2 pds dif [%]
+                li(6) = _cees(ks).stage2(i).loss_abs_C * 10 * w20   'Loss abs [g/Am3]
+                li(7) = 1000 * li(6) / _cees(ks).sum_loss_C2         'Loss2 pds dif [%]
 
                 qq = CDbl(DataGridView4.Rows(i - 1).Cells(8).Value)
                 li(8) = qq - li(7)                                  'Loss2 pds.cum [%] 
                 li(9) = 100 * (li(1) - li(6)) / li(1)               'Eff stage1&2 [%]
 
                 '========== prevent silly results ======
-                For j = 0 To 9  'Fill the DataGrid
+                For j = 0 To 9  'Fill the DataGridview
                     If Double.IsNaN(li(j)) Then li(j) = 0           'prevent silly results
                     If li(j) < 0 Or li(j) > 10 ^ 5 Then li(j) = 0   'prevent silly results
 
