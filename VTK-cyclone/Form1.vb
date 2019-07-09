@@ -23,7 +23,7 @@ Imports Word = Microsoft.Office.Interop.Word
 
     '===== stage #1 parameter ======
     Public Flow1 As Double          '[Am3/s] Air flow per cyclone 
-    Public stofb1 As Double         '[g/Am3] Dust load inlet 
+    Public dust1_A As Double        '[g/Am3] Dust load inlet 
     Public dust1_n As Double        '[g/Nm3] Dust load inlet 
     Public emmis1 As Double         '[g/Am3] Dust emission 
     Public Efficiency1 As Double    '[%] Efficiency Stage #1 
@@ -51,7 +51,8 @@ Imports Word = Microsoft.Office.Interop.Word
 
     '===== stage #2 parameters ======
     Public Flow2 As Double          '[Am3/s] Air flow per cyclone 
-    Public stofb2 As Double         '[g/Am3] Dust load inlet 
+    Public dust2_A As Double        '[g/Am3] Dust load inlet 
+    Public dust2_n As Double        '[g/Nm3] Dust load inlet 
     Public emmis2 As Double         '[g/Am3] Dust emission 
     Public sum_loss2 As Double      'Passed trough cyclone
     Public sum_loss_C2 As Double    'Passed trough cyclone Corrected
@@ -363,8 +364,8 @@ Public Class Form1
             _cees(ks).dout1 = _cyl1_dim(6) * db1         '[m] diameter gas outlet
             _cees(ks).dout2 = _cyl2_dim(6) * db2         '[m] diameter gas outlet
 
-            _cees(ks).stofb1 = NumericUpDown4.Value     '[g/Am3]
-            CheckBox2.Checked = CBool(IIf(_cees(ks).stofb1 > 5, True, False))
+            _cees(ks).dust1_A = NumericUpDown4.Value     '[g/Am3]
+            CheckBox2.Checked = CBool(IIf(_cees(ks).dust1_A > 5, True, False))
             _cees(ks).FlowT = NumericUpDown1.Value      '[m3/h] 
             _cees(ks).Flow1 = _cees(ks).FlowT / (3600 * _cees(ks).Noc1) '[Am3/s/cycloon]
 
@@ -416,7 +417,7 @@ Public Class Form1
             _cees(ks).dpdust2 = 0.5 * _cees(ks).Ro_gas2 * _cees(ks).inv2 ^ 2 * wc_dust2
 
             '----------- stof belasting ------------
-            kgs = _cees(ks).Flow1 * _cees(ks).stofb1 / 1000     '[kg/s/cycloon]
+            kgs = _cees(ks).Flow1 * _cees(ks).dust1_A / 1000     '[kg/s/cycloon]
             kgh = kgs * 3600                                    '[kg/h/cycloon]
             tot_kgh = kgh * _cees(ks).Noc1                      '[g/Am3] Dust inlet 
 
@@ -533,7 +534,7 @@ Public Class Form1
 
             TextBox39.Text = kgh.ToString("0")          'Stof inlet
             TextBox40.Text = tot_kgh.ToString("0")      'Dust inlet [g/Am3] 
-            TextBox71.Text = _cees(ks).stofb1.ToString  'Dust inlet [g/Am3]
+            TextBox71.Text = _cees(ks).dust1_A.ToString  'Dust inlet [g/Am3]
         End If
     End Sub
     Private Sub Present_Datagridview1(ks As Integer)
@@ -674,7 +675,7 @@ Public Class Form1
         _cees(c_nr).class_load(10) = NumericUpDown40.Value / 100
 
         _cees(c_nr).FlowT = NumericUpDown1.Value                'Air flow
-        _cees(c_nr).stofb1 = NumericUpDown4.Value               'Dust inlet [g/Am3] 
+        _cees(c_nr).dust1_A = NumericUpDown4.Value               'Dust inlet [g/Am3] 
         _cees(c_nr).Ct1 = ComboBox1.SelectedIndex               'Cyclone type Stage #1
         _cees(c_nr).Ct2 = ComboBox2.SelectedIndex               'Cyclone type Stage #2
         _cees(c_nr).Noc1 = CInt(NumericUpDown20.Value)          'Cyclone in parallel
@@ -824,7 +825,7 @@ Public Class Form1
         Dim dst As Double
 
         '============ stage 1 cyclone ==========
-        dst = _cees(ks).stofb1 / 1000 'Dust load dimension is [kg/Am3]
+        dst = _cees(ks).dust1_A / 1000 'Dust load dimension is [kg/Am3]
 
         f1 = 0.97833 + 2.918055 * dst - 39.3739 * dst ^ 2 + 472.0149 * dst ^ 3 - 769.586 * dst ^ 4
         f2 = -0.30338 + 21.91961 * dst - 73.5039 * dst ^ 2 + 112.485 * dst ^ 3 - 63.4408 * dst ^ 4
@@ -853,7 +854,7 @@ Public Class Form1
         TextBox55.Text = f_used.ToString("F3")
 
         '============ stage 2 cyclone ==========
-        dst = _cees(ks).stofb2 / 1000 'Dust load dimension is [kg/Am3]
+        dst = _cees(ks).dust2_A / 1000 'Dust load dimension is [kg/Am3]
         f1 = 0.97833 + 2.918055 * dst - 39.3739 * dst ^ 2 + 472.0149 * dst ^ 3 - 769.586 * dst ^ 4
         f2 = -0.30338 + 21.91961 * dst - 73.5039 * dst ^ 2 + 112.485 * dst ^ 3 - 63.4408 * dst ^ 4
         f3 = 2.043212 + 0.725352 * dst - 0.2663 * dst ^ 2 + 0.04299 * dst ^ 3 - 0.00233 * dst ^ 4
@@ -906,8 +907,8 @@ Public Class Form1
 
         ch.ChartAreas("ChartArea0").AxisX.Title = "particle dia [mu]"
         ch.ChartAreas("ChartArea0").AxisY.Title = "Loss [%] (niet gevangen)"
-        'ch.ChartAreas("ChartArea0").AxisY.Minimum = 0       'Loss
-        'ch.ChartAreas("ChartArea0").AxisY.Maximum = 100     'Loss
+        ch.ChartAreas("ChartArea0").AxisY.Minimum = 0       'Loss
+        ch.ChartAreas("ChartArea0").AxisY.Maximum = 100     'Loss
         ch.ChartAreas("ChartArea0").AxisY.Interval = 10     'Interval
         ch.ChartAreas("ChartArea0").AxisX.MinorTickMark.Enabled = True
         ch.ChartAreas("ChartArea0").AxisY.MinorTickMark.Enabled = True
@@ -920,22 +921,6 @@ Public Class Form1
         '----- now calc chart points --------------------------
         Integer.TryParse(TextBox42.Text, sdia)
         ks = CInt(NumericUpDown30.Value)
-        's_points(0, 0) = sdia   'Particle diameter [mu]
-        's_points(0, 1) = 100    '100% loss
-
-        'For h = 1 To 40
-        '    s_points(h, 0) = h                                   'Particle diameter [mu]
-        '    t = Calc_verlies(s_points(h, 0), False, _cees(ks).Kstokes1, 1) * 100  'Loss [%]
-        '    If t < 0.001 Then t = 4
-        '    s_points(h, 1) = t
-        'Next
-
-        'If CheckBox1.Checked Then
-        '    '------ now present-------------
-        '    For h = 0 To 40 - 1   'Fill line chart
-        '        ch.Series(0).Points.AddXY(s_points(h, 0), s_points(h, 1))
-        '    Next h
-        'End If
 
         '------ Stage #1 output-------------
         If CheckBox5.Checked Then
@@ -948,7 +933,6 @@ Public Class Form1
             Next h
         End If
 
-
         '------ Stage #2 output-------------
         Dim x As Double
         Dim y(10) As Double
@@ -958,12 +942,11 @@ Public Class Form1
                 x = CDbl((DataGridView4.Rows(h).Cells(0).Value))       'Particle size
                 y(5) = CDbl((DataGridView4.Rows(h).Cells(5).Value))    'Loss 1
                 y(8) = CDbl((DataGridView4.Rows(h).Cells(8).Value))    'Loss 2
-                y(9) = CDbl((DataGridView4.Rows(h).Cells(9).Value))    'Eff 1&2
+                y(9) = CDbl((DataGridView4.Rows(h).Cells(9).Value))    'Eff 1&2 [%]
 
-                ch.Series(2).Points.AddXY(x, y(9))
+                ch.Series(2).Points.AddXY(x, y(8))
 
-                TextBox127.Text &= "(x,y)= " & x.ToString & ", " & y(9).ToString & vbCrLf
-                'TextBox127.Text &= "(x,y)= " & x.ToString & vbCrLf
+                TextBox127.Text &= "(x,y)= " & x.ToString("F3") & ", " & y(8).ToString("F3") & vbCrLf
             Next h
         End If
     End Sub
@@ -1035,9 +1018,9 @@ Public Class Form1
             Calc_stage2(case_nr)        'Calc according stage #2
             Present_loss_grid1()        'Present the results stage #1
             Present_loss_grid2()        'Present the results stage #2
-            Draw_chart1(Chart1)         'Present the results
             Present_Datagridview1(case_nr)
             Init_datagrid4()            'stage #1 and stage #2 combined
+            Draw_chart1(Chart1)         'Present the results
         End If
     End Sub
 
@@ -1645,8 +1628,8 @@ Public Class Form1
             _cees(ks).emmis1 = NumericUpDown4.Value * _cees(ks).loss_total1 / 100  '[g/Am3]
         End If
 
-        _cees(ks).stofb2 = _cees(ks).emmis1 'Dust load stage #2 in emission stage #1
-        CheckBox3.Checked = CBool(IIf(_cees(ks).stofb2 > 5, True, False))
+        _cees(ks).dust2_A = _cees(ks).emmis1 'Dust load stage #2 in emission stage #1
+        CheckBox3.Checked = CBool(IIf(_cees(ks).dust2_A > 5, True, False))
         _cees(ks).Efficiency1 = 100 - _cees(ks).loss_total1        '[%] Efficiency
 
         '----------- present -----------
@@ -1654,7 +1637,7 @@ Public Class Form1
         TextBox52.Text = dia_min.ToString("F2")             'diameter [mu] 100% loss
         TextBox56.Text = ComboBox1.Text                     'Cyclone typr
         TextBox57.Text = CheckBox2.Checked.ToString         'Correction 
-        TextBox70.Text = _cees(ks).stofb2.ToString("F2")    'Dust load
+        TextBox70.Text = _cees(ks).dust2_A.ToString("F2")    'Dust load
 
 
         TextBox118.Text = _cees(ks).sum_psd_diff1.ToString("F3")
@@ -1691,7 +1674,7 @@ Public Class Form1
         If Double.IsNaN(_cees(ks).stage2(0).dia) Or Double.IsInfinity(_cees(ks).stage2(0).dia) Then Exit Sub
 
         '----------- stof belasting ------------
-        tot_kgh = _cees(ks).Flow2 * _cees(ks).stofb2 / 1000 * 3600 * _cees(ks).Noc2     '[kg/hr] Dust inlet 
+        tot_kgh = _cees(ks).Flow2 * _cees(ks).dust2_A / 1000 * 3600 * _cees(ks).Noc2     '[kg/hr] Dust inlet 
 
         kgh = tot_kgh / _cees(ks).Noc2                          '[kg/hr/Cy] Dust inlet 
         TextBox100.Text = kgh.ToString("0")
@@ -2099,7 +2082,7 @@ Public Class Form1
                 numericUpDown13.Value = CDec(_cees(zz).class_load(7) * 100)
 
                 NumericUpDown1.Value = CDec(_cees(zz).FlowT)        'Air flow total
-                NumericUpDown4.Value = CDec(_cees(zz).stofb1)       'Dust inlet [g/Am3] 
+                NumericUpDown4.Value = CDec(_cees(zz).dust1_A)       'Dust inlet [g/Am3] 
                 ComboBox1.SelectedIndex = _cees(zz).Ct1             'Cyclone type stage #1
                 ComboBox2.SelectedIndex = _cees(zz).Ct2             'Cyclone type stage #2
                 NumericUpDown20.Value = _cees(zz).Noc1              'Cyclone in parallel
@@ -2124,9 +2107,9 @@ Public Class Form1
     Private Sub Init_datagrid4()
         Dim ks As Integer = CInt(NumericUpDown30.Value)
         Dim li(11) As Double
-        Dim i As Integer
+        Dim row As Integer
 
-        If _cees(ks).stage1(i).d_ave > 0 Then   'For fast startup
+        If _cees(ks).stage1(row).d_ave > 0 Then   'For fast startup
 
             DataGridView4.ColumnCount = 10
             DataGridView4.Rows.Clear()
@@ -2147,49 +2130,49 @@ Public Class Form1
             Dim w20 As Double = 0.010137                 'Dust load [kg/Nm3] 2stage
 
             '========== first line =============
-            i = 0
-            li(0) = _cees(ks).stage1(i).d_ave                   'Dia aver [mu]"
-            li(1) = _cees(ks).stage1(i).psd_dif * 10 * w19      'In abs [g/Nm3]" T76 * W19
+            row = 0
+            li(0) = _cees(ks).stage1(row).d_ave                   'Dia aver [mu]"
+            li(1) = _cees(ks).stage1(row).psd_dif * 10 * w19      'In abs [g/Nm3]" T76 * W19
             li(2) = 100 * li(1) / _cees(ks).dust1_n             'In psd diff [%]
             li(3) = 100 - li(2)                                 'In psd diff cumm[%]" S76 
 
-            li(4) = _cees(ks).stage2(i).psd_dif                 'In psd cum [%]
-            li(5) = 100 - _cees(ks).stage2(i).psd_dif           'Loss1 pdscum [%]
-            li(6) = _cees(ks).stage2(i).loss_abs_C * 10 * w20   'Loss abs [g/Nm3]
+            li(4) = _cees(ks).stage2(row).psd_dif                 'In psd cum [%]
+            li(5) = 100 - _cees(ks).stage2(row).psd_dif           'Loss1 pdscum [%]
+            li(6) = _cees(ks).stage2(row).loss_abs_C * 10 * w20   'Loss abs [g/Nm3]
             li(7) = 1000 * li(6) / _cees(ks).sum_loss_C2         'Loss2 pds dif [%]
             li(8) = 100 - li(7)                                 'Loss2 pds.cum [%]
             li(9) = 100 * (li(1) - li(6)) / li(1)               'Eff stage1&2 [%]
 
-            For j = 0 To 9  'Fill the DataGrid
-                If Double.IsNaN(li(j)) Then li(j) = 0           'prevent silly results
-                If li(j) < 0 Or li(j) > 10 ^ 5 Then li(j) = 0   'prevent silly results
-                DataGridView4.Rows(i).Cells(j).Value = li(j).ToString("F5")
+            For col = 0 To 9  'Fill the DataGrid
+                If Double.IsNaN(li(col)) Then li(col) = 0           'prevent silly results
+                If li(col) < 0 Or li(col) > 10 ^ 5 Then li(col) = 0   'prevent silly results
+                DataGridView4.Rows(row).Cells(col).Value = li(col).ToString("F5")
             Next
 
             '========- rest of the lines ========
             Dim qq As Double
-            For i = 1 To DataGridView4.Rows.Count - 1               'Fill the DataGrid
-                li(0) = _cees(ks).stage1(i).d_ave                   'Dia aver [mu]
-                li(1) = _cees(ks).stage1(i).psd_dif * 10 * w19      'In abs [g/Am3]" T76 * W19
+            For row = 1 To DataGridView4.Rows.Count - 1               'Fill the DataGrid
+                li(0) = _cees(ks).stage1(row).d_ave                   'Dia aver [mu]
+                li(1) = _cees(ks).stage1(row).psd_dif * 10 * w19      'In abs [g/Am3]" T76 * W19
                 li(2) = 100 * li(1) / _cees(ks).dust1_n             'In psd diff [%]
-                li(3) = _cees(ks).stage1(i - 1).psd_cum_pro - li(2) 'In psd diff cumm[%]
-                li(4) = _cees(ks).stage2(i).psd_dif                 'In psd cum [%]
+                li(3) = _cees(ks).stage1(row - 1).psd_cum_pro - li(2) 'In psd diff cumm[%]
+                li(4) = _cees(ks).stage2(row).psd_dif                 'In psd cum [%]
 
-                qq = CDbl(DataGridView4.Rows(i - 1).Cells(5).Value)
-                li(5) = qq - _cees(ks).stage2(i).psd_dif            'Loss1 pdscum [%] 
-                li(6) = _cees(ks).stage2(i).loss_abs_C * 10 * w20   'Loss abs [g/Am3]
+                qq = CDbl(DataGridView4.Rows(row - 1).Cells(5).Value)
+                li(5) = qq - _cees(ks).stage2(row).psd_dif            'Loss1 pdscum [%] 
+                li(6) = _cees(ks).stage2(row).loss_abs_C * 10 * w20   'Loss abs [g/Am3]
                 li(7) = 1000 * li(6) / _cees(ks).sum_loss_C2         'Loss2 pds dif [%]
 
-                qq = CDbl(DataGridView4.Rows(i - 1).Cells(8).Value)
+                qq = CDbl(DataGridView4.Rows(row - 1).Cells(8).Value)
                 li(8) = qq - li(7)                                  'Loss2 pds.cum [%] 
                 li(9) = 100 * (li(1) - li(6)) / li(1)               'Eff stage1&2 [%]
 
                 '========== prevent silly results ======
-                For j = 0 To 9  'Fill the DataGridview
-                    If Double.IsNaN(li(j)) Then li(j) = 0           'prevent silly results
-                    If li(j) < 0 Or li(j) > 10 ^ 5 Then li(j) = 0   'prevent silly results
+                For col = 0 To 9  'Fill the DataGridview
+                    If Double.IsNaN(li(col)) Then li(col) = 0           'prevent silly results
+                    If li(col) < 0 Or li(col) > 10 ^ 5 Then li(col) = 0   'prevent silly results
 
-                    DataGridView4.Rows(i).Cells(j).Value = li(j).ToString("F6")
+                    DataGridView4.Rows(row).Cells(col).Value = li(col).ToString("F6")
                 Next
             Next
         End If
