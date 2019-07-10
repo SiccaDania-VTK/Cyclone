@@ -305,7 +305,7 @@ Public Class Form1
         Calc_sequence()
     End Sub
 
-    Private Sub Button1_Click(sender As Object, e As EventArgs) Handles button1.Click, TabPage1.Enter, numericUpDown3.ValueChanged, numericUpDown2.ValueChanged, numericUpDown14.ValueChanged, NumericUpDown1.ValueChanged, numericUpDown5.ValueChanged, NumericUpDown20.ValueChanged, NumericUpDown19.ValueChanged, NumericUpDown18.ValueChanged, ComboBox1.SelectedIndexChanged, numericUpDown9.ValueChanged, numericUpDown8.ValueChanged, numericUpDown7.ValueChanged, numericUpDown6.ValueChanged, numericUpDown12.ValueChanged, numericUpDown11.ValueChanged, numericUpDown10.ValueChanged, numericUpDown13.ValueChanged, NumericUpDown4.ValueChanged, NumericUpDown29.ValueChanged, NumericUpDown28.ValueChanged, NumericUpDown27.ValueChanged, NumericUpDown26.ValueChanged, NumericUpDown25.ValueChanged, NumericUpDown24.ValueChanged, NumericUpDown23.ValueChanged, NumericUpDown15.ValueChanged, NumericUpDown34.ValueChanged, NumericUpDown33.ValueChanged, ComboBox2.SelectedIndexChanged, NumericUpDown40.ValueChanged, NumericUpDown39.ValueChanged, NumericUpDown38.ValueChanged, NumericUpDown37.ValueChanged, NumericUpDown36.ValueChanged, NumericUpDown35.ValueChanged, NumericUpDown43.ValueChanged, NumericUpDown22.ValueChanged
+    Private Sub Button1_Click(sender As Object, e As EventArgs) Handles button1.Click, TabPage1.Enter, numericUpDown3.ValueChanged, numericUpDown2.ValueChanged, numericUpDown14.ValueChanged, NumericUpDown1.ValueChanged, numericUpDown5.ValueChanged, NumericUpDown20.ValueChanged, NumericUpDown19.ValueChanged, NumericUpDown18.ValueChanged, ComboBox1.SelectedIndexChanged, numericUpDown9.ValueChanged, numericUpDown8.ValueChanged, numericUpDown7.ValueChanged, numericUpDown6.ValueChanged, numericUpDown12.ValueChanged, numericUpDown11.ValueChanged, numericUpDown10.ValueChanged, numericUpDown13.ValueChanged, NumericUpDown4.ValueChanged, NumericUpDown29.ValueChanged, NumericUpDown28.ValueChanged, NumericUpDown27.ValueChanged, NumericUpDown26.ValueChanged, NumericUpDown25.ValueChanged, NumericUpDown24.ValueChanged, NumericUpDown23.ValueChanged, NumericUpDown15.ValueChanged, NumericUpDown34.ValueChanged, NumericUpDown33.ValueChanged, ComboBox2.SelectedIndexChanged, NumericUpDown40.ValueChanged, NumericUpDown39.ValueChanged, NumericUpDown38.ValueChanged, NumericUpDown37.ValueChanged, NumericUpDown36.ValueChanged, NumericUpDown35.ValueChanged, NumericUpDown43.ValueChanged, NumericUpDown22.ValueChanged, CheckBox3.CheckedChanged, CheckBox2.CheckedChanged
         Calc_sequence()
     End Sub
 
@@ -366,7 +366,7 @@ Public Class Form1
             _cees(ks).dout2 = _cyl2_dim(6) * db2         '[m] diameter gas outlet
 
             _cees(ks).dust1_A = NumericUpDown4.Value     '[g/Am3]
-            CheckBox2.Checked = CBool(IIf(_cees(ks).dust1_A > 5, True, False))
+            CheckBox2.Checked = CBool(IIf(_cees(ks).dust1_A > 20, True, False))
             _cees(ks).FlowT = NumericUpDown1.Value      '[m3/h] 
             _cees(ks).Flow1 = _cees(ks).FlowT / (3600 * _cees(ks).Noc1) '[Am3/s/cycloon]
 
@@ -829,6 +829,7 @@ Public Class Form1
         Dim dst As Double
 
         '============ stage 1 cyclone ==========
+        'Note correction if load > 20 gram/Am3
         dst = _cees(ks).dust1_A / 1000 'Dust load dimension is [kg/Am3]
 
         f1 = 0.97833 + 2.918055 * dst - 39.3739 * dst ^ 2 + 472.0149 * dst ^ 3 - 769.586 * dst ^ 4
@@ -858,6 +859,7 @@ Public Class Form1
         TextBox55.Text = f_used.ToString("F3")
 
         '============ stage 2 cyclone ==========
+        'Note correction if load > 20 gram/Am3
         dst = _cees(ks).dust2_A / 1000 'Dust load dimension is [kg/Am3]
         f1 = 0.97833 + 2.918055 * dst - 39.3739 * dst ^ 2 + 472.0149 * dst ^ 3 - 769.586 * dst ^ 4
         f2 = -0.30338 + 21.91961 * dst - 73.5039 * dst ^ 2 + 112.485 * dst ^ 3 - 63.4408 * dst ^ 4
@@ -933,7 +935,7 @@ Public Class Form1
                 'ch.Series(1).Points.AddXY(_cees(ks).stage1(h).dia, _cees(ks).stage1(h).psd_cum_pro)
                 ch.Series(0).Points.AddXY(_cees(ks).stage1(h).dia, (100 - _cees(ks).stage1(h).catch_chart))
                 ch.Series(1).Points.AddXY(_cees(ks).stage1(h).dia, (100 - _cees(ks).stage2(h).catch_chart))
-                Log_now(ks, h, "Draw_chart1")  'Log now to textbox24
+                'Log_now(ks, h, "Draw_chart1")  'Log now to textbox24
             Next h
         End If
 
@@ -1548,14 +1550,6 @@ Public Class Form1
         Size_classification(_cees(ks).stage1(0))                                    'Classify this part size
         Calc_k_and_m(_cees(ks).stage1(0))
 
-        'TextBox24.Text &= "stage1(0).dia=" & _cees(ks).stage1(0).dia.ToString
-        'TextBox24.Text &= "   stage1(0).i_d1=" & _cees(ks).stage1(0).i_d1.ToString
-        'TextBox24.Text &= ",  stage1(0).i_d2=" & _cees(ks).stage1(0).i_d2.ToString
-        'TextBox24.Text &= ",  stage1(0).i_p1=" & _cees(ks).stage1(0).i_p1.ToString
-        'TextBox24.Text &= ",  stage1(0).i_p2=" & _cees(ks).stage1(0).i_p1.ToString
-        'TextBox24.Text &= ",  stage1(0).i_k=" & _cees(ks).stage1(0).i_k.ToString
-        'TextBox24.Text &= ",  stage1(0).i_grp=" & _cees(ks).stage1(0).i_grp.ToString & vbCrLf
-
         _cees(ks).stage1(0).psd_cum = Math.E ^ (-((_cees(ks).stage1(i).dia / _cees(ks).stage1(i).i_m) ^ _cees(ks).stage1(i).i_k))
         _cees(ks).stage1(0).psd_cum_pro = _cees(ks).stage1(i).psd_cum * 100
 
@@ -1632,34 +1626,35 @@ Public Class Form1
 
 
         _cees(ks).dust2_A = _cees(ks).emmis1 'Dust load stage #2 in emission stage #1
-        CheckBox3.Checked = CBool(IIf(_cees(ks).dust2_A > 5, True, False))
+        CheckBox3.Checked = CBool(IIf(_cees(ks).dust2_A > 20, True, False))
         _cees(ks).Efficiency1 = 100 - _cees(ks).loss_total1        '[%] Efficiency
 
-        '----------- present -----------
+        '----------- present stage #1-----------
         TextBox51.Text = dia_max.ToString("F1")             'diameter [mu] 100% catch
         TextBox52.Text = dia_min.ToString("F2")             'diameter [mu] 100% loss
         TextBox56.Text = ComboBox1.Text                     'Cyclone typr
         TextBox57.Text = CheckBox2.Checked.ToString         'Correction 
-        TextBox70.Text = _cees(ks).dust2_A.ToString("F2")    'Dust load
-
+        TextBox70.Text = _cees(ks).dust2_A.ToString("F2")   'Dust load
 
         TextBox118.Text = _cees(ks).sum_psd_diff1.ToString("F3")
         TextBox54.Text = _cees(ks).sum_loss1.ToString("F3")
         TextBox34.Text = _cees(ks).sum_loss_C1.ToString("F3")
 
-        If CheckBox2.Checked Then
-            TextBox58.Text = _cees(ks).loss_total1.ToString("F5")    'Corrected ??????
+        If CheckBox2.Checked Then   'Dust load correction
+            TextBox58.Text = _cees(ks).loss_total1.ToString("F5")    'Corrected 
             TextBox59.Text = _cees(ks).Efficiency1.ToString("F3")
             TextBox21.Text = TextBox59.Text
             TextBox60.Text = _cees(ks).emmis1.ToString("F3")
+
             TextBox18.Text = TextBox60.Text
         Else
-            TextBox58.Text = _cees(ks).sum_loss1.ToString("F5")      'NOT Corrected  ??????
+            TextBox58.Text = _cees(ks).sum_loss1.ToString("F5")      'NOT Corrected  
             TextBox59.Text = _cees(ks).Efficiency1.ToString("F3")
             TextBox21.Text = TextBox59.Text
             TextBox60.Text = (NumericUpDown4.Value * _cees(ks).sum_loss1 / 100).ToString("F3")
             TextBox18.Text = TextBox60.Text
         End If
+        ' TextBox133.Text = _cees(ks).emmis1_n.ToString("F3")
     End Sub
 
     Private Sub Calc_stage2(ks As Integer)
@@ -1774,7 +1769,7 @@ Public Class Form1
             TextBox24.Text &= "  _cees(ks).sum_loss_C1= " & _cees(ks).sum_loss_C1.ToString("F6")
             TextBox24.Text &= "  _cees(ks).stage2(i).psd_dif= " & _cees(ks).stage2(i).psd_dif.ToString("F6") & vbCrLf
 
-            Log_now(ks, i, "Calc_stage2")  'Log now to textbox24
+            ' Log_now(ks, i, "Calc_stage2")  'Log now to textbox24
 
             _cees(ks).stage2(i).loss_abs = _cees(ks).stage2(i).loss_overall * _cees(ks).stage2(i).psd_dif
             _cees(ks).stage2(i).loss_abs_C = _cees(ks).stage2(i).loss_overall_C * _cees(ks).stage2(i).psd_dif
@@ -1791,7 +1786,7 @@ Public Class Form1
         '------ combined efficiency -----
         Eff_comb = _cees(ks).Efficiency1 + (1 - _cees(ks).Efficiency1 / 100) * _cees(ks).Efficiency2
 
-        '----------- present -----------
+        '----------- present stage #2 -----------
         TextBox63.Text = ComboBox2.Text                 'Cyclone type
         TextBox64.Text = CheckBox3.Checked.ToString     'Hi load correction
         TextBox110.Text = dia_max.ToString("F1")        'diameter [mu] 100% catch
@@ -1803,7 +1798,7 @@ Public Class Form1
         TextBox69.Text = _cees(ks).sum_loss_C2.ToString("F3")
         TextBox120.Text = Eff_comb.ToString("F2")
 
-        If CheckBox3.Checked Then
+        If CheckBox3.Checked Then   'Dust load correction
             TextBox65.Text = _cees(ks).loss_total2.ToString("F5")    'Corrected
             TextBox66.Text = _cees(ks).Efficiency2.ToString("F3")
             TextBox109.Text = _cees(ks).Efficiency2.ToString("F3")
