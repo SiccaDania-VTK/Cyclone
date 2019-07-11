@@ -898,13 +898,17 @@ Public Class Form1
         ch.Titles.Clear()
         ch.ChartAreas.Add("ChartArea0")
 
-        For h = 0 To 3
+        For h = 0 To 2
             ch.Series.Add("Series" & h.ToString)
             ch.Series(h).ChartArea = "ChartArea0"
             ch.Series(h).ChartType = DataVisualization.Charting.SeriesChartType.Line
             ch.Series(h).BorderWidth = 2
             ch.Series(h).IsVisibleInLegend = True
         Next
+        ch.Series(0).LegendText = "Input"
+        ch.Series(1).LegendText = "Cyclone stage #1"
+        ch.Series(2).LegendText = "Cyclone stage #2"
+
 
         ch.ChartAreas("ChartArea0").AxisX.TitleFont = New Font("Arial", 11, System.Drawing.FontStyle.Bold)
         ch.ChartAreas("ChartArea0").AxisY.TitleFont = New Font("Arial", 11, System.Drawing.FontStyle.Bold)
