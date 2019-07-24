@@ -902,13 +902,19 @@ Public Class Form1
             ch.Series.Add("Series" & h.ToString)
             ch.Series(h).ChartArea = "ChartArea0"
             ch.Series(h).ChartType = DataVisualization.Charting.SeriesChartType.Line
-            ch.Series(h).BorderWidth = 2
+            ch.Series(h).BorderWidth = 3
             ch.Series(h).IsVisibleInLegend = True
         Next
         ch.Series(0).LegendText = "Input"
         ch.Series(1).LegendText = "Cyclone stage #1"
         ch.Series(2).LegendText = "Cyclone stage #2"
 
+        ch.Series(0).BorderDashStyle = ChartDashStyle.Dash
+        ch.Series(1).BorderDashStyle = ChartDashStyle.DashDot
+
+        ch.Series(0).IsValueShownAsLabel = CBool(IIf(CheckBox8.Checked, True, False))
+        ch.Series(1).IsValueShownAsLabel = CBool(IIf(CheckBox9.Checked, True, False))
+        ch.Series(2).IsValueShownAsLabel = CBool(IIf(CheckBox10.Checked, True, False))
 
         ch.ChartAreas("ChartArea0").AxisX.TitleFont = New Font("Arial", 11, System.Drawing.FontStyle.Bold)
         ch.ChartAreas("ChartArea0").AxisY.TitleFont = New Font("Arial", 11, System.Drawing.FontStyle.Bold)
@@ -920,10 +926,17 @@ Public Class Form1
         ch.ChartAreas("ChartArea0").AxisY.Minimum = 0       'Loss
         ch.ChartAreas("ChartArea0").AxisY.Maximum = 100     'Loss
         ch.ChartAreas("ChartArea0").AxisY.Interval = 10     'Interval
-        ch.ChartAreas("ChartArea0").AxisX.MinorTickMark.Enabled = True
-        ch.ChartAreas("ChartArea0").AxisY.MinorTickMark.Enabled = True
-        ch.ChartAreas("ChartArea0").AxisX.MinorGrid.Enabled = True
-        ch.ChartAreas("ChartArea0").AxisY.MinorGrid.Enabled = True
+
+        If CheckBox4.Checked Then
+            ch.ChartAreas("ChartArea0").AxisX.MinorGrid.Enabled = True
+            ch.ChartAreas("ChartArea0").AxisY.MinorGrid.Enabled = True
+        End If
+
+        If CheckBox7.Checked Then
+            ch.ChartAreas("ChartArea0").AxisX.MinorTickMark.Enabled = True
+            ch.ChartAreas("ChartArea0").AxisY.MinorTickMark.Enabled = True
+        End If
+
         ch.ChartAreas("ChartArea0").AxisX.IsLogarithmic = True
         ch.ChartAreas("ChartArea0").AxisX.Minimum = 0.1     'Particle size
         ch.ChartAreas("ChartArea0").AxisX.Maximum = 100     'Particle size
@@ -932,14 +945,17 @@ Public Class Form1
         Integer.TryParse(TextBox42.Text, sdia)
         ks = CInt(NumericUpDown30.Value)
 
+        '------ Input-------------
+        If CheckBox1.Checked Then
+            For h = 0 To 110 - 1   'Fill line chart
+                ch.Series(0).Points.AddXY(_cees(ks).stage1(h).dia, (100 - _cees(ks).stage1(h).catch_chart))
+            Next h
+        End If
+
         '------ Stage #1 output-------------
         If CheckBox5.Checked Then
-
             For h = 0 To 110 - 1   'Fill line chart
-                'ch.Series(1).Points.AddXY(_cees(ks).stage1(h).dia, _cees(ks).stage1(h).psd_cum_pro)
-                ch.Series(0).Points.AddXY(_cees(ks).stage1(h).dia, (100 - _cees(ks).stage1(h).catch_chart))
                 ch.Series(1).Points.AddXY(_cees(ks).stage1(h).dia, (100 - _cees(ks).stage2(h).catch_chart))
-                'Log_now(ks, h, "Draw_chart1")  'Log now to textbox24
             Next h
         End If
 
@@ -949,14 +965,15 @@ Public Class Form1
         If CheckBox6.Checked Then
             '------ Stage #2 output-------------
             For h = 0 To DataGridView4.Rows.Count - 1                 'Fill line chart
+                '------- datagrid ------
                 x = CDbl((DataGridView4.Rows(h).Cells(0).Value))       'Particle size
                 y(5) = CDbl((DataGridView4.Rows(h).Cells(5).Value))    'Loss 1
                 y(8) = CDbl((DataGridView4.Rows(h).Cells(8).Value))    'Loss 2
-                y(9) = CDbl((DataGridView4.Rows(h).Cells(9).Value))    'Eff 1&2 [%]
-
-                ch.Series(2).Points.AddXY(x, y(8))
-
-                TextBox127.Text &= "(x,y)= " & x.ToString("F3") & ", " & y(8).ToString("F3") & vbCrLf
+                y(9) = 100 - CDbl((DataGridView4.Rows(h).Cells(9).Value))    'Eff 1&2 [%]
+                '------- Chart --------
+                If y(9) < 100 Then ch.Series(2).Points.AddXY(x, y(9))
+                '------- textbox ------
+                TextBox127.Text &= "(x,y)= " & x.ToString("F3") & ", " & y(9).ToString("F3") & vbCrLf
             Next h
         End If
     End Sub
@@ -970,8 +987,6 @@ Public Class Form1
         TextBox24.Text &= "  c.stage1(line).psd_cum_pro=" & _cees(ks).stage1(line).psd_cum_pro.ToString
         TextBox24.Text &= "  c.stage2(line).psd_cum_pro=" & _cees(ks).stage2(line).psd_cum_pro.ToString
         TextBox24.Text &= "  verschil=" & verschil.ToString & vbCrLf
-
-
     End Sub
 
     Private Sub Draw_chart2(ch As Chart)
@@ -1014,7 +1029,7 @@ Public Class Form1
             ch.Series(0).Points.AddXY(s_points(h, 0), s_points(h, 1))
         Next h
     End Sub
-    Private Sub Button2_Click(sender As Object, e As EventArgs) Handles TabPage9.Enter, CheckBox6.CheckedChanged, CheckBox5.CheckedChanged, CheckBox1.CheckedChanged
+    Private Sub Button2_Click(sender As Object, e As EventArgs) Handles TabPage9.Enter, CheckBox6.CheckedChanged, CheckBox5.CheckedChanged, CheckBox1.CheckedChanged, CheckBox7.CheckedChanged, CheckBox4.CheckedChanged, CheckBox9.CheckedChanged, CheckBox8.CheckedChanged, CheckBox10.CheckedChanged
         Calc_sequence()
     End Sub
     Private Sub Calc_sequence()
