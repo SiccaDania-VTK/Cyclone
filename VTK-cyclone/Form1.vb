@@ -889,32 +889,40 @@ Public Class Form1
     End Sub
 
     Public Sub Draw_chart1(ch As Chart)
-        '-------
-        Dim sdia As Integer
         Dim ks As Integer
+        Dim a, b As Double
 
         ch.Series.Clear()
         ch.ChartAreas.Clear()
         ch.Titles.Clear()
         ch.ChartAreas.Add("ChartArea0")
 
-        For h = 0 To 2
+        For h = 0 To 4
             ch.Series.Add("Series" & h.ToString)
             ch.Series(h).ChartArea = "ChartArea0"
-            ch.Series(h).ChartType = DataVisualization.Charting.SeriesChartType.Line
+            ch.Series(h).ChartType = SeriesChartType.Line
             ch.Series(h).BorderWidth = 3
             ch.Series(h).IsVisibleInLegend = True
         Next
-        ch.Series(0).LegendText = "Input"
-        ch.Series(1).LegendText = "Cyclone stage #1"
-        ch.Series(2).LegendText = "Cyclone stage #2"
+
+
+        ch.Series(0).LegendText = "Input Stars"
+        ch.Series(1).LegendText = "Catch #1"
+        ch.Series(2).LegendText = "Catch #2"
+        ch.Series(3).LegendText = "Cyclone stage #1"
+        ch.Series(4).LegendText = "Cyclone stage #2"
+
 
         ch.Series(0).BorderDashStyle = ChartDashStyle.Dash
         ch.Series(1).BorderDashStyle = ChartDashStyle.DashDot
+        ch.Series(2).BorderDashStyle = ChartDashStyle.DashDot
+        ch.Series(3).BorderDashStyle = ChartDashStyle.Dot
+        ch.Series(4).BorderDashStyle = ChartDashStyle.Dot
 
         ch.Series(0).IsValueShownAsLabel = CBool(IIf(CheckBox8.Checked, True, False))
         ch.Series(1).IsValueShownAsLabel = CBool(IIf(CheckBox9.Checked, True, False))
         ch.Series(2).IsValueShownAsLabel = CBool(IIf(CheckBox10.Checked, True, False))
+
 
         ch.ChartAreas("ChartArea0").AxisX.TitleFont = New Font("Arial", 11, System.Drawing.FontStyle.Bold)
         ch.ChartAreas("ChartArea0").AxisY.TitleFont = New Font("Arial", 11, System.Drawing.FontStyle.Bold)
@@ -941,41 +949,69 @@ Public Class Form1
         ch.ChartAreas("ChartArea0").AxisX.Minimum = 0.1     'Particle size
         ch.ChartAreas("ChartArea0").AxisX.Maximum = 100     'Particle size
 
-        '----- now calc chart points --------------------------
-        Integer.TryParse(TextBox42.Text, sdia)
-        ks = CInt(NumericUpDown30.Value)
+        '----- now start plotting ------------------------
+        ks = CInt(NumericUpDown30.Value)        'Case number
 
-        '------ Input-------------
+
+        '----------------------------- Plot Input stars-----------------------
+        If CheckBox11.Checked Then
+            For input_cnt = 0 To 10
+                'What is the star position
+                a = _cees(ks).dia_big(input_cnt)              '[mu] Class upper particle diameter limit diameter
+                b = _cees(ks).class_load(input_cnt) * 100     'Percentale van de inlaat stof belasting
+
+                '--------------- plot-----------------
+                ch.Series(0).ChartType = DataVisualization.Charting.SeriesChartType.Line
+                ch.Series(0).Points.AddXY(a, b)
+                ch.Series(0).Points(input_cnt).MarkerStyle = MarkerStyle.Star10
+                ch.Series(0).Points(input_cnt).MarkerSize = 15
+            Next
+        End If
+
+        '------ Plot catch chart #1-------------
         If CheckBox1.Checked Then
-            For h = 0 To 110 - 1   'Fill line chart
-                ch.Series(0).Points.AddXY(_cees(ks).stage1(h).dia, (100 - _cees(ks).stage1(h).catch_chart))
+            For h = 0 To 110 '- 1   'Fill line chart
+                a = _cees(ks).stage1(h).dia
+                b = (100 - _cees(ks).stage1(h).catch_chart)
+                ch.Series(1).Points.AddXY(a, b)
             Next h
         End If
 
-        '------ Stage #1 output-------------
+        '------ Plot catch chart #2-------------
+        If CheckBox1.Checked Then
+            For h = 0 To 110 '- 1   'Fill line chart
+                a = _cees(ks).stage1(h).dia
+                b = (100 - _cees(ks).stage2(h).catch_chart)
+                ch.Series(2).Points.AddXY(a, b)
+            Next h
+        End If
+
+        '------ Plot Stage #1 output-------------
         If CheckBox5.Checked Then
-            For h = 0 To 110 - 1   'Fill line chart
-                ch.Series(1).Points.AddXY(_cees(ks).stage1(h).dia, (100 - _cees(ks).stage2(h).catch_chart))
+            For h = 0 To 110 '- 1   'Fill line chart
+                a = _cees(ks).stage1(h).dia
+                b = (100 - _cees(ks).stage2(h).catch_chart)
+                ch.Series(3).Points.AddXY(a, b)
             Next h
         End If
 
-        '------ Stage #2 output-------------
-        Dim x As Double
-        Dim y(10) As Double
+        '------ Plot Stage #2 output-------------
+        'Dim loss1, loss2 As Double
         If CheckBox6.Checked Then
             '------ Stage #2 output-------------
-            For h = 0 To DataGridView4.Rows.Count - 1                 'Fill line chart
+            For h = 0 To DataGridView4.Rows.Count - 1                       'Fill line chart
                 '------- datagrid ------
-                x = CDbl((DataGridView4.Rows(h).Cells(0).Value))       'Particle size
-                y(5) = CDbl((DataGridView4.Rows(h).Cells(5).Value))    'Loss 1
-                y(8) = CDbl((DataGridView4.Rows(h).Cells(8).Value))    'Loss 2
-                y(9) = 100 - CDbl((DataGridView4.Rows(h).Cells(9).Value))    'Eff 1&2 [%]
+                a = CDbl((DataGridView4.Rows(h).Cells(0).Value))            'Particle size
+                'loss1 = CDbl((DataGridView4.Rows(h).Cells(5).Value))        'Loss 1
+                'loss2 = CDbl((DataGridView4.Rows(h).Cells(8).Value))        'Loss 2
+                b = 100 - CDbl((DataGridView4.Rows(h).Cells(9).Value))      'Eff 1&2 [%]
                 '------- Chart --------
-                If y(9) < 100 Then ch.Series(2).Points.AddXY(x, y(9))
+                If b < 100 Then ch.Series(4).Points.AddXY(a, b)
                 '------- textbox ------
-                TextBox127.Text &= "(x,y)= " & x.ToString("F3") & ", " & y(9).ToString("F3") & vbCrLf
+                TextBox127.Text &= "(x,y)= " & a.ToString("F3") & ", " & b.ToString("F3") & vbCrLf
             Next h
         End If
+
     End Sub
     Public Sub Log_now(ks As Integer, line As Integer, r As String)
         Dim verschil As Double
@@ -1029,7 +1065,7 @@ Public Class Form1
             ch.Series(0).Points.AddXY(s_points(h, 0), s_points(h, 1))
         Next h
     End Sub
-    Private Sub Button2_Click(sender As Object, e As EventArgs) Handles TabPage9.Enter, CheckBox6.CheckedChanged, CheckBox5.CheckedChanged, CheckBox1.CheckedChanged, CheckBox7.CheckedChanged, CheckBox4.CheckedChanged, CheckBox9.CheckedChanged, CheckBox8.CheckedChanged, CheckBox10.CheckedChanged
+    Private Sub Button2_Click(sender As Object, e As EventArgs) Handles TabPage9.Enter, CheckBox6.CheckedChanged, CheckBox5.CheckedChanged, CheckBox1.CheckedChanged, CheckBox7.CheckedChanged, CheckBox4.CheckedChanged, CheckBox9.CheckedChanged, CheckBox8.CheckedChanged, CheckBox10.CheckedChanged, CheckBox11.CheckedChanged
         Calc_sequence()
     End Sub
     Private Sub Calc_sequence()
@@ -1195,7 +1231,7 @@ Public Class Form1
             'oDoc.PageSetup.VerticalAlignment = Word.WdVerticalAlignment.wdAlignVerticalCenter
 
             oPara1 = oDoc.Content.Paragraphs.Add
-            oPara1.Range.Text = "VTK Sales"
+            oPara1.Range.Text = "VTK Sales, cyclone single stage"
             oPara1.Range.Font.Name = "Arial"
             oPara1.Range.Font.Size = 14
             oPara1.Range.Font.Bold = CInt(True)
@@ -1815,21 +1851,22 @@ Public Class Form1
         TextBox117.Text = _cees(ks).sum_psd_diff2.ToString("F3")
         TextBox68.Text = _cees(ks).sum_loss2.ToString("F3")
         TextBox69.Text = _cees(ks).sum_loss_C2.ToString("F3")
-        TextBox120.Text = Eff_comb.ToString("F2")
+        TextBox120.Text = Eff_comb.ToString("F3")
 
         If CheckBox3.Checked Then   'Dust load correction
             TextBox65.Text = _cees(ks).loss_total2.ToString("F5")    'Corrected
             TextBox66.Text = _cees(ks).Efficiency2.ToString("F3")
             TextBox109.Text = _cees(ks).Efficiency2.ToString("F3")
-            TextBox62.Text = _cees(ks).emmis2.ToString("F3")
+            TextBox62.Text = _cees(ks).emmis2.ToString("F4")
         Else
             TextBox65.Text = _cees(ks).sum_loss2.ToString("F5")      'NOT Corrected
             TextBox66.Text = _cees(ks).Efficiency2.ToString("F3")
             TextBox109.Text = _cees(ks).Efficiency2.ToString("F3")
-            TextBox62.Text = _cees(ks).emmis2.ToString("F3")
+            TextBox62.Text = _cees(ks).emmis2.ToString("F4")
 
         End If
         TextBox108.Text = TextBox62.Text
+        TextBox134.Text = TextBox108.Text
     End Sub
     'Determine the particle diameter class upper and lower limits
     ' Private Function Size_classification(dia As Double, noi As Integer) As Double
