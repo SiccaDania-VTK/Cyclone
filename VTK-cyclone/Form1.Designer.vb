@@ -23,12 +23,12 @@ Partial Class Form1
     <System.Diagnostics.DebuggerStepThrough()>
     Private Sub InitializeComponent()
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(Form1))
-        Dim ChartArea13 As System.Windows.Forms.DataVisualization.Charting.ChartArea = New System.Windows.Forms.DataVisualization.Charting.ChartArea()
-        Dim Legend13 As System.Windows.Forms.DataVisualization.Charting.Legend = New System.Windows.Forms.DataVisualization.Charting.Legend()
-        Dim Series13 As System.Windows.Forms.DataVisualization.Charting.Series = New System.Windows.Forms.DataVisualization.Charting.Series()
-        Dim ChartArea14 As System.Windows.Forms.DataVisualization.Charting.ChartArea = New System.Windows.Forms.DataVisualization.Charting.ChartArea()
-        Dim Legend14 As System.Windows.Forms.DataVisualization.Charting.Legend = New System.Windows.Forms.DataVisualization.Charting.Legend()
-        Dim Series14 As System.Windows.Forms.DataVisualization.Charting.Series = New System.Windows.Forms.DataVisualization.Charting.Series()
+        Dim ChartArea5 As System.Windows.Forms.DataVisualization.Charting.ChartArea = New System.Windows.Forms.DataVisualization.Charting.ChartArea()
+        Dim Legend5 As System.Windows.Forms.DataVisualization.Charting.Legend = New System.Windows.Forms.DataVisualization.Charting.Legend()
+        Dim Series5 As System.Windows.Forms.DataVisualization.Charting.Series = New System.Windows.Forms.DataVisualization.Charting.Series()
+        Dim ChartArea6 As System.Windows.Forms.DataVisualization.Charting.ChartArea = New System.Windows.Forms.DataVisualization.Charting.ChartArea()
+        Dim Legend6 As System.Windows.Forms.DataVisualization.Charting.Legend = New System.Windows.Forms.DataVisualization.Charting.Legend()
+        Dim Series6 As System.Windows.Forms.DataVisualization.Charting.Series = New System.Windows.Forms.DataVisualization.Charting.Series()
         Me.OpenFileDialog1 = New System.Windows.Forms.OpenFileDialog()
         Me.TabPage10 = New System.Windows.Forms.TabPage()
         Me.TabPage8 = New System.Windows.Forms.TabPage()
@@ -228,6 +228,7 @@ Partial Class Form1
         Me.DataGridView2 = New System.Windows.Forms.DataGridView()
         Me.TabPage1 = New System.Windows.Forms.TabPage()
         Me.GroupBox13 = New System.Windows.Forms.GroupBox()
+        Me.TextBox134 = New System.Windows.Forms.TextBox()
         Me.TextBox125 = New System.Windows.Forms.TextBox()
         Me.TextBox119 = New System.Windows.Forms.TextBox()
         Me.TextBox121 = New System.Windows.Forms.TextBox()
@@ -473,6 +474,7 @@ Partial Class Form1
         Me.DataGridView4 = New System.Windows.Forms.DataGridView()
         Me.TabPage11 = New System.Windows.Forms.TabPage()
         Me.SplitContainer1 = New System.Windows.Forms.SplitContainer()
+        Me.Button2 = New System.Windows.Forms.Button()
         Me.Chart1 = New System.Windows.Forms.DataVisualization.Charting.Chart()
         Me.TextBox127 = New System.Windows.Forms.TextBox()
         Me.GroupBox12 = New System.Windows.Forms.GroupBox()
@@ -483,10 +485,6 @@ Partial Class Form1
         Me.CheckBox4 = New System.Windows.Forms.CheckBox()
         Me.CheckBox6 = New System.Windows.Forms.CheckBox()
         Me.CheckBox5 = New System.Windows.Forms.CheckBox()
-        Me.CheckBox1 = New System.Windows.Forms.CheckBox()
-        Me.Button2 = New System.Windows.Forms.Button()
-        Me.TextBox134 = New System.Windows.Forms.TextBox()
-        Me.CheckBox11 = New System.Windows.Forms.CheckBox()
         Me.TabPage8.SuspendLayout()
         Me.TabPage7.SuspendLayout()
         CType(Me.PictureBox1, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -2640,6 +2638,7 @@ Partial Class Form1
         Me.DataGridView2.Dock = System.Windows.Forms.DockStyle.Fill
         Me.DataGridView2.Location = New System.Drawing.Point(3, 3)
         Me.DataGridView2.Name = "DataGridView2"
+        Me.DataGridView2.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect
         Me.DataGridView2.Size = New System.Drawing.Size(967, 803)
         Me.DataGridView2.TabIndex = 75
         '
@@ -2741,6 +2740,17 @@ Partial Class Form1
         Me.GroupBox13.TabIndex = 81
         Me.GroupBox13.TabStop = False
         Me.GroupBox13.Text = "Results"
+        '
+        'TextBox134
+        '
+        Me.TextBox134.BackColor = System.Drawing.SystemColors.Window
+        Me.TextBox134.Enabled = False
+        Me.TextBox134.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.TextBox134.Location = New System.Drawing.Point(285, 282)
+        Me.TextBox134.Name = "TextBox134"
+        Me.TextBox134.Size = New System.Drawing.Size(57, 21)
+        Me.TextBox134.TabIndex = 153
+        Me.TextBox134.TextAlign = System.Windows.Forms.HorizontalAlignment.Center
         '
         'TextBox125
         '
@@ -3469,16 +3479,16 @@ Partial Class Form1
         '
         'Chart2
         '
-        ChartArea13.Name = "ChartArea1"
-        Me.Chart2.ChartAreas.Add(ChartArea13)
-        Legend13.Name = "Legend1"
-        Me.Chart2.Legends.Add(Legend13)
+        ChartArea5.Name = "ChartArea1"
+        Me.Chart2.ChartAreas.Add(ChartArea5)
+        Legend5.Name = "Legend1"
+        Me.Chart2.Legends.Add(Legend5)
         Me.Chart2.Location = New System.Drawing.Point(891, 379)
         Me.Chart2.Name = "Chart2"
-        Series13.ChartArea = "ChartArea1"
-        Series13.Legend = "Legend1"
-        Series13.Name = "Series1"
-        Me.Chart2.Series.Add(Series13)
+        Series5.ChartArea = "ChartArea1"
+        Series5.Legend = "Legend1"
+        Series5.Name = "Series1"
+        Me.Chart2.Series.Add(Series5)
         Me.Chart2.Size = New System.Drawing.Size(382, 224)
         Me.Chart2.TabIndex = 80
         Me.Chart2.Text = "Chart2"
@@ -5427,19 +5437,30 @@ Partial Class Form1
         Me.SplitContainer1.SplitterDistance = 1077
         Me.SplitContainer1.TabIndex = 113
         '
+        'Button2
+        '
+        Me.Button2.Location = New System.Drawing.Point(983, 188)
+        Me.Button2.Name = "Button2"
+        Me.Button2.Size = New System.Drawing.Size(75, 23)
+        Me.Button2.TabIndex = 113
+        Me.Button2.Text = "Button2"
+        Me.Button2.UseVisualStyleBackColor = True
+        '
         'Chart1
         '
-        ChartArea14.Name = "ChartArea1"
-        Me.Chart1.ChartAreas.Add(ChartArea14)
+        Me.Chart1.AllowDrop = True
+        ChartArea6.Name = "ChartArea1"
+        Me.Chart1.ChartAreas.Add(ChartArea6)
         Me.Chart1.Dock = System.Windows.Forms.DockStyle.Fill
-        Legend14.Name = "Legend1"
-        Me.Chart1.Legends.Add(Legend14)
+        Me.Chart1.Enabled = False
+        Legend6.Name = "Legend1"
+        Me.Chart1.Legends.Add(Legend6)
         Me.Chart1.Location = New System.Drawing.Point(0, 0)
         Me.Chart1.Name = "Chart1"
-        Series14.ChartArea = "ChartArea1"
-        Series14.Legend = "Legend1"
-        Series14.Name = "Series1"
-        Me.Chart1.Series.Add(Series14)
+        Series6.ChartArea = "ChartArea1"
+        Series6.Legend = "Legend1"
+        Series6.Name = "Series1"
+        Me.Chart1.Series.Add(Series6)
         Me.Chart1.Size = New System.Drawing.Size(1077, 809)
         Me.Chart1.TabIndex = 68
         Me.Chart1.Text = "Chart1"
@@ -5455,7 +5476,6 @@ Partial Class Form1
         '
         'GroupBox12
         '
-        Me.GroupBox12.Controls.Add(Me.CheckBox11)
         Me.GroupBox12.Controls.Add(Me.CheckBox10)
         Me.GroupBox12.Controls.Add(Me.CheckBox9)
         Me.GroupBox12.Controls.Add(Me.CheckBox8)
@@ -5463,7 +5483,6 @@ Partial Class Form1
         Me.GroupBox12.Controls.Add(Me.CheckBox4)
         Me.GroupBox12.Controls.Add(Me.CheckBox6)
         Me.GroupBox12.Controls.Add(Me.CheckBox5)
-        Me.GroupBox12.Controls.Add(Me.CheckBox1)
         Me.GroupBox12.Location = New System.Drawing.Point(13, 3)
         Me.GroupBox12.Name = "GroupBox12"
         Me.GroupBox12.Size = New System.Drawing.Size(163, 267)
@@ -5540,54 +5559,10 @@ Partial Class Form1
         Me.CheckBox5.CheckState = System.Windows.Forms.CheckState.Checked
         Me.CheckBox5.Location = New System.Drawing.Point(14, 67)
         Me.CheckBox5.Name = "CheckBox5"
-        Me.CheckBox5.Size = New System.Drawing.Size(131, 17)
+        Me.CheckBox5.Size = New System.Drawing.Size(119, 17)
         Me.CheckBox5.TabIndex = 1
-        Me.CheckBox5.Text = "Show output stage #1"
+        Me.CheckBox5.Text = "PDS input stage #2"
         Me.CheckBox5.UseVisualStyleBackColor = True
-        '
-        'CheckBox1
-        '
-        Me.CheckBox1.AutoSize = True
-        Me.CheckBox1.Checked = True
-        Me.CheckBox1.CheckState = System.Windows.Forms.CheckState.Checked
-        Me.CheckBox1.Location = New System.Drawing.Point(14, 24)
-        Me.CheckBox1.Name = "CheckBox1"
-        Me.CheckBox1.Size = New System.Drawing.Size(80, 17)
-        Me.CheckBox1.TabIndex = 0
-        Me.CheckBox1.Text = "Show Input"
-        Me.CheckBox1.UseVisualStyleBackColor = True
-        '
-        'Button2
-        '
-        Me.Button2.Location = New System.Drawing.Point(983, 188)
-        Me.Button2.Name = "Button2"
-        Me.Button2.Size = New System.Drawing.Size(75, 23)
-        Me.Button2.TabIndex = 113
-        Me.Button2.Text = "Button2"
-        Me.Button2.UseVisualStyleBackColor = True
-        '
-        'TextBox134
-        '
-        Me.TextBox134.BackColor = System.Drawing.SystemColors.Window
-        Me.TextBox134.Enabled = False
-        Me.TextBox134.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.TextBox134.Location = New System.Drawing.Point(285, 282)
-        Me.TextBox134.Name = "TextBox134"
-        Me.TextBox134.Size = New System.Drawing.Size(57, 21)
-        Me.TextBox134.TabIndex = 153
-        Me.TextBox134.TextAlign = System.Windows.Forms.HorizontalAlignment.Center
-        '
-        'CheckBox11
-        '
-        Me.CheckBox11.AutoSize = True
-        Me.CheckBox11.Checked = True
-        Me.CheckBox11.CheckState = System.Windows.Forms.CheckState.Checked
-        Me.CheckBox11.Location = New System.Drawing.Point(14, 44)
-        Me.CheckBox11.Name = "CheckBox11"
-        Me.CheckBox11.Size = New System.Drawing.Size(107, 17)
-        Me.CheckBox11.TabIndex = 8
-        Me.CheckBox11.Text = "Show Input Stars"
-        Me.CheckBox11.UseVisualStyleBackColor = True
         '
         'Form1
         '
@@ -6135,7 +6110,6 @@ Partial Class Form1
     Friend WithEvents GroupBox12 As GroupBox
     Friend WithEvents CheckBox6 As CheckBox
     Friend WithEvents CheckBox5 As CheckBox
-    Friend WithEvents CheckBox1 As CheckBox
     Friend WithEvents TabPage12 As TabPage
     Friend WithEvents DataGridView4 As DataGridView
     Friend WithEvents TextBox126 As TextBox
@@ -6164,5 +6138,4 @@ Partial Class Form1
     Friend WithEvents CheckBox10 As CheckBox
     Friend WithEvents CheckBox9 As CheckBox
     Friend WithEvents TextBox134 As TextBox
-    Friend WithEvents CheckBox11 As CheckBox
 End Class

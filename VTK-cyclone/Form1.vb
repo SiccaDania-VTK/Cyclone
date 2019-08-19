@@ -904,20 +904,20 @@ Public Class Form1
             ch.Series(h).BorderWidth = 3
             ch.Series(h).IsVisibleInLegend = True
         Next
+        ch.Series(0).BorderWidth = 0    'Only markers NO line
+
+        ch.Series(0).LegendText = "Input Stars stage #1"
+        ch.Series(1).LegendText = "Rosin Rammler stage #1 "
+        ch.Series(2).LegendText = "Loss stage #1"
+        ch.Series(3).LegendText = "Loss stage #2"
+        ch.Series(4).LegendText = "Efficiency #1 & #2"
 
 
-        ch.Series(0).LegendText = "Input Stars"
-        ch.Series(1).LegendText = "Catch #1"
-        ch.Series(2).LegendText = "Catch #2"
-        ch.Series(3).LegendText = "Cyclone stage #1"
-        ch.Series(4).LegendText = "Cyclone stage #2"
-
-
-        ch.Series(0).BorderDashStyle = ChartDashStyle.Dash
-        ch.Series(1).BorderDashStyle = ChartDashStyle.DashDot
-        ch.Series(2).BorderDashStyle = ChartDashStyle.DashDot
+        ch.Series(0).BorderDashStyle = ChartDashStyle.Solid
+        ch.Series(1).BorderDashStyle = ChartDashStyle.Solid
+        ch.Series(2).BorderDashStyle = ChartDashStyle.Dot
         ch.Series(3).BorderDashStyle = ChartDashStyle.Dot
-        ch.Series(4).BorderDashStyle = ChartDashStyle.Dot
+        ch.Series(4).BorderDashStyle = ChartDashStyle.Solid
 
         ch.Series(0).IsValueShownAsLabel = CBool(IIf(CheckBox8.Checked, True, False))
         ch.Series(1).IsValueShownAsLabel = CBool(IIf(CheckBox9.Checked, True, False))
@@ -954,61 +954,42 @@ Public Class Form1
 
 
         '----------------------------- Plot Input stars-----------------------
-        If CheckBox11.Checked Then
-            For input_cnt = 0 To 10
-                'What is the star position
-                a = _cees(ks).dia_big(input_cnt)              '[mu] Class upper particle diameter limit diameter
-                b = _cees(ks).class_load(input_cnt) * 100     'Percentale van de inlaat stof belasting
+        For input_cnt = 0 To 10
+            'What is the star position
+            a = _cees(ks).dia_big(input_cnt)              '[mu] Class upper particle diameter limit diameter
+            b = _cees(ks).class_load(input_cnt) * 100     'Percentale van de inlaat stof belasting
 
-                '--------------- plot-----------------
-                ch.Series(0).ChartType = DataVisualization.Charting.SeriesChartType.Line
-                ch.Series(0).Points.AddXY(a, b)
-                ch.Series(0).Points(input_cnt).MarkerStyle = MarkerStyle.Star10
-                ch.Series(0).Points(input_cnt).MarkerSize = 15
-            Next
-        End If
+            '--------------- plot-----------------
+            ch.Series(0).Points.AddXY(a, b)
+            ch.Series(0).Points(input_cnt).MarkerStyle = MarkerStyle.Star10
+            ch.Series(0).Points(input_cnt).MarkerSize = 15
+        Next
 
-        '------ Plot catch chart #1-------------
-        If CheckBox1.Checked Then
-            For h = 0 To 110 '- 1   'Fill line chart
-                a = _cees(ks).stage1(h).dia
-                b = (100 - _cees(ks).stage1(h).catch_chart)
-                ch.Series(1).Points.AddXY(a, b)
-            Next h
-        End If
+        '------ Input Rosin Rammler stage #1 -------------
+        For h = 0 To 110 Step 3   'Fill line chart
+            a = _cees(ks).stage1(h).dia
+            b = _cees(ks).stage1(h).psd_cum_pro
+            ch.Series(1).Points.AddXY(a, b)
+        Next h
 
-        '------ Plot catch chart #2-------------
-        If CheckBox1.Checked Then
-            For h = 0 To 110 '- 1   'Fill line chart
-                a = _cees(ks).stage1(h).dia
-                b = (100 - _cees(ks).stage2(h).catch_chart)
-                ch.Series(2).Points.AddXY(a, b)
-            Next h
-        End If
-
-        '------ Plot Stage #1 output-------------
-        If CheckBox5.Checked Then
-            For h = 0 To 110 '- 1   'Fill line chart
-                a = _cees(ks).stage1(h).dia
-                b = (100 - _cees(ks).stage2(h).catch_chart)
-                ch.Series(3).Points.AddXY(a, b)
-            Next h
-        End If
 
         '------ Plot Stage #2 output-------------
-        'Dim loss1, loss2 As Double
+        Dim loss1, loss2 As Double
         If CheckBox6.Checked Then
             '------ Stage #2 output-------------
             For h = 0 To DataGridView4.Rows.Count - 1                       'Fill line chart
                 '------- datagrid ------
                 a = CDbl((DataGridView4.Rows(h).Cells(0).Value))            'Particle size
-                'loss1 = CDbl((DataGridView4.Rows(h).Cells(5).Value))        'Loss 1
-                'loss2 = CDbl((DataGridView4.Rows(h).Cells(8).Value))        'Loss 2
-                b = 100 - CDbl((DataGridView4.Rows(h).Cells(9).Value))      'Eff 1&2 [%]
+                loss1 = CDbl((DataGridView4.Rows(h).Cells(5).Value))        'Loss 1
+                loss2 = CDbl((DataGridView4.Rows(h).Cells(8).Value))        'Loss 2
+                b = CDbl((DataGridView4.Rows(h).Cells(9).Value))            'Eff 1&2 [%]
                 '------- Chart --------
-                If b < 100 Then ch.Series(4).Points.AddXY(a, b)
+                ch.Series(2).Points.AddXY(a, loss1)
+                ch.Series(3).Points.AddXY(a, loss2)
+                ch.Series(4).Points.AddXY(a, b)
+
                 '------- textbox ------
-                TextBox127.Text &= "(x,y)= " & a.ToString("F3") & ", " & b.ToString("F3") & vbCrLf
+                'TextBox127.Text &= "(x,y)= " & a.ToString("F3") & ", " & b.ToString("F3") & vbCrLf
             Next h
         End If
 
@@ -1065,7 +1046,7 @@ Public Class Form1
             ch.Series(0).Points.AddXY(s_points(h, 0), s_points(h, 1))
         Next h
     End Sub
-    Private Sub Button2_Click(sender As Object, e As EventArgs) Handles TabPage9.Enter, CheckBox6.CheckedChanged, CheckBox5.CheckedChanged, CheckBox1.CheckedChanged, CheckBox7.CheckedChanged, CheckBox4.CheckedChanged, CheckBox9.CheckedChanged, CheckBox8.CheckedChanged, CheckBox10.CheckedChanged, CheckBox11.CheckedChanged
+    Private Sub Button2_Click(sender As Object, e As EventArgs) Handles TabPage9.Enter, CheckBox6.CheckedChanged, CheckBox5.CheckedChanged, CheckBox7.CheckedChanged, CheckBox4.CheckedChanged, CheckBox9.CheckedChanged, CheckBox8.CheckedChanged, CheckBox10.CheckedChanged
         Calc_sequence()
     End Sub
     Private Sub Calc_sequence()
@@ -1450,25 +1431,28 @@ Public Class Form1
         DataGridView2.Rows.Add(111)
         'DataGridView2.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill
 
+        DataGridView2.EnableHeadersVisualStyles = False                     'For backcolor
         DataGridView2.Columns(0).HeaderText = "Dia class [mu]"
         DataGridView2.Columns(1).HeaderText = "Dia average [mu]"
         DataGridView2.Columns(2).HeaderText = "Dia/k [-]"
         DataGridView2.Columns(3).HeaderText = "Loss overall [-]"
         DataGridView2.Columns(4).HeaderText = "Loss overall Corrected"
-        DataGridView2.Columns(5).HeaderText = "Catch chart [%]"     '
-        DataGridView2.Columns(6).HeaderText = "Group number [-]"    '
-        DataGridView2.Columns(7).HeaderText = "d1 lower dia [mu]"   '
-        DataGridView2.Columns(8).HeaderText = "d2 upper dia [mu]"   '
-        DataGridView2.Columns(9).HeaderText = "p1 input [%]"        '
-        DataGridView2.Columns(10).HeaderText = "p2 input [%]"       '
-        DataGridView2.Columns(11).HeaderText = "k [-]"              '    
-        DataGridView2.Columns(12).HeaderText = "m [-]"              '
-
+        DataGridView2.Columns(5).HeaderText = "Catch chart [%]"             '
+        DataGridView2.Columns(6).HeaderText = "Group number [-]"            '
+        DataGridView2.Columns(7).HeaderText = "d1 lower dia [mu]"           '
+        DataGridView2.Columns(8).HeaderText = "d2 upper dia [mu]"           '
+        DataGridView2.Columns(9).HeaderText = "p1 input [%]"                '
+        DataGridView2.Columns(10).HeaderText = "p2 input [%]"               '
+        DataGridView2.Columns(11).HeaderText = "k [-]"                      '    
+        DataGridView2.Columns(12).HeaderText = "m [-]"                      '
         DataGridView2.Columns(13).HeaderText = "interpol. psd cum [-]"      '
-        DataGridView2.Columns(14).HeaderText = "psd cum [%]"        '
-        DataGridView2.Columns(15).HeaderText = "psd diff [%]"       '
-        DataGridView2.Columns(16).HeaderText = "loss abs [%]"       '
-        DataGridView2.Columns(17).HeaderText = "loss corr abs [%]"  '
+        DataGridView2.Columns(14).HeaderText = "psd cum [%]"                '
+        DataGridView2.Columns(15).HeaderText = "psd diff [%]"               '
+        DataGridView2.Columns(16).HeaderText = "loss abs [%]"               '
+        DataGridView2.Columns(17).HeaderText = "loss corr abs [%]"          '
+
+        DataGridView2.Columns(0).HeaderCell.Style.BackColor = Color.Yellow  'Chart
+        DataGridView2.Columns(5).HeaderCell.Style.BackColor = Color.Yellow  'Chart
 
         For row = 1 To 110  'Fill the DataGrid
             j = row - 1
@@ -1510,27 +1494,29 @@ Public Class Form1
         DataGridView3.Rows.Clear()
         DataGridView3.Rows.Add(111)
         'DatagridView3.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill
+        DataGridView3.EnableHeadersVisualStyles = False                         'For backcolor
+        DataGridView3.Columns(0).HeaderText = "Dia class [mu]"                  '
+        DataGridView3.Columns(1).HeaderText = "Dia average [mu]"                '
+        DataGridView3.Columns(2).HeaderText = "Dia/k [-]"                       '
+        DataGridView3.Columns(3).HeaderText = "Loss overall [-]"                '
+        DataGridView3.Columns(4).HeaderText = "Loss overall Corrected [-]"      '
+        DataGridView3.Columns(5).HeaderText = "Catch chart [%]"                 '
+        DataGridView3.Columns(6).HeaderText = "Group number"                    '
+        DataGridView3.Columns(7).HeaderText = "d1 lower dia [mu]"               '
+        DataGridView3.Columns(8).HeaderText = "d2 upper dia [mu]"               '
+        DataGridView3.Columns(9).HeaderText = "p1 input [%]"                    '
+        DataGridView3.Columns(10).HeaderText = "p2 input [%]"                   '
+        DataGridView3.Columns(11).HeaderText = "k [-]"                          '    
+        DataGridView3.Columns(12).HeaderText = "m [-]"                          '
+        DataGridView3.Columns(13).HeaderText = "interpol. psd cum [-]"          '
+        DataGridView3.Columns(14).HeaderText = "psd_cum_pro for chart"          '
+        DataGridView3.Columns(15).HeaderText = "psd diff [%] of 1-stage"        '
+        DataGridView3.Columns(16).HeaderText = "psd diff [%] of 2-stage"        '
+        DataGridView3.Columns(17).HeaderText = "catch loss abs [%]"             '
+        DataGridView3.Columns(18).HeaderText = "loss abs corrected [%]"         '
 
-        DataGridView3.Columns(0).HeaderText = "Dia class [mu]"
-        DataGridView3.Columns(1).HeaderText = "Dia average [mu]"
-        DataGridView3.Columns(2).HeaderText = "Dia/k [-]"
-        DataGridView3.Columns(3).HeaderText = "Loss overall [-]"
-        DataGridView3.Columns(4).HeaderText = "Loss overall Corrected [-]"
-        DataGridView3.Columns(5).HeaderText = "Catch chart [%]"     '
-        DataGridView3.Columns(6).HeaderText = "Group number"    '
-        DataGridView3.Columns(7).HeaderText = "d1 lower dia [mu]"    '
-        DataGridView3.Columns(8).HeaderText = "d2 upper dia [mu]"    '
-        DataGridView3.Columns(9).HeaderText = "p1 input [%]"        '
-        DataGridView3.Columns(10).HeaderText = "p2 input [%]"       '
-        DataGridView3.Columns(11).HeaderText = "k [-]"              '    
-        DataGridView3.Columns(12).HeaderText = "m [-]"              '
-
-        DataGridView3.Columns(13).HeaderText = "interpol. psd cum [-]"      '
-        DataGridView3.Columns(14).HeaderText = "psd_cum_pro for chart"    '
-        DataGridView3.Columns(15).HeaderText = "psd diff [%] of 1-stage"       '
-        DataGridView3.Columns(16).HeaderText = "psd diff [%] of 2-stage"       '
-        DataGridView3.Columns(17).HeaderText = "catch loss abs [%]"   '
-        DataGridView3.Columns(18).HeaderText = "loss abs corrected [%]" '
+        DataGridView3.Columns(0).HeaderCell.Style.BackColor = Color.Yellow      'For chart
+        DataGridView3.Columns(14).HeaderCell.Style.BackColor = Color.Yellow     'For chart
 
         For row = 1 To 110  'Fill the DataGrid
             j = row - 1
@@ -2170,17 +2156,24 @@ Public Class Form1
             DataGridView4.ColumnCount = 10
             DataGridView4.Rows.Clear()
             DataGridView4.Rows.Add(111)
+            DataGridView4.EnableHeadersVisualStyles = False                         'For backcolor
 
-            DataGridView4.Columns(0).HeaderText = "Dia aver [mu]"
+            DataGridView4.Columns(0).HeaderText = "Dia aver [mu]"                   'Chart
             DataGridView4.Columns(1).HeaderText = "In abs [g/Am3]"
             DataGridView4.Columns(2).HeaderText = "In psd diff [%]"
             DataGridView4.Columns(3).HeaderText = "In psd cum [%]"
-            DataGridView4.Columns(4).HeaderText = "Loss1 pds dif [%]"   '
-            DataGridView4.Columns(5).HeaderText = "LOSS1 (chart) pdscum [%]"    '
-            DataGridView4.Columns(6).HeaderText = "Loss abs [g/Nm3]"    '
-            DataGridView4.Columns(7).HeaderText = "Loss2 pds dif [%]"   '
-            DataGridView4.Columns(8).HeaderText = "LOSS2 (chart) pdscum [%]"    '
-            DataGridView4.Columns(9).HeaderText = "Eff stage1&2 [%]"    '
+            DataGridView4.Columns(4).HeaderText = "Loss1 pds dif [%]"               '
+            DataGridView4.Columns(5).HeaderText = "Loss1 (chart) pdscum [%]"        'chart
+            DataGridView4.Columns(6).HeaderText = "Loss abs [g/Nm3]"                '
+            DataGridView4.Columns(7).HeaderText = "Loss2 pds dif [%]"               '
+            DataGridView4.Columns(8).HeaderText = "Loss2 (chart) pdscum [%]"        'chart
+            DataGridView4.Columns(9).HeaderText = "Eff 1&2 (chart) [%]"             'chart
+
+            DataGridView4.Columns(0).HeaderCell.Style.BackColor = Color.Yellow      'For chart
+            DataGridView4.Columns(5).HeaderCell.Style.BackColor = Color.Yellow      'For chart
+            DataGridView4.Columns(8).HeaderCell.Style.BackColor = Color.Yellow      'For chart
+            DataGridView4.Columns(9).HeaderCell.Style.BackColor = Color.Yellow      'For chart
+
 
             '===== Dust load 1stage [kg/Nm3]  =====
             w19 = _cees(ks).dust1_n / 1000 'Dust load [gr/Nm3]
@@ -2194,7 +2187,6 @@ Public Class Form1
             li(1) = _cees(ks).stage1(row).psd_dif * 10 * w19    'In abs [g/Nm3]" T76 * W19
             li(2) = 100 * li(1) / _cees(ks).dust1_n             'In psd diff [%]
             li(3) = 100 - li(2)                                 'In psd diff cumm[%]" S76 
-
             li(4) = _cees(ks).stage2(row).psd_dif               'In psd cum [%]
             li(5) = 100 - _cees(ks).stage2(row).psd_dif         'Loss1 pdscum [%]
             li(6) = _cees(ks).stage2(row).loss_abs_C * 10 * w20 'Loss abs [g/Nm3]
