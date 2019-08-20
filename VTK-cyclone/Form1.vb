@@ -555,6 +555,7 @@ Public Class Form1
         DataGridView1.AutoResizeColumns()
     End Sub
     Private Sub Calc_Datagridview1(ks As Integer)
+
         '==== stage #1 ====
         Dim h18, h19 As Double
         Dim j18, i18 As Double
@@ -2014,6 +2015,7 @@ Public Class Form1
         Dim _db As Double
         Dim sheet_metal_wht As Double
         Dim p304, p316 As Double
+        Dim c_area1, c_area2 As Double      'Outside area est.
 
         '========== Stage cyclone #1 =====
         plt_top1 = NumericUpDown32.Value        '[mm] top plate
@@ -2051,7 +2053,8 @@ Public Class Form1
 
         c_weight1 = w1 + w2 + w3 + w4 + w5 + w6             'Total weight
         c_weight1 *= 1.1                                    '10% safety
-        TextBox61.Text = c_weight1.ToString("0")            'Total weight
+        c_area1 = c_weight1 / (plt_body1 / 1000 * ro_steel) 'Area [m2]
+
 
         '========== Stage cyclone #2 ========
         plt_top2 = NumericUpDown41.Value                '[mm] top plate
@@ -2091,6 +2094,8 @@ Public Class Form1
         C_weight2 *= 1.03                                   '3% weight flanges 
         C_weight2 *= 1.1                                    '10% safety
 
+        c_area2 = C_weight2 / (plt_body2 / 1000 * ro_steel)  'Area [m2]
+
         total_instal = c_weight1 * NumericUpDown20.Value
         total_instal += C_weight2 * NumericUpDown33.Value
 
@@ -2099,11 +2104,14 @@ Public Class Form1
         p316 = sheet_metal_wht * NumericUpDown44.Value      'rvs 316
 
         '-------- present -----------
-        TextBox72.Text = C_weight2.ToString("0")
-        TextBox99.Text = total_instal.ToString("0")
-        TextBox83.Text = sheet_metal_wht.ToString("0")
-        TextBox114.Text = p304.ToString("0")
-        TextBox115.Text = p316.ToString("0")
+        TextBox72.Text = C_weight2.ToString("F0")
+        TextBox127.Text = c_area2.ToString("F2")            'Area [m2]
+        TextBox99.Text = total_instal.ToString("F0")
+        TextBox83.Text = sheet_metal_wht.ToString("F0")
+        TextBox114.Text = p304.ToString("F0")
+        TextBox115.Text = p316.ToString("F0")
+        TextBox61.Text = c_weight1.ToString("F0")           'Total weight
+        TextBox135.Text = c_area1.ToString("F2")            'Area [m2]
     End Sub
     'Calculate cyclone weight
     Private Sub Button7_Click(sender As Object, e As EventArgs) Handles Button7.Click, TabPage7.Enter, NumericUpDown32.ValueChanged, NumericUpDown31.ValueChanged, NumericUpDown45.ValueChanged, NumericUpDown44.ValueChanged, NumericUpDown42.ValueChanged, NumericUpDown41.ValueChanged
@@ -2274,7 +2282,7 @@ Public Class Form1
 
         loss = 100 - loss
         For row = 1 To DataGridView4.Rows.Count - 1
-            If loss < CDbl(DataGridView4.Rows(row).Cells(9).Value) Then
+            If loss <= CDbl(DataGridView4.Rows(row).Cells(9).Value) Then
                 Return CDbl((DataGridView4.Rows(row).Cells(0).Value))
                 Exit For
             End If
