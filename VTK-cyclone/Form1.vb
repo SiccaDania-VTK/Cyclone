@@ -891,13 +891,14 @@ Public Class Form1
     Public Sub Draw_chart1(ch As Chart)
         Dim ks As Integer
         Dim a, b As Double
+        Dim eff1 As Double
 
         ch.Series.Clear()
         ch.ChartAreas.Clear()
         ch.Titles.Clear()
         ch.ChartAreas.Add("ChartArea0")
 
-        For h = 0 To 4
+        For h = 0 To 5
             ch.Series.Add("Series" & h.ToString)
             ch.Series(h).ChartArea = "ChartArea0"
             ch.Series(h).ChartType = SeriesChartType.Line
@@ -907,11 +908,11 @@ Public Class Form1
         ch.Series(0).BorderWidth = 0    'Only markers NO line
 
         ch.Series(0).LegendText = "Input Stars stage #1"
-        ch.Series(1).LegendText = "Rosin Rammler stage #1 "
+        ch.Series(1).LegendText = "Input Rosin Rammler #1 "
         ch.Series(2).LegendText = "Loss stage #1"
         ch.Series(3).LegendText = "Loss stage #2"
-        ch.Series(4).LegendText = "Efficiency #1 & #2"
-
+        ch.Series(4).LegendText = "Efficiency #1"
+        ch.Series(5).LegendText = "Efficiency 1 AND 2"
 
         ch.Series(0).BorderDashStyle = ChartDashStyle.Solid
         ch.Series(1).BorderDashStyle = ChartDashStyle.Solid
@@ -922,7 +923,9 @@ Public Class Form1
         ch.Series(0).IsValueShownAsLabel = CBool(IIf(CheckBox8.Checked, True, False))
         ch.Series(1).IsValueShownAsLabel = CBool(IIf(CheckBox9.Checked, True, False))
         ch.Series(2).IsValueShownAsLabel = CBool(IIf(CheckBox10.Checked, True, False))
-
+        ch.Series(3).IsValueShownAsLabel = CBool(IIf(CheckBox1.Checked, True, False))
+        ch.Series(4).IsValueShownAsLabel = CBool(IIf(CheckBox11.Checked, True, False))
+        ch.Series(5).IsValueShownAsLabel = CBool(IIf(CheckBox5.Checked, True, False))
 
         ch.ChartAreas("ChartArea0").AxisX.TitleFont = New Font("Arial", 11, System.Drawing.FontStyle.Bold)
         ch.ChartAreas("ChartArea0").AxisY.TitleFont = New Font("Arial", 11, System.Drawing.FontStyle.Bold)
@@ -952,7 +955,6 @@ Public Class Form1
         '----- now start plotting ------------------------
         ks = CInt(NumericUpDown30.Value)        'Case number
 
-
         '----------------------------- Plot Input stars-----------------------
         For input_cnt = 0 To 10
             'What is the star position
@@ -965,33 +967,46 @@ Public Class Form1
             ch.Series(0).Points(input_cnt).MarkerSize = 15
         Next
 
-        '------ Input Rosin Rammler stage #1 -------------
+        '------ PSD Input Rosin Rammler stage #1 -------------
         For h = 0 To 110 Step 3   'Fill line chart
             a = _cees(ks).stage1(h).dia
             b = _cees(ks).stage1(h).psd_cum_pro
             ch.Series(1).Points.AddXY(a, b)
         Next h
 
-
         '------ Plot Stage #2 output-------------
         Dim loss1, loss2 As Double
-        If CheckBox6.Checked Then
-            '------ Stage #2 output-------------
-            For h = 0 To DataGridView4.Rows.Count - 1                       'Fill line chart
-                '------- datagrid ------
-                a = CDbl((DataGridView4.Rows(h).Cells(0).Value))            'Particle size
-                loss1 = CDbl((DataGridView4.Rows(h).Cells(5).Value))        'Loss 1
-                loss2 = CDbl((DataGridView4.Rows(h).Cells(8).Value))        'Loss 2
-                b = CDbl((DataGridView4.Rows(h).Cells(9).Value))            'Eff 1&2 [%]
-                '------- Chart --------
-                ch.Series(2).Points.AddXY(a, loss1)
-                ch.Series(3).Points.AddXY(a, loss2)
-                ch.Series(4).Points.AddXY(a, b)
 
-                '------- textbox ------
-                'TextBox127.Text &= "(x,y)= " & a.ToString("F3") & ", " & b.ToString("F3") & vbCrLf
-            Next h
-        End If
+        '------ Data from DataGridView2 -------------
+        For h = 0 To DataGridView2.Rows.Count - 1                      'Fill line chart
+            a = CDbl((DataGridView2.Rows(h).Cells(0).Value))           'Particle size
+            eff1 = CDbl((DataGridView2.Rows(h).Cells(5).Value))        'Get data eff1
+
+            '------- Plot stage #1 eff --------
+            ch.Series(4).Points.AddXY(a, eff1)                         'Plot eff #1
+        Next h
+
+
+
+        '------ Data from DataGridView4 -------------
+        For h = 0 To DataGridView4.Rows.Count - 1                       'Fill line chart
+            a = CDbl((DataGridView4.Rows(h).Cells(0).Value))            'Particle size
+            loss1 = CDbl((DataGridView4.Rows(h).Cells(5).Value))        'Get data Loss 1
+
+            '------- Plot stage #1  --------
+            ch.Series(2).Points.AddXY(a, loss1)                         'Plot Loss 1
+
+            '------- Plot stage #2  --------
+            If CheckBox6.Checked Then
+                loss2 = CDbl((DataGridView4.Rows(h).Cells(8).Value))    'get data Loss 2
+                b = CDbl((DataGridView4.Rows(h).Cells(9).Value))        'get data Eff 1&2 [%]
+                ch.Series(3).Points.AddXY(a, loss2)                     'Plot Loss 2
+                ch.Series(5).Points.AddXY(a, b)                         'Plot Eff 1&2 [%]
+            End If
+
+            '------- textbox ------
+            'TextBox127.Text &= "(x,y)= " & a.ToString("F3") & ", " & b.ToString("F3") & vbCrLf
+        Next h
 
     End Sub
     Public Sub Log_now(ks As Integer, line As Integer, r As String)
@@ -1046,7 +1061,7 @@ Public Class Form1
             ch.Series(0).Points.AddXY(s_points(h, 0), s_points(h, 1))
         Next h
     End Sub
-    Private Sub Button2_Click(sender As Object, e As EventArgs) Handles TabPage9.Enter, CheckBox6.CheckedChanged, CheckBox5.CheckedChanged, CheckBox7.CheckedChanged, CheckBox4.CheckedChanged, CheckBox9.CheckedChanged, CheckBox8.CheckedChanged, CheckBox10.CheckedChanged
+    Private Sub Button2_Click(sender As Object, e As EventArgs) Handles TabPage9.Enter, CheckBox6.CheckedChanged, CheckBox7.CheckedChanged, CheckBox4.CheckedChanged, CheckBox9.CheckedChanged, CheckBox8.CheckedChanged, CheckBox10.CheckedChanged
         Calc_sequence()
     End Sub
     Private Sub Calc_sequence()
@@ -1437,7 +1452,7 @@ Public Class Form1
         DataGridView2.Columns(2).HeaderText = "Dia/k [-]"
         DataGridView2.Columns(3).HeaderText = "Loss overall [-]"
         DataGridView2.Columns(4).HeaderText = "Loss overall Corrected"
-        DataGridView2.Columns(5).HeaderText = "Catch chart [%]"             '
+        DataGridView2.Columns(5).HeaderText = "Catch Eff. (chart) [%]"      '
         DataGridView2.Columns(6).HeaderText = "Group number [-]"            '
         DataGridView2.Columns(7).HeaderText = "d1 lower dia [mu]"           '
         DataGridView2.Columns(8).HeaderText = "d2 upper dia [mu]"           '
@@ -2161,7 +2176,7 @@ Public Class Form1
             DataGridView4.Columns(0).HeaderText = "Dia aver [mu]"                   'Chart
             DataGridView4.Columns(1).HeaderText = "In abs [g/Am3]"
             DataGridView4.Columns(2).HeaderText = "In psd diff [%]"
-            DataGridView4.Columns(3).HeaderText = "In psd cum [%]"
+            DataGridView4.Columns(3).HeaderText = "In psd cum (chart)[%]"
             DataGridView4.Columns(4).HeaderText = "Loss1 pds dif [%]"               '
             DataGridView4.Columns(5).HeaderText = "Loss1 (chart) pdscum [%]"        'chart
             DataGridView4.Columns(6).HeaderText = "Loss abs [g/Nm3]"                '
@@ -2170,6 +2185,7 @@ Public Class Form1
             DataGridView4.Columns(9).HeaderText = "Eff 1&2 (chart) [%]"             'chart
 
             DataGridView4.Columns(0).HeaderCell.Style.BackColor = Color.Yellow      'For chart
+            DataGridView4.Columns(3).HeaderCell.Style.BackColor = Color.Yellow      'For chart
             DataGridView4.Columns(5).HeaderCell.Style.BackColor = Color.Yellow      'For chart
             DataGridView4.Columns(8).HeaderCell.Style.BackColor = Color.Yellow      'For chart
             DataGridView4.Columns(9).HeaderCell.Style.BackColor = Color.Yellow      'For chart
@@ -2218,14 +2234,16 @@ Public Class Form1
                 li(8) = qq - li(7)                                      'Loss2 pds.cum [%] 
                 li(9) = 100 * (li(1) - li(6)) / li(1)                   'Eff stage1&2 [%]
 
+                If li(8) = 0 Then li(9) = 100       'Loss is zero eff must be 100%
+
                 '========== prevent silly results ======
                 For col = 0 To 9  'Fill the DataGridview
                     If Double.IsNaN(li(col)) Then li(col) = 0               'prevent silly results
                     If li(col) < 0 Or li(col) > 10 ^ 5 Then li(col) = 0     'prevent silly results
-
                     DataGridView4.Rows(row).Cells(col).Value = li(col).ToString("F6")
                 Next
             Next
+
         End If
     End Sub
 
