@@ -23,12 +23,12 @@ Partial Class Form1
     <System.Diagnostics.DebuggerStepThrough()>
     Private Sub InitializeComponent()
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(Form1))
-        Dim ChartArea9 As System.Windows.Forms.DataVisualization.Charting.ChartArea = New System.Windows.Forms.DataVisualization.Charting.ChartArea()
-        Dim Legend9 As System.Windows.Forms.DataVisualization.Charting.Legend = New System.Windows.Forms.DataVisualization.Charting.Legend()
-        Dim Series9 As System.Windows.Forms.DataVisualization.Charting.Series = New System.Windows.Forms.DataVisualization.Charting.Series()
-        Dim ChartArea10 As System.Windows.Forms.DataVisualization.Charting.ChartArea = New System.Windows.Forms.DataVisualization.Charting.ChartArea()
-        Dim Legend10 As System.Windows.Forms.DataVisualization.Charting.Legend = New System.Windows.Forms.DataVisualization.Charting.Legend()
-        Dim Series10 As System.Windows.Forms.DataVisualization.Charting.Series = New System.Windows.Forms.DataVisualization.Charting.Series()
+        Dim ChartArea1 As System.Windows.Forms.DataVisualization.Charting.ChartArea = New System.Windows.Forms.DataVisualization.Charting.ChartArea()
+        Dim Legend1 As System.Windows.Forms.DataVisualization.Charting.Legend = New System.Windows.Forms.DataVisualization.Charting.Legend()
+        Dim Series1 As System.Windows.Forms.DataVisualization.Charting.Series = New System.Windows.Forms.DataVisualization.Charting.Series()
+        Dim ChartArea2 As System.Windows.Forms.DataVisualization.Charting.ChartArea = New System.Windows.Forms.DataVisualization.Charting.ChartArea()
+        Dim Legend2 As System.Windows.Forms.DataVisualization.Charting.Legend = New System.Windows.Forms.DataVisualization.Charting.Legend()
+        Dim Series2 As System.Windows.Forms.DataVisualization.Charting.Series = New System.Windows.Forms.DataVisualization.Charting.Series()
         Me.OpenFileDialog1 = New System.Windows.Forms.OpenFileDialog()
         Me.TabPage10 = New System.Windows.Forms.TabPage()
         Me.TabPage8 = New System.Windows.Forms.TabPage()
@@ -478,15 +478,16 @@ Partial Class Form1
         Me.Chart1 = New System.Windows.Forms.DataVisualization.Charting.Chart()
         Me.TextBox127 = New System.Windows.Forms.TextBox()
         Me.GroupBox12 = New System.Windows.Forms.GroupBox()
+        Me.CheckBox11 = New System.Windows.Forms.CheckBox()
+        Me.CheckBox5 = New System.Windows.Forms.CheckBox()
+        Me.CheckBox1 = New System.Windows.Forms.CheckBox()
         Me.CheckBox10 = New System.Windows.Forms.CheckBox()
         Me.CheckBox9 = New System.Windows.Forms.CheckBox()
         Me.CheckBox8 = New System.Windows.Forms.CheckBox()
         Me.CheckBox7 = New System.Windows.Forms.CheckBox()
         Me.CheckBox4 = New System.Windows.Forms.CheckBox()
         Me.CheckBox6 = New System.Windows.Forms.CheckBox()
-        Me.CheckBox1 = New System.Windows.Forms.CheckBox()
-        Me.CheckBox5 = New System.Windows.Forms.CheckBox()
-        Me.CheckBox11 = New System.Windows.Forms.CheckBox()
+        Me.CheckBox12 = New System.Windows.Forms.CheckBox()
         Me.TabPage8.SuspendLayout()
         Me.TabPage7.SuspendLayout()
         CType(Me.PictureBox1, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -3481,16 +3482,16 @@ Partial Class Form1
         '
         'Chart2
         '
-        ChartArea9.Name = "ChartArea1"
-        Me.Chart2.ChartAreas.Add(ChartArea9)
-        Legend9.Name = "Legend1"
-        Me.Chart2.Legends.Add(Legend9)
+        ChartArea1.Name = "ChartArea1"
+        Me.Chart2.ChartAreas.Add(ChartArea1)
+        Legend1.Name = "Legend1"
+        Me.Chart2.Legends.Add(Legend1)
         Me.Chart2.Location = New System.Drawing.Point(891, 379)
         Me.Chart2.Name = "Chart2"
-        Series9.ChartArea = "ChartArea1"
-        Series9.Legend = "Legend1"
-        Series9.Name = "Series1"
-        Me.Chart2.Series.Add(Series9)
+        Series1.ChartArea = "ChartArea1"
+        Series1.Legend = "Legend1"
+        Series1.Name = "Series1"
+        Me.Chart2.Series.Add(Series1)
         Me.Chart2.Size = New System.Drawing.Size(382, 224)
         Me.Chart2.TabIndex = 80
         Me.Chart2.Text = "Chart2"
@@ -5451,18 +5452,18 @@ Partial Class Form1
         'Chart1
         '
         Me.Chart1.AllowDrop = True
-        ChartArea10.Name = "ChartArea1"
-        Me.Chart1.ChartAreas.Add(ChartArea10)
+        ChartArea2.Name = "ChartArea1"
+        Me.Chart1.ChartAreas.Add(ChartArea2)
         Me.Chart1.Dock = System.Windows.Forms.DockStyle.Fill
         Me.Chart1.Enabled = False
-        Legend10.Name = "Legend1"
-        Me.Chart1.Legends.Add(Legend10)
+        Legend2.Name = "Legend1"
+        Me.Chart1.Legends.Add(Legend2)
         Me.Chart1.Location = New System.Drawing.Point(0, 0)
         Me.Chart1.Name = "Chart1"
-        Series10.ChartArea = "ChartArea1"
-        Series10.Legend = "Legend1"
-        Series10.Name = "Series1"
-        Me.Chart1.Series.Add(Series10)
+        Series2.ChartArea = "ChartArea1"
+        Series2.Legend = "Legend1"
+        Series2.Name = "Series1"
+        Me.Chart1.Series.Add(Series2)
         Me.Chart1.Size = New System.Drawing.Size(1077, 809)
         Me.Chart1.TabIndex = 68
         Me.Chart1.Text = "Chart1"
@@ -5478,6 +5479,7 @@ Partial Class Form1
         '
         'GroupBox12
         '
+        Me.GroupBox12.Controls.Add(Me.CheckBox12)
         Me.GroupBox12.Controls.Add(Me.CheckBox11)
         Me.GroupBox12.Controls.Add(Me.CheckBox5)
         Me.GroupBox12.Controls.Add(Me.CheckBox1)
@@ -5494,40 +5496,70 @@ Partial Class Form1
         Me.GroupBox12.TabStop = False
         Me.GroupBox12.Text = "Chart options"
         '
+        'CheckBox11
+        '
+        Me.CheckBox11.AutoSize = True
+        Me.CheckBox11.Location = New System.Drawing.Point(5, 184)
+        Me.CheckBox11.Name = "CheckBox11"
+        Me.CheckBox11.Size = New System.Drawing.Size(123, 17)
+        Me.CheckBox11.TabIndex = 10
+        Me.CheckBox11.Text = "Values Efficiency #1"
+        Me.CheckBox11.UseVisualStyleBackColor = True
+        '
+        'CheckBox5
+        '
+        Me.CheckBox5.AutoSize = True
+        Me.CheckBox5.Location = New System.Drawing.Point(5, 228)
+        Me.CheckBox5.Name = "CheckBox5"
+        Me.CheckBox5.Size = New System.Drawing.Size(98, 17)
+        Me.CheckBox5.TabIndex = 9
+        Me.CheckBox5.Text = "Values Eff. 1&&2"
+        Me.CheckBox5.UseVisualStyleBackColor = True
+        '
+        'CheckBox1
+        '
+        Me.CheckBox1.AutoSize = True
+        Me.CheckBox1.Location = New System.Drawing.Point(5, 162)
+        Me.CheckBox1.Name = "CheckBox1"
+        Me.CheckBox1.Size = New System.Drawing.Size(95, 17)
+        Me.CheckBox1.TabIndex = 8
+        Me.CheckBox1.Text = "Values loss #2"
+        Me.CheckBox1.UseVisualStyleBackColor = True
+        '
         'CheckBox10
         '
         Me.CheckBox10.AutoSize = True
-        Me.CheckBox10.Location = New System.Drawing.Point(6, 145)
+        Me.CheckBox10.Location = New System.Drawing.Point(5, 140)
         Me.CheckBox10.Name = "CheckBox10"
-        Me.CheckBox10.Size = New System.Drawing.Size(124, 17)
+        Me.CheckBox10.Size = New System.Drawing.Size(95, 17)
         Me.CheckBox10.TabIndex = 7
-        Me.CheckBox10.Text = "Show values loss #1"
+        Me.CheckBox10.Text = "Values loss #1"
         Me.CheckBox10.UseVisualStyleBackColor = True
         '
         'CheckBox9
         '
         Me.CheckBox9.AutoSize = True
-        Me.CheckBox9.Location = New System.Drawing.Point(6, 122)
+        Me.CheckBox9.Location = New System.Drawing.Point(5, 118)
         Me.CheckBox9.Name = "CheckBox9"
-        Me.CheckBox9.Size = New System.Drawing.Size(132, 17)
+        Me.CheckBox9.Size = New System.Drawing.Size(103, 17)
         Me.CheckBox9.TabIndex = 6
-        Me.CheckBox9.Text = "Show values stage #1"
+        Me.CheckBox9.Text = "Values stage #1"
         Me.CheckBox9.UseVisualStyleBackColor = True
         '
         'CheckBox8
         '
         Me.CheckBox8.AutoSize = True
-        Me.CheckBox8.Location = New System.Drawing.Point(6, 99)
+        Me.CheckBox8.Location = New System.Drawing.Point(5, 96)
         Me.CheckBox8.Name = "CheckBox8"
-        Me.CheckBox8.Size = New System.Drawing.Size(114, 17)
+        Me.CheckBox8.Size = New System.Drawing.Size(85, 17)
         Me.CheckBox8.TabIndex = 5
-        Me.CheckBox8.Text = "Show values Input"
+        Me.CheckBox8.Text = "Values Input"
         Me.CheckBox8.UseVisualStyleBackColor = True
         '
         'CheckBox7
         '
         Me.CheckBox7.AutoSize = True
-        Me.CheckBox7.Location = New System.Drawing.Point(6, 76)
+        Me.CheckBox7.Location = New System.Drawing.Point(5, 74)
         Me.CheckBox7.Name = "CheckBox7"
         Me.CheckBox7.Size = New System.Drawing.Size(101, 17)
         Me.CheckBox7.TabIndex = 4
@@ -5537,7 +5569,7 @@ Partial Class Form1
         'CheckBox4
         '
         Me.CheckBox4.AutoSize = True
-        Me.CheckBox4.Location = New System.Drawing.Point(6, 53)
+        Me.CheckBox4.Location = New System.Drawing.Point(5, 52)
         Me.CheckBox4.Name = "CheckBox4"
         Me.CheckBox4.Size = New System.Drawing.Size(103, 17)
         Me.CheckBox4.TabIndex = 3
@@ -5549,42 +5581,22 @@ Partial Class Form1
         Me.CheckBox6.AutoSize = True
         Me.CheckBox6.Checked = True
         Me.CheckBox6.CheckState = System.Windows.Forms.CheckState.Checked
-        Me.CheckBox6.Location = New System.Drawing.Point(6, 30)
+        Me.CheckBox6.Location = New System.Drawing.Point(5, 30)
         Me.CheckBox6.Name = "CheckBox6"
         Me.CheckBox6.Size = New System.Drawing.Size(98, 17)
         Me.CheckBox6.TabIndex = 2
         Me.CheckBox6.Text = "Show stage #2"
         Me.CheckBox6.UseVisualStyleBackColor = True
         '
-        'CheckBox1
+        'CheckBox12
         '
-        Me.CheckBox1.AutoSize = True
-        Me.CheckBox1.Location = New System.Drawing.Point(6, 168)
-        Me.CheckBox1.Name = "CheckBox1"
-        Me.CheckBox1.Size = New System.Drawing.Size(124, 17)
-        Me.CheckBox1.TabIndex = 8
-        Me.CheckBox1.Text = "Show values loss #2"
-        Me.CheckBox1.UseVisualStyleBackColor = True
-        '
-        'CheckBox5
-        '
-        Me.CheckBox5.AutoSize = True
-        Me.CheckBox5.Location = New System.Drawing.Point(6, 211)
-        Me.CheckBox5.Name = "CheckBox5"
-        Me.CheckBox5.Size = New System.Drawing.Size(117, 17)
-        Me.CheckBox5.TabIndex = 9
-        Me.CheckBox5.Text = "Show Efficiency 1&2"
-        Me.CheckBox5.UseVisualStyleBackColor = True
-        '
-        'CheckBox11
-        '
-        Me.CheckBox11.AutoSize = True
-        Me.CheckBox11.Location = New System.Drawing.Point(6, 188)
-        Me.CheckBox11.Name = "CheckBox11"
-        Me.CheckBox11.Size = New System.Drawing.Size(118, 17)
-        Me.CheckBox11.TabIndex = 10
-        Me.CheckBox11.Text = "Show Efficiency #1"
-        Me.CheckBox11.UseVisualStyleBackColor = True
+        Me.CheckBox12.AutoSize = True
+        Me.CheckBox12.Location = New System.Drawing.Point(5, 206)
+        Me.CheckBox12.Name = "CheckBox12"
+        Me.CheckBox12.Size = New System.Drawing.Size(123, 17)
+        Me.CheckBox12.TabIndex = 11
+        Me.CheckBox12.Text = "Values Efficiency #2"
+        Me.CheckBox12.UseVisualStyleBackColor = True
         '
         'Form1
         '
@@ -6162,4 +6174,5 @@ Partial Class Form1
     Friend WithEvents CheckBox1 As CheckBox
     Friend WithEvents CheckBox5 As CheckBox
     Friend WithEvents CheckBox11 As CheckBox
+    Friend WithEvents CheckBox12 As CheckBox
 End Class

@@ -891,20 +891,23 @@ Public Class Form1
     Public Sub Draw_chart1(ch As Chart)
         Dim ks As Integer
         Dim a, b As Double
-        Dim eff1 As Double
+        Dim eff1, eff2 As Double
 
         ch.Series.Clear()
         ch.ChartAreas.Clear()
         ch.Titles.Clear()
         ch.ChartAreas.Add("ChartArea0")
 
-        For h = 0 To 5
+        For h = 0 To 6
             ch.Series.Add("Series" & h.ToString)
             ch.Series(h).ChartArea = "ChartArea0"
             ch.Series(h).ChartType = SeriesChartType.Line
             ch.Series(h).BorderWidth = 3
             ch.Series(h).IsVisibleInLegend = True
+            'ch.Series(h).Label = "#VALY{F1}"
+            ch.Series(h).IsValueShownAsLabel = False
         Next
+
         ch.Series(0).BorderWidth = 0    'Only markers NO line
 
         ch.Series(0).LegendText = "Input Stars stage #1"
@@ -912,20 +915,27 @@ Public Class Form1
         ch.Series(2).LegendText = "Loss stage #1"
         ch.Series(3).LegendText = "Loss stage #2"
         ch.Series(4).LegendText = "Efficiency #1"
-        ch.Series(5).LegendText = "Efficiency 1 AND 2"
+        ch.Series(5).LegendText = "Efficiency #2"
+        ch.Series(6).LegendText = "Efficiency 1&2"
+
+        ch.Series(0).IsVisibleInLegend = True
 
         ch.Series(0).BorderDashStyle = ChartDashStyle.Solid
         ch.Series(1).BorderDashStyle = ChartDashStyle.Solid
-        ch.Series(2).BorderDashStyle = ChartDashStyle.Dot
-        ch.Series(3).BorderDashStyle = ChartDashStyle.Dot
-        ch.Series(4).BorderDashStyle = ChartDashStyle.Solid
+        ch.Series(2).BorderDashStyle = ChartDashStyle.Solid
+        ch.Series(3).BorderDashStyle = ChartDashStyle.Solid
+        ch.Series(4).BorderDashStyle = ChartDashStyle.Dot
+        ch.Series(5).BorderDashStyle = ChartDashStyle.Dot
+        ch.Series(6).BorderDashStyle = ChartDashStyle.Dot
 
         ch.Series(0).IsValueShownAsLabel = CBool(IIf(CheckBox8.Checked, True, False))
         ch.Series(1).IsValueShownAsLabel = CBool(IIf(CheckBox9.Checked, True, False))
         ch.Series(2).IsValueShownAsLabel = CBool(IIf(CheckBox10.Checked, True, False))
         ch.Series(3).IsValueShownAsLabel = CBool(IIf(CheckBox1.Checked, True, False))
         ch.Series(4).IsValueShownAsLabel = CBool(IIf(CheckBox11.Checked, True, False))
-        ch.Series(5).IsValueShownAsLabel = CBool(IIf(CheckBox5.Checked, True, False))
+        ch.Series(5).IsValueShownAsLabel = CBool(IIf(CheckBox12.Checked, True, False))
+        ch.Series(6).IsValueShownAsLabel = CBool(IIf(CheckBox5.Checked, True, False))
+
 
         ch.ChartAreas("ChartArea0").AxisX.TitleFont = New Font("Arial", 11, System.Drawing.FontStyle.Bold)
         ch.ChartAreas("ChartArea0").AxisY.TitleFont = New Font("Arial", 11, System.Drawing.FontStyle.Bold)
@@ -967,6 +977,7 @@ Public Class Form1
             ch.Series(0).Points(input_cnt).MarkerSize = 15
         Next
 
+
         '------ PSD Input Rosin Rammler stage #1 -------------
         For h = 0 To 110 Step 3   'Fill line chart
             a = _cees(ks).stage1(h).dia
@@ -981,12 +992,19 @@ Public Class Form1
         For h = 0 To DataGridView2.Rows.Count - 1                      'Fill line chart
             a = CDbl((DataGridView2.Rows(h).Cells(0).Value))           'Particle size
             eff1 = CDbl((DataGridView2.Rows(h).Cells(5).Value))        'Get data eff1
+            eff2 = CDbl((DataGridView3.Rows(h).Cells(5).Value))        'Get data eff2
 
-            '------- Plot stage #1 eff --------
+            '------- Plot efficiency --------
             ch.Series(4).Points.AddXY(a, eff1)                         'Plot eff #1
+            If CheckBox6.Checked Then
+                ch.Series(5).Points.AddXY(a, eff2)                     'Plot eff #2
+            End If
         Next h
 
-
+        '----- labels on chart ------------
+        ch.Series(0).Points(5).Label = "Input"
+        ch.Series(4).Points(30).Label = "Eff #1"
+        If CheckBox6.Checked Then ch.Series(5).Points(45).Label = "Eff #2"
 
         '------ Data from DataGridView4 -------------
         For h = 0 To DataGridView4.Rows.Count - 1                       'Fill line chart
@@ -1001,24 +1019,20 @@ Public Class Form1
                 loss2 = CDbl((DataGridView4.Rows(h).Cells(8).Value))    'get data Loss 2
                 b = CDbl((DataGridView4.Rows(h).Cells(9).Value))        'get data Eff 1&2 [%]
                 ch.Series(3).Points.AddXY(a, loss2)                     'Plot Loss 2
-                ch.Series(5).Points.AddXY(a, b)                         'Plot Eff 1&2 [%]
+                ch.Series(6).Points.AddXY(a, b)                         'Plot Eff 1&2 [%]
             End If
-
-            '------- textbox ------
-            'TextBox127.Text &= "(x,y)= " & a.ToString("F3") & ", " & b.ToString("F3") & vbCrLf
         Next h
-
     End Sub
     Public Sub Log_now(ks As Integer, line As Integer, r As String)
-        Dim verschil As Double
+        'Dim verschil As Double
 
-        verschil = _cees(ks).stage1(line).psd_cum_pro - _cees(ks).stage2(line).psd_cum_pro
-        TextBox24.Text &= "Log line" & line.ToString & " " & r
-        TextBox24.Text &= " c.stage1(line).psd_dif=" & _cees(ks).stage1(line).psd_dif.ToString
-        TextBox24.Text &= "  c.stage2(line).psd_dif=" & _cees(ks).stage2(line).psd_dif.ToString
-        TextBox24.Text &= "  c.stage1(line).psd_cum_pro=" & _cees(ks).stage1(line).psd_cum_pro.ToString
-        TextBox24.Text &= "  c.stage2(line).psd_cum_pro=" & _cees(ks).stage2(line).psd_cum_pro.ToString
-        TextBox24.Text &= "  verschil=" & verschil.ToString & vbCrLf
+        'verschil = _cees(ks).stage1(line).psd_cum_pro - _cees(ks).stage2(line).psd_cum_pro
+        'TextBox24.Text &= "Log line" & line.ToString & " " & r
+        'TextBox24.Text &= " c.stage1(line).psd_dif=" & _cees(ks).stage1(line).psd_dif.ToString
+        'TextBox24.Text &= "  c.stage2(line).psd_dif=" & _cees(ks).stage2(line).psd_dif.ToString
+        'TextBox24.Text &= "  c.stage1(line).psd_cum_pro=" & _cees(ks).stage1(line).psd_cum_pro.ToString
+        'TextBox24.Text &= "  c.stage2(line).psd_cum_pro=" & _cees(ks).stage2(line).psd_cum_pro.ToString
+        'TextBox24.Text &= "  verschil=" & verschil.ToString & vbCrLf
     End Sub
 
     Private Sub Draw_chart2(ch As Chart)
@@ -1061,7 +1075,7 @@ Public Class Form1
             ch.Series(0).Points.AddXY(s_points(h, 0), s_points(h, 1))
         Next h
     End Sub
-    Private Sub Button2_Click(sender As Object, e As EventArgs) Handles TabPage9.Enter, CheckBox6.CheckedChanged, CheckBox7.CheckedChanged, CheckBox4.CheckedChanged, CheckBox9.CheckedChanged, CheckBox8.CheckedChanged, CheckBox10.CheckedChanged
+    Private Sub Button2_Click(sender As Object, e As EventArgs) Handles TabPage9.Enter, CheckBox6.CheckedChanged, CheckBox7.CheckedChanged, CheckBox4.CheckedChanged, CheckBox9.CheckedChanged, CheckBox8.CheckedChanged, CheckBox10.CheckedChanged, CheckBox5.CheckedChanged, CheckBox12.CheckedChanged, CheckBox11.CheckedChanged, CheckBox1.CheckedChanged
         Calc_sequence()
     End Sub
     Private Sub Calc_sequence()
@@ -1759,7 +1773,7 @@ Public Class Form1
         _cees(ks).stage2(0).loss_abs = _cees(ks).stage2(0).loss_overall * _cees(ks).stage2(0).psd_dif
         _cees(ks).stage2(0).loss_abs_C = _cees(ks).stage2(0).loss_overall_C * _cees(ks).stage2(0).psd_dif
 
-        TextBox24.Text &= "_cees(ks).Efficiency1= " & _cees(ks).Efficiency1.ToString & vbCrLf
+        ' TextBox24.Text &= "_cees(ks).Efficiency1= " & _cees(ks).Efficiency1.ToString & vbCrLf
 
         '----- initial values -------
         _cees(ks).sum_psd_diff2 = 0 '_cees(ks).stage2(0).psd_dif
@@ -1821,9 +1835,9 @@ Public Class Form1
                 _cees(ks).stage2(i).psd_dif = 0
             End If
 
-            TextBox24.Text &= "_cees(ks).stage1(i).psd_dif= " & _cees(ks).stage1(i).psd_dif.ToString("F6")
-            TextBox24.Text &= "  _cees(ks).sum_loss_C1= " & _cees(ks).sum_loss_C1.ToString("F6")
-            TextBox24.Text &= "  _cees(ks).stage2(i).psd_dif= " & _cees(ks).stage2(i).psd_dif.ToString("F6") & vbCrLf
+            'TextBox24.Text &= "_cees(ks).stage1(i).psd_dif= " & _cees(ks).stage1(i).psd_dif.ToString("F6")
+            'TextBox24.Text &= "  _cees(ks).sum_loss_C1= " & _cees(ks).sum_loss_C1.ToString("F6")
+            'TextBox24.Text &= "  _cees(ks).stage2(i).psd_dif= " & _cees(ks).stage2(i).psd_dif.ToString("F6") & vbCrLf
 
             ' Log_now(ks, i, "Calc_stage2")  'Log now to textbox24
 
@@ -2244,8 +2258,30 @@ Public Class Form1
                 Next
             Next
 
+            '---------------- present dp(x) values ----
+            TextBox119.Text = Vlookup_db(100).ToString("F2")
+            TextBox121.Text = Vlookup_db(95).ToString("F2")
+            TextBox122.Text = Vlookup_db(90).ToString("F2")
+            TextBox123.Text = Vlookup_db(50).ToString("F2")
+            TextBox124.Text = Vlookup_db(10).ToString("F2")
+            TextBox125.Text = Vlookup_db(5).ToString("F2")
+
         End If
     End Sub
+    Private Function Vlookup_db(loss As Double) As Double
+        'If the loss percenatege is found return the particle diameter
+        If loss > 100 Or loss < 0 Then MsgBox("Problem in line Vlookup_db")
+
+        loss = 100 - loss
+        For row = 1 To DataGridView4.Rows.Count - 1
+            If loss < CDbl(DataGridView4.Rows(row).Cells(9).Value) Then
+                Return CDbl((DataGridView4.Rows(row).Cells(0).Value))
+                Exit For
+            End If
+        Next
+
+        Return (-1)
+    End Function
 
     'Calculate ACTUAL --> NORMAL Conditions
     'Normaal condities; 0 celsius, 101325 Pascal
