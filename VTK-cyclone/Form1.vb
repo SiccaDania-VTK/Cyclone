@@ -550,7 +550,7 @@ Public Class Form1
             k41 += CDbl(DataGridView1.Rows(h).Cells(4).Value)    'tot_catch_abs[%]
         Next
         '===================================================================
-        Calc_Datagridview1(ks)
+        'Calc_Datagridview1(ks)
 
         DataGridView1.AutoResizeColumns()
     End Sub
@@ -1084,16 +1084,25 @@ Public Class Form1
 
         If ComboBox1.SelectedIndex > -1 And ComboBox2.SelectedIndex > -1 Then
             Dust_load_correction(case_nr)
-            Get_input_calc_1(case_nr)   'This is the CASE number
+            Get_input_calc_1(case_nr)       'This is the CASE number
             Calc_part_dia_loss(case_nr)
-            Calc_stage1(case_nr)        'Calc according stage #1
-            Calc_stage2(case_nr)        'Calc according stage #2
-            Present_loss_grid1()        'Present the results stage #1
-            Present_loss_grid2()        'Present the results stage #2
-            Present_Datagridview1(case_nr)
-            Init_datagrid4()            'stage #1 and stage #2 combined
-            Draw_chart1(Chart1)         'Present the results
-            Draw_chart2(Chart2)         'Present the results
+
+            Calc_stage1(case_nr)            'Calc according stage #1
+            Calc_stage2(case_nr)            'Calc according stage #2
+
+            Calc_stage1(case_nr)            'Calc according stage #1
+            Calc_stage2(case_nr)            'Calc according stage #2
+
+            Calc_stage1(case_nr)            'Calc according stage #1
+            Calc_stage2(case_nr)            'Calc according stage #2
+            Calc_stage1_2()                 'Calc stage #1 and stage #2 combined
+
+            Present_loss_grid1()            'Present the results stage #1
+            Present_loss_grid2()            'Present the results stage #2
+            Present_Datagridview1(case_nr)  'Present the results stage #1
+
+            Draw_chart1(Chart1)             'Present the results
+            Draw_chart2(Chart2)             'Present the results
         End If
     End Sub
 
@@ -2181,7 +2190,7 @@ Public Class Form1
         Calc_sequence()
     End Sub
 
-    Private Sub Init_datagrid4()
+    Private Sub Calc_stage1_2()
         Dim ks As Integer = CInt(NumericUpDown30.Value)
         Dim li(11) As Double
         Dim row As Integer
