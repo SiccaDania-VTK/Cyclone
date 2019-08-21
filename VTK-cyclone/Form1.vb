@@ -712,7 +712,6 @@ Public Class Form1
     End Sub
     '-------- Bereken het verlies getal NIET gecorrigeerd -----------
     '----- de input is de GEMIDDELDE korrel grootte-----------
-    'Calc_verlies(_cees(ks).stage2(i).d_ave, False, _cees(ks).Kstokes2, 2)
 
     Private Function Calc_verlies(korrel_g As Double, present As Boolean, stokes As Double, stage As Integer) As Double
         Dim words() As String
@@ -1038,7 +1037,7 @@ Public Class Form1
 
     Private Sub Draw_chart2(ch As Chart)
         'Small chart on the first tab
-        Dim s_points(100, 2) As Double
+        Dim s_points(50, 2) As Double
         Dim h As Integer
         Dim sdia As Integer
         Dim ks As Integer   'Case number
@@ -1048,33 +1047,46 @@ Public Class Form1
         ch.Titles.Clear()
         ch.ChartAreas.Add("ChartArea0")
 
-        ch.Series.Add("Series" & h.ToString)
-        ch.Series(h).ChartArea = "ChartArea0"
-        ch.Series(h).ChartType = DataVisualization.Charting.SeriesChartType.Line
-        ch.Series(h).BorderWidth = 2
-        ch.Series(h).IsVisibleInLegend = False
+        ch.Series.Add("Series1")
+        ch.Series.Add("Series2")
+        ch.Series(0).ChartArea = "ChartArea0"
+        ch.Series(0).ChartType = DataVisualization.Charting.SeriesChartType.Line
+        ch.Series(0).BorderWidth = 2
+        ch.Series(0).IsVisibleInLegend = False
 
-        ch.Titles.Add("Loss Curve")
-        ch.ChartAreas("ChartArea0").AxisX.Title = "particle dia [mu]"
+        ch.Series(1).ChartArea = "ChartArea0"
+        ch.Series(1).ChartType = DataVisualization.Charting.SeriesChartType.Line
+        ch.Series(1).BorderWidth = 2
+        ch.Series(1).IsVisibleInLegend = False
+
+        ch.Titles.Add("Loss Curve Stage #1 and #2")
+        ch.ChartAreas("ChartArea0").AxisX.Title = "Particle diameter [mu]"
+        ch.ChartAreas("ChartArea0").AxisY.Title = "Cyclone loss [%]"
         ch.ChartAreas("ChartArea0").AxisY.Minimum = 0     'Loss
         ch.ChartAreas("ChartArea0").AxisY.Maximum = 100   'Loss
         ch.ChartAreas("ChartArea0").AxisX.Minimum = 0     'Particle size
-        ch.ChartAreas("ChartArea0").AxisX.Maximum = 20    'Particle size
+        ch.ChartAreas("ChartArea0").AxisX.Maximum = 30    'Particle size
 
-        '----- now calc chart poins --------------------------
-        Integer.TryParse(TextBox42.Text, sdia)
-        s_points(0, 0) = sdia   'Particle diameter [mu]
-        s_points(0, 1) = 100    '100% loss
+        '----- now calc chart points #1 and #2 --------------------------
+        Integer.TryParse(TextBox42.Text, sdia)                  'dp(100) stage #1
+        s_points(0, 0) = sdia                                   'Particle diameter [mu]
+        s_points(0, 1) = 100                                    '100% loss
+        s_points(0, 2) = 100                                    '100% loss
         ks = CInt(NumericUpDown30.Value)
-        For h = 1 To 40
+        For h = 1 To 30                                          'Particle diameter [mu]
             s_points(h, 0) = h                                   'Particle diameter [mu]
-            s_points(h, 1) = Calc_verlies(s_points(h, 0), False, _cees(ks).Kstokes2, 2) * 100  'Loss [%]
+            s_points(h, 1) = Calc_verlies(h, False, _cees(ks).Kstokes1, 1) * 100  'stage #1 Loss [%]
+            s_points(h, 2) = Calc_verlies(h, False, _cees(ks).Kstokes2, 2) * 100  'stage #2 Loss [%]
         Next
 
         '------ now present-------------
-        For h = 0 To 40 - 1   'Fill line chart
-            ch.Series(0).Points.AddXY(s_points(h, 0), s_points(h, 1))
+        For h = 0 To 30 - 1   'Fill line chart
+            ch.Series(0).Points.AddXY(s_points(h, 0), s_points(h, 1))   'stage #1 Loss [%]
+            ch.Series(1).Points.AddXY(s_points(h, 0), s_points(h, 2))   'stage #2 Loss [%]
         Next h
+
+        ch.Series(0).Points(6).Label = "Cyclone #1"
+        ch.Series(1).Points(4).Label = "Cyclone #2"
     End Sub
     Private Sub Button2_Click(sender As Object, e As EventArgs) Handles TabPage9.Enter, CheckBox6.CheckedChanged, CheckBox7.CheckedChanged, CheckBox4.CheckedChanged, CheckBox9.CheckedChanged, CheckBox8.CheckedChanged, CheckBox10.CheckedChanged, CheckBox5.CheckedChanged, CheckBox12.CheckedChanged, CheckBox11.CheckedChanged, CheckBox1.CheckedChanged
         Calc_sequence()
@@ -1101,8 +1113,8 @@ Public Class Form1
             Present_loss_grid2()            'Present the results stage #2
             Present_Datagridview1(case_nr)  'Present the results stage #1
 
-            Draw_chart1(Chart1)             'Present the results
-            Draw_chart2(Chart2)             'Present the results
+            Draw_chart1(Chart1)             'Present the results 
+            Draw_chart2(Chart2)             'Present the results loss curve
         End If
     End Sub
 
@@ -2309,4 +2321,38 @@ Public Class Form1
         ro_normal = ro1 * (p1 / 101325) * (273.15 / (t1 + 273.15))
         Return (ro_normal)
     End Function
+
+    Private Sub Button9_Click(sender As Object, e As EventArgs) Handles Button9.Click, TabPage5.Enter, NumericUpDown48.ValueChanged, NumericUpDown47.ValueChanged, NumericUpDown46.ValueChanged, NumericUpDown17.ValueChanged, NumericUpDown16.ValueChanged
+        'Stress calculation
+        Round_plate()
+    End Sub
+    Private Sub Round_plate()
+        'Round plate simply supported
+        Dim dia, r, t As Double
+        Dim Elas, p, σm, yt, v As Double
+        Dim _σ_02 As Double
+
+        _σ_02 = NumericUpDown48.Value           '[N/mm2]
+        p = NumericUpDown16.Value * 100         '[mbar->[N/m2]]
+
+        dia = NumericUpDown47.Value / 1000      '[m]
+        r = dia / 2                             '[m]
+        t = NumericUpDown46.Value / 1000        '[m]
+        Elas = 193 * 10 ^ 6                     '[Pa] 304
+
+        v = 0.3 'For steel
+        σm = 1.238 * p * r ^ 2 / t ^ 2
+        σm /= 10 ^ 6                            '[N/mm2]
+
+        yt = 0.696 * p * r ^ 4
+        yt /= Elas * t ^ 3                      '[mm]
+
+
+        TextBox138.Text = (Elas * 10 ^ -6).ToString     '[MPa]
+        TextBox136.Text = σm.ToString("F0")             '[N/mm2]
+        TextBox137.Text = yt.ToString("F1")             '[mm]
+
+        '===== check ================
+        TextBox136.BackColor = CType(IIf(σm > _σ_02, Color.Red, Color.LightGreen), Color)
+    End Sub
 End Class
