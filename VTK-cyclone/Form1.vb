@@ -334,8 +334,10 @@ Public Class Form1
         _cees(ks).Ro_gas1_n = Calc_Normal_density(_cees(ks).Ro_gas1, _cees(ks).p1_abs, _cees(ks).Temp)
         _cees(ks).dust1_n = NumericUpDown4.Value
         _cees(ks).dust1_n /= _cees(ks).Ro_gas1_n
+
+        '--------- present -------------
         TextBox132.Text = _cees(ks).dust1_n.ToString("F2")
-        TextBox129.Text = _cees(ks).Ro_gas1_n.ToString("F3")
+        TextBox129.Text = _cees(ks).Ro_gas1_n.ToString("F3")    'kg/Nm3
 
         If (ComboBox1.SelectedIndex > -1) And (ComboBox2.SelectedIndex > -1) Then 'Prevent exceptions
             '-------- dimension cyclone stage #1
@@ -556,7 +558,7 @@ Public Class Form1
     End Sub
     Private Sub Calc_Datagridview1(ks As Integer)
 
-        '==== stage #1 ====
+        '==== stage #1 + stage #2 ====
         Dim h18, h19 As Double
         Dim j18, i18 As Double
         Dim l18, k19 As Double
@@ -568,7 +570,7 @@ Public Class Form1
 
         For h = 0 To 22
             DataGridView1.Rows(h).Cells(0).Value = _cees(ks).stage1(h * 5).d_ave.ToString("F3") 'diameter
-            DataGridView1.Rows(h).Cells(1).Value = _cees(ks).stage1(h * 5).psd_cum_pro.ToString("F4") 'feed psd cum
+            DataGridView1.Rows(h).Cells(1).Value = _cees(ks).stage1(h * 5).psd_cum_pro.ToString("F3") 'feed psd cum
 
             If h > 0 Then
                 h18 = CDbl(DataGridView1.Rows(h - 1).Cells(1).Value)
@@ -576,18 +578,18 @@ Public Class Form1
                 h18 = 100
             End If
             h19 = CDbl(DataGridView1.Rows(h).Cells(1).Value)   'feed psd cum
-            DataGridView1.Rows(h).Cells(2).Value = (h18 - h19).ToString("F4")   'feed psd diff
+            DataGridView1.Rows(h).Cells(2).Value = (h18 - h19).ToString("F3")   'feed psd diff
 
             '========= (column 3) loss ===============
             If CheckBox2.Checked Then
-                DataGridView1.Rows(h).Cells(3).Value = (_cees(ks).stage1(h * 5).loss_overall_C * 100).ToString("F4")
+                DataGridView1.Rows(h).Cells(3).Value = (_cees(ks).stage1(h * 5).loss_overall_C * 100).ToString("F3")
             Else
-                DataGridView1.Rows(h).Cells(3).Value = (_cees(ks).stage1(h * 5).loss_overall * 100).ToString("F4")
+                DataGridView1.Rows(h).Cells(3).Value = (_cees(ks).stage1(h * 5).loss_overall * 100).ToString("F3")
             End If
 
             i18 = CDbl(DataGridView1.Rows(h).Cells(2).Value) 'feed psd diff
             j18 = CDbl(DataGridView1.Rows(h).Cells(3).Value) 'loss % Of feed
-            DataGridView1.Rows(h).Cells(4).Value = (i18 * j18 / 100).ToString("F4") 'Loss abs [%]
+            DataGridView1.Rows(h).Cells(4).Value = (i18 * j18 / 100).ToString("F3") 'Loss abs [%]
 
             '=========  (column 4) Loss abs [%] ===============
             If h > 0 Then
@@ -605,12 +607,12 @@ Public Class Form1
             End If
             tt = (l18 - 100 * k19 / k41)
             If tt < 0 Then tt = 0           'Prevent negative numbers
-            DataGridView1.Rows(h).Cells(5).Value = tt.ToString("F4")
+            DataGridView1.Rows(h).Cells(5).Value = tt.ToString("F3")
 
             '============= (column 6) Loss abs [%] ===================
             k18 = CDbl(DataGridView1.Rows(h).Cells(4).Value)   'Loss abs [%]
             m18 = (i18 - k18)
-            DataGridView1.Rows(h).Cells(6).Value = m18.ToString("F4") 'Catch abs
+            DataGridView1.Rows(h).Cells(6).Value = m18.ToString("F3") 'Catch abs
 
             '=============  (column 7) Catch psd cum  ===================
             Double.TryParse(TextBox59.Text, tot_catch_abs)      'tot_catch_abs[%]
@@ -621,11 +623,11 @@ Public Class Form1
                 n18 = 100
             End If
             n18 = CDbl(IIf(n18 < 0, 0, n18))        'prevent silly results
-            DataGridView1.Rows(h).Cells(7).Value = n18.ToString("F4") 'Catch psd cum
+            DataGridView1.Rows(h).Cells(7).Value = n18.ToString("F3") 'Catch psd cum
 
             '=========  (column 8) Efficiency ===============
             o18 = 100 - j18
-            DataGridView1.Rows(h).Cells(8).Value = o18.ToString("F4")           'Grade eff.
+            DataGridView1.Rows(h).Cells(8).Value = o18.ToString("F3")           'Grade eff.
         Next h
     End Sub
 
@@ -913,12 +915,18 @@ Public Class Form1
         ch.Series(0).LegendText = "Input Stars stage #1"
         ch.Series(1).LegendText = "Input Rosin Rammler #1 "
         ch.Series(2).LegendText = "Loss stage #1"
-        ch.Series(3).LegendText = "Loss stage #2"
+        ch.Series(3).LegendText = "Loss stage #2"   '(staat niet in de GvG grafiek)
         ch.Series(4).LegendText = "Efficiency #1"
         ch.Series(5).LegendText = "Efficiency #2"
         ch.Series(6).LegendText = "Efficiency 1&2"
 
-        ch.Series(0).IsVisibleInLegend = True
+        For h = 0 To 6
+            If CheckBox13.Checked Then
+                ch.Series(h).IsVisibleInLegend = True
+            Else
+                ch.Series(h).IsVisibleInLegend = False
+            End If
+        Next
 
         ch.Series(0).BorderDashStyle = ChartDashStyle.Solid
         ch.Series(1).BorderDashStyle = ChartDashStyle.Solid
@@ -935,7 +943,6 @@ Public Class Form1
         ch.Series(4).IsValueShownAsLabel = CBool(IIf(CheckBox11.Checked, True, False))
         ch.Series(5).IsValueShownAsLabel = CBool(IIf(CheckBox12.Checked, True, False))
         ch.Series(6).IsValueShownAsLabel = CBool(IIf(CheckBox5.Checked, True, False))
-
 
         ch.ChartAreas("ChartArea0").AxisX.TitleFont = New Font("Arial", 11, System.Drawing.FontStyle.Bold)
         ch.ChartAreas("ChartArea0").AxisY.TitleFont = New Font("Arial", 11, System.Drawing.FontStyle.Bold)
@@ -1017,6 +1024,7 @@ Public Class Form1
             '------- Plot stage #2  --------
             If CheckBox6.Checked Then
                 loss2 = CDbl((DataGridView4.Rows(h).Cells(8).Value))    'get data Loss 2
+
                 b = CDbl((DataGridView4.Rows(h).Cells(9).Value))        'get data Eff 1&2 [%]
                 ch.Series(3).Points.AddXY(a, loss2)                     'Plot Loss 2
                 ch.Series(6).Points.AddXY(a, b)                         'Plot Eff 1&2 [%]
@@ -1088,7 +1096,7 @@ Public Class Form1
         ch.Series(0).Points(6).Label = "Cyclone #1"
         ch.Series(1).Points(4).Label = "Cyclone #2"
     End Sub
-    Private Sub Button2_Click(sender As Object, e As EventArgs) Handles TabPage9.Enter, CheckBox6.CheckedChanged, CheckBox7.CheckedChanged, CheckBox4.CheckedChanged, CheckBox9.CheckedChanged, CheckBox8.CheckedChanged, CheckBox10.CheckedChanged, CheckBox5.CheckedChanged, CheckBox12.CheckedChanged, CheckBox11.CheckedChanged, CheckBox1.CheckedChanged
+    Private Sub Button2_Click(sender As Object, e As EventArgs) Handles TabPage9.Enter, CheckBox6.CheckedChanged, CheckBox7.CheckedChanged, CheckBox4.CheckedChanged, CheckBox9.CheckedChanged, CheckBox8.CheckedChanged, CheckBox10.CheckedChanged, CheckBox5.CheckedChanged, CheckBox12.CheckedChanged, CheckBox11.CheckedChanged, CheckBox1.CheckedChanged, CheckBox13.CheckedChanged
         Calc_sequence()
     End Sub
     Private Sub Calc_sequence()
@@ -1246,7 +1254,7 @@ Public Class Form1
         Dim oTable As Word.Table
         Dim oPara1, oPara4 As Word.Paragraph
 
-        Dim chart_size As Integer = 140  '% of original picture size
+        Dim chart_size As Integer = 65  '% of original picture size
         Dim file_name As String
         Dim row As Integer = 0
         Try
@@ -1295,7 +1303,7 @@ Public Class Form1
             oTable.Cell(row, 2).Range.Text = NumericUpDown18.Value.ToString("F0")
             oTable.Cell(row, 3).Range.Text = "[c]"
             row += 1
-            oTable.Cell(row, 1).Range.Text = "Inlet prssure"
+            oTable.Cell(row, 1).Range.Text = "Inlet pressure"
             oTable.Cell(row, 2).Range.Text = NumericUpDown19.Value.ToString("F1")
             oTable.Cell(row, 3).Range.Text = "[mbar abs]"
             row += 1
@@ -1436,7 +1444,8 @@ Public Class Form1
             '------------------save Chart2 (Loss curve)---------------- 
             Draw_chart2(Chart2)
             file_name = dirpath_Temp & "Chart_loss.Jpeg"
-            Chart2.SaveImage(file_name, System.Drawing.Imaging.ImageFormat.Jpeg)
+            'Chart2.SaveImage(file_name, System.Drawing.Imaging.ImageFormat.Jpeg)
+            Chart1.SaveImage(file_name, System.Drawing.Imaging.ImageFormat.Jpeg)
             oPara4 = oDoc.Content.Paragraphs.Add
             oPara4.Alignment = Word.WdParagraphAlignment.wdAlignParagraphCenter
             oPara4.Range.InlineShapes.AddPicture(file_name)
@@ -1483,13 +1492,13 @@ Public Class Form1
         'DataGridView2.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill
 
         DataGridView2.EnableHeadersVisualStyles = False                     'For backcolor
-        DataGridView2.Columns(0).HeaderText = "Dia class [mu]"
-        DataGridView2.Columns(1).HeaderText = "Dia average [mu]"
-        DataGridView2.Columns(2).HeaderText = "Dia/k [-]"
-        DataGridView2.Columns(3).HeaderText = "Loss overall [-]"
-        DataGridView2.Columns(4).HeaderText = "Loss overall Corrected"
-        DataGridView2.Columns(5).HeaderText = "Catch Eff. (chart) [%]"      '
-        DataGridView2.Columns(6).HeaderText = "Group number [-]"            '
+        DataGridView2.Columns(0).HeaderText = "Dia upper [mu]"              '
+        DataGridView2.Columns(1).HeaderText = "Dia (aver.) class [mu]"      '         
+        DataGridView2.Columns(2).HeaderText = "Dia/k [-]"                   '
+        DataGridView2.Columns(3).HeaderText = "Loss overall [-]"            '
+        DataGridView2.Columns(4).HeaderText = "Loss overall Corrected"      '
+        DataGridView2.Columns(5).HeaderText = "Grade eff. (st1) [%]"              'Catch [%]
+        DataGridView2.Columns(6).HeaderText = "Group no [-]"                '
         DataGridView2.Columns(7).HeaderText = "d1 lower dia [mu]"           '
         DataGridView2.Columns(8).HeaderText = "d2 upper dia [mu]"           '
         DataGridView2.Columns(9).HeaderText = "p1 input [%]"                '
@@ -1502,8 +1511,10 @@ Public Class Form1
         DataGridView2.Columns(16).HeaderText = "loss abs [%]"               '
         DataGridView2.Columns(17).HeaderText = "loss corr abs [%]"          '
 
-        DataGridView2.Columns(0).HeaderCell.Style.BackColor = Color.Yellow  'Chart
+        DataGridView2.Columns(1).HeaderCell.Style.BackColor = Color.Yellow  'Chart
         DataGridView2.Columns(5).HeaderCell.Style.BackColor = Color.Yellow  'Chart
+
+        DataGridView2.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill
 
         For row = 1 To 110  'Fill the DataGrid
             j = row - 1
@@ -1546,13 +1557,13 @@ Public Class Form1
         DataGridView3.Rows.Add(111)
         'DatagridView3.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill
         DataGridView3.EnableHeadersVisualStyles = False                         'For backcolor
-        DataGridView3.Columns(0).HeaderText = "Dia class [mu]"                  '
-        DataGridView3.Columns(1).HeaderText = "Dia average [mu]"                '
+        DataGridView3.Columns(0).HeaderText = "Dia upper [mu]"                  '
+        DataGridView3.Columns(1).HeaderText = "Dia (aver.) class [mu]"          '
         DataGridView3.Columns(2).HeaderText = "Dia/k [-]"                       '
         DataGridView3.Columns(3).HeaderText = "Loss overall [-]"                '
         DataGridView3.Columns(4).HeaderText = "Loss overall Corrected [-]"      '
-        DataGridView3.Columns(5).HeaderText = "Catch chart [%]"                 '
-        DataGridView3.Columns(6).HeaderText = "Group number"                    '
+        DataGridView3.Columns(5).HeaderText = "Grade eff. (st2) [%]"                   'Catch chart [%]
+        DataGridView3.Columns(6).HeaderText = "Group no [-]"                    '
         DataGridView3.Columns(7).HeaderText = "d1 lower dia [mu]"               '
         DataGridView3.Columns(8).HeaderText = "d2 upper dia [mu]"               '
         DataGridView3.Columns(9).HeaderText = "p1 input [%]"                    '
@@ -1566,7 +1577,10 @@ Public Class Form1
         DataGridView3.Columns(17).HeaderText = "catch loss abs [%]"             '
         DataGridView3.Columns(18).HeaderText = "loss abs corrected [%]"         '
 
-        DataGridView3.Columns(0).HeaderCell.Style.BackColor = Color.Yellow      'For chart
+        DataGridView3.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill
+
+        DataGridView3.Columns(1).HeaderCell.Style.BackColor = Color.Yellow      'For chart
+        DataGridView3.Columns(5).HeaderCell.Style.BackColor = Color.Yellow      'For chart
         DataGridView3.Columns(14).HeaderCell.Style.BackColor = Color.Yellow     'For chart
 
         For row = 1 To 110  'Fill the DataGrid
@@ -1621,6 +1635,7 @@ Public Class Form1
         Dim perc_smallest_part1 As Double
         Dim fac_m As Double
         Dim words() As String
+        Dim ratio, emmision_Am3, emmision_Nm3 As Double
 
         If Double.IsNaN(_cees(ks).stage1(0).dia) Or Double.IsInfinity(_cees(ks).stage1(0).dia) Then Exit Sub
 
@@ -1690,6 +1705,7 @@ Public Class Form1
                 _cees(ks).stage1(i).catch_chart = (1 - _cees(ks).stage1(i).loss_overall) * 100    '[%] NOT corrected
             End If
             Size_classification(_cees(ks).stage1(i))                                   'Classify this part size
+
             '====to prevent silly results====
             If _cees(ks).stage1(i).i_grp <> 11 Then
                 Calc_k_and_m(_cees(ks).stage1(i))
@@ -1721,6 +1737,9 @@ Public Class Form1
         CheckBox3.Checked = CBool(IIf(_cees(ks).dust2_A > 20, True, False))
         _cees(ks).Efficiency1 = 100 - _cees(ks).loss_total1        '[%] Efficiency
 
+        '--------- ratio Am3 and Nm2 ----------
+        ratio = _cees(ks).Ro_gas1 / _cees(ks).Ro_gas2
+
         '----------- present stage #1-----------
         TextBox51.Text = dia_max.ToString("F1")             'diameter [mu] 100% catch
         TextBox52.Text = dia_min.ToString("F2")             'diameter [mu] 100% loss
@@ -1733,17 +1752,22 @@ Public Class Form1
         TextBox34.Text = _cees(ks).sum_loss_C1.ToString("F3")
 
         If CheckBox2.Checked Then   'Dust load correction
+            emmision_Am3 = _cees(ks).emmis1
+            emmision_Nm3 = emmision_Am3 * ratio
             TextBox58.Text = _cees(ks).loss_total1.ToString("F5")    'Corrected 
             TextBox59.Text = _cees(ks).Efficiency1.ToString("F3")
             TextBox21.Text = TextBox59.Text
-            TextBox60.Text = _cees(ks).emmis1.ToString("F3")
-
+            TextBox60.Text = emmision_Am3.ToString("F3")
+            TextBox133.Text = emmision_Nm3.ToString("F3")
             TextBox18.Text = TextBox60.Text
         Else
+            emmision_Am3 = (NumericUpDown4.Value * _cees(ks).sum_loss1 / 100)
+            emmision_Nm3 = emmision_Am3 * ratio
             TextBox58.Text = _cees(ks).sum_loss1.ToString("F5")      'NOT Corrected  
             TextBox59.Text = _cees(ks).Efficiency1.ToString("F3")
             TextBox21.Text = TextBox59.Text
-            TextBox60.Text = (NumericUpDown4.Value * _cees(ks).sum_loss1 / 100).ToString("F3")
+            TextBox60.Text = emmision_Am3.ToString("F3")
+            TextBox133.Text = emmision_Nm3.ToString("F3")
             TextBox18.Text = TextBox60.Text
         End If
         ' TextBox133.Text = _cees(ks).emmis1_n.ToString("F3")
@@ -2216,23 +2240,24 @@ Public Class Form1
             DataGridView4.Rows.Add(111)
             DataGridView4.EnableHeadersVisualStyles = False                         'For backcolor
 
-            DataGridView4.Columns(0).HeaderText = "Dia aver [mu]"                   'Chart
+            DataGridView4.Columns(0).HeaderText = "Dia class [mu]"                  'Chart
             DataGridView4.Columns(1).HeaderText = "In abs [g/Am3]"
             DataGridView4.Columns(2).HeaderText = "In psd diff [%]"
             DataGridView4.Columns(3).HeaderText = "In psd cum (chart)[%]"
-            DataGridView4.Columns(4).HeaderText = "Loss1 pds dif [%]"               '
+            DataGridView4.Columns(4).HeaderText = "Loss1 pds diff [%]"               '
             DataGridView4.Columns(5).HeaderText = "Loss1 (chart) pdscum [%]"        'chart
             DataGridView4.Columns(6).HeaderText = "Loss abs [g/Nm3]"                '
-            DataGridView4.Columns(7).HeaderText = "Loss2 pds dif [%]"               '
+            DataGridView4.Columns(7).HeaderText = "Loss2 pds diff [%]"              '
             DataGridView4.Columns(8).HeaderText = "Loss2 (chart) pdscum [%]"        'chart
             DataGridView4.Columns(9).HeaderText = "Eff 1&2 (chart) [%]"             'chart
+
+            DataGridView4.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill
 
             DataGridView4.Columns(0).HeaderCell.Style.BackColor = Color.Yellow      'For chart
             DataGridView4.Columns(3).HeaderCell.Style.BackColor = Color.Yellow      'For chart
             DataGridView4.Columns(5).HeaderCell.Style.BackColor = Color.Yellow      'For chart
             DataGridView4.Columns(8).HeaderCell.Style.BackColor = Color.Yellow      'For chart
             DataGridView4.Columns(9).HeaderCell.Style.BackColor = Color.Yellow      'For chart
-
 
             '===== Dust load 1stage [kg/Nm3]  =====
             w19 = _cees(ks).dust1_n / 1000 'Dust load [gr/Nm3]
@@ -2275,7 +2300,7 @@ Public Class Form1
 
                 qq = CDbl(DataGridView4.Rows(row - 1).Cells(8).Value)
                 li(8) = qq - li(7)                                      'Loss2 pds.cum [%] 
-                li(9) = 100 * (li(1) - li(6)) / li(1)                   'Eff stage1&2 [%]
+                li(9) = 100 * ((li(1) - li(6)) / li(1))                 'Eff stage1&2 [%]
 
                 If li(8) = 0 Then li(9) = 100       'Loss is zero eff must be 100%
 
@@ -2315,24 +2340,35 @@ Public Class Form1
     'Calculate ACTUAL --> NORMAL Conditions
     'Normaal condities; 0 celsius, 101325 Pascal
     'http://www.installbasis.nl/downloads/Omrekening%20Normaalkubiekemeters.PDF
+    'PV=MRT     ===>    M/V=ρ  ===>    ρ=P/(R.T)
+    'R= P/(ρ.T)
+    'R1=R2  ===>   Pn/(ρn.Tn)= P2/(ρ2.T2)
+    'Pn.ρ2.T2= P2.ρn.Tn
+    'ρn =(Pn/P2).ρ2.(T2/Tn)
+    'ρn =(101325/P2).ρ2.(T2/273.15)
+
+
     Private Function Calc_Normal_density(ro1 As Double, p1 As Double, t1 As Double) As Double
         Dim ro_normal As Double
-
-        ro_normal = ro1 * (p1 / 101325) * (273.15 / (t1 + 273.15))
+        ro_normal = ro1 * (101325 / p1) * ((t1 + 273.15) / 273.15)
         Return (ro_normal)
     End Function
 
-    Private Sub Button9_Click(sender As Object, e As EventArgs) Handles Button9.Click, TabPage5.Enter, NumericUpDown48.ValueChanged, NumericUpDown47.ValueChanged, NumericUpDown46.ValueChanged, NumericUpDown17.ValueChanged, NumericUpDown16.ValueChanged
+    Private Sub Button9_Click(sender As Object, e As EventArgs) Handles Button9.Click, TabPage5.Enter, NumericUpDown47.ValueChanged, NumericUpDown46.ValueChanged, NumericUpDown16.ValueChanged, NumericUpDown50.ValueChanged
         'Stress calculation
-        Round_plate()
+        Calc_Round_plate()
+        Calc_shell()
     End Sub
-    Private Sub Round_plate()
+    Private Sub Calc_Round_plate()
         'Round plate simply supported
         Dim dia, r, t As Double
         Dim Elas, p, σm, yt, v As Double
-        Dim _σ_02 As Double
+        Dim _fs, sf, _σ_02 As Double
 
-        _σ_02 = NumericUpDown48.Value           '[N/mm2]
+        _σ_02 = NumericUpDown17.Value           '[N/mm2]
+        sf = NumericUpDown49.Value              '[-] safety factor
+        _fs = _σ_02 / sf
+
         p = NumericUpDown16.Value * 100         '[mbar->[N/m2]]
 
         dia = NumericUpDown47.Value / 1000      '[m]
@@ -2347,12 +2383,37 @@ Public Class Form1
         yt = 0.696 * p * r ^ 4
         yt /= Elas * t ^ 3                      '[mm]
 
-
         TextBox138.Text = (Elas * 10 ^ -6).ToString     '[MPa]
         TextBox136.Text = σm.ToString("F0")             '[N/mm2]
         TextBox137.Text = yt.ToString("F1")             '[mm]
 
         '===== check ================
-        TextBox136.BackColor = CType(IIf(σm > _σ_02, Color.Red, Color.LightGreen), Color)
+        TextBox136.BackColor = CType(IIf(σm > _fs, Color.Red, Color.LightGreen), Color)
     End Sub
+
+    Private Sub Calc_shell()
+        'EN13445, equation 7.4.2 Required wall thickness
+        'For symbols, quanties and units see page 12
+        Dim dia As Double
+        Dim p, e_wall As Double
+        Dim _σ_02 As Double
+        Dim _fs As Double
+        Dim z_joint As Double      'weld joint efficiency
+        Dim sf As Double            'Safety factor
+
+        _σ_02 = NumericUpDown17.Value           '[N/mm2]
+        sf = NumericUpDown49.Value              '[-] safety factor
+        z_joint = NumericUpDown50.Value         '[-] weld factor
+        _fs = _σ_02 / sf
+
+        p = NumericUpDown16.Value / 10000           '[mbar->[N/mm2]=[MPa]]
+        dia = NumericUpDown47.Value                 '[mm]
+        e_wall = p * dia / (2 * _fs * z_joint + p)  'equation (7.4.2) page 30, Required wall thickness
+
+        '---------------------
+        TextBox139.Text = p.ToString                '[N/mm2]
+        TextBox140.Text = e_wall.ToString("F4")     '[mm]
+        TextBox141.Text = _fs.ToString              '[N/mm2]
+    End Sub
+
 End Class
