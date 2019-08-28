@@ -1732,13 +1732,12 @@ Public Class Form1
         _cees(ks).emmis1 = NumericUpDown4.Value * (_cees(ks).loss_total1 / 100)  '[g/Am3]
         _cees(ks).emmis1_n = _cees(ks).emmis1 / Calc_Normal_density(_cees(ks).Ro_gas1, _cees(ks).p1_abs, _cees(ks).Temp)
 
-
         _cees(ks).dust2_A = _cees(ks).emmis1 'Dust load stage #2 in emission stage #1
         CheckBox3.Checked = CBool(IIf(_cees(ks).dust2_A > 20, True, False))
         _cees(ks).Efficiency1 = 100 - _cees(ks).loss_total1        '[%] Efficiency
 
-        '--------- ratio Am3 and Nm2 ----------
-        ratio = _cees(ks).Ro_gas1 / _cees(ks).Ro_gas2
+        '--------- ratio  Nm2 and Am3 ---------
+        ratio = _cees(ks).Ro_gas1_n / _cees(ks).Ro_gas1
 
         '----------- present stage #1-----------
         TextBox51.Text = dia_max.ToString("F1")             'diameter [mu] 100% catch
@@ -1751,26 +1750,21 @@ Public Class Form1
         TextBox54.Text = _cees(ks).sum_loss1.ToString("F3")
         TextBox34.Text = _cees(ks).sum_loss_C1.ToString("F3")
 
-        If CheckBox2.Checked Then   'Dust load correction
+        If CheckBox2.Checked Then                       'Dust load correction
             emmision_Am3 = _cees(ks).emmis1
             emmision_Nm3 = emmision_Am3 * ratio
-            TextBox58.Text = _cees(ks).loss_total1.ToString("F5")    'Corrected 
-            TextBox59.Text = _cees(ks).Efficiency1.ToString("F3")
-            TextBox21.Text = TextBox59.Text
-            TextBox60.Text = emmision_Am3.ToString("F3")
-            TextBox133.Text = emmision_Nm3.ToString("F3")
-            TextBox18.Text = TextBox60.Text
+            TextBox58.Text = _cees(ks).loss_total1.ToString("F3")    '[%] Corrected 
         Else
             emmision_Am3 = (NumericUpDown4.Value * _cees(ks).sum_loss1 / 100)
             emmision_Nm3 = emmision_Am3 * ratio
-            TextBox58.Text = _cees(ks).sum_loss1.ToString("F5")      'NOT Corrected  
-            TextBox59.Text = _cees(ks).Efficiency1.ToString("F3")
-            TextBox21.Text = TextBox59.Text
-            TextBox60.Text = emmision_Am3.ToString("F3")
-            TextBox133.Text = emmision_Nm3.ToString("F3")
-            TextBox18.Text = TextBox60.Text
+            TextBox58.Text = _cees(ks).sum_loss1.ToString("F3")      '[%] NOT Corrected  
         End If
-        ' TextBox133.Text = _cees(ks).emmis1_n.ToString("F3")
+
+        TextBox59.Text = _cees(ks).Efficiency1.ToString("F3")
+        TextBox21.Text = TextBox59.Text
+        TextBox60.Text = emmision_Am3.ToString("F3")
+        TextBox133.Text = emmision_Nm3.ToString("F3")
+        TextBox18.Text = TextBox60.Text
     End Sub
 
     Private Sub Calc_stage2(ks As Integer)
@@ -1784,6 +1778,7 @@ Public Class Form1
         Dim words() As String
         Dim kgh, tot_kgh As Double
         Dim Eff_comb As Double      'Efficiency stage #1 and #2
+        Dim ratio As Double
 
         If Double.IsNaN(_cees(ks).stage2(0).dia) Or Double.IsInfinity(_cees(ks).stage2(0).dia) Then Exit Sub
 
@@ -1902,6 +1897,9 @@ Public Class Form1
         '------ combined efficiency -----
         Eff_comb = _cees(ks).Efficiency1 + (1 - _cees(ks).Efficiency1 / 100) * _cees(ks).Efficiency2
 
+        '--------- ratio  Nm2 and Am3 ---------
+        ratio = _cees(ks).Ro_gas2_n / _cees(ks).Ro_gas2
+
         '----------- present stage #2 -----------
         TextBox63.Text = ComboBox2.Text                 'Cyclone type
         TextBox64.Text = CheckBox3.Checked.ToString     'Hi load correction
@@ -1915,17 +1913,16 @@ Public Class Form1
         TextBox120.Text = Eff_comb.ToString("F3")
 
         If CheckBox3.Checked Then   'Dust load correction
-            TextBox65.Text = _cees(ks).loss_total2.ToString("F5")    'Corrected
-            TextBox66.Text = _cees(ks).Efficiency2.ToString("F3")
-            TextBox109.Text = _cees(ks).Efficiency2.ToString("F3")
-            TextBox62.Text = _cees(ks).emmis2.ToString("F4")
+            TextBox65.Text = _cees(ks).loss_total2.ToString("F3")    '[%] Corrected
         Else
-            TextBox65.Text = _cees(ks).sum_loss2.ToString("F5")      'NOT Corrected
-            TextBox66.Text = _cees(ks).Efficiency2.ToString("F3")
-            TextBox109.Text = _cees(ks).Efficiency2.ToString("F3")
-            TextBox62.Text = _cees(ks).emmis2.ToString("F4")
-
+            TextBox65.Text = _cees(ks).sum_loss2.ToString("F3")      '[%] NOT Corrected
         End If
+
+        TextBox66.Text = _cees(ks).Efficiency2.ToString("F3")
+        TextBox109.Text = _cees(ks).Efficiency2.ToString("F3")
+        TextBox62.Text = _cees(ks).emmis2.ToString("F4")
+        TextBox142.Text = (_cees(ks).emmis2 * ratio).ToString("F4")
+
         TextBox108.Text = TextBox62.Text
         TextBox134.Text = TextBox108.Text
     End Sub

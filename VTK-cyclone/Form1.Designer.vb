@@ -23,12 +23,12 @@ Partial Class Form1
     <System.Diagnostics.DebuggerStepThrough()>
     Private Sub InitializeComponent()
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(Form1))
-        Dim ChartArea7 As System.Windows.Forms.DataVisualization.Charting.ChartArea = New System.Windows.Forms.DataVisualization.Charting.ChartArea()
-        Dim Legend7 As System.Windows.Forms.DataVisualization.Charting.Legend = New System.Windows.Forms.DataVisualization.Charting.Legend()
-        Dim Series7 As System.Windows.Forms.DataVisualization.Charting.Series = New System.Windows.Forms.DataVisualization.Charting.Series()
-        Dim ChartArea8 As System.Windows.Forms.DataVisualization.Charting.ChartArea = New System.Windows.Forms.DataVisualization.Charting.ChartArea()
-        Dim Legend8 As System.Windows.Forms.DataVisualization.Charting.Legend = New System.Windows.Forms.DataVisualization.Charting.Legend()
-        Dim Series8 As System.Windows.Forms.DataVisualization.Charting.Series = New System.Windows.Forms.DataVisualization.Charting.Series()
+        Dim ChartArea1 As System.Windows.Forms.DataVisualization.Charting.ChartArea = New System.Windows.Forms.DataVisualization.Charting.ChartArea()
+        Dim Legend1 As System.Windows.Forms.DataVisualization.Charting.Legend = New System.Windows.Forms.DataVisualization.Charting.Legend()
+        Dim Series1 As System.Windows.Forms.DataVisualization.Charting.Series = New System.Windows.Forms.DataVisualization.Charting.Series()
+        Dim ChartArea2 As System.Windows.Forms.DataVisualization.Charting.ChartArea = New System.Windows.Forms.DataVisualization.Charting.ChartArea()
+        Dim Legend2 As System.Windows.Forms.DataVisualization.Charting.Legend = New System.Windows.Forms.DataVisualization.Charting.Legend()
+        Dim Series2 As System.Windows.Forms.DataVisualization.Charting.Series = New System.Windows.Forms.DataVisualization.Charting.Series()
         Me.OpenFileDialog1 = New System.Windows.Forms.OpenFileDialog()
         Me.TabPage10 = New System.Windows.Forms.TabPage()
         Me.TabPage8 = New System.Windows.Forms.TabPage()
@@ -208,6 +208,9 @@ Partial Class Form1
         Me.TabPage2 = New System.Windows.Forms.TabPage()
         Me.TableLayoutPanel3 = New System.Windows.Forms.TableLayoutPanel()
         Me.GroupBox14 = New System.Windows.Forms.GroupBox()
+        Me.TextBox142 = New System.Windows.Forms.TextBox()
+        Me.Label243 = New System.Windows.Forms.Label()
+        Me.Label244 = New System.Windows.Forms.Label()
         Me.Label203 = New System.Windows.Forms.Label()
         Me.Label204 = New System.Windows.Forms.Label()
         Me.TextBox117 = New System.Windows.Forms.TextBox()
@@ -234,6 +237,7 @@ Partial Class Form1
         Me.TabPage9 = New System.Windows.Forms.TabPage()
         Me.TableLayoutPanel1 = New System.Windows.Forms.TableLayoutPanel()
         Me.GroupBox5 = New System.Windows.Forms.GroupBox()
+        Me.Label242 = New System.Windows.Forms.Label()
         Me.TextBox133 = New System.Windows.Forms.TextBox()
         Me.Label214 = New System.Windows.Forms.Label()
         Me.Label215 = New System.Windows.Forms.Label()
@@ -530,10 +534,7 @@ Partial Class Form1
         Me.CheckBox7 = New System.Windows.Forms.CheckBox()
         Me.CheckBox4 = New System.Windows.Forms.CheckBox()
         Me.CheckBox6 = New System.Windows.Forms.CheckBox()
-        Me.Label242 = New System.Windows.Forms.Label()
-        Me.TextBox142 = New System.Windows.Forms.TextBox()
-        Me.Label243 = New System.Windows.Forms.Label()
-        Me.Label244 = New System.Windows.Forms.Label()
+        Me.Label245 = New System.Windows.Forms.Label()
         Me.TabPage8.SuspendLayout()
         Me.TabPage7.SuspendLayout()
         CType(Me.PictureBox1, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -2601,12 +2602,40 @@ Partial Class Form1
         Me.GroupBox14.Controls.Add(Me.Label160)
         Me.GroupBox14.Controls.Add(Me.TextBox66)
         Me.GroupBox14.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.GroupBox14.Location = New System.Drawing.Point(1040, 3)
+        Me.GroupBox14.Location = New System.Drawing.Point(1039, 3)
         Me.GroupBox14.Name = "GroupBox14"
-        Me.GroupBox14.Size = New System.Drawing.Size(232, 803)
+        Me.GroupBox14.Size = New System.Drawing.Size(233, 803)
         Me.GroupBox14.TabIndex = 76
         Me.GroupBox14.TabStop = False
         Me.GroupBox14.Text = "Stage 2 results"
+        '
+        'TextBox142
+        '
+        Me.TextBox142.Location = New System.Drawing.Point(103, 252)
+        Me.TextBox142.Name = "TextBox142"
+        Me.TextBox142.Size = New System.Drawing.Size(63, 20)
+        Me.TextBox142.TabIndex = 137
+        Me.TextBox142.TextAlign = System.Windows.Forms.HorizontalAlignment.Center
+        '
+        'Label243
+        '
+        Me.Label243.AutoSize = True
+        Me.Label243.Font = New System.Drawing.Font("Microsoft Sans Serif", 11.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Label243.Location = New System.Drawing.Point(6, 251)
+        Me.Label243.Name = "Label243"
+        Me.Label243.Size = New System.Drawing.Size(61, 18)
+        Me.Label243.TabIndex = 135
+        Me.Label243.Text = "Emissie"
+        '
+        'Label244
+        '
+        Me.Label244.AutoSize = True
+        Me.Label244.Font = New System.Drawing.Font("Microsoft Sans Serif", 11.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Label244.Location = New System.Drawing.Point(172, 252)
+        Me.Label244.Name = "Label244"
+        Me.Label244.Size = New System.Drawing.Size(60, 18)
+        Me.Label244.TabIndex = 136
+        Me.Label244.Text = "[g/Nm3]"
         '
         'Label203
         '
@@ -2818,7 +2847,7 @@ Partial Class Form1
         Me.DataGridView3.Dock = System.Windows.Forms.DockStyle.Fill
         Me.DataGridView3.Location = New System.Drawing.Point(3, 3)
         Me.DataGridView3.Name = "DataGridView3"
-        Me.DataGridView3.Size = New System.Drawing.Size(1031, 803)
+        Me.DataGridView3.Size = New System.Drawing.Size(1030, 803)
         Me.DataGridView3.TabIndex = 75
         '
         'TabPage9
@@ -2894,6 +2923,15 @@ Partial Class Form1
         Me.GroupBox5.TabIndex = 73
         Me.GroupBox5.TabStop = False
         Me.GroupBox5.Text = "Stage 1 results"
+        '
+        'Label242
+        '
+        Me.Label242.AutoSize = True
+        Me.Label242.Location = New System.Drawing.Point(6, 409)
+        Me.Label242.Name = "Label242"
+        Me.Label242.Size = New System.Drawing.Size(76, 13)
+        Me.Label242.TabIndex = 141
+        Me.Label242.Text = "discharge pipe"
         '
         'TextBox133
         '
@@ -4048,16 +4086,16 @@ Partial Class Form1
         '
         'Chart2
         '
-        ChartArea7.Name = "ChartArea1"
-        Me.Chart2.ChartAreas.Add(ChartArea7)
-        Legend7.Name = "Legend1"
-        Me.Chart2.Legends.Add(Legend7)
+        ChartArea1.Name = "ChartArea1"
+        Me.Chart2.ChartAreas.Add(ChartArea1)
+        Legend1.Name = "Legend1"
+        Me.Chart2.Legends.Add(Legend1)
         Me.Chart2.Location = New System.Drawing.Point(891, 379)
         Me.Chart2.Name = "Chart2"
-        Series7.ChartArea = "ChartArea1"
-        Series7.Legend = "Legend1"
-        Series7.Name = "Series1"
-        Me.Chart2.Series.Add(Series7)
+        Series1.ChartArea = "ChartArea1"
+        Series1.Legend = "Legend1"
+        Series1.Name = "Series1"
+        Me.Chart2.Series.Add(Series1)
         Me.Chart2.Size = New System.Drawing.Size(382, 224)
         Me.Chart2.TabIndex = 80
         Me.Chart2.Text = "Chart2"
@@ -5232,6 +5270,7 @@ Partial Class Form1
         '
         'groupBox1
         '
+        Me.groupBox1.Controls.Add(Me.Label245)
         Me.groupBox1.Controls.Add(Me.Label79)
         Me.groupBox1.Controls.Add(Me.Label80)
         Me.groupBox1.Controls.Add(Me.Label166)
@@ -5296,9 +5335,9 @@ Partial Class Form1
         Me.groupBox1.Controls.Add(Me.label3)
         Me.groupBox1.Controls.Add(Me.label4)
         Me.groupBox1.Controls.Add(Me.label5)
-        Me.groupBox1.Location = New System.Drawing.Point(343, 14)
+        Me.groupBox1.Location = New System.Drawing.Point(343, 6)
         Me.groupBox1.Name = "groupBox1"
-        Me.groupBox1.Size = New System.Drawing.Size(932, 359)
+        Me.groupBox1.Size = New System.Drawing.Size(932, 367)
         Me.groupBox1.TabIndex = 23
         Me.groupBox1.TabStop = False
         Me.groupBox1.Text = "CUMULATIVE particles diameters distribution, Chart stage #1 && #2"
@@ -5755,7 +5794,7 @@ Partial Class Form1
         Me.DataGridView1.Location = New System.Drawing.Point(284, 16)
         Me.DataGridView1.Name = "DataGridView1"
         Me.DataGridView1.RowHeadersWidth = 51
-        Me.DataGridView1.Size = New System.Drawing.Size(645, 340)
+        Me.DataGridView1.Size = New System.Drawing.Size(645, 348)
         Me.DataGridView1.TabIndex = 79
         '
         'Label70
@@ -6012,18 +6051,18 @@ Partial Class Form1
         'Chart1
         '
         Me.Chart1.AllowDrop = True
-        ChartArea8.Name = "ChartArea1"
-        Me.Chart1.ChartAreas.Add(ChartArea8)
+        ChartArea2.Name = "ChartArea1"
+        Me.Chart1.ChartAreas.Add(ChartArea2)
         Me.Chart1.Dock = System.Windows.Forms.DockStyle.Fill
         Me.Chart1.Enabled = False
-        Legend8.Name = "Legend1"
-        Me.Chart1.Legends.Add(Legend8)
+        Legend2.Name = "Legend1"
+        Me.Chart1.Legends.Add(Legend2)
         Me.Chart1.Location = New System.Drawing.Point(0, 0)
         Me.Chart1.Name = "Chart1"
-        Series8.ChartArea = "ChartArea1"
-        Series8.Legend = "Legend1"
-        Series8.Name = "Series1"
-        Me.Chart1.Series.Add(Series8)
+        Series2.ChartArea = "ChartArea1"
+        Series2.Legend = "Legend1"
+        Series2.Name = "Series1"
+        Me.Chart1.Series.Add(Series2)
         Me.Chart1.Size = New System.Drawing.Size(1077, 809)
         Me.Chart1.TabIndex = 68
         Me.Chart1.Text = "Chart1"
@@ -6171,42 +6210,15 @@ Partial Class Form1
         Me.CheckBox6.Text = "Show stage #2"
         Me.CheckBox6.UseVisualStyleBackColor = True
         '
-        'Label242
+        'Label245
         '
-        Me.Label242.AutoSize = True
-        Me.Label242.Location = New System.Drawing.Point(6, 409)
-        Me.Label242.Name = "Label242"
-        Me.Label242.Size = New System.Drawing.Size(76, 13)
-        Me.Label242.TabIndex = 141
-        Me.Label242.Text = "discharge pipe"
-        '
-        'TextBox142
-        '
-        Me.TextBox142.Location = New System.Drawing.Point(103, 252)
-        Me.TextBox142.Name = "TextBox142"
-        Me.TextBox142.Size = New System.Drawing.Size(63, 20)
-        Me.TextBox142.TabIndex = 137
-        Me.TextBox142.TextAlign = System.Windows.Forms.HorizontalAlignment.Center
-        '
-        'Label243
-        '
-        Me.Label243.AutoSize = True
-        Me.Label243.Font = New System.Drawing.Font("Microsoft Sans Serif", 11.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label243.Location = New System.Drawing.Point(6, 251)
-        Me.Label243.Name = "Label243"
-        Me.Label243.Size = New System.Drawing.Size(61, 18)
-        Me.Label243.TabIndex = 135
-        Me.Label243.Text = "Emissie"
-        '
-        'Label244
-        '
-        Me.Label244.AutoSize = True
-        Me.Label244.Font = New System.Drawing.Font("Microsoft Sans Serif", 11.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label244.Location = New System.Drawing.Point(172, 252)
-        Me.Label244.Name = "Label244"
-        Me.Label244.Size = New System.Drawing.Size(60, 18)
-        Me.Label244.TabIndex = 136
-        Me.Label244.Text = "[g/Nm3]"
+        Me.Label245.AutoSize = True
+        Me.Label245.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Label245.Location = New System.Drawing.Point(9, 345)
+        Me.Label245.Name = "Label245"
+        Me.Label245.Size = New System.Drawing.Size(173, 13)
+        Me.Label245.TabIndex = 132
+        Me.Label245.Text = "<0.25 mu all lost, >70 mu all caught"
         '
         'Form1
         '
@@ -6840,4 +6852,5 @@ Partial Class Form1
     Friend WithEvents TextBox142 As TextBox
     Private WithEvents Label243 As Label
     Private WithEvents Label244 As Label
+    Private WithEvents Label245 As Label
 End Class
