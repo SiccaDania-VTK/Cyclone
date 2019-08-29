@@ -23,10 +23,10 @@ Imports Word = Microsoft.Office.Interop.Word
 
     '===== stage #1 parameter ======
     Public Flow1 As Double          '[Am3/s] Air flow per cyclone 
-    Public dust1_A As Double        '[g/Am3] Dust load inlet 
-    Public dust1_n As Double        '[g/Nm3] Dust load inlet 
-    Public emmis1 As Double         '[g/Am3] Dust emission 
-    Public emmis1_n As Double       '[g/Nm3] Dust emission 
+    Public dust1_Am3 As Double      '[g/Am3] Dust load inlet 
+    Public dust1_Nm3 As Double      '[g/Nm3] Dust load inlet 
+    Public emmis1_Am3 As Double     '[g/Am3] Dust emission 
+    Public emmis1_Nm3 As Double     '[g/Nm3] Dust emission 
     Public Efficiency1 As Double    '[%] Efficiency Stage #1 
     Public sum_loss1 As Double      '[-]Passed trough cyclone 
     Public sum_loss_C1 As Double    '[-] Passed trough cyclone Corrected
@@ -35,8 +35,8 @@ Imports Word = Microsoft.Office.Interop.Word
     Public p1_abs As Double         '[Pa abs] pressure inlet abs
     Public dpgas1 As Double         '[Pa] pressure loss gas
     Public dpdust1 As Double        '[Pa] pressure loss dust
-    Public Ro_gas1 As Double        '[kg/Am3] density gas
-    Public Ro_gas1_n As Double      '[kg/Nm3] density gas
+    Public Ro_gas1_Am3 As Double    '[kg/Am3] density gas
+    Public Ro_gas1_Nm3 As Double    '[kg/Nm3] density gas
     Public Ct1 As Integer           '[-] Cyclone type (eg AC435)
     Public Noc1 As Integer          '[-] Number paralle Cyclones
     Public db1 As Double            '[m] Diameter cyclone body
@@ -53,10 +53,10 @@ Imports Word = Microsoft.Office.Interop.Word
 
     '===== stage #2 parameters ======
     Public Flow2 As Double          '[Am3/s] Air flow per cyclone 
-    Public dust2_A As Double        '[g/Am3] Dust load inlet 
-    Public dust2_n As Double        '[g/Nm3] Dust load inlet 
-    Public emmis2 As Double         '[g/Am3] Dust emission 
-    Public emmis2_n As Double       '[g/Nm3] Dust emission 
+    Public dust2_Am3 As Double      '[g/Am3] Dust load inlet 
+    Public dust2_Nm3 As Double      '[g/Nm3] Dust load inlet 
+    Public emmis2_Am3 As Double     '[g/Am3] Dust emission 
+    Public emmis2_Nm3 As Double     '[g/Nm3] Dust emission 
     Public sum_loss2 As Double      'Passed trough cyclone
     Public sum_loss_C2 As Double    'Passed trough cyclone Corrected
     Public loss_total2 As Double
@@ -65,8 +65,8 @@ Imports Word = Microsoft.Office.Interop.Word
     Public p2_abs As Double         '[Pa abs] pressure inlet abs
     Public dpgas2 As Double         '[Pa] pressure loss gas
     Public dpdust2 As Double        '[Pa] pressure loss dust
-    Public Ro_gas2 As Double        '[kg/Am3] density gas
-    Public Ro_gas2_n As Double      '[kg/Nm3] density gas
+    Public Ro_gas2_Am3 As Double    '[kg/Am3] density gas
+    Public Ro_gas2_Nm3 As Double    '[kg/Nm3] density gas
     Public Ct2 As Integer           '[-] Cyclone type (eg AC435)
     Public Noc2 As Integer          '[-] Number paralle Cyclones
     Public db2 As Double            '[m] Diameter cyclone body
@@ -319,7 +319,7 @@ Public Class Form1
         Dim tot_kgh As Double       'Dust inlet per hour totaal 
         Dim ro_solid As Double      'Density [kg/hr]
         Dim visco As Double         'Visco in Centi Poise
-        Dim ratio As Double         'ratio  Nm2 and Am3
+        Dim ratio As Double         'ratio  kg/Nm3 and kg/Am3
 
         '==== data ======
         Dim wc_dust1, wc_dust2 As Double    'weerstand_coef_air
@@ -332,17 +332,17 @@ Public Class Form1
         '==== stage 1 ====
 
         '------ dust load NORMAL conditions ----
-        _cees(ks).Ro_gas1 = numericUpDown3.Value                    '[kg/Am3]
-        _cees(ks).Ro_gas1_n = Calc_Normal_density(_cees(ks).Ro_gas1, _cees(ks).p1_abs, _cees(ks).Temp)
+        _cees(ks).Ro_gas1_Am3 = numericUpDown3.Value                    '[kg/Am3]
+        _cees(ks).Ro_gas1_Nm3 = Calc_Normal_density(_cees(ks).Ro_gas1_Am3, _cees(ks).p1_abs, _cees(ks).Temp)
 
         '--------- ratio  Nm2 and Am3 ---------
-        ratio = _cees(ks).Ro_gas1_n / _cees(ks).Ro_gas1
-        _cees(ks).dust1_A = NumericUpDown4.Value                    'gram/Am3
-        _cees(ks).dust1_n = _cees(ks).dust1_A * ratio               'gram/Nm3
+        ratio = _cees(ks).Ro_gas1_Nm3 / _cees(ks).Ro_gas1_Am3
+        _cees(ks).dust1_Am3 = NumericUpDown4.Value                    'gram/Am3
+        _cees(ks).dust1_Nm3 = _cees(ks).dust1_Am3 * ratio               'gram/Nm3
 
         '--------- present -------------
-        TextBox132.Text = _cees(ks).dust1_n.ToString("F2")          'gram/Nm3
-        TextBox129.Text = _cees(ks).Ro_gas1_n.ToString("F3")        'kg/Nm3 inlet gas
+        TextBox132.Text = _cees(ks).dust1_Nm3.ToString("F2")          'gram/Nm3
+        TextBox129.Text = _cees(ks).Ro_gas1_Nm3.ToString("F3")        'kg/Nm3 inlet gas
 
         If (ComboBox1.SelectedIndex > -1) And (ComboBox2.SelectedIndex > -1) Then 'Prevent exceptions
             '-------- dimension cyclone stage #1
@@ -373,7 +373,7 @@ Public Class Form1
             _cees(ks).dout2 = _cyl2_dim(6) * db2         '[m] diameter gas outlet
 
             '------ determine high/low dust load ------------
-            CheckBox2.Checked = CBool(IIf(_cees(ks).dust1_A > 20, True, False))
+            CheckBox2.Checked = CBool(IIf(_cees(ks).dust1_Am3 > 20, True, False))
             _cees(ks).FlowT = NumericUpDown1.Value      '[m3/h] 
             _cees(ks).Flow1 = _cees(ks).FlowT / (3600 * _cees(ks).Noc1) '[Am3/s/cycloon]
 
@@ -389,14 +389,14 @@ Public Class Form1
                 wc_air1 = CDbl(words(8))        'Resistance Coefficient air
                 wc_dust1 = CDbl(words(9))       'Resistance Coefficient dust
             End If
-            _cees(ks).dpgas1 = 0.5 * _cees(ks).Ro_gas1 * _cees(ks).inv1 ^ 2 * wc_air1      '[Pa]
-            _cees(ks).dpdust1 = 0.5 * _cees(ks).Ro_gas1 * _cees(ks).inv1 ^ 2 * wc_dust1    '[Pa]
+            _cees(ks).dpgas1 = 0.5 * _cees(ks).Ro_gas1_Am3 * _cees(ks).inv1 ^ 2 * wc_air1      '[Pa]
+            _cees(ks).dpdust1 = 0.5 * _cees(ks).Ro_gas1_Am3 * _cees(ks).inv1 ^ 2 * wc_dust1    '[Pa]
             _cees(ks).p2_abs = _cees(ks).p1_abs - _cees(ks).dpgas1              '[P_abs inlet]
 
 
             '=========== Stage #2 ==============
-            _cees(ks).Ro_gas2 = _cees(ks).Ro_gas1 * _cees(ks).p2_abs / _cees(ks).p1_abs  '[kg/Am3]
-            _cees(ks).Ro_gas2_n = Calc_Normal_density(_cees(ks).Ro_gas2, _cees(ks).p2_abs, _cees(ks).Temp)
+            _cees(ks).Ro_gas2_Am3 = _cees(ks).Ro_gas1_Am3 * _cees(ks).p2_abs / _cees(ks).p1_abs  '[kg/Am3]
+            _cees(ks).Ro_gas2_Nm3 = Calc_Normal_density(_cees(ks).Ro_gas2_Am3, _cees(ks).p2_abs, _cees(ks).Temp)
 
             _cees(ks).Flow2 = _cees(ks).FlowT / (3600 * _cees(ks).Noc2)         '[Am3/s/cycloon]
 
@@ -415,11 +415,11 @@ Public Class Form1
                 wc_air2 = CDbl(words(8))
                 wc_dust2 = CDbl(words(9))
             End If
-            _cees(ks).dpgas2 = 0.5 * _cees(ks).Ro_gas2 * _cees(ks).inv2 ^ 2 * wc_air2
-            _cees(ks).dpdust2 = 0.5 * _cees(ks).Ro_gas2 * _cees(ks).inv2 ^ 2 * wc_dust2
+            _cees(ks).dpgas2 = 0.5 * _cees(ks).Ro_gas2_Am3 * _cees(ks).inv2 ^ 2 * wc_air2
+            _cees(ks).dpdust2 = 0.5 * _cees(ks).Ro_gas2_Am3 * _cees(ks).inv2 ^ 2 * wc_dust2
 
             '----------- stof belasting ------------
-            kgs = _cees(ks).Flow1 * _cees(ks).dust1_A / 1000     '[kg/s/cycloon]
+            kgs = _cees(ks).Flow1 * _cees(ks).dust1_Am3 / 1000     '[kg/s/cycloon]
             kgh = kgs * 3600                                    '[kg/h/cycloon]
             tot_kgh = kgh * _cees(ks).Noc1                      '[g/Am3] Dust inlet 
 
@@ -428,7 +428,7 @@ Public Class Form1
             _cees(ks).Kstokes2 = Sqrt(db2 * 2000 * visco * 16 / (ro_solid * 0.0181 * _cees(ks).inv2))
 
             '----------- presenteren ----------------------------------
-            TextBox128.Text = _cees(ks).Ro_gas2_n.ToString("F3")        '[kg/Nm3] density
+            TextBox128.Text = _cees(ks).Ro_gas2_Nm3.ToString("F3")        '[kg/Nm3] density
             TextBox36.Text = (_cees(ks).FlowT / 3600).ToString("F4")    '[m3/s] flow
 
             '----------- presenteren afmetingen ------------------------------
@@ -493,8 +493,8 @@ Public Class Form1
             TextBox130.Text = _cees(ks).p2_abs.ToString("F0")       '[Pa abs]
 
             '---------- Density --------------
-            TextBox75.Text = _cees(ks).Ro_gas1.ToString("F3")       '[kg/Am3]
-            TextBox19.Text = _cees(ks).Ro_gas2.ToString("F3")       '[kg/Am3]
+            TextBox75.Text = _cees(ks).Ro_gas1_Am3.ToString("F3")       '[kg/Am3]
+            TextBox19.Text = _cees(ks).Ro_gas2_Am3.ToString("F3")       '[kg/Am3]
 
             '---------- Check inlet speed [m/s] stage #1---------------
             If _cees(ks).inv1 < 10 Or _cees(ks).inv1 > 30 Then
@@ -530,7 +530,7 @@ Public Class Form1
 
             TextBox39.Text = kgh.ToString("0")          'Stof inlet
             TextBox40.Text = tot_kgh.ToString("0")      'Dust inlet [g/Am3] 
-            TextBox71.Text = _cees(ks).dust1_A.ToString  'Dust inlet [g/Am3]
+            TextBox71.Text = _cees(ks).dust1_Am3.ToString  'Dust inlet [g/Am3]
         End If
     End Sub
     Private Sub Present_Datagridview1(ks As Integer)
@@ -689,7 +689,7 @@ Public Class Form1
         _cees(c_nr).class_load(10) = NumericUpDown40.Value / 100
 
         _cees(c_nr).FlowT = NumericUpDown1.Value                'Air flow
-        _cees(c_nr).dust1_A = NumericUpDown4.Value               'Dust inlet [g/Am3] 
+        _cees(c_nr).dust1_Am3 = NumericUpDown4.Value               'Dust inlet [g/Am3] 
         _cees(c_nr).Ct1 = ComboBox1.SelectedIndex               'Cyclone type Stage #1
         _cees(c_nr).Ct2 = ComboBox2.SelectedIndex               'Cyclone type Stage #2
         _cees(c_nr).Noc1 = CInt(NumericUpDown20.Value)          'Cyclone in parallel
@@ -835,7 +835,7 @@ Public Class Form1
 
         '============ stage 1 cyclone ==========
         'Note correction if load > 20 gram/Am3
-        dst = _cees(ks).dust1_A / 1000 'Dust load dimension is [kg/Am3]
+        dst = _cees(ks).dust1_Am3 / 1000 'Dust load dimension is [kg/Am3]
 
         f1 = 0.97833 + 2.918055 * dst - 39.3739 * dst ^ 2 + 472.0149 * dst ^ 3 - 769.586 * dst ^ 4
         f2 = -0.30338 + 21.91961 * dst - 73.5039 * dst ^ 2 + 112.485 * dst ^ 3 - 63.4408 * dst ^ 4
@@ -865,7 +865,7 @@ Public Class Form1
 
         '============ stage 2 cyclone ==========
         'Note correction if load > 20 gram/Am3
-        dst = _cees(ks).dust2_A / 1000 'Dust load dimension is [kg/Am3]
+        dst = _cees(ks).dust2_Am3 / 1000 'Dust load dimension is [kg/Am3]
         f1 = 0.97833 + 2.918055 * dst - 39.3739 * dst ^ 2 + 472.0149 * dst ^ 3 - 769.586 * dst ^ 4
         f2 = -0.30338 + 21.91961 * dst - 73.5039 * dst ^ 2 + 112.485 * dst ^ 3 - 63.4408 * dst ^ 4
         f3 = 2.043212 + 0.725352 * dst - 0.2663 * dst ^ 2 + 0.04299 * dst ^ 3 - 0.00233 * dst ^ 4
@@ -1636,7 +1636,7 @@ Public Class Form1
         Dim perc_smallest_part1 As Double
         Dim fac_m As Double
         Dim words() As String
-        Dim ratio, emmision_Am3, emmision_Nm3 As Double
+        Dim density_ratio1 As Double
 
         If Double.IsNaN(_cees(ks).stage1(0).dia) Or Double.IsInfinity(_cees(ks).stage1(0).dia) Then Exit Sub
 
@@ -1727,44 +1727,45 @@ Public Class Form1
         Next
         _cees(ks).loss_total1 = _cees(ks).sum_loss_C1 + ((100 - _cees(ks).sum_psd_diff1) * perc_smallest_part1)
 
-        _cees(ks).emmis1 = NumericUpDown4.Value * (_cees(ks).loss_total1 / 100)  '[g/Am3]
-        _cees(ks).emmis1_n = _cees(ks).emmis1 / Calc_Normal_density(_cees(ks).Ro_gas1, _cees(ks).p1_abs, _cees(ks).Temp)
+        _cees(ks).emmis1_Am3 = NumericUpDown4.Value * (_cees(ks).loss_total1 / 100)  '[g/Am3]
+        _cees(ks).emmis1_Nm3 = _cees(ks).emmis1_Am3 * Calc_Normal_density(_cees(ks).Ro_gas1_Am3, _cees(ks).p1_abs, _cees(ks).Temp)
 
-        _cees(ks).dust2_A = _cees(ks).emmis1 'Dust load stage #2 in emission stage #1
+        '----------Dust load stage #2 in emission stage #1 -----------
+        _cees(ks).dust2_Am3 = _cees(ks).emmis1_Am3
 
-
-        CheckBox3.Checked = CBool(IIf(_cees(ks).dust2_A > 20, True, False))
+        CheckBox3.Checked = CBool(IIf(_cees(ks).dust2_Am3 > 20, True, False))
         _cees(ks).Efficiency1 = 100 - _cees(ks).loss_total1        '[%] Efficiency
 
-        '--------- ratio  Nm2 and Am3 ---------
-        ratio = _cees(ks).Ro_gas1_n / _cees(ks).Ro_gas1
-
         '----------- present stage #1-----------
-        TextBox51.Text = _cees(ks).Dmax1.ToString("F2")    'diameter [mu] 100% catch
-        TextBox52.Text = _cees(ks).Dmin1.ToString("F2")    'diameter [mu] 100% loss
+        TextBox51.Text = _cees(ks).Dmax1.ToString("F2")     'diameter [mu] 100% catch
+        TextBox52.Text = _cees(ks).Dmin1.ToString("F2")     'diameter [mu] 100% loss
         TextBox56.Text = ComboBox1.Text                     'Cyclone type
-        TextBox57.Text = CheckBox2.Checked.ToString         'Correction 
-        TextBox70.Text = _cees(ks).dust2_A.ToString("F2")   'Dust load
+        TextBox57.Text = CheckBox2.Checked.ToString         'Correction stage #1
+        TextBox70.Text = _cees(ks).dust2_Am3.ToString("F2") 'Dust load [gram/Am3]
 
         TextBox118.Text = _cees(ks).sum_psd_diff1.ToString("F3")
         TextBox54.Text = _cees(ks).sum_loss1.ToString("F3")
         TextBox34.Text = _cees(ks).sum_loss_C1.ToString("F3")
 
-        If CheckBox2.Checked Then                       'Dust load correction
-            emmision_Am3 = _cees(ks).emmis1
-            emmision_Nm3 = emmision_Am3 * ratio
+        '---------Density ratio kg/Nm3 and kg/Am3 ---------
+        density_ratio1 = _cees(ks).Ro_gas1_Nm3 / _cees(ks).Ro_gas1_Am3
+
+        '----------- Dust load correction stage #1 ------------------
+        If CheckBox2.Checked Then
+            _cees(ks).emmis1_Am3 = _cees(ks).emmis1_Am3
+            _cees(ks).emmis1_Nm3 = _cees(ks).emmis1_Am3 * density_ratio1
             TextBox58.Text = _cees(ks).loss_total1.ToString("F3")    '[%] Corrected 
         Else
-            emmision_Am3 = (NumericUpDown4.Value * _cees(ks).sum_loss1 / 100)
-            emmision_Nm3 = emmision_Am3 * ratio
+            _cees(ks).emmis1_Am3 = (NumericUpDown4.Value * _cees(ks).sum_loss1 / 100)
+            _cees(ks).emmis1_Nm3 = _cees(ks).emmis1_Am3 * density_ratio1
             TextBox58.Text = _cees(ks).sum_loss1.ToString("F3")      '[%] NOT Corrected  
         End If
 
         TextBox59.Text = _cees(ks).Efficiency1.ToString("F3")
-        TextBox21.Text = TextBox59.Text
-        TextBox60.Text = emmision_Am3.ToString("F3")
-        TextBox133.Text = emmision_Nm3.ToString("F3")
-        TextBox18.Text = TextBox60.Text
+        TextBox21.Text = _cees(ks).Efficiency1.ToString("F3")
+        TextBox60.Text = _cees(ks).emmis1_Am3.ToString("F3")
+        TextBox18.Text = _cees(ks).emmis1_Am3.ToString("F3")
+        TextBox133.Text = _cees(ks).emmis1_Nm3.ToString("F3")
     End Sub
 
     Private Sub Calc_stage2(ks As Integer)
@@ -1778,21 +1779,17 @@ Public Class Form1
         Dim words() As String
         Dim kgh, tot_kgh As Double
         Dim Eff_comb As Double      'Efficiency stage #1 and #2
-        Dim ratio As Double
+        Dim density_ratio2 As Double
 
         If Double.IsNaN(_cees(ks).stage2(0).dia) Or Double.IsInfinity(_cees(ks).stage2(0).dia) Then Exit Sub
 
         '----------- stof belasting ------------
-        tot_kgh = _cees(ks).Flow2 * _cees(ks).dust2_A / 1000 * 3600 * _cees(ks).Noc2     '[kg/hr] Dust inlet 
+        tot_kgh = _cees(ks).Flow2 * _cees(ks).dust2_Am3 / 1000 * 3600 * _cees(ks).Noc2     '[kg/hr] Dust inlet 
 
         kgh = tot_kgh / _cees(ks).Noc2                          '[kg/hr/Cy] Dust inlet 
         TextBox100.Text = kgh.ToString("0")
         TextBox101.Text = tot_kgh.ToString("0")
-        TextBox143.Text = _cees(ks).dust2_n.ToString("F2")      '[kg/Nm3]
-
-
-        'mmmmmmmmmmm
-
+        TextBox143.Text = _cees(ks).dust2_Nm3.ToString("F2")      'Dust load [gram/Nm3]
 
 
         '--------- now the particles (====Grid line 0======)------------
@@ -1853,6 +1850,8 @@ Public Class Form1
             _cees(ks).stage2(i).d_ave_K = _cees(ks).stage2(i).d_ave / _cees(ks).Kstokes2          'dia/k_stokes
             _cees(ks).stage2(i).loss_overall = Calc_verlies(_cees(ks).stage2(i).d_ave, False, _cees(ks).Kstokes2, 2)   '[-] loss overall
             Calc_verlies_corrected(_cees(ks).stage2(i), 2)                                '[-] loss overall corrected
+
+            '------------- Load correction stage #2 -------------------
             If CheckBox3.Checked Then
                 _cees(ks).stage2(i).catch_chart = (1 - _cees(ks).stage2(i).loss_overall_C) * 100  '[%] Corrected
             Else
@@ -1891,22 +1890,16 @@ Public Class Form1
             _cees(ks).sum_loss_C2 += _cees(ks).stage2(i).loss_abs_C
         Next i
         _cees(ks).loss_total2 = _cees(ks).sum_loss_C2 + ((100 - _cees(ks).sum_psd_diff2) * perc_smallest_part2)
-        _cees(ks).emmis2 = _cees(ks).emmis1 * _cees(ks).loss_total2 / 100
+        _cees(ks).emmis2_Am3 = _cees(ks).emmis1_Am3 * _cees(ks).loss_total2 / 100
         _cees(ks).Efficiency2 = 100 - _cees(ks).loss_total2      '[%] Efficiency
 
         '------ combined efficiency -----
         Eff_comb = _cees(ks).Efficiency1 + (1 - _cees(ks).Efficiency1 / 100) * _cees(ks).Efficiency2
 
 
-
-
-
-
-
-
         '----------- present stage #2 -----------
         TextBox63.Text = ComboBox2.Text                     'Cyclone type
-        TextBox64.Text = CheckBox3.Checked.ToString         'Hi load correction
+        TextBox64.Text = CheckBox3.Checked.ToString         'Hi load correction stage #2
         TextBox110.Text = _cees(ks).Dmax2.ToString("F2")    'diameter [mu] 100% catch
         TextBox111.Text = _cees(ks).Dmin2.ToString("F2")    'diameter [mu] 100% loss
         TextBox116.Text = _istep.ToString("F5")             'Calculation step stage #2
@@ -1916,19 +1909,26 @@ Public Class Form1
         TextBox69.Text = _cees(ks).sum_loss_C2.ToString("F3")
         TextBox120.Text = Eff_comb.ToString("F3")
 
-        If CheckBox3.Checked Then   'Dust load correction
+        If CheckBox3.Checked Then   'Dust load correction stage #2
             TextBox65.Text = _cees(ks).loss_total2.ToString("F3")    '[%] Corrected
         Else
             TextBox65.Text = _cees(ks).sum_loss2.ToString("F3")      '[%] NOT Corrected
         End If
 
-        TextBox66.Text = _cees(ks).Efficiency2.ToString("F3")
-        TextBox109.Text = _cees(ks).Efficiency2.ToString("F3")
-        TextBox62.Text = _cees(ks).emmis2.ToString("F4")
-        TextBox142.Text = (_cees(ks).emmis2 * ratio).ToString("F4")
+        '--------- Density ratio  kg/Nm3 and kg/Am3 ---------
+        density_ratio2 = _cees(ks).Ro_gas2_Nm3 / _cees(ks).Ro_gas2_Am3  '[-]
+        _cees(ks).emmis2_Nm3 = _cees(ks).emmis2_Am3 * density_ratio2
 
-        TextBox108.Text = TextBox62.Text
-        TextBox134.Text = TextBox108.Text
+
+        TextBox66.Text = _cees(ks).Efficiency2.ToString("F3")       '[%]
+        TextBox109.Text = _cees(ks).Efficiency2.ToString("F3")      '[%]
+
+        TextBox62.Text = _cees(ks).emmis2_Am3.ToString("F4")        '[gram/Am3] emmissie stage #2
+        TextBox108.Text = _cees(ks).emmis2_Am3.ToString("F4")       '[gram/Am3] emmissie stage #2
+        TextBox134.Text = _cees(ks).emmis2_Am3.ToString("F4")       '[gram/Am3] emmissie stage #2
+        TextBox142.Text = _cees(ks).emmis2_Nm3.ToString("F4")       '[gram/Nm3]emmissie stage #2
+
+
     End Sub
     'Determine the particle diameter class upper and lower limits
     ' Private Function Size_classification(dia As Double, noi As Integer) As Double
@@ -2205,7 +2205,7 @@ Public Class Form1
                 numericUpDown13.Value = CDec(_cees(zz).class_load(7) * 100)
 
                 NumericUpDown1.Value = CDec(_cees(zz).FlowT)        'Air flow total
-                NumericUpDown4.Value = CDec(_cees(zz).dust1_A)       'Dust inlet [g/Am3] 
+                NumericUpDown4.Value = CDec(_cees(zz).dust1_Am3)    'Dust inlet [g/Am3] 
                 ComboBox1.SelectedIndex = _cees(zz).Ct1             'Cyclone type stage #1
                 ComboBox2.SelectedIndex = _cees(zz).Ct2             'Cyclone type stage #2
                 NumericUpDown20.Value = _cees(zz).Noc1              'Cyclone in parallel
@@ -2261,16 +2261,16 @@ Public Class Form1
             DataGridView4.Columns(9).HeaderCell.Style.BackColor = Color.Yellow      'For chart
 
             '===== Dust load 1stage [kg/Nm3]  =====
-            w19 = _cees(ks).dust1_n / 1000 'Dust load [gr/Nm3]
+            w19 = _cees(ks).dust1_Nm3 / 1000 'Dust load [gr/Nm3]
 
             '===== Emissie 1stage [kg/Nm3]  =====
-            w20 = _cees(ks).emmis1_n / 1000  'Emission [kg/Nm3] 1stage
+            w20 = _cees(ks).emmis1_Nm3 / 1000  'Emission [kg/Nm3] 1stage
 
             '========== first line =============
             row = 0
             li(0) = _cees(ks).stage1(row).d_ave                 'Dia aver [mu]"
             li(1) = _cees(ks).stage1(row).psd_dif * 10 * w19    'In abs [g/Nm3]" T76 * W19
-            li(2) = 100 * li(1) / _cees(ks).dust1_n             'In psd diff [%]
+            li(2) = 100 * li(1) / _cees(ks).dust1_Nm3             'In psd diff [%]
             li(3) = 100 - li(2)                                 'In psd diff cumm[%]" S76 
             li(4) = _cees(ks).stage2(row).psd_dif               'In psd cum [%]
             li(5) = 100 - _cees(ks).stage2(row).psd_dif         'Loss1 pdscum [%]
@@ -2290,7 +2290,7 @@ Public Class Form1
             For row = 1 To DataGridView4.Rows.Count - 1                 'Fill the DataGrid
                 li(0) = _cees(ks).stage1(row).d_ave                     'Dia aver [mu]
                 li(1) = _cees(ks).stage1(row).psd_dif * 10 * w19        'In abs [g/Am3]" T76 * W19
-                li(2) = 100 * li(1) / _cees(ks).dust1_n                 'In psd diff [%]
+                li(2) = 100 * li(1) / _cees(ks).dust1_Nm3               'In psd diff [%]
                 li(3) = _cees(ks).stage1(row - 1).psd_cum_pro - li(2)   'In psd diff cumm[%]
                 li(4) = _cees(ks).stage2(row).psd_dif                   'In psd cum [%]
 
@@ -2345,8 +2345,8 @@ Public Class Form1
     'R= P/(ρ.T)
     'R1=R2  ===>   Pn/(ρn.Tn)= P2/(ρ2.T2)
     'Pn.ρ2.T2= P2.ρn.Tn
-    'ρn =(Pn/P2).ρ2.(T2/Tn)
-    'ρn =(101325/P2).ρ2.(T2/273.15)
+    'ρn =ρ2.(Pn/P2).(T2/Tn)
+    'ρn =ρ2.(101325/P2).(T2/273.15)
 
 
     Private Function Calc_Normal_density(ro1 As Double, p1 As Double, t1 As Double) As Double
