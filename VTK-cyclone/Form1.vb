@@ -2428,7 +2428,7 @@ Public Class Form1
         Return (ro_normal)
     End Function
 
-    Private Sub Button9_Click(sender As Object, e As EventArgs) Handles Button9.Click, TabPage5.Enter, NumericUpDown47.ValueChanged, NumericUpDown46.ValueChanged, NumericUpDown16.ValueChanged, NumericUpDown50.ValueChanged
+    Private Sub Button9_Click(sender As Object, e As EventArgs) Handles Button9.Click, TabPage5.Enter, NumericUpDown47.ValueChanged, NumericUpDown46.ValueChanged, NumericUpDown16.ValueChanged, NumericUpDown50.ValueChanged, NumericUpDown49.ValueChanged, NumericUpDown17.ValueChanged
         'Stress calculation
         Calc_Round_plate()
         Calc_shell()
@@ -2450,8 +2450,6 @@ Public Class Form1
         r = dia / 2                             '[m]
         t = NumericUpDown46.Value / 1000        '[m]
         temper = NumericUpDown18.Value          '[celsius]
-        'Elas = 193 * 10 ^ 6                    '[Pa] for 304
-
 
         Elas = (201.66 - 8.48 * temper / 10 ^ 2) '* 10 ^ 9   '[GPa] for 304
         Elas *= 10 ^ 9                                       '[Pa] for 304
@@ -2463,13 +2461,10 @@ Public Class Form1
         yt = (0.696 * p * r ^ 4) / (Elas * t ^ 3)           '[m]
         yt *= 1000                                          '[m]--->[mm]
 
-        TextBox145.Text = t.ToString
-
-
         TextBox144.Text = temper.ToString("F0")             '[celsius]
         TextBox138.Text = (Elas / 10 ^ 9).ToString("F0")    '[GPa]
         TextBox136.Text = σm.ToString("F0")                 '[N/mm2]
-        TextBox137.Text = yt.ToString("F3")                 '[mm]
+        TextBox137.Text = yt.ToString("F1")                 '[mm]
 
         '===== check ================
         TextBox136.BackColor = CType(IIf(σm > _fs, Color.Red, Color.LightGreen), Color)
@@ -2495,9 +2490,9 @@ Public Class Form1
         e_wall = p * dia / (2 * _fs * z_joint + p)  'equation (7.4.2) page 30, Required wall thickness
 
         '---------------------
-        TextBox139.Text = p.ToString                '[N/mm2]
-        TextBox140.Text = e_wall.ToString("F4")     '[mm]
-        TextBox141.Text = _fs.ToString              '[N/mm2]
+        TextBox139.Text = p.ToString("F3")          '[N/mm2] pressure
+        TextBox140.Text = e_wall.ToString("F1")     '[mm] wall thickness
+        TextBox141.Text = _fs.ToString("F0")        '[N/mm2] design stress
     End Sub
 
     Private Sub Button10_Click(sender As Object, e As EventArgs) Handles Button10.Click, TabPage10.Enter
