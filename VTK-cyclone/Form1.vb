@@ -2453,15 +2453,18 @@ Public Class Form1
         'Elas = 193 * 10 ^ 6                    '[Pa] for 304
 
 
-        Elas = (201.66 - 8.48 * temper / 10 ^ 2) * 10 ^ 9   '[GPa] for 304
-
+        Elas = (201.66 - 8.48 * temper / 10 ^ 2) '* 10 ^ 9   '[GPa] for 304
+        Elas *= 10 ^ 9                                       '[Pa] for 304
 
         v = 0.3 'For steel
         σm = 1.238 * p * r ^ 2 / t ^ 2
         σm /= 10 ^ 6                                        '[N/mm2]
 
-        yt = 0.696 * p * r ^ 4
-        yt /= Elas * t ^ 3                                  '[mm]
+        yt = (0.696 * p * r ^ 4) / (Elas * t ^ 3)           '[m]
+        yt *= 1000                                          '[m]--->[mm]
+
+        TextBox145.Text = t.ToString
+
 
         TextBox144.Text = temper.ToString("F0")             '[celsius]
         TextBox138.Text = (Elas / 10 ^ 9).ToString("F0")    '[GPa]
