@@ -403,11 +403,9 @@ Public Class Form1
             '------ compensate the flow for the pressure loss over stage 1 ---
             _cees(ks).Flow2 *= _cees(ks).p1_abs / _cees(ks).p2_abs
 
-
             '---- Compensate for the Speed for the pressure loss in stage #1 ----
             _cees(ks).inv2 = _cees(ks).Flow2 / (_cees(ks).inb2 * _cees(ks).inh2)    '[m/s]
             _cees(ks).outv2 = _cees(ks).Flow2 / ((PI / 4) * _cees(ks).dout2 ^ 2)    '[m/s]
-
 
             '----------- Pressure loss cyclone stage #2----------------------
             If ComboBox2.SelectedIndex > -1 Then
@@ -428,10 +426,10 @@ Public Class Form1
             _cees(ks).Kstokes2 = Sqrt(db2 * 2000 * visco * 16 / (ro_solid * 0.0181 * _cees(ks).inv2))
 
             '----------- presenteren ----------------------------------
-            TextBox128.Text = _cees(ks).Ro_gas2_Nm3.ToString("F3")        '[kg/Nm3] density
+            TextBox128.Text = _cees(ks).Ro_gas2_Nm3.ToString("F3")      '[kg/Nm3] density
             TextBox36.Text = (_cees(ks).FlowT / 3600).ToString("F4")    '[m3/s] flow
 
-            '----------- presenteren afmetingen ------------------------------
+            '----------- presenteren afmetingen in [mm] ----------------------------
             TextBox1.Text = (_cees(ks).inh1).ToString("F3")          'inlaat breedte
             TextBox2.Text = (_cees(ks).inb1).ToString("F3")          'Inlaat hoogte
             TextBox3.Text = (_cyl1_dim(3) * db1).ToString("F3")      'Inlaat lengte
@@ -479,11 +477,11 @@ Public Class Form1
             TextBox22.Text = _cees(ks).outv1.ToString("0.0")            'uitlaat snelheid
             TextBox77.Text = _cees(ks).outv2.ToString("0.0")            'uitlaat snelheid
 
-            TextBox23.Text = _cees(ks).Kstokes1.ToString("F4")       'Stokes waarde stage#1
-            TextBox78.Text = _cees(ks).Kstokes2.ToString("F4")       'Stokes waarde stage#1
+            TextBox23.Text = _cees(ks).Kstokes1.ToString("F4")          'Stokes waarde stage#1
+            TextBox78.Text = _cees(ks).Kstokes2.ToString("F4")          'Stokes waarde stage#2
 
-            TextBox37.Text = _cees(ks).db1.ToString                     'Cycloone diameter
-            TextBox74.Text = _cees(ks).db2.ToString                     'Cycloone diameter
+            TextBox37.Text = _cees(ks).db1.ToString                     'Cycloone diameter stage#1
+            TextBox74.Text = _cees(ks).db2.ToString                     'Cycloone diameter stage#2
 
             TextBox38.Text = CType(ComboBox1.SelectedItem, String)      'Cycloon type
             TextBox73.Text = CType(ComboBox2.SelectedItem, String)      'Cycloon type
@@ -528,13 +526,12 @@ Public Class Form1
             'Save data of screen into the _cees array
             Fill_cees_array(CInt(NumericUpDown30.Value))
 
-            TextBox39.Text = kgh.ToString("0")          'Stof inlet
-            TextBox40.Text = tot_kgh.ToString("0")      'Dust inlet [g/Am3] 
-            TextBox71.Text = _cees(ks).dust1_Am3.ToString  'Dust inlet [g/Am3]
+            TextBox39.Text = kgh.ToString("F0")                 'Stof inlet [kg/(h.cyclone)]
+            TextBox40.Text = tot_kgh.ToString("F0")             'Dust inlet [g/Am3] 
+            TextBox71.Text = _cees(ks).dust1_Am3.ToString("F1") 'Dust inlet [g/Am3]
         End If
     End Sub
     Private Sub Present_Datagridview1(ks As Integer)
-
 
         '--------- HeaderText --------------------
         DataGridView1.Columns(0).HeaderText = "Dia class"
@@ -554,7 +551,6 @@ Public Class Form1
             k41 += CDbl(DataGridView1.Rows(h).Cells(4).Value)    'tot_catch_abs[%]
         Next
         '===================================================================
-        'Calc_Datagridview1(ks)
 
         DataGridView1.AutoResizeColumns()
     End Sub
@@ -672,10 +668,10 @@ Public Class Form1
         _cees(c_nr).dia_big(7) = NumericUpDown29.Value   '80
         _cees(c_nr).dia_big(8) = NumericUpDown35.Value   '50
         _cees(c_nr).dia_big(9) = NumericUpDown36.Value   '60
-        _cees(c_nr).dia_big(10) = NumericUpDown37.Value   '80
+        _cees(c_nr).dia_big(10) = NumericUpDown37.Value  '80
 
 
-        'Percentale van de inlaat stof belasting
+        'Percentale van de inlaat stof belasting [%]
         _cees(c_nr).class_load(0) = numericUpDown6.Value / 100
         _cees(c_nr).class_load(1) = numericUpDown7.Value / 100
         _cees(c_nr).class_load(2) = numericUpDown8.Value / 100
@@ -688,8 +684,8 @@ Public Class Form1
         _cees(c_nr).class_load(9) = NumericUpDown39.Value / 100
         _cees(c_nr).class_load(10) = NumericUpDown40.Value / 100
 
-        _cees(c_nr).FlowT = NumericUpDown1.Value                'Air flow
-        _cees(c_nr).dust1_Am3 = NumericUpDown4.Value               'Dust inlet [g/Am3] 
+        _cees(c_nr).FlowT = NumericUpDown1.Value                'Air flow [Am3/hr]
+        _cees(c_nr).dust1_Am3 = NumericUpDown4.Value            'Dust inlet [g/Am3] 
         _cees(c_nr).Ct1 = ComboBox1.SelectedIndex               'Cyclone type Stage #1
         _cees(c_nr).Ct2 = ComboBox2.SelectedIndex               'Cyclone type Stage #2
         _cees(c_nr).Noc1 = CInt(NumericUpDown20.Value)          'Cyclone in parallel
@@ -698,7 +694,7 @@ Public Class Form1
         _cees(c_nr).db2 = NumericUpDown34.Value                 'Diameter cyclone Stage #2
         _cees(c_nr).ro_gas = numericUpDown3.Value               'Density [kg/hr]
         _cees(c_nr).ro_solid = numericUpDown2.Value             'Density [kg/hr]
-        _cees(c_nr).visco = numericUpDown14.Value               'Visco in Centi Poise
+        _cees(c_nr).visco = numericUpDown14.Value               'Visco in [Centi Poise]
         _cees(c_nr).Temp = NumericUpDown18.Value                'Temperature [c]
         _cees(c_nr).p1_abs = 101325 + NumericUpDown19.Value * 100         'Pressure [Pa abs]
 
@@ -827,15 +823,10 @@ Public Class Form1
 
         Return (dia_result)
     End Function
-
-    '---- According to VT-UK -----
-    Private Sub Dust_load_correction(ks As Integer)
-        Dim f1, f2, f3, f4, f, f_used As Double
-        Dim dst As Double
-
-        '============ stage 1 cyclone ==========
-        'Note correction if load > 20 gram/Am3
-        dst = _cees(ks).dust1_Am3 / 1000 'Dust load dimension is [kg/Am3]
+    Private Function Calc_dust_load_correction(dst As Double) As Double
+        Dim f1, f2, f3, f4, f As Double
+        '---- Dust load dimension is [kg/Am3] ---
+        '---- Below 20 gram/Am3 NO correction ---
 
         f1 = 0.97833 + 2.918055 * dst - 39.3739 * dst ^ 2 + 472.0149 * dst ^ 3 - 769.586 * dst ^ 4
         f2 = -0.30338 + 21.91961 * dst - 73.5039 * dst ^ 2 + 112.485 * dst ^ 3 - 63.4408 * dst ^ 4
@@ -843,7 +834,7 @@ Public Class Form1
         f4 = 2.853325 + 0.019026 * dst - 0.00036 * dst ^ 2 + 0.000003 * dst ^ 3 - 0.0000000065 * dst ^ 4
 
         Select Case dst
-            Case < 0.02
+            Case < 0.02     '[20 gram/Am3]
                 f = 1
             Case < 0.14
                 f = f1
@@ -854,42 +845,19 @@ Public Class Form1
             Case Else
                 f = f4
         End Select
+        Return (f)
+    End Function
 
-        If (CheckBox2.Checked) Then
-            f_used = f
-        Else
-            f_used = 1
-        End If
+    '---- According to VTK UK -----
+    Private Sub Dust_load_correction(ks As Integer)
+        Dim f_used As Double
 
+        '============ stage 1 cyclone ==========
+        f_used = Calc_dust_load_correction(_cees(ks).dust1_Am3 / 1000)
         TextBox55.Text = f_used.ToString("F3")
 
         '============ stage 2 cyclone ==========
-        'Note correction if load > 20 gram/Am3
-        dst = _cees(ks).dust2_Am3 / 1000 'Dust load dimension is [kg/Am3]
-        f1 = 0.97833 + 2.918055 * dst - 39.3739 * dst ^ 2 + 472.0149 * dst ^ 3 - 769.586 * dst ^ 4
-        f2 = -0.30338 + 21.91961 * dst - 73.5039 * dst ^ 2 + 112.485 * dst ^ 3 - 63.4408 * dst ^ 4
-        f3 = 2.043212 + 0.725352 * dst - 0.2663 * dst ^ 2 + 0.04299 * dst ^ 3 - 0.00233 * dst ^ 4
-        f4 = 2.853325 + 0.019026 * dst - 0.00036 * dst ^ 2 + 0.000003 * dst ^ 3 - 0.0000000065 * dst ^ 4
-
-        Select Case dst
-            Case < 0.02
-                f = 1
-            Case < 0.14
-                f = f1
-            Case < 0.7
-                f = f2
-            Case < 9.1
-                f = f3
-            Case Else
-                f = f4
-        End Select
-
-        If (CheckBox3.Checked) Then
-            f_used = f
-        Else
-            f_used = 1
-        End If
-
+        f_used = Calc_dust_load_correction(_cees(ks).dust2_Am3 / 1000)
         TextBox67.Text = f_used.ToString("F3")
     End Sub
 
@@ -1025,8 +993,8 @@ Public Class Form1
 
             '------- Plot stage #2  --------
             If CheckBox6.Checked Then
-                'loss2 = CDbl((DataGridView4.Rows(h).Cells(8).Value))    'get data Loss 2
-                loss2 = CDbl((DataGridView3.Rows(h).Cells(14).Value))    'get data Loss 2
+                'loss2 = CDbl((DataGridView4.Rows(h).Cells(8).Value))   'get data Loss 2
+                loss2 = CDbl((DataGridView3.Rows(h).Cells(14).Value))   'get data Loss 2
 
                 b = CDbl((DataGridView4.Rows(h).Cells(9).Value))        'get data Eff 1&2 [%]
                 ch.Series(3).Points.AddXY(a, loss2)                     'Plot Loss 2
@@ -1100,6 +1068,47 @@ Public Class Form1
         ch.Series(0).Points(6).Label = "Cyclone #1"
         ch.Series(1).Points(4).Label = "Cyclone #2"
     End Sub
+    Private Sub Draw_chart3(ch As Chart)
+        'Lust Load correction formula
+        Dim s_points(150, 2) As Double
+        Dim h As Integer
+
+        ch.Series.Clear()
+        ch.ChartAreas.Clear()
+        ch.Titles.Clear()
+        ch.ChartAreas.Add("ChartArea0")
+
+        ch.Series.Add("Series1")
+        ch.Series(0).ChartArea = "ChartArea0"
+        ch.Series(0).ChartType = DataVisualization.Charting.SeriesChartType.Line
+        ch.Series(0).BorderWidth = 2
+        ch.Series(0).IsVisibleInLegend = False
+
+        ch.Titles.Add("Dust Load correction factor")
+        ch.ChartAreas("ChartArea0").AxisX.Title = "Dust load [gr/Am3]"
+        ch.ChartAreas("ChartArea0").AxisY.Title = "Dust Load correction factor"
+        ch.ChartAreas("ChartArea0").AxisY.Minimum = 1               'Correction factor
+        ch.ChartAreas("ChartArea0").AxisY.Maximum = 2               'Correction factor
+        ch.ChartAreas("ChartArea0").AxisX.Minimum = 0               'Dustload
+        ch.ChartAreas("ChartArea0").AxisX.Maximum = 150             'Dustload
+
+        '----- now calc chart points #1 and #2 --------------------------
+        s_points(0, 0) = 0                                          'Dust load 0 [kg/Am3]
+        s_points(0, 1) = 1                                          'Correction factor [-]
+
+        For h = 1 To 150                                            'Dust load [kg/Am3]
+            s_points(h, 0) = h                                      'Dust load [kg/Am3]
+            s_points(h, 1) = Calc_dust_load_correction(h / 1000)    'Correction factor [-]
+        Next
+
+        '------ now present-------------
+        For h = 0 To 150 - 1   'Fill line chart
+            ch.Series(0).Points.AddXY(s_points(h, 0), s_points(h, 1))   '
+        Next h
+
+        ch.Series(0).Points(6).Label = "Load correction"
+    End Sub
+
     Private Sub Button2_Click(sender As Object, e As EventArgs) Handles TabPage9.Enter, CheckBox6.CheckedChanged, CheckBox7.CheckedChanged, CheckBox4.CheckedChanged, CheckBox9.CheckedChanged, CheckBox8.CheckedChanged, CheckBox10.CheckedChanged, CheckBox5.CheckedChanged, CheckBox12.CheckedChanged, CheckBox11.CheckedChanged, CheckBox1.CheckedChanged, CheckBox13.CheckedChanged
         Calc_sequence()
     End Sub
@@ -1352,7 +1361,7 @@ Public Class Form1
 
             '---------------cyclone data-------------------------------
             'Insert a table, fill it with data and change the column widths.
-            oTable = oDoc.Tables.Add(oDoc.Bookmarks.Item("\endofdoc").Range, 4, 3)
+            oTable = oDoc.Tables.Add(oDoc.Bookmarks.Item("\endofdoc").Range, 7, 3)
             oTable.Range.ParagraphFormat.SpaceAfter = 1
             oTable.Range.Font.Size = 10
             oTable.Range.Font.Bold = CInt(False)
@@ -1360,15 +1369,31 @@ Public Class Form1
             row = 1
             oTable.Cell(row, 1).Range.Text = "Cyclone data"
             row += 1
-            oTable.Cell(row, 1).Range.Text = "Cyclone type "
+            '----------- stage #1 ---------------
+            oTable.Cell(row, 1).Range.Text = "Cyclone type stage #1 "
             oTable.Cell(row, 2).Range.Text = ComboBox1.SelectedItem.ToString
+            oTable.Cell(row, 3).Range.Text = "[-]"
             row += 1
-            oTable.Cell(row, 1).Range.Text = "Body diameter"
+            oTable.Cell(row, 1).Range.Text = "Body diameter #1"
             oTable.Cell(row, 2).Range.Text = numericUpDown5.Value.ToString
             oTable.Cell(row, 3).Range.Text = "[mm]"
             row += 1
-            oTable.Cell(row, 1).Range.Text = "No parallel"
+            oTable.Cell(row, 1).Range.Text = "No parallel #1"
             oTable.Cell(row, 2).Range.Text = NumericUpDown20.Value.ToString
+            oTable.Cell(row, 3).Range.Text = "[-]"
+            row += 1
+            '----------- stage #2 ---------------
+            oTable.Cell(row, 1).Range.Text = "Cyclone type stage #2 "
+            oTable.Cell(row, 2).Range.Text = ComboBox2.SelectedItem.ToString
+            oTable.Cell(row, 3).Range.Text = "[-]"
+            row += 1
+            oTable.Cell(row, 1).Range.Text = "Body diameter #2"
+            oTable.Cell(row, 2).Range.Text = NumericUpDown34.Value.ToString
+            oTable.Cell(row, 3).Range.Text = "[mm]"
+            row += 1
+            oTable.Cell(row, 1).Range.Text = "No parallel #2"
+            oTable.Cell(row, 2).Range.Text = NumericUpDown33.Value.ToString
+            oTable.Cell(row, 3).Range.Text = "[-]"
 
             oTable.Columns(1).Width = oWord.InchesToPoints(2.0)   'Change width of columns 
             oTable.Columns(2).Width = oWord.InchesToPoints(1)
@@ -1379,7 +1404,7 @@ Public Class Form1
 
             '---------------Process data-------------------------------
             'Insert a table, fill it with data and change the column widths.
-            oTable = oDoc.Tables.Add(oDoc.Bookmarks.Item("\endofdoc").Range, 4, 3)
+            oTable = oDoc.Tables.Add(oDoc.Bookmarks.Item("\endofdoc").Range, 7, 3)
             oTable.Range.ParagraphFormat.SpaceAfter = 1
             oTable.Range.Font.Size = 10
             oTable.Range.Font.Bold = CInt(False)
@@ -1387,17 +1412,33 @@ Public Class Form1
             row = 1
             oTable.Cell(row, 1).Range.Text = "Process data"
             row += 1
-            oTable.Cell(row, 1).Range.Text = "Inlet speed "
+            '----------- stage #1 ---------------
+            oTable.Cell(row, 1).Range.Text = "Inlet speed #1 "
             oTable.Cell(row, 2).Range.Text = TextBox16.Text
             oTable.Cell(row, 3).Range.Text = "[m/s]"
             row += 1
-            oTable.Cell(row, 1).Range.Text = "Outlet data"
+            oTable.Cell(row, 1).Range.Text = "Outlet speed #1"
             oTable.Cell(row, 2).Range.Text = TextBox22.Text
             oTable.Cell(row, 3).Range.Text = "[m/s]"
             row += 1
-            oTable.Cell(row, 1).Range.Text = "Pressure loss"
+            oTable.Cell(row, 1).Range.Text = "Pressure loss #1"
             oTable.Cell(row, 2).Range.Text = TextBox17.Text
             oTable.Cell(row, 3).Range.Text = "[Pa]"
+            row += 1
+            '----------- stage #2 ---------------
+            oTable.Cell(row, 1).Range.Text = "Inlet speed #2 "
+            oTable.Cell(row, 2).Range.Text = TextBox80.Text
+            oTable.Cell(row, 3).Range.Text = "[m/s]"
+            row += 1
+            oTable.Cell(row, 1).Range.Text = "Outlet speed #2"
+            oTable.Cell(row, 2).Range.Text = TextBox77.Text
+            oTable.Cell(row, 3).Range.Text = "[m/s]"
+            row += 1
+            oTable.Cell(row, 1).Range.Text = "Pressure loss #2"
+            oTable.Cell(row, 2).Range.Text = TextBox79.Text
+            oTable.Cell(row, 3).Range.Text = "[Pa]"
+
+
             oTable.Columns(1).Width = oWord.InchesToPoints(2.0)   'Change width of columns 
             oTable.Columns(2).Width = oWord.InchesToPoints(1)
             oTable.Columns(3).Width = oWord.InchesToPoints(2)
@@ -1405,7 +1446,7 @@ Public Class Form1
             oTable.Rows(1).Range.Font.Bold = CInt(True)
             oDoc.Bookmarks.Item("\endofdoc").Range.InsertParagraphAfter()
 
-            '---------------Calculation date-------------------------------
+            '---------------Calculation date stage #1-------------------------------
             'Insert a table, fill it with data and change the column widths.
             oTable = oDoc.Tables.Add(oDoc.Bookmarks.Item("\endofdoc").Range, 24, 10)
             oTable.Range.ParagraphFormat.SpaceAfter = 1
@@ -1413,7 +1454,7 @@ Public Class Form1
             oTable.Range.Font.Bold = CInt(False)
             oTable.Rows(1).Range.Font.Bold = CInt(True)
             row = 1
-            oTable.Cell(row, 1).Range.Text = "Calc.data"
+            oTable.Cell(row, 1).Range.Text = "Stage #1"
             row += 1
 
             oTable.Cell(row, 1).Range.Text = "Dia class[mu]"
@@ -1444,6 +1485,47 @@ Public Class Form1
             Next
             oTable.Rows(1).Range.Font.Bold = CInt(True)
             oDoc.Bookmarks.Item("\endofdoc").Range.InsertParagraphAfter()
+
+            ''---------------Calculation date stage #2-------------------------------
+            ''Insert a table, fill it with data and change the column widths.
+            'oTable = oDoc.Tables.Add(oDoc.Bookmarks.Item("\endofdoc").Range, 24, 10)
+            'oTable.Range.ParagraphFormat.SpaceAfter = 1
+            'oTable.Range.Font.Size = 10
+            'oTable.Range.Font.Bold = CInt(False)
+            'oTable.Rows(1).Range.Font.Bold = CInt(True)
+            'row = 1
+            'oTable.Cell(row, 1).Range.Text = "Stage #2"
+            'row += 1
+
+            'oTable.Cell(row, 1).Range.Text = "Dia class[mu]"
+            'oTable.Cell(row, 2).Range.Text = "Feed psd cumm [%]"
+            'oTable.Cell(row, 3).Range.Text = "Feed psd diff [%]"
+            'oTable.Cell(row, 4).Range.Text = "Loss of feed [%]"
+            'oTable.Cell(row, 5).Range.Text = "Loss abs [%]"
+            'oTable.Cell(row, 6).Range.Text = "Loss cum [%]"
+            'oTable.Cell(row, 7).Range.Text = "Catch abs [%]"
+            'oTable.Cell(row, 8).Range.Text = "Catch cum [%]"
+            'oTable.Cell(row, 9).Range.Text = "Efficiency [%]"
+
+            'For j = 0 To 22
+            '    row += 1
+            '    oTable.Cell(row, 1).Range.Text = CType(DataGridView1.Rows(j).Cells(0).Value, String)
+            '    oTable.Cell(row, 2).Range.Text = CType(DataGridView1.Rows(j).Cells(1).Value, String)
+            '    oTable.Cell(row, 3).Range.Text = CType(DataGridView1.Rows(j).Cells(2).Value, String)
+            '    oTable.Cell(row, 4).Range.Text = CType(DataGridView1.Rows(j).Cells(3).Value, String)
+            '    oTable.Cell(row, 5).Range.Text = CType(DataGridView1.Rows(j).Cells(4).Value, String)
+            '    oTable.Cell(row, 6).Range.Text = CType(DataGridView1.Rows(j).Cells(5).Value, String)
+            '    oTable.Cell(row, 7).Range.Text = CType(DataGridView1.Rows(j).Cells(6).Value, String)
+            '    oTable.Cell(row, 8).Range.Text = CType(DataGridView1.Rows(j).Cells(7).Value, String)
+            '    oTable.Cell(row, 9).Range.Text = CType(DataGridView1.Rows(j).Cells(8).Value, String)
+            'Next
+
+            'For j = 1 To 8
+            '    oTable.Columns(j).Width = oWord.InchesToPoints(0.75)   'Change width of columns 
+            'Next
+            'oTable.Rows(1).Range.Font.Bold = CInt(True)
+            'oDoc.Bookmarks.Item("\endofdoc").Range.InsertParagraphAfter()
+
 
             '------------------save Chart2 (Loss curve)---------------- 
             Draw_chart2(Chart2)
@@ -1501,7 +1583,7 @@ Public Class Form1
         DataGridView2.Columns(2).HeaderText = "Dia/k [-]"                   '
         DataGridView2.Columns(3).HeaderText = "Loss overall [-]"            '
         DataGridView2.Columns(4).HeaderText = "Loss overall Corrected"      '
-        DataGridView2.Columns(5).HeaderText = "Grade eff. (st1) [%]"              'Catch [%]
+        DataGridView2.Columns(5).HeaderText = "Grade eff. (st1) [%]"        'Catch [%]
         DataGridView2.Columns(6).HeaderText = "Group no [-]"                '
         DataGridView2.Columns(7).HeaderText = "d1 lower dia [mu]"           '
         DataGridView2.Columns(8).HeaderText = "d2 upper dia [mu]"           '
@@ -1523,8 +1605,8 @@ Public Class Form1
         For row = 1 To 110  'Fill the DataGrid
             j = row - 1
             DataGridView2.Rows(j).Cells(0).Value = _cees(ks).stage1(j).dia.ToString("F8")
-            DataGridView2.Rows(j).Cells(1).Value = _cees(ks).stage1(j).d_ave.ToString("F8")     'Average diameter
-            DataGridView2.Rows(j).Cells(2).Value = _cees(ks).stage1(j).d_ave_K.ToString("F5")   'Average dia/K stokes
+            DataGridView2.Rows(j).Cells(1).Value = _cees(ks).stage1(j).d_ave.ToString("F8")          'Average diameter
+            DataGridView2.Rows(j).Cells(2).Value = _cees(ks).stage1(j).d_ave_K.ToString("F5")        'Average dia/K stokes
             DataGridView2.Rows(j).Cells(3).Value = _cees(ks).stage1(j).loss_overall.ToString("F5")   'Loss 
             DataGridView2.Rows(j).Cells(4).Value = _cees(ks).stage1(j).loss_overall_C.ToString("F5") 'Loss 
             DataGridView2.Rows(j).Cells(5).Value = _cees(ks).stage1(j).catch_chart.ToString("F5")    'Catch
@@ -1566,7 +1648,7 @@ Public Class Form1
         DataGridView3.Columns(2).HeaderText = "Dia/k [-]"                       '
         DataGridView3.Columns(3).HeaderText = "Loss overall [-]"                '
         DataGridView3.Columns(4).HeaderText = "Loss overall Corrected [-]"      '
-        DataGridView3.Columns(5).HeaderText = "Grade eff. (st2) [%]"                   'Catch chart [%]
+        DataGridView3.Columns(5).HeaderText = "Grade eff. (st2) [%]"            'Catch chart [%]
         DataGridView3.Columns(6).HeaderText = "Group no [-]"                    '
         DataGridView3.Columns(7).HeaderText = "d1 lower dia [mu]"               '
         DataGridView3.Columns(8).HeaderText = "d2 upper dia [mu]"               '
@@ -1636,7 +1718,7 @@ Public Class Form1
         Dim perc_smallest_part1 As Double
         Dim fac_m As Double
         Dim words() As String
-        Dim density_ratio1 As Double
+        Dim density_ratio1, density_ratio2 As Double
 
         If Double.IsNaN(_cees(ks).stage1(0).dia) Or Double.IsInfinity(_cees(ks).stage1(0).dia) Then Exit Sub
 
@@ -1697,6 +1779,11 @@ Public Class Form1
             _cees(ks).stage1(i).loss_overall = Calc_verlies(_cees(ks).stage1(i).d_ave, False, _cees(ks).Kstokes1, 1)   '[-] loss overall
             Calc_verlies_corrected(_cees(ks).stage1(i), 1)                               '[-] loss overall corrected
 
+
+            'If _cees(ks).stage1(i).loss_overall_C <> _cees(ks).stage1(i).loss_overall Then
+            '    MsgBox(_cees(ks).stage1(i).loss_overall_C.ToString & ",  " & _cees(ks).stage1(i).loss_overall.ToString)
+            'End If
+
             If CheckBox2.Checked Then
                 _cees(ks).stage1(i).catch_chart = (1 - _cees(ks).stage1(i).loss_overall_C) * 100 '[%] Corrected
             Else
@@ -1733,6 +1820,10 @@ Public Class Form1
         '----------Dust load stage #2 in emission stage #1 -----------
         _cees(ks).dust2_Am3 = _cees(ks).emmis1_Am3
 
+        '--------- Density ratio stage #2 kg/Nm3 and kg/Am3 ---------
+        density_ratio2 = _cees(ks).Ro_gas2_Nm3 / _cees(ks).Ro_gas2_Am3  '[-]
+        _cees(ks).dust2_Nm3 = _cees(ks).dust2_Am3 * density_ratio2      'Dust load [gram/Nm3]
+
         CheckBox3.Checked = CBool(IIf(_cees(ks).dust2_Am3 > 20, True, False))
         _cees(ks).Efficiency1 = 100 - _cees(ks).loss_total1        '[%] Efficiency
 
@@ -1747,8 +1838,8 @@ Public Class Form1
         TextBox54.Text = _cees(ks).sum_loss1.ToString("F3")
         TextBox34.Text = _cees(ks).sum_loss_C1.ToString("F3")
 
-        '---------Density ratio kg/Nm3 and kg/Am3 ---------
-        density_ratio1 = _cees(ks).Ro_gas1_Nm3 / _cees(ks).Ro_gas1_Am3
+        '---------Density ratio stage#1  kg/Nm3 and kg/Am3 ---------
+        density_ratio1 = _cees(ks).Ro_gas1_Nm3 / _cees(ks).Ro_gas1_Am3  '[-]
 
         '----------- Dust load correction stage #1 ------------------
         If CheckBox2.Checked Then
@@ -1771,26 +1862,20 @@ Public Class Form1
     Private Sub Calc_stage2(ks As Integer)
         'This is the standard VTK cyclone calculation 
         Dim i As Integer = 0
-        'Dim dia_max As Double       'Above this diameter everything is caught
-        'Dim dia_min As Double       'Below this diameter nothing is caught
-        'Dim istep2 As Double        'Particle diameter step
         Dim perc_smallest_part2 As Double
         Dim fac_m As Double
         Dim words() As String
         Dim kgh, tot_kgh As Double
         Dim Eff_comb As Double      'Efficiency stage #1 and #2
-        Dim density_ratio2 As Double
 
         If Double.IsNaN(_cees(ks).stage2(0).dia) Or Double.IsInfinity(_cees(ks).stage2(0).dia) Then Exit Sub
 
         '----------- stof belasting ------------
         tot_kgh = _cees(ks).Flow2 * _cees(ks).dust2_Am3 / 1000 * 3600 * _cees(ks).Noc2     '[kg/hr] Dust inlet 
-
         kgh = tot_kgh / _cees(ks).Noc2                          '[kg/hr/Cy] Dust inlet 
-        TextBox100.Text = kgh.ToString("0")
-        TextBox101.Text = tot_kgh.ToString("0")
-        TextBox143.Text = _cees(ks).dust2_Nm3.ToString("F2")      'Dust load [gram/Nm3]
 
+        TextBox100.Text = kgh.ToString("F0")
+        TextBox101.Text = tot_kgh.ToString("F0")
 
         '--------- now the particles (====Grid line 0======)------------
         _cees(ks).stage2(0).dia = _cees(ks).stage1(0).dia                                   'Copy stage #1
@@ -1816,7 +1901,6 @@ Public Class Form1
 
         _cees(ks).stage2(0).loss_abs = _cees(ks).stage2(0).loss_overall * _cees(ks).stage2(0).psd_dif
         _cees(ks).stage2(0).loss_abs_C = _cees(ks).stage2(0).loss_overall_C * _cees(ks).stage2(0).psd_dif
-
 
         '----- initial values -------
         _cees(ks).sum_psd_diff2 = 0 '_cees(ks).stage2(0).psd_dif
@@ -1875,12 +1959,6 @@ Public Class Form1
                 _cees(ks).stage2(i).psd_dif = 0
             End If
 
-            'TextBox24.Text &= "_cees(ks).stage1(i).psd_dif= " & _cees(ks).stage1(i).psd_dif.ToString("F6")
-            'TextBox24.Text &= "  _cees(ks).sum_loss_C1= " & _cees(ks).sum_loss_C1.ToString("F6")
-            'TextBox24.Text &= "  _cees(ks).stage2(i).psd_dif= " & _cees(ks).stage2(i).psd_dif.ToString("F6") & vbCrLf
-
-            ' Log_now(ks, i, "Calc_stage2")  'Log now to textbox24
-
             _cees(ks).stage2(i).loss_abs = _cees(ks).stage2(i).loss_overall * _cees(ks).stage2(i).psd_dif
             _cees(ks).stage2(i).loss_abs_C = _cees(ks).stage2(i).loss_overall_C * _cees(ks).stage2(i).psd_dif
 
@@ -1915,20 +1993,15 @@ Public Class Form1
             TextBox65.Text = _cees(ks).sum_loss2.ToString("F3")      '[%] NOT Corrected
         End If
 
-        '--------- Density ratio  kg/Nm3 and kg/Am3 ---------
-        density_ratio2 = _cees(ks).Ro_gas2_Nm3 / _cees(ks).Ro_gas2_Am3  '[-]
-        _cees(ks).emmis2_Nm3 = _cees(ks).emmis2_Am3 * density_ratio2
-
-
-        TextBox66.Text = _cees(ks).Efficiency2.ToString("F3")       '[%]
+        TextBox66.Text = _cees(ks).Efficiency2.ToString("F3")       '[%] stage #2
         TextBox109.Text = _cees(ks).Efficiency2.ToString("F3")      '[%]
 
         TextBox62.Text = _cees(ks).emmis2_Am3.ToString("F4")        '[gram/Am3] emmissie stage #2
         TextBox108.Text = _cees(ks).emmis2_Am3.ToString("F4")       '[gram/Am3] emmissie stage #2
         TextBox134.Text = _cees(ks).emmis2_Am3.ToString("F4")       '[gram/Am3] emmissie stage #2
-        TextBox142.Text = _cees(ks).emmis2_Nm3.ToString("F4")       '[gram/Nm3]emmissie stage #2
+        TextBox142.Text = _cees(ks).emmis2_Nm3.ToString("F4")       '[gram/Nm3] emmissie stage #2
 
-
+        TextBox143.Text = _cees(ks).dust2_Nm3.ToString("F1")    'Dust load [gram/Nm3]
     End Sub
     'Determine the particle diameter class upper and lower limits
     ' Private Function Size_classification(dia As Double, noi As Integer) As Double
@@ -2365,6 +2438,7 @@ Public Class Form1
         Dim dia, r, t As Double
         Dim Elas, p, σm, yt, v As Double
         Dim _fs, sf, _σ_02 As Double
+        Dim temper As Double
 
         _σ_02 = NumericUpDown17.Value           '[N/mm2]
         sf = NumericUpDown49.Value              '[-] safety factor
@@ -2375,18 +2449,24 @@ Public Class Form1
         dia = NumericUpDown47.Value / 1000      '[m]
         r = dia / 2                             '[m]
         t = NumericUpDown46.Value / 1000        '[m]
-        Elas = 193 * 10 ^ 6                     '[Pa] 304
+        temper = NumericUpDown18.Value          '[celsius]
+        'Elas = 193 * 10 ^ 6                    '[Pa] for 304
+
+
+        Elas = (201.66 - 8.48 * temper / 10 ^ 2) * 10 ^ 9   '[GPa] for 304
+
 
         v = 0.3 'For steel
         σm = 1.238 * p * r ^ 2 / t ^ 2
-        σm /= 10 ^ 6                            '[N/mm2]
+        σm /= 10 ^ 6                                        '[N/mm2]
 
         yt = 0.696 * p * r ^ 4
-        yt /= Elas * t ^ 3                      '[mm]
+        yt /= Elas * t ^ 3                                  '[mm]
 
-        TextBox138.Text = (Elas * 10 ^ -6).ToString     '[MPa]
-        TextBox136.Text = σm.ToString("F0")             '[N/mm2]
-        TextBox137.Text = yt.ToString("F1")             '[mm]
+        TextBox144.Text = temper.ToString("F0")             '[celsius]
+        TextBox138.Text = (Elas / 10 ^ 9).ToString("F0")    '[GPa]
+        TextBox136.Text = σm.ToString("F0")                 '[N/mm2]
+        TextBox137.Text = yt.ToString("F3")                 '[mm]
 
         '===== check ================
         TextBox136.BackColor = CType(IIf(σm > _fs, Color.Red, Color.LightGreen), Color)
@@ -2417,4 +2497,7 @@ Public Class Form1
         TextBox141.Text = _fs.ToString              '[N/mm2]
     End Sub
 
+    Private Sub Button10_Click(sender As Object, e As EventArgs) Handles Button10.Click, TabPage10.Enter
+        Draw_chart3(Chart3)             'Dust load correction
+    End Sub
 End Class
