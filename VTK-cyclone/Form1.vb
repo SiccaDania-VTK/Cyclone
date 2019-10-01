@@ -167,6 +167,7 @@ Public Class Form1
 
         'Initialize the arrays in the struct
         For i = 0 To _cees.Length - 1
+            _cees(i).case_name = ""
             ReDim _cees(i).dia_big(11)          'Initialize
             ReDim _cees(i).class_load(11)       'Initialize
             ReDim _cees(i).stage1(150)          'Initialize
@@ -189,12 +190,6 @@ Public Class Form1
         user_list.Add("FredKo")
         hard_disk_list.Add("JR10006P02Y6EE")        'VTK laptop, FKo
 
-        user_list.Add("VittorioS")
-        hard_disk_list.Add("002427108605")          'VTK laptop, Vittorio
-
-        user_list.Add("keess")
-        hard_disk_list.Add("002410146654")          'VTK laptop, KeesS
-
         user_list.Add("JanK")
         hard_disk_list.Add("0025_38B4_71B4_88FC.")  'VTK laptop, Jank
 
@@ -206,17 +201,8 @@ Public Class Form1
         hard_disk_list.Add("MCDBM1M4F3QRBEH6")      'VTK laptop, Jeroen disk 2
         hard_disk_list.Add("0025_388A_81BB_14B5.")  'Zweet kamer, Jeroen 
 
-        user_list.Add("lennardh")
-        hard_disk_list.Add("141190402709")          'VTK PC, Lennard Hubert
-
         user_list.Add("Peterdw")
         hard_disk_list.Add("134309552747")          'VTK PC, Peter de Wild
-
-        user_list.Add("Jeffreyvdz")
-        hard_disk_list.Add("ACE4_2E81_7006_2BD9.")  'VTK Laptop, Jeffrey van der Zwart
-
-        user_list.Add("Twana")
-        hard_disk_list.Add("ACE4_2E81_7006_2BD7.")  'VTK Laptop, Twan Akbheis
 
         user_list.Add("robru")
         hard_disk_list.Add("174741803447")          'VTK Laptop, Rob Ruiter
@@ -302,6 +288,10 @@ Public Class Form1
         TextBox126.Text &= "" & vbCrLf
         TextBox126.Text &= "" & vbCrLf
         TextBox126.Text &= "Opmerking 1) deeltjes < 0.5-0.7 mu kunnen niet gevangen worden ivm fysische mechanismen groter dan de centrifugaal kracht."
+
+        TextBox145.Text = "Particles may breakup into smaller ones" & vbCrLf
+        TextBox145.Text &= "indside a cyclone" & vbCrLf
+        TextBox145.Text &= "See project P10.1070"
 
         Calc_sequence()
     End Sub
@@ -524,7 +514,7 @@ Public Class Form1
 
             '--------- Get Inlet korrel-groep data ----------
             'Save data of screen into the _cees array
-            Fill_cees_array(CInt(NumericUpDown30.Value))
+            Fill_array_from_screen(CInt(NumericUpDown30.Value))
 
             TextBox39.Text = kgh.ToString("F0")                 'Stof inlet [kg/(h.cyclone)]
             TextBox40.Text = tot_kgh.ToString("F0")             'Dust inlet [g/Am3] 
@@ -651,11 +641,28 @@ Public Class Form1
         TextBox107.Text = Calc_dia_particle(0.05, _cees(ks).Kstokes2, 2).ToString("F2")    '[mu] @   5% lost
     End Sub
 
-    Private Sub Fill_cees_array(c_nr As Integer)
+    Private Sub Fill_array_from_screen(c_nr As Integer)
 
-        _cees(0).Quote_no = TextBox28.Text      'Quote number
-        _cees(0).Tag_no = TextBox29.Text        'The Tag number
-        _cees(c_nr).case_name = TextBox53.Text  'The case name
+        TextBox24.Text &= "line 660, Fill array from screen, nr " & c_nr.ToString & vbCrLf
+
+        _cees(c_nr).Quote_no = TextBox28.Text                  'Quote number
+        _cees(c_nr).Tag_no = TextBox29.Text                    'The Tag number
+        _cees(c_nr).case_name = TextBox53.Text                  'The case name
+
+        _cees(c_nr).FlowT = NumericUpDown1.Value                'Air flow [Am3/hr]
+        _cees(c_nr).dust1_Am3 = NumericUpDown4.Value            'Dust inlet [g/Am3] 
+        _cees(c_nr).Ct1 = ComboBox1.SelectedIndex               'Cyclone type Stage #1
+        _cees(c_nr).Ct2 = ComboBox2.SelectedIndex               'Cyclone type Stage #2
+        _cees(c_nr).Noc1 = CInt(NumericUpDown20.Value)          'Cyclone in parallel
+        _cees(c_nr).Noc2 = CInt(NumericUpDown33.Value)          'Cyclone in parallel
+        _cees(c_nr).db1 = numericUpDown13.Value                 'Diameter cyclone Stage #1
+        _cees(c_nr).db2 = NumericUpDown34.Value                 'Diameter cyclone Stage #2
+        _cees(c_nr).ro_gas = numericUpDown3.Value               'Density [kg/hr]
+        _cees(c_nr).ro_solid = numericUpDown2.Value             'Density [kg/hr]
+        _cees(c_nr).visco = numericUpDown14.Value               'Visco in [Centi Poise]
+        _cees(c_nr).Temp = NumericUpDown18.Value                'Temperature [c]
+        _cees(c_nr).p1_abs = 101325 + (NumericUpDown19.Value * 100)         'Pressure [Pa abs]
+
 
         '[mu] Class upper particle diameter limit diameter
         _cees(c_nr).dia_big(0) = NumericUpDown15.Value   '10
@@ -684,19 +691,6 @@ Public Class Form1
         _cees(c_nr).class_load(9) = NumericUpDown39.Value / 100
         _cees(c_nr).class_load(10) = NumericUpDown40.Value / 100
 
-        _cees(c_nr).FlowT = NumericUpDown1.Value                'Air flow [Am3/hr]
-        _cees(c_nr).dust1_Am3 = NumericUpDown4.Value            'Dust inlet [g/Am3] 
-        _cees(c_nr).Ct1 = ComboBox1.SelectedIndex               'Cyclone type Stage #1
-        _cees(c_nr).Ct2 = ComboBox2.SelectedIndex               'Cyclone type Stage #2
-        _cees(c_nr).Noc1 = CInt(NumericUpDown20.Value)          'Cyclone in parallel
-        _cees(c_nr).Noc2 = CInt(NumericUpDown33.Value)          'Cyclone in parallel
-        _cees(c_nr).db1 = numericUpDown13.Value                 'Diameter cyclone Stage #1
-        _cees(c_nr).db2 = NumericUpDown34.Value                 'Diameter cyclone Stage #2
-        _cees(c_nr).ro_gas = numericUpDown3.Value               'Density [kg/hr]
-        _cees(c_nr).ro_solid = numericUpDown2.Value             'Density [kg/hr]
-        _cees(c_nr).visco = numericUpDown14.Value               'Visco in [Centi Poise]
-        _cees(c_nr).Temp = NumericUpDown18.Value                'Temperature [c]
-        _cees(c_nr).p1_abs = 101325 + NumericUpDown19.Value * 100         'Pressure [Pa abs]
 
         '-------- Check -- bigger diameter must have bigger cummulative weight
         numericUpDown6.BackColor = CType(IIf(numericUpDown6.Value > numericUpDown7.Value, Color.LightGreen, Color.Red), Color)
@@ -1140,13 +1134,26 @@ Public Class Form1
     End Sub
 
     Private Sub Button3_Click(sender As Object, e As EventArgs) Handles Button3.Click
+        'Save the project data to file
+        'Return to case 0, save data to file, return to previous selected case
+        Dim selected_case As Integer
+
         If TextBox28.Text.Trim.Length > 0 And TextBox29.Text.Trim.Length > 0 Then
-            Save_tofile2()
+            selected_case = CInt(NumericUpDown30.Value) 'Store for later use
+
+            NumericUpDown30.Value = 0               'Goto case 0
+            Fill_Screen_from_array(0)               'Refresh screen data
+            Save_present_case_to_array()            'Store data in array
+            Save_to_disk()                          'Store project on disk
+            NumericUpDown30.Value = selected_case   'Goto previous case
+            Fill_Screen_from_array(selected_case)   'Refresh screen data
         Else
             MessageBox.Show("Complete Quote and Tag number")
         End If
+
+        TextBox24.Text &= "line 1165, save project to disk" & vbCrLf
     End Sub
-    Private Sub Save_tofile2()
+    Private Sub Save_to_disk()
         Dim filename, user As String
         Dim bf As New System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
 
@@ -1155,6 +1162,7 @@ Public Class Form1
         filename = "Cyclone_select_" & TextBox28.Text & "_" & TextBox29.Text & DateTime.Now.ToString("_yyyy_MM_dd_") & user & ".vtk2"
         filename = Replace(filename, Chr(32), Chr(95)) 'Replace the space's
 
+        '------------- Create directories if they do not exist ----
         Try
             If (Not System.IO.Directory.Exists(dirpath_Temp)) Then System.IO.Directory.CreateDirectory(dirpath_Temp)
             If (Not System.IO.Directory.Exists(dirpath_Eng)) Then System.IO.Directory.CreateDirectory(dirpath_Eng)
@@ -1171,11 +1179,12 @@ Public Class Form1
                 MessageBox.Show("VTK intranet not acceasable, save on " & filename)
             End If
 
-            '--- delete existing file -------
+            '--- Delete existing file -------
             If System.IO.File.Exists(filename) = True Then
                 System.IO.File.Delete(filename)
             End If
-            '--- save file file -------
+
+            '--- and save new file to disk -------
             Dim fStream As New FileStream(filename, FileMode.CreateNew)
             bf.Serialize(fStream, _cees) ' write to file
             fStream.Close()
@@ -1183,14 +1192,8 @@ Public Class Form1
             MessageBox.Show("Line 6298, " & ex.Message)  ' Show the exception's message.
         End Try
     End Sub
-    Private Sub Read_file2()
-        Dim filename, user As String
+    Private Sub Retrieve_from_disk()
         Dim bf As New System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
-
-        '------------- create filemame ----------
-        user = Trim(Environment.UserName)           'User name on the screen
-        filename = "Cyclone_select_" & TextBox28.Text & "_" & TextBox29.Text & DateTime.Now.ToString("_yyyy_MM_dd_") & user & ".vtk2"
-        filename = Replace(filename, Chr(32), Chr(95)) 'Replace the space's
 
         OpenFileDialog1.FileName = "Cyclone_select_*"
 
@@ -1204,13 +1207,7 @@ Public Class Form1
         OpenFileDialog1.Filter = "VTK2 Files|*.vtk2|VTK1 file|*.vtk"
         If OpenFileDialog1.ShowDialog() = System.Windows.Forms.DialogResult.OK Then
             Try
-                If Directory.Exists(dirpath_Eng) Then
-                    filename = dirpath_Eng & filename 'used at VTK with intranet
-                Else
-                    filename = dirpath_tmp & filename 'used at VTK with intranet'used at home
-                End If
-
-                Dim fStream As New FileStream(filename, FileMode.Open) With {
+                Dim fStream As New FileStream(OpenFileDialog1.FileName, FileMode.Open) With {
                     .Position = 0 ' reset stream pointer
                     }
                 _cees = CType(bf.Deserialize(fStream), Input_struct()) ' read from file
@@ -1222,8 +1219,8 @@ Public Class Form1
     End Sub
 
     Private Sub Button4_Click(sender As Object, e As EventArgs) Handles Button4.Click
-        Read_file2()
-        Fill_cees_array(0) 'Restore case 0
+        Retrieve_from_disk()        'Read from disk to array
+        Fill_array_from_screen(0)   'Restore case 0
         Calc_sequence()
     End Sub
 
@@ -2237,64 +2234,76 @@ Public Class Form1
         Calc_cycl_weight()
     End Sub
     Private Sub Button8_Click(sender As Object, e As EventArgs) Handles Button8.Click
+        Save_present_case_to_array()
+    End Sub
+    Private Sub Save_present_case_to_array()
         Dim cc As Integer
         'Save data of screen into the _cees array
+
         cc = CInt(NumericUpDown30.Value)       'Case number
-        Fill_cees_array(cc)
-        'Calc_sequence()
+        TextBox24.Text &= "line 2267, save case to array nr" & cc.ToString & vbCrLf
+        Fill_array_from_screen(cc)
     End Sub
 
     Private Sub NumericUpDown30_ValueChanged(sender As Object, e As EventArgs) Handles NumericUpDown30.ValueChanged
-        Case_number_changed()
-        'Calc_sequence()
-    End Sub
-    Private Sub Case_number_changed()
         Dim zz As Integer = CInt(NumericUpDown30.Value)    'Case number
+        Fill_Screen_from_array(zz)
+    End Sub
+    Private Sub Fill_Screen_from_array(zz As Integer)
+        Dim p1_rel As Double
+
+        TextBox24.Text &= "line 2276, Fill_Screen_from_array nr" & zz.ToString & vbCrLf
         Try
-            '----------- general (not calculated) data------------------
-            TextBox28.Text = _cees(0).Quote_no             'Quote no
-            TextBox29.Text = _cees(0).Tag_no               'Tag no
+            '----------- General (not calculated) data------------------
             TextBox53.Text = _cees(zz).case_name           'Case name
 
             If _cees(zz).case_name.Length > 0 Then
+                Chck_value(NumericUpDown1, CDec(_cees(zz).FlowT))       'Air flow total
+                Chck_value(NumericUpDown4, CDec(_cees(zz).dust1_Am3))   'Dust inlet [g/Am3] 
+
+                ComboBox1.SelectedIndex = _cees(zz).Ct1                 'Cyclone type stage #1
+                ComboBox2.SelectedIndex = _cees(zz).Ct2                 'Cyclone type stage #2
+
+                Chck_value(NumericUpDown20, _cees(zz).Noc1)              'Cyclone in parallel
+                Chck_value(numericUpDown13, CDec(_cees(zz).db1))         'Diameter cyclone body #1
+                Chck_value(NumericUpDown34, CDec(_cees(zz).db2))         'Diameter cyclone body #2
+                Chck_value(numericUpDown3, CDec(_cees(zz).ro_gas))       'Density [kg/hr]
+                Chck_value(numericUpDown2, CDec(_cees(zz).ro_solid))     'Density [kg/hr]
+                Chck_value(numericUpDown14, CDec(_cees(zz).visco))       'Visco in Centi Poise
+                Chck_value(NumericUpDown18, CDec(_cees(zz).Temp))        'Temperature [c]
+                p1_rel = (_cees(zz).p1_abs - 101325) / 100
+                Chck_value(NumericUpDown19, CDec(p1_rel))                'Pressure [Pa abs]-->[mbar g]
+
                 '[mu] Class upper particle diameter limit diameter
-                NumericUpDown15.Value = CDec(_cees(zz).dia_big(0))   '10
-                NumericUpDown23.Value = CDec(_cees(zz).dia_big(1))   '15
-                NumericUpDown24.Value = CDec(_cees(zz).dia_big(2))   '20
-                NumericUpDown25.Value = CDec(_cees(zz).dia_big(3))   '30
-                NumericUpDown26.Value = CDec(_cees(zz).dia_big(4))   '40
-                NumericUpDown27.Value = CDec(_cees(zz).dia_big(5))   '50
-                NumericUpDown28.Value = CDec(_cees(zz).dia_big(6))   '60
-                NumericUpDown29.Value = CDec(_cees(zz).dia_big(7))   '80
+                Chck_value(NumericUpDown15, CDec(_cees(zz).dia_big(0)))   '10
+                Chck_value(NumericUpDown23, CDec(_cees(zz).dia_big(1)))   '15
+                Chck_value(NumericUpDown24, CDec(_cees(zz).dia_big(2)))   '20
+                Chck_value(NumericUpDown25, CDec(_cees(zz).dia_big(3)))   '30
+                Chck_value(NumericUpDown26, CDec(_cees(zz).dia_big(4)))   '40
+                Chck_value(NumericUpDown27, CDec(_cees(zz).dia_big(5)))   '50
+                Chck_value(NumericUpDown28, CDec(_cees(zz).dia_big(6)))   '60
+                Chck_value(NumericUpDown29, CDec(_cees(zz).dia_big(7)))   '80
 
                 'Percentale van de inlaat stof belasting
-                numericUpDown6.Value = CDec(_cees(zz).class_load(0) * 100)
-                numericUpDown7.Value = CDec(_cees(zz).class_load(1) * 100)
-                numericUpDown8.Value = CDec(_cees(zz).class_load(2) * 100)
-                numericUpDown9.Value = CDec(_cees(zz).class_load(3) * 100)
-                numericUpDown10.Value = CDec(_cees(zz).class_load(4) * 100)
-                numericUpDown11.Value = CDec(_cees(zz).class_load(5) * 100)
-                numericUpDown12.Value = CDec(_cees(zz).class_load(6) * 100)
-                numericUpDown13.Value = CDec(_cees(zz).class_load(7) * 100)
-
-                NumericUpDown1.Value = CDec(_cees(zz).FlowT)        'Air flow total
-                NumericUpDown4.Value = CDec(_cees(zz).dust1_Am3)    'Dust inlet [g/Am3] 
-                ComboBox1.SelectedIndex = _cees(zz).Ct1             'Cyclone type stage #1
-                ComboBox2.SelectedIndex = _cees(zz).Ct2             'Cyclone type stage #2
-                NumericUpDown20.Value = _cees(zz).Noc1              'Cyclone in parallel
-                numericUpDown13.Value = CDec(_cees(zz).db1)         'Diameter cyclone body #1
-                NumericUpDown34.Value = CDec(_cees(zz).db2)         'Diameter cyclone body #2
-                numericUpDown3.Value = CDec(_cees(zz).ro_gas)       'Density [kg/hr]
-                numericUpDown2.Value = CDec(_cees(zz).ro_solid)     'Density [kg/hr]
-                numericUpDown14.Value = CDec(_cees(zz).visco)       'Visco in Centi Poise
-                NumericUpDown18.Value = CDec(_cees(zz).Temp)        'Temperature [c]
-                NumericUpDown19.Value = CDec(_cees(zz).p1_abs)      'Pressure [Pa abs]
+                Chck_value(numericUpDown6, CDec(_cees(zz).class_load(0) * 100))
+                Chck_value(numericUpDown7, CDec(_cees(zz).class_load(1) * 100))
+                Chck_value(numericUpDown8, CDec(_cees(zz).class_load(2) * 100))
+                Chck_value(numericUpDown9, CDec(_cees(zz).class_load(3) * 100))
+                Chck_value(numericUpDown10, CDec(_cees(zz).class_load(4) * 100))
+                Chck_value(numericUpDown11, CDec(_cees(zz).class_load(5) * 100))
+                Chck_value(numericUpDown12, CDec(_cees(zz).class_load(6) * 100))
+                Chck_value(numericUpDown13, CDec(_cees(zz).class_load(7) * 100))
             End If
 
         Catch ex As Exception
-            'MessageBox.Show(ex.Message & vbcrlf &  "Line 1586")  
+            MessageBox.Show(ex.Message & vbCrLf & "Line 2321")
         End Try
     End Sub
+    Private Sub Chck_value(num As NumericUpDown, value As Decimal)
+        If value > num.Maximum Then num.Value = num.Maximum
+        If value < num.Minimum Then num.Value = num.Minimum
+    End Sub
+
 
     Private Sub Button2_Click_1(sender As Object, e As EventArgs) Handles Button2.Click
         Calc_sequence()
@@ -2393,7 +2402,6 @@ Public Class Form1
             TextBox123.Text = Vlookup_db(50).ToString("F2")
             TextBox124.Text = Vlookup_db(10).ToString("F2")
             TextBox125.Text = Vlookup_db(5).ToString("F2")
-
         End If
     End Sub
     Private Function Vlookup_db(loss As Double) As Double
@@ -2420,7 +2428,6 @@ Public Class Form1
     'Pn.ρ2.T2= P2.ρn.Tn
     'ρn =ρ2.(Pn/P2).(T2/Tn)
     'ρn =ρ2.(101325/P2).(T2/273.15)
-
 
     Private Function Calc_Normal_density(ro1 As Double, p1 As Double, t1 As Double) As Double
         Dim ro_normal As Double
@@ -2497,5 +2504,9 @@ Public Class Form1
 
     Private Sub Button10_Click(sender As Object, e As EventArgs) Handles Button10.Click, TabPage10.Enter
         Draw_chart3(Chart3)             'Dust load correction
+    End Sub
+
+    Private Sub Button11_Click(sender As Object, e As EventArgs) Handles Button11.Click
+        Form2.Show()    'Fopspeen
     End Sub
 End Class
