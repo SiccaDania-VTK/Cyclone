@@ -13,6 +13,10 @@ Imports Word = Microsoft.Office.Interop.Word
     Public Quote_no As String       'Quote number
     Public Tag_no As String         'Tag number
     Public case_name As String      'The case name
+    Public Spare_str1 As String     'For future use
+    Public Spare_str2 As String     'For future use
+    Public Spare_str3 As String     'For future use
+
     Public FlowT As Double          'Air flow [Am3/h]
     Public dia_big() As Double      'Particle diameter inlet [mu]
     Public class_load() As Double   'group_weight_cum in de inlaat stroom [% weight]
@@ -20,6 +24,9 @@ Imports Word = Microsoft.Office.Interop.Word
     Public ro_solid As Double       '[kg/hr] Density 
     Public visco As Double          '[Centi Poise] Visco in 
     Public Temp As Double           '[c] Temperature 
+    Public Spare1 As String         'For future use
+    Public Spare2 As String         'For future use
+    Public Spare3 As String         'For future use
 
     '===== stage #1 parameter ======
     Public Flow1 As Double          '[Am3/s] Air flow per cyclone 
@@ -289,10 +296,12 @@ Public Class Form1
         TextBox126.Text &= "" & vbCrLf
         TextBox126.Text &= "Opmerking 1) deeltjes < 0.5-0.7 mu kunnen niet gevangen worden ivm fysische mechanismen groter dan de centrifugaal kracht."
 
-        TextBox145.Text = "Particles may breakup into smaller ones" & vbCrLf
-        TextBox145.Text &= "indside a cyclone" & vbCrLf
+        TextBox145.Text = "Particles may breakup into smaller ones inside a cyclone" & vbCrLf
         TextBox145.Text &= "See project P10.1070"
 
+        TextBox147.Text = "Cyclone is a excellent Spark arrestor" & vbCrLf
+        TextBox147.Text &= "Use in front of filter or silo" & vbCrLf
+        TextBox147.Text &= "Also used in suction of gas-turbines to catch flies" & vbCrLf
         Calc_sequence()
     End Sub
 
@@ -1136,27 +1145,19 @@ Public Class Form1
     Private Sub Button3_Click(sender As Object, e As EventArgs) Handles Button3.Click
         'Save the project data to file
         'Return to case 0, save data to file, return to previous selected case
-        Dim selected_case As Integer
 
         If TextBox28.Text.Trim.Length > 0 And TextBox29.Text.Trim.Length > 0 Then
-            selected_case = CInt(NumericUpDown30.Value) 'Store for later use
-
-            NumericUpDown30.Value = 0               'Goto case 0
-            Fill_Screen_from_array(0)               'Refresh screen data
             Save_present_case_to_array()            'Store data in array
             Save_to_disk()                          'Store project on disk
-            NumericUpDown30.Value = selected_case   'Goto previous case
-            Fill_Screen_from_array(selected_case)   'Refresh screen data
         Else
             MessageBox.Show("Complete Quote and Tag number")
         End If
-
-        TextBox24.Text &= "line 1165, save project to disk" & vbCrLf
     End Sub
     Private Sub Save_to_disk()
         Dim filename, user As String
         Dim bf As New System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
 
+        TextBox24.Text &= "line 1162, save project to disk" & vbCrLf
         '------------- create filemame ----------
         user = Trim(Environment.UserName)           'User name on the screen
         filename = "Cyclone_select_" & TextBox28.Text & "_" & TextBox29.Text & DateTime.Now.ToString("_yyyy_MM_dd_") & user & ".vtk2"
@@ -1215,12 +1216,15 @@ Public Class Form1
             Catch ex As Exception
                 MessageBox.Show("Line 1013, " & ex.Message)  ' Show the exception's message.
             End Try
+            TextBox24.Text &= "line 1220, Retrieved  project from disk" & vbCrLf
         End If
     End Sub
 
     Private Sub Button4_Click(sender As Object, e As EventArgs) Handles Button4.Click
+        'Retrieve project from disk and goto case nr 0
+
         Retrieve_from_disk()        'Read from disk to array
-        Fill_array_from_screen(0)   'Restore case 0
+        Fill_Screen_from_array(0)   'Refresh screen data case 0
         Calc_sequence()
     End Sub
 
@@ -1545,7 +1549,9 @@ Public Class Form1
     Private Sub Button6_Click(sender As Object, e As EventArgs) Handles Button6.Click, NumericUpDown21.ValueChanged
         Dim Visco As Double
         Visco = Air_visco(CDbl(NumericUpDown21.Value))
-        TextBox30.Text = Visco.ToString("F5")
+        TextBox30.Text = Visco.ToString("F5")   'centi Poise
+        TextBox146.Text = (Visco * 0.001).ToString("F7")  'Pa.sec
+
     End Sub
 
     'http://www-mdp.eng.cam.ac.uk/web/library/enginfo/aerothermal_dvd_only/aero/fprops/propsoffluids/node5.html
@@ -2247,61 +2253,65 @@ Public Class Form1
 
     Private Sub NumericUpDown30_ValueChanged(sender As Object, e As EventArgs) Handles NumericUpDown30.ValueChanged
         Dim zz As Integer = CInt(NumericUpDown30.Value)    'Case number
+
         Fill_Screen_from_array(zz)
     End Sub
     Private Sub Fill_Screen_from_array(zz As Integer)
         Dim p1_rel As Double
 
         TextBox24.Text &= "line 2276, Fill_Screen_from_array nr" & zz.ToString & vbCrLf
-        Try
-            '----------- General (not calculated) data------------------
-            TextBox53.Text = _cees(zz).case_name           'Case name
 
-            If _cees(zz).case_name.Length > 0 Then
-                Chck_value(NumericUpDown1, CDec(_cees(zz).FlowT))       'Air flow total
-                Chck_value(NumericUpDown4, CDec(_cees(zz).dust1_Am3))   'Dust inlet [g/Am3] 
+        '----------- General (not calculated) data------------------
+        TextBox53.Text = _cees(zz).case_name           'Case name
 
-                ComboBox1.SelectedIndex = _cees(zz).Ct1                 'Cyclone type stage #1
-                ComboBox2.SelectedIndex = _cees(zz).Ct2                 'Cyclone type stage #2
+        If _cees(zz).case_name.Length > 0 Then
+            Chck_value(NumericUpDown1, CDec(_cees(zz).FlowT))       'Air flow total
+            Chck_value(NumericUpDown4, CDec(_cees(zz).dust1_Am3))   'Dust inlet [g/Am3] 
 
-                Chck_value(NumericUpDown20, _cees(zz).Noc1)              'Cyclone in parallel
-                Chck_value(numericUpDown13, CDec(_cees(zz).db1))         'Diameter cyclone body #1
-                Chck_value(NumericUpDown34, CDec(_cees(zz).db2))         'Diameter cyclone body #2
-                Chck_value(numericUpDown3, CDec(_cees(zz).ro_gas))       'Density [kg/hr]
-                Chck_value(numericUpDown2, CDec(_cees(zz).ro_solid))     'Density [kg/hr]
-                Chck_value(numericUpDown14, CDec(_cees(zz).visco))       'Visco in Centi Poise
-                Chck_value(NumericUpDown18, CDec(_cees(zz).Temp))        'Temperature [c]
-                p1_rel = (_cees(zz).p1_abs - 101325) / 100
-                Chck_value(NumericUpDown19, CDec(p1_rel))                'Pressure [Pa abs]-->[mbar g]
+            ComboBox1.SelectedIndex = _cees(zz).Ct1                 'Cyclone type stage #1
+            ComboBox2.SelectedIndex = _cees(zz).Ct2                 'Cyclone type stage #2
 
-                '[mu] Class upper particle diameter limit diameter
-                Chck_value(NumericUpDown15, CDec(_cees(zz).dia_big(0)))   '10
-                Chck_value(NumericUpDown23, CDec(_cees(zz).dia_big(1)))   '15
-                Chck_value(NumericUpDown24, CDec(_cees(zz).dia_big(2)))   '20
-                Chck_value(NumericUpDown25, CDec(_cees(zz).dia_big(3)))   '30
-                Chck_value(NumericUpDown26, CDec(_cees(zz).dia_big(4)))   '40
-                Chck_value(NumericUpDown27, CDec(_cees(zz).dia_big(5)))   '50
-                Chck_value(NumericUpDown28, CDec(_cees(zz).dia_big(6)))   '60
-                Chck_value(NumericUpDown29, CDec(_cees(zz).dia_big(7)))   '80
+            Chck_value(NumericUpDown20, _cees(zz).Noc1)              'Cyclone in parallel
+            Chck_value(numericUpDown13, CDec(_cees(zz).db1))         'Diameter cyclone body #1
+            Chck_value(NumericUpDown34, CDec(_cees(zz).db2))         'Diameter cyclone body #2
+            Chck_value(numericUpDown3, CDec(_cees(zz).ro_gas))       'Density [kg/hr]
+            Chck_value(numericUpDown2, CDec(_cees(zz).ro_solid))     'Density [kg/hr]
+            Chck_value(numericUpDown14, CDec(_cees(zz).visco))       'Visco in Centi Poise
+            Chck_value(NumericUpDown18, CDec(_cees(zz).Temp))        'Temperature [c]
+            p1_rel = (_cees(zz).p1_abs - 101325) / 100
+            Chck_value(NumericUpDown19, CDec(p1_rel))                'Pressure [Pa abs]-->[mbar g]
 
-                'Percentale van de inlaat stof belasting
-                Chck_value(numericUpDown6, CDec(_cees(zz).class_load(0) * 100))
-                Chck_value(numericUpDown7, CDec(_cees(zz).class_load(1) * 100))
-                Chck_value(numericUpDown8, CDec(_cees(zz).class_load(2) * 100))
-                Chck_value(numericUpDown9, CDec(_cees(zz).class_load(3) * 100))
-                Chck_value(numericUpDown10, CDec(_cees(zz).class_load(4) * 100))
-                Chck_value(numericUpDown11, CDec(_cees(zz).class_load(5) * 100))
-                Chck_value(numericUpDown12, CDec(_cees(zz).class_load(6) * 100))
-                Chck_value(numericUpDown13, CDec(_cees(zz).class_load(7) * 100))
-            End If
+            '[mu] Class upper particle diameter limit diameter
+            Chck_value(NumericUpDown15, CDec(_cees(zz).dia_big(0)))   '10
+            Chck_value(NumericUpDown23, CDec(_cees(zz).dia_big(1)))   '15
+            Chck_value(NumericUpDown24, CDec(_cees(zz).dia_big(2)))   '20
+            Chck_value(NumericUpDown25, CDec(_cees(zz).dia_big(3)))   '30
+            Chck_value(NumericUpDown26, CDec(_cees(zz).dia_big(4)))   '40
+            Chck_value(NumericUpDown27, CDec(_cees(zz).dia_big(5)))   '50
+            Chck_value(NumericUpDown28, CDec(_cees(zz).dia_big(6)))   '60
+            Chck_value(NumericUpDown29, CDec(_cees(zz).dia_big(7)))   '80
 
-        Catch ex As Exception
-            MessageBox.Show(ex.Message & vbCrLf & "Line 2321")
-        End Try
+            'Percentale van de inlaat stof belasting
+            Chck_value(numericUpDown6, CDec(_cees(zz).class_load(0) * 100))
+            Chck_value(numericUpDown7, CDec(_cees(zz).class_load(1) * 100))
+            Chck_value(numericUpDown8, CDec(_cees(zz).class_load(2) * 100))
+            Chck_value(numericUpDown9, CDec(_cees(zz).class_load(3) * 100))
+            Chck_value(numericUpDown10, CDec(_cees(zz).class_load(4) * 100))
+            Chck_value(numericUpDown11, CDec(_cees(zz).class_load(5) * 100))
+            Chck_value(numericUpDown12, CDec(_cees(zz).class_load(6) * 100))
+            Chck_value(numericUpDown13, CDec(_cees(zz).class_load(7) * 100))
+        End If
     End Sub
     Private Sub Chck_value(num As NumericUpDown, value As Decimal)
-        If value > num.Maximum Then num.Value = num.Maximum
-        If value < num.Minimum Then num.Value = num.Minimum
+        'Make sure the numericupdown.value is within the min-max value
+        Select Case value
+            Case > num.Maximum
+                num.Value = num.Maximum
+            Case < num.Minimum
+                num.Value = num.Minimum
+            Case Else
+                num.Value = value
+        End Select
     End Sub
 
 
