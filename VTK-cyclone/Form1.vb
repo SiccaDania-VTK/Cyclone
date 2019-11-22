@@ -258,6 +258,20 @@ Public Class Form1
         ComboBox1.SelectedIndex = 2                 'Select Cyclone type AC_435
         ComboBox2.SelectedIndex = 5                 'Select Cyclone type AC_850
 
+        TextBox148.Text = "Het d50 getal geeft de diameter aan waarbij 50% gevangen wordt en 50% verloren gaat." & vbCrLf
+        TextBox148.Text &= " " & vbCrLf
+        TextBox148.Text &= "In de cirkel is voor iedere cycloon de verhouding van het d50 getal tov" & vbCrLf
+        TextBox148.Text &= "het d50 getal voor AC435 cycloon bij het debiet Qv aangegeven." & vbCrLf
+        TextBox148.Text &= "Het oppervlak van het instroom kanaal is voor alle modellen (bij gelijk debiet) ongeveer gelijk," & vbCrLf
+        TextBox148.Text &= "de cycloon body is echter geheel verschillend." & vbCrLf
+        TextBox148.Text &= " " & vbCrLf
+        TextBox148.Text &= "Hoe groter de cycloon hoe beter hij vangt." & vbCrLf
+        TextBox148.Text &= "Kenmerk voor hoge efficiency is dat de cycloon groter is dan de standaard cycloon" & vbCrLf
+        TextBox148.Text &= "Een betere vangst zou aan een langere verblijftijd toegeschreven kunnen worden." & vbCrLf
+        TextBox148.Text &= " " & vbCrLf
+        TextBox148.Text &= "Een goede combinatie blijkt voorvangen met een AC435 gevolgd door twee stuks AC850." & vbCrLf
+
+
         TextBox20.Text = "All AA cyclones have a diameter of 300mm" & vbCrLf
         TextBox20.Text &= "Load above 5 gr/m3 is considered a high load" & vbCrLf
         TextBox20.Text &= "Cyclones can not choke" & vbCrLf
