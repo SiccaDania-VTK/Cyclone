@@ -270,6 +270,9 @@ Public Class Form1
         TextBox148.Text &= "Een betere vangst zou aan een langere verblijftijd toegeschreven kunnen worden." & vbCrLf
         TextBox148.Text &= " " & vbCrLf
         TextBox148.Text &= "Een goede combinatie blijkt voorvangen met een AC435 gevolgd door twee stuks AC850." & vbCrLf
+        TextBox148.Text &= " " & vbCrLf
+        TextBox148.Text &= "Note certain dairy products are fragile and will break up in a cyclone into several smaller parts," & vbCrLf
+        TextBox148.Text &= "in this case the inlet speed must be reduced." & vbCrLf
 
 
         TextBox20.Text = "All AA cyclones have a diameter of 300mm" & vbCrLf
