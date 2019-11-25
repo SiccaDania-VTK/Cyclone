@@ -271,8 +271,11 @@ Public Class Form1
         TextBox148.Text &= " " & vbCrLf
         TextBox148.Text &= "Een goede combinatie blijkt voorvangen met een AC435 gevolgd door twee stuks AC850." & vbCrLf
         TextBox148.Text &= " " & vbCrLf
-        TextBox148.Text &= "Note certain dairy products are fragile and will break up in a cyclone into several smaller parts," & vbCrLf
-        TextBox148.Text &= "in this case the inlet speed must be reduced." & vbCrLf
+        TextBox148.Text &= "Note 1) Spray-dried dairy products are fragile and will break up in a cyclone into several smaller parts," & vbCrLf
+        TextBox148.Text &= "in this case the inlet speed must be reduced to 14-16 m/s(also depends on moisture content)." & vbCrLf
+        TextBox148.Text &= "Patato starch does the opposite, less particles come out than go in. " & vbCrLf
+        TextBox148.Text &= " " & vbCrLf
+
 
 
         TextBox20.Text = "All AA cyclones have a diameter of 300mm" & vbCrLf
