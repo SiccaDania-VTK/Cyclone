@@ -215,7 +215,7 @@ Public Class Form1
         hard_disk_list.Add("174741803447")          'VTK Laptop, Rob Ruiter
 
         nu = Now()
-        nu2 = CDate("2019-12-01 00:00:00")
+        nu2 = CDate("2020-02-01 00:00:00")
         life_time = CInt((nu2 - nu).TotalDays)
         Label101.Text = "Expire " & life_time.ToString
 
