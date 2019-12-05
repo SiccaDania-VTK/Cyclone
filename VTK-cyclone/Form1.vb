@@ -322,6 +322,11 @@ Public Class Form1
         TextBox147.Text = "Cyclone is a excellent Spark arrestor" & vbCrLf
         TextBox147.Text &= "Use in front of filter or silo" & vbCrLf
         TextBox147.Text &= "Also used in suction of gas-turbines to catch flies" & vbCrLf
+
+        TextBox149.Text = "Gluten separation with a Cyclone" & vbCrLf
+        TextBox149.Text &= "Test have show that the particles are getting" & vbCrLf
+        TextBox149.Text &= "electrically charged and stick to the vessel wall" & vbCrLf
+
         Calc_sequence()
     End Sub
 
