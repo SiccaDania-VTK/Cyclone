@@ -123,7 +123,7 @@ Public Class Form1
     'Uitlaat keeldia inw.;Uitlaat flensdiameter inw.;Lengte insteekpijp inw.;
     'Lengte romp + conus;Lengte romp;Lengte conus;Dia_conus / 3P-pijp;Lengte 3P-pijp;Lengte 3P-conus;Kleine dia 3P-conus",
 
-    Public Shared cyl_dimensions() As String = {
+    ReadOnly cyl_dimensions() As String = {
     "AC-300;0.34;0.77;0.6;0.63;0.3;0.68;0.68;0.892;3.36;1.312;2.048;0.4;0.6;0.6;0.25",
     "AC-350;0.32;0.7;0.6;0.617;0.3;0.63;0.63;0.892;3.36;1.312;2.048;0.4;0.6;0.6;0.25",
     "AC-435;0.282;0.64;0.6;0.6;0.3;0.56;0.56;0.892;3.36;1.312;2.048;0.4;0.6;0.6;0.25",
@@ -138,7 +138,7 @@ Public Class Form1
     'm1,k1,a1 als d < d_krit
     'm2,k2,a2 als d > d_krit
     'type; d/krit; m1; k1; a1; m2; k2; a2; drukcoef air;drukcoef dust
-    Public Shared rekenlijnen() As String = {
+    ReadOnly rekenlijnen() As String = {
     "AC300;     12.2;   1.15;   7.457;  1.005;      8.5308;     1.6102; 0.4789; 7;      0",
     "AC350;     10.2;   1.0;    5.3515; 1.0474;     4.4862;     2.4257; 0.6472; 7;      7.927",
     "AC435;     8.93;   0.69;   4.344;  1.139;      4.2902;     1.3452; 0.5890; 7;      8.26",
@@ -150,11 +150,11 @@ Public Class Form1
     "AC1850+afz;10.45;  0.4617; 0.2921; 0.4560;     -0.2396;    0.1269; 0.3633; 0;      0"}
 
     '----------- directory's-----------
-    Dim dirpath_Eng As String = "N:\Engineering\VBasic\Cyclone_sizing_input\"
-    Dim dirpath_Rap As String = "N:\Engineering\VBasic\Cyclone_rapport_copy\"
-    Dim dirpath_tmp As String = "C:\Tmp\"
-    Dim ProcID As Integer = Process.GetCurrentProcess.Id
-    Dim dirpath_Temp As String = "C:\Temp\" & ProcID.ToString
+    ReadOnly dirpath_Eng As String = "N:\Engineering\VBasic\Cyclone_sizing_input\"
+    ReadOnly dirpath_Rap As String = "N:\Engineering\VBasic\Cyclone_rapport_copy\"
+    ReadOnly dirpath_tmp As String = "C:\Tmp\"
+    ReadOnly ProcID As Integer = Process.GetCurrentProcess.Id
+    ReadOnly dirpath_Temp As String = "C:\Temp\" & ProcID.ToString
 
     Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         Dim hh, life_time, i As Integer
