@@ -350,8 +350,11 @@ Public Class Form1
         Dim wc_air1, wc_air2 As Double      'weerstand_coef_air
 
         '==== results ===
-        Dim kgh As Double           'Dust inlet per hour/cyclone 
-        Dim kgs As Double           'Dust inlet per second/cyclone
+        Dim kgh As Double               'Dust inlet per hour/cyclone 
+        Dim kgs As Double               'Dust inlet per second/cyclone
+        Dim kortezijde, langezijde As Double    'tbv atan()
+        Dim halfconeapex1 As Double     'Conus hoek
+        Dim halfconeapex2 As Double     'Conus hoek
 
         '==== stage 1 ====
 
@@ -440,8 +443,20 @@ Public Class Form1
             _cees(ks).dpgas2 = 0.5 * _cees(ks).Ro_gas2_Am3 * _cees(ks).inv2 ^ 2 * wc_air2
             _cees(ks).dpdust2 = 0.5 * _cees(ks).Ro_gas2_Am3 * _cees(ks).inv2 ^ 2 * wc_dust2
 
+            '----------- 1/2 cone apex #1-----------
+            kortezijde = (db1 - _cyl1_dim(12) * db1) * 0.5
+            langezijde = _cyl1_dim(11) * db1
+            halfconeapex1 = Atan(kortezijde / langezijde)           '[rad]
+            halfconeapex1 = halfconeapex1 / (PI / 2) * 90           '[degree]
+
+            '----------- 1/2 cone apex #2-----------
+            kortezijde = (db2 - _cyl1_dim(12) * db2) * 0.5
+            langezijde = _cyl1_dim(11) * db2
+            halfconeapex2 = Atan(kortezijde / langezijde)           '[rad] 
+            halfconeapex2 = halfconeapex2 / (PI / 2) * 90           '[degree]
+
             '----------- stof belasting ------------
-            kgs = _cees(ks).Flow1 * _cees(ks).dust1_Am3 / 1000     '[kg/s/cycloon]
+            kgs = _cees(ks).Flow1 * _cees(ks).dust1_Am3 / 1000  '[kg/s/cycloon]
             kgh = kgs * 3600                                    '[kg/h/cycloon]
             tot_kgh = kgh * _cees(ks).Noc1                      '[g/Am3] Dust inlet 
 
@@ -485,6 +500,8 @@ Public Class Form1
             TextBox96.Text = (_cyl1_dim(13) * db2).ToString("F3")    'Lengte 3P-pijp
             TextBox97.Text = (_cyl1_dim(14) * db2).ToString("F3")    'Lengte 3P conus
             TextBox98.Text = (_cyl1_dim(15) * db2).ToString("F3")    'Kleine dia 3P-conus
+            TextBox150.Text = halfconeapex1.ToString("F1")           '1/2 cone apex
+            TextBox151.Text = halfconeapex2.ToString("F1")           '1/2 cone apex
 
             TextBox113.Text = (_cees(ks).Flow1 * 3600).ToString("0")    '[Am3/s] Cycloone Flow
             TextBox112.Text = (_cees(ks).Flow2 * 3600).ToString("0")    '[Am3/s] Cycloone Flow
@@ -511,8 +528,8 @@ Public Class Form1
             TextBox73.Text = CType(ComboBox2.SelectedItem, String)      'Cycloon type
 
             '---------- Pressure abs --------------
-            TextBox131.Text = _cees(ks).p1_abs.ToString("F0")       '[Pa abs]
-            TextBox130.Text = _cees(ks).p2_abs.ToString("F0")       '[Pa abs]
+            TextBox131.Text = _cees(ks).p1_abs.ToString("F0")           '[Pa abs]
+            TextBox130.Text = _cees(ks).p2_abs.ToString("F0")           '[Pa abs]
 
             '---------- Density --------------
             TextBox75.Text = _cees(ks).Ro_gas1_Am3.ToString("F3")       '[kg/Am3]
