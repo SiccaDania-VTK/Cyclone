@@ -211,11 +211,11 @@ Public Class Form1
         user_list.Add("Peterdw")
         hard_disk_list.Add("134309552747")          'VTK PC, Peter de Wild
 
-        user_list.Add("robru")
-        hard_disk_list.Add("174741803447")          'VTK Laptop, Rob Ruiter
+        user_list.Add("Abi")
+        hard_disk_list.Add("174741803447")          'VTK Laptop, Ab van Iterson <a.van.Iterson@vtk.nl>
 
         nu = Now()
-        nu2 = CDate("2020-02-01 00:00:00")
+        nu2 = CDate("2020-04-01 00:00:00")
         life_time = CInt((nu2 - nu).TotalDays)
         Label101.Text = "Expire " & life_time.ToString
 
