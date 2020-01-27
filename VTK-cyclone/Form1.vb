@@ -324,8 +324,11 @@ Public Class Form1
         TextBox147.Text &= "Also used in suction of gas-turbines to catch flies" & vbCrLf
 
         TextBox149.Text = "Gluten separation with a Cyclone" & vbCrLf
-        TextBox149.Text &= "Test have show that the particles are getting" & vbCrLf
+        TextBox149.Text &= "Test have show that the particles are getting "
         TextBox149.Text &= "electrically charged and stick to the vessel wall" & vbCrLf
+
+        TextBox152.Text = "Particle Density and Bulk (Volumetric) Density" & vbCrLf
+        TextBox152.Text &= "Rule of thumb for foodstuffs, Particle Density= 2 x Bulk density" & vbCrLf
 
         Calc_sequence()
     End Sub
