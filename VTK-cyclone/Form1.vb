@@ -134,6 +134,41 @@ Public Class Form1
     "AC-1850;0.136;0.31;0.6;0.53;0.3;0.15;0.25;0.892;3.797;1.312;2.485;0.4;0.6;0.6;0.25",
     "AC-1850+afz;0.136;0.31;0.6;0.53;0.3;0.15;0.25;0.892;3.797;1.312;2.485;0.4;0.6;0.6;0.25"}
 
+
+    ReadOnly DSM_psd_example() As String = {
+    "4.50;0.04",
+    "5.50;0.27",
+    "6.50;0.61",
+    "7.50;1.06",
+    "9.00;1.98",
+    "11.0;3.67",
+    "13.0;5.93",
+    "15.5;9.50",
+    "18.5;14.73",
+    "21.5;20.71",
+    "25.0;28.1",
+    "30.0;38.59",
+    "37.5;52.93",
+    "45.0;64.66",
+    "52.5;73.66",
+    "62.5;82.16",
+    "75.0;88.86",
+    "90.0;93.38",
+    "105;96.05",
+    "125;97.86",
+    "150;98.92",
+    "180;99.58",
+    "215;99.95",
+    "255;100",
+    "305;100",
+    "365;100",
+    "435;100",
+    "515;100",
+    "615;100",
+    "735;100",
+    "875;100"}
+
+
     'Nieuwe reken methode, verdeling volgens Weibull verdeling
     'm1,k1,a1 als d < d_krit
     'm2,k2,a2 als d > d_krit
@@ -2563,5 +2598,16 @@ Public Class Form1
 
     Private Sub Button11_Click(sender As Object, e As EventArgs) Handles Button11.Click
         Form2.Show()    'Fopspeen
+    End Sub
+
+    Private Sub Button12_Click(sender As Object, e As EventArgs) Handles Button12.Click, TabPage13.Enter
+        DataGridView5.ColumnCount = 4
+        DataGridView5.Rows.Clear()
+        DataGridView5.Rows.Add(20)
+        DataGridView5.EnableHeadersVisualStyles = False           'For backcolor
+
+        DataGridView5.Columns(0).HeaderText = "X0/um"
+        DataGridView5.Columns(1).HeaderText = "Q3/%"
+        DataGridView5.Columns(2).HeaderText = "--"
     End Sub
 End Class
