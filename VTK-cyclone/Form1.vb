@@ -134,7 +134,7 @@ Public Class Form1
     "AC-1850;0.136;0.31;0.6;0.53;0.3;0.15;0.25;0.892;3.797;1.312;2.485;0.4;0.6;0.6;0.25",
     "AC-1850+afz;0.136;0.31;0.6;0.53;0.3;0.15;0.25;0.892;3.797;1.312;2.485;0.4;0.6;0.6;0.25"}
 
-    "DSM polymer power DSM Geleen
+    'DSM polymer power DSM Geleen
     ReadOnly DSM_psd_example() As String = {
     "4.50;0.04",
     "5.50;0.27",
