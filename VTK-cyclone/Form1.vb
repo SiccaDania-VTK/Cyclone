@@ -134,7 +134,7 @@ Public Class Form1
     "AC-1850;0.136;0.31;0.6;0.53;0.3;0.15;0.25;0.892;3.797;1.312;2.485;0.4;0.6;0.6;0.25",
     "AC-1850+afz;0.136;0.31;0.6;0.53;0.3;0.15;0.25;0.892;3.797;1.312;2.485;0.4;0.6;0.6;0.25"}
 
-    'DSM polymer power DSM Geleen
+    'DSM polymer power DSM Geleen (cumulatief[%], particle diameter[mu])
     ReadOnly DSM_psd_example() As String = {
     "4.50;0.04",
     "5.50;0.27",
@@ -794,7 +794,8 @@ Public Class Form1
         numericUpDown13.BackColor = CType(IIf(numericUpDown13.Value > NumericUpDown38.Value, Color.LightGreen, Color.Red), Color)
         NumericUpDown38.BackColor = CType(IIf(NumericUpDown38.Value > NumericUpDown39.Value, Color.LightGreen, Color.Red), Color)
         NumericUpDown39.BackColor = CType(IIf(NumericUpDown39.Value > NumericUpDown40.Value, Color.LightGreen, Color.Red), Color)
-        NumericUpDown40.BackColor = CType(IIf(NumericUpDown40.Value >= 0, Color.LightGreen, Color.Red), Color)
+        NumericUpDown40.BackColor = CType(IIf(NumericUpDown40.Value > NumericUpDown48.Value, Color.LightGreen, Color.Red), Color)
+        NumericUpDown48.BackColor = CType(IIf(NumericUpDown48.Value >= 0, Color.LightGreen, Color.Red), Color)
     End Sub
     '-------- Bereken het verlies getal NIET gecorrigeerd -----------
     '----- de input is de GEMIDDELDE korrel grootte-----------
@@ -1640,7 +1641,6 @@ Public Class Form1
         Visco = Air_visco(CDbl(NumericUpDown21.Value))
         TextBox30.Text = Visco.ToString("F5")   'centi Poise
         TextBox146.Text = (Visco * 0.001).ToString("F7")  'Pa.sec
-
     End Sub
 
     'http://www-mdp.eng.cam.ac.uk/web/library/enginfo/aerothermal_dvd_only/aero/fprops/propsoffluids/node5.html
@@ -1667,7 +1667,6 @@ Public Class Form1
         DataGridView2.ColumnCount = 18
         DataGridView2.Rows.Clear()
         DataGridView2.Rows.Add(111)
-        'DataGridView2.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill
 
         DataGridView2.EnableHeadersVisualStyles = False                     'For backcolor
         DataGridView2.Columns(0).HeaderText = "Dia upper [mu]"              '
@@ -1692,8 +1691,8 @@ Public Class Form1
         DataGridView2.Columns(1).HeaderCell.Style.BackColor = Color.Yellow  'Chart
         DataGridView2.Columns(5).HeaderCell.Style.BackColor = Color.Yellow  'Chart
 
-        DataGridView2.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill
-
+        'DataGridView2.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill
+        DataGridView2.AutoSize = False
         For row = 1 To 110  'Fill the DataGrid
             j = row - 1
             DataGridView2.Rows(j).Cells(0).Value = _cees(ks).stage1(j).dia.ToString("F8")
@@ -1733,7 +1732,7 @@ Public Class Form1
         DataGridView3.ColumnCount = 19
         DataGridView3.Rows.Clear()
         DataGridView3.Rows.Add(111)
-        'DatagridView3.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill
+
         DataGridView3.EnableHeadersVisualStyles = False                         'For backcolor
         DataGridView3.Columns(0).HeaderText = "Dia upper [mu]"                  '
         DataGridView3.Columns(1).HeaderText = "Dia (aver.) class [mu]"          '
@@ -2175,28 +2174,31 @@ Public Class Form1
             End Select
 
             Dim w(11) As Double  'Individual particle class weights
-            w(0) = NumericUpDown40.Value
-            w(1) = NumericUpDown39.Value - w(0)
-            w(2) = NumericUpDown38.Value - w(1) - w(0)
-            w(3) = numericUpDown13.Value - w(2) - w(1) - w(0)
-            w(4) = numericUpDown12.Value - w(3) - w(2) - w(1) - w(0)
-            w(5) = numericUpDown11.Value - w(4) - w(3) - w(2) - w(1) - w(0)
-            w(6) = numericUpDown10.Value - w(5) - w(4) - w(3) - w(2) - w(1) - w(0)
-            w(7) = numericUpDown9.Value - w(6) - w(5) - w(4) - w(3) - w(2) - w(1) - w(0)
-            w(8) = numericUpDown8.Value - w(7) - w(6) - w(5) - w(4) - w(3) - w(2) - w(1) - w(0)
-            w(9) = numericUpDown7.Value - w(8) - w(7) - w(6) - w(5) - w(4) - w(3) - w(2) - w(1) - w(0)
-            w(10) = numericUpDown6.Value - w(9) - w(8) - w(7) - w(6) - w(5) - w(4) - w(3) - w(2) - w(1) - w(0)
 
-            TextBox50.Text = w(10).ToString("0.0")
-            TextBox49.Text = w(9).ToString("0.0")
-            TextBox46.Text = w(8).ToString("0.0")
-            TextBox45.Text = w(7).ToString("0.0")
-            TextBox44.Text = w(6).ToString("0.0")
-            TextBox43.Text = w(5).ToString("0.0")
-            TextBox27.Text = w(4).ToString("0.0")
-            TextBox25.Text = w(3).ToString("0.0")
-            TextBox81.Text = w(2).ToString("0.0")
-            TextBox82.Text = w(1).ToString("0.0")
+            w(0) = NumericUpDown48.Value
+            w(1) = NumericUpDown40.Value - w(0)
+            w(2) = NumericUpDown39.Value - w(1) - w(0)
+            w(3) = NumericUpDown38.Value - w(2) - w(1) - w(0)
+            w(4) = numericUpDown13.Value - w(3) - w(2) - w(1) - w(0)
+            w(5) = numericUpDown12.Value - w(4) - w(3) - w(2) - w(1) - w(0)
+            w(6) = numericUpDown11.Value - w(5) - w(4) - w(3) - w(2) - w(1) - w(0)
+            w(7) = numericUpDown10.Value - w(6) - w(5) - w(4) - w(3) - w(2) - w(1) - w(0)
+            w(8) = numericUpDown9.Value - w(7) - w(6) - w(5) - w(4) - w(3) - w(2) - w(1) - w(0)
+            w(9) = numericUpDown8.Value - w(8) - w(7) - w(6) - w(5) - w(4) - w(3) - w(2) - w(1) - w(0)
+            w(10) = numericUpDown7.Value - w(9) - w(8) - w(7) - w(6) - w(5) - w(4) - w(3) - w(2) - w(1) - w(0)
+            w(11) = numericUpDown6.Value - w(10) - w(9) - w(8) - w(7) - w(6) - w(5) - w(4) - w(3) - w(2) - w(1) - w(0)
+
+            TextBox50.Text = w(11).ToString("0.0")
+            TextBox49.Text = w(10).ToString("0.0")
+            TextBox46.Text = w(9).ToString("0.0")
+            TextBox45.Text = w(8).ToString("0.0")
+            TextBox44.Text = w(7).ToString("0.0")
+            TextBox43.Text = w(6).ToString("0.0")
+            TextBox27.Text = w(5).ToString("0.0")
+            TextBox25.Text = w(4).ToString("0.0")
+            TextBox81.Text = w(3).ToString("0.0")
+            TextBox82.Text = w(2).ToString("0.0")
+            TextBox154.Text = w(1).ToString("0.0")
 
             '-------- Check -- bigger diameter must have bigger cummulative weight
             NumericUpDown15.BackColor = CType(IIf(NumericUpDown15.Value > 0, Color.LightGreen, Color.Red), Color)
@@ -2210,6 +2212,7 @@ Public Class Form1
             NumericUpDown35.BackColor = CType(IIf(NumericUpDown35.Value >= NumericUpDown29.Value, Color.LightGreen, Color.Red), Color)
             NumericUpDown36.BackColor = CType(IIf(NumericUpDown36.Value >= NumericUpDown35.Value, Color.LightGreen, Color.Red), Color)
             NumericUpDown37.BackColor = CType(IIf(NumericUpDown37.Value >= NumericUpDown36.Value, Color.LightGreen, Color.Red), Color)
+            NumericUpDown51.BackColor = CType(IIf(NumericUpDown51.Value >= NumericUpDown36.Value, Color.LightGreen, Color.Red), Color)
         Else
             'MessageBox.Show("Error in line 1946")
         End If
@@ -2354,8 +2357,8 @@ Public Class Form1
 
             '----------- General (not calculated) data------------------
             TextBox28.Text = _cees(zz).Quote_no                 'Quote number
-            TextBox29.Text = _cees(zz).Tag_no                 'The Tag number
-            TextBox53.Text = _cees(zz).case_name           'Case name
+            TextBox29.Text = _cees(zz).Tag_no                   'The Tag number
+            TextBox53.Text = _cees(zz).case_name                'Case name
 
             Chck_value(NumericUpDown1, CDec(_cees(zz).FlowT))       'Air flow total
             Chck_value(NumericUpDown4, CDec(_cees(zz).dust1_Am3))   'Dust inlet [g/Am3] 
@@ -2383,6 +2386,13 @@ Public Class Form1
             Chck_value(NumericUpDown28, CDec(_cees(zz).dia_big(6)))   '60
             Chck_value(NumericUpDown29, CDec(_cees(zz).dia_big(7)))   '80
 
+            'addeed
+            Chck_value(NumericUpDown35, CDec(_cees(zz).dia_big(8)))   '40
+            Chck_value(NumericUpDown36, CDec(_cees(zz).dia_big(9)))   '50
+            Chck_value(NumericUpDown37, CDec(_cees(zz).dia_big(10)))   '60
+            Chck_value(NumericUpDown51, CDec(_cees(zz).dia_big(11)))   '80
+
+
             'Percentage van de inlaat stof belasting
             Chck_value(numericUpDown6, CDec(_cees(zz).class_load(0) * 100))
             Chck_value(numericUpDown7, CDec(_cees(zz).class_load(1) * 100))
@@ -2392,6 +2402,13 @@ Public Class Form1
             Chck_value(numericUpDown11, CDec(_cees(zz).class_load(5) * 100))
             Chck_value(numericUpDown12, CDec(_cees(zz).class_load(6) * 100))
             Chck_value(numericUpDown13, CDec(_cees(zz).class_load(7) * 100))
+
+            Chck_value(NumericUpDown38, CDec(_cees(zz).class_load(8) * 100))
+            Chck_value(NumericUpDown39, CDec(_cees(zz).class_load(9) * 100))
+            Chck_value(NumericUpDown40, CDec(_cees(zz).class_load(10) * 100))
+            Chck_value(NumericUpDown48, CDec(_cees(zz).class_load(11) * 100))
+
+
             Me.Refresh()
         End If
 
@@ -2619,13 +2636,23 @@ Public Class Form1
     End Sub
 
     Private Sub Button12_Click(sender As Object, e As EventArgs) Handles Button12.Click, TabPage13.Enter
+        Dim words() As String
         DataGridView5.ColumnCount = 4
         DataGridView5.Rows.Clear()
-        DataGridView5.Rows.Add(20)
+        DataGridView5.Rows.Add(DSM_psd_example.Length - 1)
         DataGridView5.EnableHeadersVisualStyles = False           'For backcolor
 
-        DataGridView5.Columns(0).HeaderText = "X0/um"
-        DataGridView5.Columns(1).HeaderText = "Q3/%"
+        DataGridView5.Columns(0).HeaderText = "Dia [um]"
+        DataGridView5.Columns(1).HeaderText = "Cumm [%]"
         DataGridView5.Columns(2).HeaderText = "--"
+
+        For row = 0 To DataGridView5.Rows.Count - 1
+            words = DSM_psd_example(row).Split(CType(";", Char()))
+            DataGridView5.Rows(row).Cells(0).Value = CDbl(words(0))
+            DataGridView5.Rows(row).Cells(1).Value = CDbl(words(1))
+            DataGridView5.Rows(row).Cells(2).Value = (100 - CDbl(words(1)))
+        Next
+
     End Sub
+
 End Class
