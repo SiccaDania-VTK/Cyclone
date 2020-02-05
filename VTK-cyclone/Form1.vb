@@ -359,12 +359,14 @@ Public Class Form1
         TextBox147.Text &= "Also used in suction of gas-turbines to catch flies" & vbCrLf
 
         TextBox149.Text = "Gluten separation with a Cyclone" & vbCrLf
-        TextBox149.Text &= "Test have show that the particles are getting "
-        TextBox149.Text &= "electrically charged and stick to the vessel wall" & vbCrLf
+        TextBox149.Text &= "Test have show that the particles are getting electrically charged and stick to the vessel wall" & vbCrLf
 
         TextBox152.Text = "Particle Density and Bulk (Volumetric) Density" & vbCrLf
         TextBox152.Text &= "Rule of thumb for foodstuffs, Particle Density= 2 x Bulk density" & vbCrLf
 
+        TextBox153.Text = "Spray dried product are fragile" & vbCrLf
+        TextBox153.Text &= "Inlet speed cyclone is 16 m/s" & vbCrLf
+        TextBox153.Text &= "Spray dryer outlet pressure range is between 0 and -5 mbar" & vbCrLf
         Calc_sequence()
     End Sub
 
@@ -1237,7 +1239,14 @@ Public Class Form1
         Dim filename, user As String
         Dim bf As New System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
 
-        TextBox24.Text &= "line 1162, save project to disk" & vbCrLf
+        'TextBox24.Text &= "line 1162, save project to disk" & vbCrLf
+        If TextBox28.Text.Trim.Length = 0 Or TextBox29.Text.Trim.Length = 0 Then
+            MessageBox.Show("Complete Quote and Tag number")
+            Exit Sub
+        End If
+
+        Save_present_case_to_array()            'Store data in array
+
         '------------- create filemame ----------
         user = Trim(Environment.UserName)           'User name on the screen
         filename = "Cyclone_select_" & TextBox28.Text & "_" & TextBox29.Text & DateTime.Now.ToString("_yyyy_MM_dd_") & user & ".vtk2"
@@ -2341,10 +2350,13 @@ Public Class Form1
 
         TextBox24.Text &= "line 2276, Fill_Screen_from_array nr" & zz.ToString & vbCrLf
 
-        '----------- General (not calculated) data------------------
-        TextBox53.Text = _cees(zz).case_name           'Case name
-
         If _cees(zz).case_name.Length > 0 Then
+
+            '----------- General (not calculated) data------------------
+            TextBox28.Text = _cees(zz).Quote_no                 'Quote number
+            TextBox29.Text = _cees(zz).Tag_no                 'The Tag number
+            TextBox53.Text = _cees(zz).case_name           'Case name
+
             Chck_value(NumericUpDown1, CDec(_cees(zz).FlowT))       'Air flow total
             Chck_value(NumericUpDown4, CDec(_cees(zz).dust1_Am3))   'Dust inlet [g/Am3] 
 
@@ -2371,7 +2383,7 @@ Public Class Form1
             Chck_value(NumericUpDown28, CDec(_cees(zz).dia_big(6)))   '60
             Chck_value(NumericUpDown29, CDec(_cees(zz).dia_big(7)))   '80
 
-            'Percentale van de inlaat stof belasting
+            'Percentage van de inlaat stof belasting
             Chck_value(numericUpDown6, CDec(_cees(zz).class_load(0) * 100))
             Chck_value(numericUpDown7, CDec(_cees(zz).class_load(1) * 100))
             Chck_value(numericUpDown8, CDec(_cees(zz).class_load(2) * 100))
@@ -2380,16 +2392,22 @@ Public Class Form1
             Chck_value(numericUpDown11, CDec(_cees(zz).class_load(5) * 100))
             Chck_value(numericUpDown12, CDec(_cees(zz).class_load(6) * 100))
             Chck_value(numericUpDown13, CDec(_cees(zz).class_load(7) * 100))
+            Me.Refresh()
         End If
+
     End Sub
     Private Sub Chck_value(num As NumericUpDown, value As Decimal)
         'Make sure the numericupdown.value is within the min-max value
+
         Select Case value
             Case > num.Maximum
                 num.Value = num.Maximum
+                TextBox24.Text &= "NOK, value= " & value.ToString & ",  num= " & num.Name.ToString & vbCrLf
             Case < num.Minimum
                 num.Value = num.Minimum
+                TextBox24.Text &= "NOK, value= " & value.ToString & ",  num= " & num.Name.ToString & vbCrLf
             Case Else
+                'TextBox24.Text &= "OK, value= " & value.ToString & ",  num= " & num.Name.ToString & vbCrLf
                 num.Value = value
         End Select
     End Sub
