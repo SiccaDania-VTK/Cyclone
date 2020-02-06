@@ -168,6 +168,36 @@ Public Class Form1
     "735;100",
     "875;100"}
 
+    'Cargill China (cumulatief[%], particle diameter[mu])
+    ReadOnly maltodextrine_psd() As String = {
+    "1.0;   99.9",
+    "2.0;   98.5",
+    "4.0;   97",
+    "5.0;   96",
+    "7.0;   93",
+    "9.0;   90",
+    "11;    86",
+    "20;    68",
+    "40;    45",
+    "60;    30",
+    "80;    20",
+    "150;   4",
+    "200;   1"}
+
+    'Start screen (cumulatief[%], particle diameter[mu])
+    ReadOnly start_screen_psd() As String = {
+    "0.3;  99.999",
+    "5.0;  94",
+    "10;   82",
+    "15;   61.1",
+    "20;   40.5",
+    "25;   24.5",
+    "30;   13.8",
+    "35;   7.0",
+    "40;   3.4",
+    "45;   1.5",
+    "50;   0.5",
+    "60;   0.1"}
 
     'Nieuwe reken methode, verdeling volgens Weibull verdeling
     'm1,k1,a1 als d < d_krit
@@ -311,8 +341,6 @@ Public Class Form1
         TextBox148.Text &= "Patato starch does the opposite, less particles come out than go in. " & vbCrLf
         TextBox148.Text &= " " & vbCrLf
 
-
-
         TextBox20.Text = "All AA cyclones have a diameter of 300mm" & vbCrLf
         TextBox20.Text &= "Load above 5 gr/m3 is considered a high load" & vbCrLf
         TextBox20.Text &= "Cyclones can not choke" & vbCrLf
@@ -367,7 +395,10 @@ Public Class Form1
         TextBox153.Text = "Spray dried product are fragile" & vbCrLf
         TextBox153.Text &= "Inlet speed cyclone is 16 m/s" & vbCrLf
         TextBox153.Text &= "Spray dryer outlet pressure range is between 0 and -5 mbar" & vbCrLf
+
         Calc_sequence()
+        Build_dgv6()        'PSD input grid
+
     End Sub
 
     Private Sub Button1_Click(sender As Object, e As EventArgs) Handles button1.Click, TabPage1.Enter, numericUpDown3.ValueChanged, numericUpDown2.ValueChanged, numericUpDown14.ValueChanged, NumericUpDown1.ValueChanged, numericUpDown5.ValueChanged, NumericUpDown20.ValueChanged, NumericUpDown19.ValueChanged, NumericUpDown18.ValueChanged, ComboBox1.SelectedIndexChanged, numericUpDown9.ValueChanged, numericUpDown8.ValueChanged, numericUpDown7.ValueChanged, numericUpDown6.ValueChanged, numericUpDown12.ValueChanged, numericUpDown11.ValueChanged, numericUpDown10.ValueChanged, numericUpDown13.ValueChanged, NumericUpDown4.ValueChanged, NumericUpDown29.ValueChanged, NumericUpDown28.ValueChanged, NumericUpDown27.ValueChanged, NumericUpDown26.ValueChanged, NumericUpDown25.ValueChanged, NumericUpDown24.ValueChanged, NumericUpDown23.ValueChanged, NumericUpDown15.ValueChanged, NumericUpDown34.ValueChanged, NumericUpDown33.ValueChanged, ComboBox2.SelectedIndexChanged, NumericUpDown40.ValueChanged, NumericUpDown39.ValueChanged, NumericUpDown38.ValueChanged, NumericUpDown37.ValueChanged, NumericUpDown36.ValueChanged, NumericUpDown35.ValueChanged, NumericUpDown43.ValueChanged, NumericUpDown22.ValueChanged, CheckBox3.CheckedChanged, CheckBox2.CheckedChanged
@@ -2642,6 +2673,9 @@ Public Class Form1
     End Sub
 
     Private Sub Button12_Click(sender As Object, e As EventArgs) Handles Button12.Click, TabPage13.Enter
+        Build_dgv5()
+    End Sub
+    Private Sub Build_dgv5()
         Dim words() As String
         DataGridView5.ColumnCount = 4
         DataGridView5.Rows.Clear()
@@ -2658,7 +2692,27 @@ Public Class Form1
             DataGridView5.Rows(row).Cells(1).Value = CDbl(words(1))
             DataGridView5.Rows(row).Cells(2).Value = (100 - CDbl(words(1)))
         Next
+    End Sub
+    Private Sub Build_dgv6()
+        Dim words() As String
+        DataGridView6.ColumnCount = 2
+        DataGridView6.Rows.Clear()
+        DataGridView6.Rows.Add(start_screen_psd.Length - 1)
+        DataGridView6.EnableHeadersVisualStyles = False           'For backcolor
 
+        DataGridView6.Columns(0).HeaderText = "Dia [um]"
+        DataGridView6.Columns(1).HeaderText = "Cumm [%]"
+        DataGridView6.Columns(0).Width = 60
+        DataGridView6.Columns(1).Width = 60
+
+        For row = 0 To DataGridView6.Rows.Count - 1
+
+            words = start_screen_psd(row).Split(CType(";", Char()))
+            DataGridView6.Rows(row).Cells(0).Value = CDbl(words(0))
+            DataGridView6.Rows(row).Cells(1).Value = CDbl(words(1))
+
+        Next
+        ' DataGridView6.AutoResizeColumns()
     End Sub
 
 End Class

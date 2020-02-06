@@ -475,6 +475,7 @@ Partial Class Form1
         Me.label9 = New System.Windows.Forms.Label()
         Me.label10 = New System.Windows.Forms.Label()
         Me.groupBox1 = New System.Windows.Forms.GroupBox()
+        Me.DataGridView1 = New System.Windows.Forms.DataGridView()
         Me.TextBox154 = New System.Windows.Forms.TextBox()
         Me.Label70 = New System.Windows.Forms.Label()
         Me.NumericUpDown48 = New System.Windows.Forms.NumericUpDown()
@@ -564,7 +565,7 @@ Partial Class Form1
         Me.Label252 = New System.Windows.Forms.Label()
         Me.Button12 = New System.Windows.Forms.Button()
         Me.DataGridView5 = New System.Windows.Forms.DataGridView()
-        Me.DataGridView1 = New System.Windows.Forms.DataGridView()
+        Me.DataGridView6 = New System.Windows.Forms.DataGridView()
         Me.TabPage10.SuspendLayout()
         Me.GroupBox18.SuspendLayout()
         CType(Me.Chart3, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -631,6 +632,7 @@ Partial Class Form1
         CType(Me.numericUpDown2, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.numericUpDown3, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.groupBox1.SuspendLayout()
+        CType(Me.DataGridView1, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.NumericUpDown48, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.NumericUpDown51, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.NumericUpDown40, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -667,7 +669,7 @@ Partial Class Form1
         Me.GroupBox12.SuspendLayout()
         Me.TabPage13.SuspendLayout()
         CType(Me.DataGridView5, System.ComponentModel.ISupportInitialize).BeginInit()
-        CType(Me.DataGridView1, System.ComponentModel.ISupportInitialize).BeginInit()
+        CType(Me.DataGridView6, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
         '
         'OpenFileDialog1
@@ -5537,6 +5539,7 @@ Partial Class Form1
         '
         'groupBox1
         '
+        Me.groupBox1.Controls.Add(Me.DataGridView6)
         Me.groupBox1.Controls.Add(Me.DataGridView1)
         Me.groupBox1.Controls.Add(Me.TextBox154)
         Me.groupBox1.Controls.Add(Me.Label70)
@@ -5610,6 +5613,14 @@ Partial Class Form1
         Me.groupBox1.TabIndex = 23
         Me.groupBox1.TabStop = False
         Me.groupBox1.Text = "CUMULATIVE particles diameters distribution, Chart stage #1"
+        '
+        'DataGridView1
+        '
+        Me.DataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
+        Me.DataGridView1.Location = New System.Drawing.Point(482, 15)
+        Me.DataGridView1.Name = "DataGridView1"
+        Me.DataGridView1.Size = New System.Drawing.Size(444, 343)
+        Me.DataGridView1.TabIndex = 138
         '
         'TextBox154
         '
@@ -6541,13 +6552,13 @@ Partial Class Form1
         Me.DataGridView5.Size = New System.Drawing.Size(229, 801)
         Me.DataGridView5.TabIndex = 0
         '
-        'DataGridView1
+        'DataGridView6
         '
-        Me.DataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
-        Me.DataGridView1.Location = New System.Drawing.Point(274, 15)
-        Me.DataGridView1.Name = "DataGridView1"
-        Me.DataGridView1.Size = New System.Drawing.Size(652, 343)
-        Me.DataGridView1.TabIndex = 138
+        Me.DataGridView6.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
+        Me.DataGridView6.Location = New System.Drawing.Point(266, 15)
+        Me.DataGridView6.Name = "DataGridView6"
+        Me.DataGridView6.Size = New System.Drawing.Size(206, 343)
+        Me.DataGridView6.TabIndex = 139
         '
         'Form1
         '
@@ -6643,6 +6654,7 @@ Partial Class Form1
         CType(Me.numericUpDown3, System.ComponentModel.ISupportInitialize).EndInit()
         Me.groupBox1.ResumeLayout(False)
         Me.groupBox1.PerformLayout()
+        CType(Me.DataGridView1, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.NumericUpDown48, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.NumericUpDown51, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.NumericUpDown40, System.ComponentModel.ISupportInitialize).EndInit()
@@ -6681,7 +6693,7 @@ Partial Class Form1
         Me.TabPage13.ResumeLayout(False)
         Me.TabPage13.PerformLayout()
         CType(Me.DataGridView5, System.ComponentModel.ISupportInitialize).EndInit()
-        CType(Me.DataGridView1, System.ComponentModel.ISupportInitialize).EndInit()
+        CType(Me.DataGridView6, System.ComponentModel.ISupportInitialize).EndInit()
         Me.ResumeLayout(False)
 
     End Sub
@@ -7218,4 +7230,5 @@ Partial Class Form1
     Friend WithEvents DataGridView2 As DataGridView
     Friend WithEvents DataGridView3 As DataGridView
     Friend WithEvents DataGridView1 As DataGridView
+    Friend WithEvents DataGridView6 As DataGridView
 End Class
