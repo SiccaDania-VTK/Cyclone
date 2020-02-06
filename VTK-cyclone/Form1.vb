@@ -1691,8 +1691,8 @@ Public Class Form1
         DataGridView2.Columns(1).HeaderCell.Style.BackColor = Color.Yellow  'Chart
         DataGridView2.Columns(5).HeaderCell.Style.BackColor = Color.Yellow  'Chart
 
-        'DataGridView2.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill
-        DataGridView2.AutoSize = False
+        DataGridView2.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill
+        'DataGridView2.AutoSize = False
         For row = 1 To 110  'Fill the DataGrid
             j = row - 1
             DataGridView2.Rows(j).Cells(0).Value = _cees(ks).stage1(j).dia.ToString("F8")
@@ -2099,78 +2099,84 @@ Public Class Form1
     Public Sub Size_classification(ByRef g As GvG_Calc_struct)
         If g.dia > 0 Then
             Select Case True
-                Case g.dia < NumericUpDown15.Value      '0-10 mu
-                    g.i_d1 = NumericUpDown15.Value      '10 mu
-                    g.i_d2 = NumericUpDown23.Value      '15 mu
-                    g.i_p1 = numericUpDown6.Value / 100
-                    g.i_p1 = numericUpDown7.Value / 100
+                Case g.dia < NumericUpDown15.Value      '0-0.3 [mu]
+                    g.i_d1 = 0.001                      'Diameter small [mu]
+                    g.i_d2 = NumericUpDown15.Value      'Diameter big [mu]
+                    g.i_p1 = numericUpDown6.Value / 100 'User lower input percentage
+                    g.i_p1 = numericUpDown7.Value / 100 'User upper input percentage
                     g.i_grp = 0
                 Case g.dia >= NumericUpDown15.Value And g.dia < NumericUpDown23.Value   '>=10 and < 15
-                    g.i_d1 = NumericUpDown15.Value      '10 mu
-                    g.i_d2 = NumericUpDown23.Value      '15 mu
-                    g.i_p1 = numericUpDown6.Value / 100
-                    g.i_p2 = numericUpDown7.Value / 100
+                    g.i_d1 = NumericUpDown15.Value      'Diameter small [mu]
+                    g.i_d2 = NumericUpDown23.Value      'Diameter big [mu]
+                    g.i_p1 = numericUpDown6.Value / 100 'User lower input percentage
+                    g.i_p2 = numericUpDown7.Value / 100 'User upper input percentage
                     g.i_grp = 1
                 Case g.dia >= NumericUpDown23.Value And g.dia < NumericUpDown24.Value
-                    g.i_d1 = NumericUpDown23.Value      '15 mu
-                    g.i_d2 = NumericUpDown24.Value      '20 mu
-                    g.i_p1 = numericUpDown7.Value / 100
-                    g.i_p2 = numericUpDown8.Value / 100
+                    g.i_d1 = NumericUpDown23.Value      'Diameter small [mu]
+                    g.i_d2 = NumericUpDown24.Value      'Diameter big [mu]
+                    g.i_p1 = numericUpDown7.Value / 100 'User lower input percentage
+                    g.i_p2 = numericUpDown8.Value / 100 'User upper input percentage
                     g.i_grp = 2
                 Case g.dia >= NumericUpDown24.Value And g.dia < NumericUpDown25.Value
-                    g.i_d1 = NumericUpDown24.Value '20
-                    g.i_d2 = NumericUpDown25.Value '30
+                    g.i_d1 = NumericUpDown24.Value
+                    g.i_d2 = NumericUpDown25.Value
                     g.i_p1 = numericUpDown8.Value / 100
                     g.i_p2 = numericUpDown9.Value / 100
                     g.i_grp = 3
                 Case g.dia >= NumericUpDown25.Value And g.dia < NumericUpDown26.Value
-                    g.i_d1 = NumericUpDown25.Value '30
-                    g.i_d2 = NumericUpDown26.Value '40
+                    g.i_d1 = NumericUpDown25.Value
+                    g.i_d2 = NumericUpDown26.Value
                     g.i_p1 = numericUpDown9.Value / 100
                     g.i_p2 = numericUpDown10.Value / 100
                     g.i_grp = 4
                 Case g.dia >= NumericUpDown26.Value And g.dia < NumericUpDown27.Value
-                    g.i_d1 = NumericUpDown26.Value '40
-                    g.i_d2 = NumericUpDown27.Value '50
+                    g.i_d1 = NumericUpDown26.Value
+                    g.i_d2 = NumericUpDown27.Value
                     g.i_p1 = numericUpDown10.Value / 100
                     g.i_p2 = numericUpDown11.Value / 100
                     g.i_grp = 5
                 Case g.dia >= NumericUpDown27.Value And g.dia < NumericUpDown28.Value
-                    g.i_d1 = NumericUpDown27.Value   '50
-                    g.i_d2 = NumericUpDown28.Value '60
+                    g.i_d1 = NumericUpDown27.Value
+                    g.i_d2 = NumericUpDown28.Value
                     g.i_p1 = numericUpDown11.Value / 100
                     g.i_p2 = numericUpDown12.Value / 100
                     g.i_grp = 6
                 Case g.dia >= NumericUpDown28.Value And g.dia < NumericUpDown29.Value
-                    g.i_d1 = NumericUpDown28.Value '60
-                    g.i_d2 = NumericUpDown29.Value '80
+                    g.i_d1 = NumericUpDown28.Value
+                    g.i_d2 = NumericUpDown29.Value
                     g.i_p1 = numericUpDown12.Value / 100
                     g.i_p2 = numericUpDown13.Value / 100
                     g.i_grp = 7
                 Case g.dia >= NumericUpDown29.Value And g.dia < NumericUpDown35.Value
-                    g.i_d1 = NumericUpDown29.Value      '
-                    g.i_d2 = NumericUpDown35.Value      '
+                    g.i_d1 = NumericUpDown29.Value
+                    g.i_d2 = NumericUpDown35.Value
                     g.i_p1 = numericUpDown13.Value / 100
                     g.i_p2 = NumericUpDown38.Value / 100
                     g.i_grp = 8
                 Case g.dia >= NumericUpDown35.Value And g.dia < NumericUpDown36.Value
-                    g.i_d1 = NumericUpDown35.Value  '
-                    g.i_d2 = NumericUpDown36.Value  '
+                    g.i_d1 = NumericUpDown35.Value
+                    g.i_d2 = NumericUpDown36.Value
                     g.i_p1 = NumericUpDown38.Value / 100
                     g.i_p2 = NumericUpDown39.Value / 100
                     g.i_grp = 9
                 Case g.dia >= NumericUpDown36.Value And g.dia < NumericUpDown37.Value
-                    g.i_d1 = NumericUpDown36.Value  '
-                    g.i_d2 = NumericUpDown37.Value  '
+                    g.i_d1 = NumericUpDown36.Value
+                    g.i_d2 = NumericUpDown37.Value
                     g.i_p1 = NumericUpDown39.Value / 100
                     g.i_p2 = NumericUpDown40.Value / 100
                     g.i_grp = 10
-                Case Else
-                    g.i_d1 = NumericUpDown37.Value  '
-                    g.i_d2 = g.i_d1 * 1.1
-                    g.i_p1 = NumericUpDown40.Value / 100
-                    g.i_p2 = 1.0
+                Case g.dia >= NumericUpDown37.Value And g.dia < NumericUpDown51.Value
+                    g.i_d1 = NumericUpDown37.Value          'Diameter small
+                    g.i_d2 = NumericUpDown51.Value          'Diameter big
+                    g.i_p1 = NumericUpDown40.Value / 100    'User lower input percentage
+                    g.i_p2 = NumericUpDown48.Value / 100    'User upper input percentage
                     g.i_grp = 11
+                Case Else
+                    g.i_d1 = NumericUpDown51.Value          'Diameter small [mu]
+                    g.i_d2 = 1000                           'Diameter big [mu]
+                    g.i_p1 = NumericUpDown48.Value / 100    'User lower input percentage
+                    g.i_p2 = 0                              'User upper input percentage
+                    g.i_grp = 12
             End Select
 
             Dim w(11) As Double  'Individual particle class weights
