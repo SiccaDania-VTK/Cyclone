@@ -236,6 +236,7 @@ Public Class Form1
         DataGridView1.Rows.Clear()
         DataGridView1.Rows.Add(23)
         DataGridView1.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.DisplayedCells
+        DataGridView1.RowHeadersVisible = False
 
         'Initialize the arrays in the struct
         For i = 0 To _cees.Length - 1
@@ -2699,6 +2700,8 @@ Public Class Form1
         DataGridView6.Rows.Clear()
         DataGridView6.Rows.Add(start_screen_psd.Length - 1)
         DataGridView6.EnableHeadersVisualStyles = False           'For backcolor
+        DataGridView6.RowHeadersVisible = False
+
 
         DataGridView6.Columns(0).HeaderText = "Dia [um]"
         DataGridView6.Columns(1).HeaderText = "Cumm [%]"
