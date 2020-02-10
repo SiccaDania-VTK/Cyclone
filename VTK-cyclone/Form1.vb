@@ -118,6 +118,7 @@ Public Class Form1
     Public _istep As Double                 '[mu] Particle size calculation step
     Public _cees(20) As Input_struct        '20 Case's data
     Dim k41 As Double                       'sum loss abs (for DataGridView1)
+    Dim init As Boolean = False             'Initialize done
 
     'Type AC;Inlaatbreedte;Inlaathoogte;Inlaatlengte;Inlaat hartmaat;Inlaat afschuining;
     'Uitlaat keeldia inw.;Uitlaat flensdiameter inw.;Lengte insteekpijp inw.;
@@ -399,10 +400,10 @@ Public Class Form1
 
         Calc_sequence()
         Build_dgv6()        'PSD input grid
-
+        init = True         'init is now done
     End Sub
 
-    Private Sub Button1_Click(sender As Object, e As EventArgs) Handles button1.Click, TabPage1.Enter, numericUpDown3.ValueChanged, numericUpDown2.ValueChanged, numericUpDown14.ValueChanged, NumericUpDown1.ValueChanged, numericUpDown5.ValueChanged, NumericUpDown20.ValueChanged, NumericUpDown19.ValueChanged, NumericUpDown18.ValueChanged, ComboBox1.SelectedIndexChanged, numericUpDown9.ValueChanged, numericUpDown8.ValueChanged, numericUpDown7.ValueChanged, numericUpDown6.ValueChanged, numericUpDown12.ValueChanged, numericUpDown11.ValueChanged, numericUpDown10.ValueChanged, numericUpDown13.ValueChanged, NumericUpDown4.ValueChanged, NumericUpDown29.ValueChanged, NumericUpDown28.ValueChanged, NumericUpDown27.ValueChanged, NumericUpDown26.ValueChanged, NumericUpDown25.ValueChanged, NumericUpDown24.ValueChanged, NumericUpDown23.ValueChanged, NumericUpDown15.ValueChanged, NumericUpDown34.ValueChanged, NumericUpDown33.ValueChanged, ComboBox2.SelectedIndexChanged, NumericUpDown40.ValueChanged, NumericUpDown39.ValueChanged, NumericUpDown38.ValueChanged, NumericUpDown37.ValueChanged, NumericUpDown36.ValueChanged, NumericUpDown35.ValueChanged, NumericUpDown43.ValueChanged, NumericUpDown22.ValueChanged, CheckBox3.CheckedChanged, CheckBox2.CheckedChanged
+    Private Sub Button1_Click(sender As Object, e As EventArgs) Handles button1.Click, TabPage1.Enter, numericUpDown3.ValueChanged, numericUpDown2.ValueChanged, numericUpDown14.ValueChanged, NumericUpDown1.ValueChanged, numericUpDown5.ValueChanged, NumericUpDown20.ValueChanged, NumericUpDown19.ValueChanged, NumericUpDown18.ValueChanged, ComboBox1.SelectedIndexChanged, NumericUpDown4.ValueChanged, NumericUpDown34.ValueChanged, NumericUpDown33.ValueChanged, ComboBox2.SelectedIndexChanged, NumericUpDown43.ValueChanged, NumericUpDown22.ValueChanged, CheckBox3.CheckedChanged, CheckBox2.CheckedChanged
         Calc_sequence()
     End Sub
 
@@ -437,7 +438,7 @@ Public Class Form1
         '--------- ratio  Nm2 and Am3 ---------
         ratio = _cees(ks).Ro_gas1_Nm3 / _cees(ks).Ro_gas1_Am3
         _cees(ks).dust1_Am3 = NumericUpDown4.Value                    'gram/Am3
-        _cees(ks).dust1_Nm3 = _cees(ks).dust1_Am3 * ratio               'gram/Nm3
+        _cees(ks).dust1_Nm3 = _cees(ks).dust1_Am3 * ratio             'gram/Nm3
 
         '--------- present -------------
         TextBox132.Text = _cees(ks).dust1_Nm3.ToString("F2")          'gram/Nm3
@@ -778,7 +779,7 @@ Public Class Form1
         _cees(c_nr).Ct2 = ComboBox2.SelectedIndex               'Cyclone type Stage #2
         _cees(c_nr).Noc1 = CInt(NumericUpDown20.Value)          'Cyclone in parallel
         _cees(c_nr).Noc2 = CInt(NumericUpDown33.Value)          'Cyclone in parallel
-        _cees(c_nr).db1 = numericUpDown13.Value                 'Diameter cyclone Stage #1
+        _cees(c_nr).db1 = numericUpDown5.Value                  'Diameter cyclone Stage #1
         _cees(c_nr).db2 = NumericUpDown34.Value                 'Diameter cyclone Stage #2
         _cees(c_nr).ro_gas = numericUpDown3.Value               'Density [kg/hr]
         _cees(c_nr).ro_solid = numericUpDown2.Value             'Density [kg/hr]
@@ -788,46 +789,59 @@ Public Class Form1
 
 
         '[mu] Class upper particle diameter limit diameter
-        _cees(c_nr).dia_big(0) = NumericUpDown15.Value   '10
-        _cees(c_nr).dia_big(1) = NumericUpDown23.Value   '15
-        _cees(c_nr).dia_big(2) = NumericUpDown24.Value   '20
-        _cees(c_nr).dia_big(3) = NumericUpDown25.Value   '30
-        _cees(c_nr).dia_big(4) = NumericUpDown26.Value   '40
-        _cees(c_nr).dia_big(5) = NumericUpDown27.Value   '50
-        _cees(c_nr).dia_big(6) = NumericUpDown28.Value   '60
-        _cees(c_nr).dia_big(7) = NumericUpDown29.Value   '80
-        _cees(c_nr).dia_big(8) = NumericUpDown35.Value   '50
-        _cees(c_nr).dia_big(9) = NumericUpDown36.Value   '60
-        _cees(c_nr).dia_big(10) = NumericUpDown37.Value  '80
+        '_cees(c_nr).dia_big(0) = _cees(c_nr).dia_big(0)   '10
+        '_cees(c_nr).dia_big(1) = _cees(c_nr).dia_big(1)   '15
+        '_cees(c_nr).dia_big(2) = _cees(c_nr).class_load(2).Value   '20
+        '_cees(c_nr).dia_big(3) = _cees(c_nr).class_load(3).Value   '30
+        '_cees(c_nr).dia_big(4) = _cees(c_nr).class_load(4).Value   '40
+        '_cees(c_nr).dia_big(5) = _cees(c_nr).class_load(5).Value   '50
+        '_cees(c_nr).dia_big(6) = _cees(c_nr).class_load(6).Value   '60
+        '_cees(c_nr).dia_big(7) = _cees(c_nr).class_load(7).Value   '80
+        '_cees(c_nr).dia_big(8) = _cees(c_nr).class_load(8).Value   '50
+        '_cees(c_nr).dia_big(9) = _cees(c_nr).class_load(9).Value   '60
+        '_cees(c_nr).dia_big(10) = _cees(c_nr).class_load(10).Value  '80
 
 
         'Percentale van de inlaat stof belasting [%]
-        _cees(c_nr).class_load(0) = numericUpDown6.Value / 100
-        _cees(c_nr).class_load(1) = numericUpDown7.Value / 100
-        _cees(c_nr).class_load(2) = numericUpDown8.Value / 100
-        _cees(c_nr).class_load(3) = numericUpDown9.Value / 100
-        _cees(c_nr).class_load(4) = numericUpDown10.Value / 100
-        _cees(c_nr).class_load(5) = numericUpDown11.Value / 100
-        _cees(c_nr).class_load(6) = numericUpDown12.Value / 100
-        _cees(c_nr).class_load(7) = numericUpDown13.Value / 100
-        _cees(c_nr).class_load(8) = NumericUpDown38.Value / 100
-        _cees(c_nr).class_load(9) = NumericUpDown39.Value / 100
-        _cees(c_nr).class_load(10) = NumericUpDown40.Value / 100
+        '_cees(c_nr).class_load(0) = _cees(c_nr).class_load(0) / 100
+        '_cees(c_nr).class_load(1) = _cees(c_nr).class_load(1).Value / 100
+        '_cees(c_nr).class_load(2) = _cees(c_nr).class_load(2).Value / 100
+        '_cees(c_nr).class_load(3) = _cees(c_nr).class_load(3).Value / 100
+        '_cees(c_nr).class_load(4) = numericUpDown10.Value / 100
+        '_cees(c_nr).class_load(5) = numericUpDown11.Value / 100
+        '_cees(c_nr).class_load(6) = numericUpDown12.Value / 100
+        '_cees(c_nr).class_load(7) = numericUpDown13.Value / 100
+        '_cees(c_nr).class_load(8) = NumericUpDown38.Value / 100
+        '_cees(c_nr).class_load(9) = NumericUpDown39.Value / 100
+        '_cees(c_nr).class_load(10) = NumericUpDown40.Value / 100
 
+
+        If init = False Then Exit Sub
+
+        For row = 0 To _cees(c_nr).dia_big.Count - 1
+            Debug.WriteLine("line 820")
+            If DataGridView6.Rows(row).Cells(0).Value.ToString = "" Then DataGridView6.Rows(row).Cells(0).Value = 0
+
+            _cees(c_nr).dia_big(row) = CDbl(DataGridView6.Rows(row).Cells(0).Value)
+            _cees(c_nr).class_load(row) = CDbl(DataGridView6.Rows(row).Cells(1).Value) / 100
+        Next
 
         '-------- Check -- bigger diameter must have bigger cummulative weight
-        numericUpDown6.BackColor = CType(IIf(numericUpDown6.Value > numericUpDown7.Value, Color.LightGreen, Color.Red), Color)
-        numericUpDown7.BackColor = CType(IIf(numericUpDown7.Value > numericUpDown8.Value, Color.LightGreen, Color.Red), Color)
-        numericUpDown8.BackColor = CType(IIf(numericUpDown8.Value > numericUpDown9.Value, Color.LightGreen, Color.Red), Color)
-        numericUpDown9.BackColor = CType(IIf(numericUpDown9.Value > numericUpDown10.Value, Color.LightGreen, Color.Red), Color)
-        numericUpDown10.BackColor = CType(IIf(numericUpDown10.Value > numericUpDown11.Value, Color.LightGreen, Color.Red), Color)
-        numericUpDown11.BackColor = CType(IIf(numericUpDown11.Value > numericUpDown12.Value, Color.LightGreen, Color.Red), Color)
-        numericUpDown12.BackColor = CType(IIf(numericUpDown12.Value > numericUpDown13.Value, Color.LightGreen, Color.Red), Color)
-        numericUpDown13.BackColor = CType(IIf(numericUpDown13.Value > NumericUpDown38.Value, Color.LightGreen, Color.Red), Color)
-        NumericUpDown38.BackColor = CType(IIf(NumericUpDown38.Value > NumericUpDown39.Value, Color.LightGreen, Color.Red), Color)
-        NumericUpDown39.BackColor = CType(IIf(NumericUpDown39.Value > NumericUpDown40.Value, Color.LightGreen, Color.Red), Color)
-        NumericUpDown40.BackColor = CType(IIf(NumericUpDown40.Value > NumericUpDown48.Value, Color.LightGreen, Color.Red), Color)
-        NumericUpDown48.BackColor = CType(IIf(NumericUpDown48.Value >= 0, Color.LightGreen, Color.Red), Color)
+
+        'numericUpDown6.BackColor = CType(IIf(_cees(c_nr).class_load(0) > _cees(c_nr).class_load(1).Value, Color.LightGreen, Color.Red), Color)
+        '_cees(c_nr).class_load(1).BackColor = CType(IIf(_cees(c_nr).class_load(1).Value > _cees(c_nr).class_load(2).Value, Color.LightGreen, Color.Red), Color)
+        '_cees(c_nr).class_load(2).BackColor = CType(IIf(_cees(c_nr).class_load(2).Value > _cees(c_nr).class_load(3).Value, Color.LightGreen, Color.Red), Color)
+        '_cees(c_nr).class_load(3).BackColor = CType(IIf(_cees(c_nr).class_load(3).Value > numericUpDown10.Value, Color.LightGreen, Color.Red), Color)
+        'numericUpDown10.BackColor = CType(IIf(numericUpDown10.Value > numericUpDown11.Value, Color.LightGreen, Color.Red), Color)
+        'numericUpDown11.BackColor = CType(IIf(numericUpDown11.Value > numericUpDown12.Value, Color.LightGreen, Color.Red), Color)
+        'numericUpDown12.BackColor = CType(IIf(numericUpDown12.Value > numericUpDown13.Value, Color.LightGreen, Color.Red), Color)
+        'numericUpDown13.BackColor = CType(IIf(numericUpDown13.Value > NumericUpDown38.Value, Color.LightGreen, Color.Red), Color)
+        'NumericUpDown38.BackColor = CType(IIf(NumericUpDown38.Value > NumericUpDown39.Value, Color.LightGreen, Color.Red), Color)
+        'NumericUpDown39.BackColor = CType(IIf(NumericUpDown39.Value > NumericUpDown40.Value, Color.LightGreen, Color.Red), Color)
+        'NumericUpDown40.BackColor = CType(IIf(NumericUpDown40.Value > NumericUpDown48.Value, Color.LightGreen, Color.Red), Color)
+        'NumericUpDown48.BackColor = CType(IIf(NumericUpDown48.Value >= 0, Color.LightGreen, Color.Red), Color)
+
+        Debug.WriteLine("Fill_array_from_screen DONE")
     End Sub
     '-------- Bereken het verlies getal NIET gecorrigeerd -----------
     '----- de input is de GEMIDDELDE korrel grootte-----------
@@ -1260,7 +1274,7 @@ Public Class Form1
     Private Sub Button3_Click(sender As Object, e As EventArgs) Handles Button3.Click
         'Save the project data to file
         'Return to case 0, save data to file, return to previous selected case
-
+        Debug.WriteLine("Save to file ")
         If TextBox28.Text.Trim.Length > 0 And TextBox29.Text.Trim.Length > 0 Then
             Save_present_case_to_array()            'Store data in array
             Save_to_disk()                          'Store project on disk
@@ -1314,6 +1328,7 @@ Public Class Form1
         Catch ex As Exception
             MessageBox.Show("Line 6298, " & ex.Message)  ' Show the exception's message.
         End Try
+        Debug.WriteLine("Save_to_disk() ")
     End Sub
     Private Sub Retrieve_from_disk()
         Dim bf As New System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
@@ -1848,7 +1863,7 @@ Public Class Form1
         '------ the idea is that the smallest diameter cyclone determines
         '------ the smallest particle diameter used in the calculation
         '------ for the stage #1 cyclone
-        If numericUpDown5.Value > NumericUpDown35.Value Then
+        If numericUpDown5.Value > _cees(ks).class_load(8) Then
             _cees(ks).stage1(0).dia = Calc_dia_particle(1.0, _cees(ks).Kstokes2, 2) 'stage #2 cyclone
         Else
             _cees(ks).stage1(0).dia = Calc_dia_particle(1.0, _cees(ks).Kstokes1, 1) 'stage #1 cyclone
@@ -1860,7 +1875,7 @@ Public Class Form1
         Calc_verlies_corrected(_cees(ks).stage1(0), 1)                                '[-] loss overall corrected
         _cees(ks).stage1(0).catch_chart = (1 - _cees(ks).stage1(i).loss_overall_C) * 100     '[%]
 
-        Size_classification(_cees(ks).stage1(0))                                    'Classify this part size
+        Size_classification(_cees(ks).stage1(0), ks)                                    'Classify this part size
         Calc_k_and_m(_cees(ks).stage1(0))
 
         _cees(ks).stage1(0).psd_cum = Math.E ^ (-((_cees(ks).stage1(i).dia / _cees(ks).stage1(i).i_m) ^ _cees(ks).stage1(i).i_k))
@@ -1912,7 +1927,7 @@ Public Class Form1
             Else
                 _cees(ks).stage1(i).catch_chart = (1 - _cees(ks).stage1(i).loss_overall) * 100    '[%] NOT corrected
             End If
-            Size_classification(_cees(ks).stage1(i))                                   'Classify this part size
+            Size_classification(_cees(ks).stage1(i), ks)                                   'Classify this part size
 
             '====to prevent silly results====
             If _cees(ks).stage1(i).i_grp <> 11 Then
@@ -2007,7 +2022,7 @@ Public Class Form1
         _cees(ks).stage2(0).loss_overall = Calc_verlies(_cees(ks).stage2(0).d_ave_K, False, _cees(ks).Kstokes2, 2)     '[-] loss overall
         Calc_verlies_corrected(_cees(ks).stage2(0), 2)                               '[-] loss overall corrected
         _cees(ks).stage2(0).catch_chart = (1 - _cees(ks).stage2(0).loss_overall_C) * 100    '[%]
-        Size_classification(_cees(ks).stage2(0))                                  'groepnummer
+        Size_classification(_cees(ks).stage2(0), ks)                                  'groepnummer
 
         If _cees(ks).stage2(i).i_grp <> 11 Then
             Calc_k_and_m(_cees(ks).stage2(0))
@@ -2066,7 +2081,7 @@ Public Class Form1
             End If
 
 
-            Size_classification(_cees(ks).stage2(i))                                     'Calc
+            Size_classification(_cees(ks).stage2(i), ks)                                     'Calc
             _cees(ks).stage2(i).i_grp = _cees(ks).stage1(i).i_grp
 
             If _cees(ks).stage2(i).i_grp <> 11 Then
@@ -2128,103 +2143,103 @@ Public Class Form1
     End Sub
     'Determine the particle diameter class upper and lower limits
     ' Private Function Size_classification(dia As Double, noi As Integer) As Double
-    Public Sub Size_classification(ByRef g As GvG_Calc_struct)
+    Public Sub Size_classification(ByRef g As GvG_Calc_struct, c_nr As Integer)
         If g.dia > 0 Then
             Select Case True
-                Case g.dia < NumericUpDown15.Value      '0-0.3 [mu]
+                Case g.dia < _cees(c_nr).dia_big(0)      '0-0.3 [mu]
                     g.i_d1 = 0.001                      'Diameter small [mu]
-                    g.i_d2 = NumericUpDown15.Value      'Diameter big [mu]
-                    g.i_p1 = numericUpDown6.Value / 100 'User lower input percentage
-                    g.i_p1 = numericUpDown7.Value / 100 'User upper input percentage
+                    g.i_d2 = _cees(c_nr).dia_big(0)      'Diameter big [mu]
+                    g.i_p1 = _cees(c_nr).class_load(0) / 100 'User lower input percentage
+                    g.i_p1 = _cees(c_nr).class_load(1) / 100 'User upper input percentage
                     g.i_grp = 0
-                Case g.dia >= NumericUpDown15.Value And g.dia < NumericUpDown23.Value   '>=10 and < 15
-                    g.i_d1 = NumericUpDown15.Value      'Diameter small [mu]
-                    g.i_d2 = NumericUpDown23.Value      'Diameter big [mu]
-                    g.i_p1 = numericUpDown6.Value / 100 'User lower input percentage
-                    g.i_p2 = numericUpDown7.Value / 100 'User upper input percentage
+                Case g.dia >= _cees(c_nr).dia_big(0) And g.dia < _cees(c_nr).dia_big(1)   '>=10 and < 15
+                    g.i_d1 = _cees(c_nr).dia_big(0)      'Diameter small [mu]
+                    g.i_d2 = _cees(c_nr).dia_big(1)      'Diameter big [mu]
+                    g.i_p1 = _cees(c_nr).class_load(0) / 100 'User lower input percentage
+                    g.i_p2 = _cees(c_nr).class_load(1) / 100 'User upper input percentage
                     g.i_grp = 1
-                Case g.dia >= NumericUpDown23.Value And g.dia < NumericUpDown24.Value
-                    g.i_d1 = NumericUpDown23.Value      'Diameter small [mu]
-                    g.i_d2 = NumericUpDown24.Value      'Diameter big [mu]
-                    g.i_p1 = numericUpDown7.Value / 100 'User lower input percentage
-                    g.i_p2 = numericUpDown8.Value / 100 'User upper input percentage
+                Case g.dia >= _cees(c_nr).dia_big(1) And g.dia < _cees(c_nr).dia_big(2)
+                    g.i_d1 = _cees(c_nr).dia_big(1)      'Diameter small [mu]
+                    g.i_d2 = _cees(c_nr).dia_big(2)     'Diameter big [mu]
+                    g.i_p1 = _cees(c_nr).class_load(1) / 100 'User lower input percentage
+                    g.i_p2 = _cees(c_nr).class_load(2) / 100 'User upper input percentage
                     g.i_grp = 2
-                Case g.dia >= NumericUpDown24.Value And g.dia < NumericUpDown25.Value
-                    g.i_d1 = NumericUpDown24.Value
-                    g.i_d2 = NumericUpDown25.Value
-                    g.i_p1 = numericUpDown8.Value / 100
-                    g.i_p2 = numericUpDown9.Value / 100
+                Case g.dia >= _cees(c_nr).dia_big(2) And g.dia < _cees(c_nr).dia_big(3)
+                    g.i_d1 = _cees(c_nr).dia_big(2)
+                    g.i_d2 = _cees(c_nr).dia_big(3)
+                    g.i_p1 = _cees(c_nr).class_load(2) / 100
+                    g.i_p2 = _cees(c_nr).class_load(3) / 100
                     g.i_grp = 3
-                Case g.dia >= NumericUpDown25.Value And g.dia < NumericUpDown26.Value
-                    g.i_d1 = NumericUpDown25.Value
-                    g.i_d2 = NumericUpDown26.Value
-                    g.i_p1 = numericUpDown9.Value / 100
-                    g.i_p2 = numericUpDown10.Value / 100
+                Case g.dia >= _cees(c_nr).dia_big(3) And g.dia < _cees(c_nr).dia_big(4)
+                    g.i_d1 = _cees(c_nr).dia_big(3)
+                    g.i_d2 = _cees(c_nr).dia_big(4)
+                    g.i_p1 = _cees(c_nr).class_load(3) / 100
+                    g.i_p2 = _cees(c_nr).class_load(4) / 100
                     g.i_grp = 4
-                Case g.dia >= NumericUpDown26.Value And g.dia < NumericUpDown27.Value
-                    g.i_d1 = NumericUpDown26.Value
-                    g.i_d2 = NumericUpDown27.Value
-                    g.i_p1 = numericUpDown10.Value / 100
-                    g.i_p2 = numericUpDown11.Value / 100
+                Case g.dia >= _cees(c_nr).dia_big(4) And g.dia < _cees(c_nr).dia_big(5)
+                    g.i_d1 = _cees(c_nr).dia_big(4)
+                    g.i_d2 = _cees(c_nr).dia_big(5)
+                    g.i_p1 = _cees(c_nr).class_load(4) / 100
+                    g.i_p2 = _cees(c_nr).class_load(5) / 100
                     g.i_grp = 5
-                Case g.dia >= NumericUpDown27.Value And g.dia < NumericUpDown28.Value
-                    g.i_d1 = NumericUpDown27.Value
-                    g.i_d2 = NumericUpDown28.Value
-                    g.i_p1 = numericUpDown11.Value / 100
-                    g.i_p2 = numericUpDown12.Value / 100
+                Case g.dia >= _cees(c_nr).dia_big(5) And g.dia < _cees(c_nr).dia_big(6)
+                    g.i_d1 = _cees(c_nr).dia_big(5)
+                    g.i_d2 = _cees(c_nr).dia_big(6)
+                    g.i_p1 = _cees(c_nr).class_load(5) / 100
+                    g.i_p2 = _cees(c_nr).class_load(6) / 100
                     g.i_grp = 6
-                Case g.dia >= NumericUpDown28.Value And g.dia < NumericUpDown29.Value
-                    g.i_d1 = NumericUpDown28.Value
-                    g.i_d2 = NumericUpDown29.Value
-                    g.i_p1 = numericUpDown12.Value / 100
-                    g.i_p2 = numericUpDown13.Value / 100
+                Case g.dia >= _cees(c_nr).dia_big(6) And g.dia < _cees(c_nr).dia_big(7)
+                    g.i_d1 = _cees(c_nr).dia_big(6)
+                    g.i_d2 = _cees(c_nr).dia_big(7)
+                    g.i_p1 = _cees(c_nr).class_load(6) / 100
+                    g.i_p2 = _cees(c_nr).class_load(7) / 100
                     g.i_grp = 7
-                Case g.dia >= NumericUpDown29.Value And g.dia < NumericUpDown35.Value
-                    g.i_d1 = NumericUpDown29.Value
-                    g.i_d2 = NumericUpDown35.Value
-                    g.i_p1 = numericUpDown13.Value / 100
-                    g.i_p2 = NumericUpDown38.Value / 100
+                Case g.dia >= _cees(c_nr).dia_big(7) And g.dia < _cees(c_nr).dia_big(8)
+                    g.i_d1 = _cees(c_nr).dia_big(7)
+                    g.i_d2 = _cees(c_nr).dia_big(8)
+                    g.i_p1 = _cees(c_nr).class_load(7) / 100
+                    g.i_p2 = _cees(c_nr).class_load(8) / 100
                     g.i_grp = 8
-                Case g.dia >= NumericUpDown35.Value And g.dia < NumericUpDown36.Value
-                    g.i_d1 = NumericUpDown35.Value
-                    g.i_d2 = NumericUpDown36.Value
-                    g.i_p1 = NumericUpDown38.Value / 100
-                    g.i_p2 = NumericUpDown39.Value / 100
+                Case g.dia >= _cees(c_nr).dia_big(8) And g.dia < _cees(c_nr).dia_big(9)
+                    g.i_d1 = _cees(c_nr).dia_big(8)
+                    g.i_d2 = _cees(c_nr).dia_big(9)
+                    g.i_p1 = _cees(c_nr).class_load(8) / 100
+                    g.i_p2 = _cees(c_nr).class_load(9) / 100
                     g.i_grp = 9
-                Case g.dia >= NumericUpDown36.Value And g.dia < NumericUpDown37.Value
-                    g.i_d1 = NumericUpDown36.Value
-                    g.i_d2 = NumericUpDown37.Value
-                    g.i_p1 = NumericUpDown39.Value / 100
-                    g.i_p2 = NumericUpDown40.Value / 100
+                Case g.dia >= _cees(c_nr).dia_big(9) And g.dia < _cees(c_nr).dia_big(10)
+                    g.i_d1 = _cees(c_nr).dia_big(9)
+                    g.i_d2 = _cees(c_nr).dia_big(10)
+                    g.i_p1 = _cees(c_nr).class_load(9) / 100
+                    g.i_p2 = _cees(c_nr).class_load(10) / 100
                     g.i_grp = 10
-                Case g.dia >= NumericUpDown37.Value And g.dia < NumericUpDown51.Value
-                    g.i_d1 = NumericUpDown37.Value          'Diameter small
-                    g.i_d2 = NumericUpDown51.Value          'Diameter big
-                    g.i_p1 = NumericUpDown40.Value / 100    'User lower input percentage
-                    g.i_p2 = NumericUpDown48.Value / 100    'User upper input percentage
+                Case g.dia >= _cees(c_nr).dia_big(10) And g.dia < _cees(c_nr).dia_big(11)
+                    g.i_d1 = _cees(c_nr).dia_big(10)     'Diameter small
+                    g.i_d2 = _cees(c_nr).dia_big(11)          'Diameter big
+                    g.i_p1 = _cees(c_nr).class_load(10) / 100    'User lower input percentage
+                    g.i_p2 = _cees(c_nr).class_load(11) / 100    'User upper input percentage
                     g.i_grp = 11
                 Case Else
-                    g.i_d1 = NumericUpDown51.Value          'Diameter small [mu]
-                    g.i_d2 = 1000                           'Diameter big [mu]
-                    g.i_p1 = NumericUpDown48.Value / 100    'User lower input percentage
-                    g.i_p2 = 0                              'User upper input percentage
+                    g.i_d1 = _cees(c_nr).dia_big(11)            'Diameter small [mu]
+                    g.i_d2 = 1000                               'Diameter big [mu]
+                    g.i_p1 = _cees(c_nr).class_load(11) / 100   'User lower input percentage
+                    g.i_p2 = 0                                  'User upper input percentage
                     g.i_grp = 12
             End Select
 
             Dim w(11) As Double  'Individual particle class weights
 
-            w(0) = NumericUpDown48.Value
-            w(1) = NumericUpDown40.Value - w(0)
-            w(2) = NumericUpDown39.Value - w(1) - w(0)
-            w(3) = NumericUpDown38.Value - w(2) - w(1) - w(0)
-            w(4) = numericUpDown13.Value - w(3) - w(2) - w(1) - w(0)
-            w(5) = numericUpDown12.Value - w(4) - w(3) - w(2) - w(1) - w(0)
-            w(6) = numericUpDown11.Value - w(5) - w(4) - w(3) - w(2) - w(1) - w(0)
-            w(7) = numericUpDown10.Value - w(6) - w(5) - w(4) - w(3) - w(2) - w(1) - w(0)
-            w(8) = numericUpDown9.Value - w(7) - w(6) - w(5) - w(4) - w(3) - w(2) - w(1) - w(0)
-            w(9) = numericUpDown8.Value - w(8) - w(7) - w(6) - w(5) - w(4) - w(3) - w(2) - w(1) - w(0)
-            w(10) = numericUpDown7.Value - w(9) - w(8) - w(7) - w(6) - w(5) - w(4) - w(3) - w(2) - w(1) - w(0)
-            w(11) = numericUpDown6.Value - w(10) - w(9) - w(8) - w(7) - w(6) - w(5) - w(4) - w(3) - w(2) - w(1) - w(0)
+            w(0) = _cees(c_nr).class_load(11)
+            w(1) = _cees(c_nr).class_load(10) - w(0)
+            w(2) = _cees(c_nr).class_load(9) - w(1) - w(0)
+            w(3) = _cees(c_nr).class_load(8) - w(2) - w(1) - w(0)
+            w(4) = _cees(c_nr).class_load(7) - w(3) - w(2) - w(1) - w(0)
+            w(5) = _cees(c_nr).class_load(6) - w(4) - w(3) - w(2) - w(1) - w(0)
+            w(6) = _cees(c_nr).class_load(5) - w(5) - w(4) - w(3) - w(2) - w(1) - w(0)
+            w(7) = _cees(c_nr).class_load(4) - w(6) - w(5) - w(4) - w(3) - w(2) - w(1) - w(0)
+            w(8) = _cees(c_nr).class_load(3) - w(7) - w(6) - w(5) - w(4) - w(3) - w(2) - w(1) - w(0)
+            w(9) = _cees(c_nr).class_load(2) - w(8) - w(7) - w(6) - w(5) - w(4) - w(3) - w(2) - w(1) - w(0)
+            w(10) = _cees(c_nr).class_load(1) - w(9) - w(8) - w(7) - w(6) - w(5) - w(4) - w(3) - w(2) - w(1) - w(0)
+            w(11) = _cees(c_nr).class_load(0) - w(10) - w(9) - w(8) - w(7) - w(6) - w(5) - w(4) - w(3) - w(2) - w(1) - w(0)
 
             TextBox50.Text = w(11).ToString("0.0")
             TextBox49.Text = w(10).ToString("0.0")
@@ -2239,18 +2254,18 @@ Public Class Form1
             TextBox154.Text = w(1).ToString("0.0")
 
             '-------- Check -- bigger diameter must have bigger cummulative weight
-            NumericUpDown15.BackColor = CType(IIf(NumericUpDown15.Value > 0, Color.LightGreen, Color.Red), Color)
-            NumericUpDown23.BackColor = CType(IIf(NumericUpDown23.Value >= NumericUpDown15.Value, Color.LightGreen, Color.Red), Color)
-            NumericUpDown24.BackColor = CType(IIf(NumericUpDown24.Value >= NumericUpDown23.Value, Color.LightGreen, Color.Red), Color)
-            NumericUpDown25.BackColor = CType(IIf(NumericUpDown25.Value >= NumericUpDown24.Value, Color.LightGreen, Color.Red), Color)
-            NumericUpDown26.BackColor = CType(IIf(NumericUpDown26.Value >= NumericUpDown25.Value, Color.LightGreen, Color.Red), Color)
-            NumericUpDown27.BackColor = CType(IIf(NumericUpDown27.Value >= NumericUpDown26.Value, Color.LightGreen, Color.Red), Color)
-            NumericUpDown28.BackColor = CType(IIf(NumericUpDown28.Value >= NumericUpDown27.Value, Color.LightGreen, Color.Red), Color)
-            NumericUpDown29.BackColor = CType(IIf(NumericUpDown29.Value >= NumericUpDown28.Value, Color.LightGreen, Color.Red), Color)
-            NumericUpDown35.BackColor = CType(IIf(NumericUpDown35.Value >= NumericUpDown29.Value, Color.LightGreen, Color.Red), Color)
-            NumericUpDown36.BackColor = CType(IIf(NumericUpDown36.Value >= NumericUpDown35.Value, Color.LightGreen, Color.Red), Color)
-            NumericUpDown37.BackColor = CType(IIf(NumericUpDown37.Value >= NumericUpDown36.Value, Color.LightGreen, Color.Red), Color)
-            NumericUpDown51.BackColor = CType(IIf(NumericUpDown51.Value >= NumericUpDown36.Value, Color.LightGreen, Color.Red), Color)
+            'NumericUpDown15.BackColor = CType(IIf(_cees(c_nr).dia_big(0) > 0, Color.LightGreen, Color.Red), Color)
+            'NumericUpDown23.BackColor = CType(IIf(_cees(c_nr).dia_big(1) >= _cees(c_nr).dia_big(0), Color.LightGreen, Color.Red), Color)
+            '_cees(c_nr).class_load(2).BackColor = CType(IIf(_cees(c_nr).class_load(2).Value >= _cees(c_nr).dia_big(1), Color.LightGreen, Color.Red), Color)
+            '_cees(c_nr).class_load(3).BackColor = CType(IIf(_cees(c_nr).class_load(3).Value >= _cees(c_nr).class_load(2).Value, Color.LightGreen, Color.Red), Color)
+            '_cees(c_nr).class_load(4).BackColor = CType(IIf(_cees(c_nr).class_load(4).Value >= _cees(c_nr).class_load(3).Value, Color.LightGreen, Color.Red), Color)
+            '_cees(c_nr).class_load(5).BackColor = CType(IIf(_cees(c_nr).class_load(5).Value >= _cees(c_nr).class_load(4).Value, Color.LightGreen, Color.Red), Color)
+            '_cees(c_nr).class_load(6).BackColor = CType(IIf(_cees(c_nr).class_load(6).Value >= _cees(c_nr).class_load(5).Value, Color.LightGreen, Color.Red), Color)
+            '_cees(c_nr).class_load(7).BackColor = CType(IIf(_cees(c_nr).class_load(7).Value >= _cees(c_nr).class_load(6).Value, Color.LightGreen, Color.Red), Color)
+            '_cees(c_nr).class_load(8).BackColor = CType(IIf(_cees(c_nr).class_load(8).Value >= _cees(c_nr).class_load(7).Value, Color.LightGreen, Color.Red), Color)
+            '_cees(c_nr).class_load(9).BackColor = CType(IIf(_cees(c_nr).class_load(9).Value >= _cees(c_nr).class_load(8).Value, Color.LightGreen, Color.Red), Color)
+            '_cees(c_nr).class_load(10).BackColor = CType(IIf(_cees(c_nr).class_load(10).Value >= _cees(c_nr).class_load(9).Value, Color.LightGreen, Color.Red), Color)
+            '_cees(c_nr).class_load(11).BackColor = CType(IIf(_cees(c_nr).class_load(11).Value >= _cees(c_nr).class_load(9).Value, Color.LightGreen, Color.Red), Color)
         Else
             'MessageBox.Show("Error in line 1946")
         End If
@@ -2379,6 +2394,7 @@ Public Class Form1
         cc = CInt(NumericUpDown30.Value)       'Case number
         TextBox24.Text &= "line 2267, save case to array nr" & cc.ToString & vbCrLf
         Fill_array_from_screen(cc)
+        Debug.WriteLine("Save_present_case_to_array")
     End Sub
 
     Private Sub NumericUpDown30_ValueChanged(sender As Object, e As EventArgs) Handles NumericUpDown30.ValueChanged
@@ -2405,7 +2421,7 @@ Public Class Form1
             ComboBox2.SelectedIndex = _cees(zz).Ct2                 'Cyclone type stage #2
 
             Chck_value(NumericUpDown20, _cees(zz).Noc1)              'Cyclone in parallel
-            Chck_value(numericUpDown13, CDec(_cees(zz).db1))         'Diameter cyclone body #1
+            Chck_value(numericUpDown5, CDec(_cees(zz).db1))          'Diameter cyclone body #1
             Chck_value(NumericUpDown34, CDec(_cees(zz).db2))         'Diameter cyclone body #2
             Chck_value(numericUpDown3, CDec(_cees(zz).ro_gas))       'Density [kg/hr]
             Chck_value(numericUpDown2, CDec(_cees(zz).ro_solid))     'Density [kg/hr]
@@ -2415,37 +2431,11 @@ Public Class Form1
             Chck_value(NumericUpDown19, CDec(p1_rel))                'Pressure [Pa abs]-->[mbar g]
 
             '[mu] Class upper particle diameter limit diameter
-            Chck_value(NumericUpDown15, CDec(_cees(zz).dia_big(0)))   '10
-            Chck_value(NumericUpDown23, CDec(_cees(zz).dia_big(1)))   '15
-            Chck_value(NumericUpDown24, CDec(_cees(zz).dia_big(2)))   '20
-            Chck_value(NumericUpDown25, CDec(_cees(zz).dia_big(3)))   '30
-            Chck_value(NumericUpDown26, CDec(_cees(zz).dia_big(4)))   '40
-            Chck_value(NumericUpDown27, CDec(_cees(zz).dia_big(5)))   '50
-            Chck_value(NumericUpDown28, CDec(_cees(zz).dia_big(6)))   '60
-            Chck_value(NumericUpDown29, CDec(_cees(zz).dia_big(7)))   '80
-
-            'addeed
-            Chck_value(NumericUpDown35, CDec(_cees(zz).dia_big(8)))   '40
-            Chck_value(NumericUpDown36, CDec(_cees(zz).dia_big(9)))   '50
-            Chck_value(NumericUpDown37, CDec(_cees(zz).dia_big(10)))   '60
-            Chck_value(NumericUpDown51, CDec(_cees(zz).dia_big(11)))   '80
-
-
-            'Percentage van de inlaat stof belasting
-            Chck_value(numericUpDown6, CDec(_cees(zz).class_load(0) * 100))
-            Chck_value(numericUpDown7, CDec(_cees(zz).class_load(1) * 100))
-            Chck_value(numericUpDown8, CDec(_cees(zz).class_load(2) * 100))
-            Chck_value(numericUpDown9, CDec(_cees(zz).class_load(3) * 100))
-            Chck_value(numericUpDown10, CDec(_cees(zz).class_load(4) * 100))
-            Chck_value(numericUpDown11, CDec(_cees(zz).class_load(5) * 100))
-            Chck_value(numericUpDown12, CDec(_cees(zz).class_load(6) * 100))
-            Chck_value(numericUpDown13, CDec(_cees(zz).class_load(7) * 100))
-
-            Chck_value(NumericUpDown38, CDec(_cees(zz).class_load(8) * 100))
-            Chck_value(NumericUpDown39, CDec(_cees(zz).class_load(9) * 100))
-            Chck_value(NumericUpDown40, CDec(_cees(zz).class_load(10) * 100))
-            Chck_value(NumericUpDown48, CDec(_cees(zz).class_load(11) * 100))
-
+            '[%] Percentage van de inlaat stof belasting
+            For row = 0 To _cees(zz).dia_big.Count - 1
+                DataGridView6.Rows(row).Cells(0).Value = _cees(zz).dia_big(row)
+                DataGridView6.Rows(row).Cells(1).Value = _cees(zz).class_load(row) * 100
+            Next
 
             Me.Refresh()
         End If
@@ -2702,9 +2692,8 @@ Public Class Form1
         DataGridView6.EnableHeadersVisualStyles = False           'For backcolor
         DataGridView6.RowHeadersVisible = False
 
-
-        DataGridView6.Columns(0).HeaderText = "Dia [um]"
-        DataGridView6.Columns(1).HeaderText = "Cumm [%]"
+        DataGridView6.Columns(0).HeaderText = "Upper Dia [um]"
+        DataGridView6.Columns(1).HeaderText = "Cumm [%] tot wght"
         DataGridView6.Columns(0).Width = 60
         DataGridView6.Columns(1).Width = 60
 
