@@ -787,38 +787,11 @@ Public Class Form1
         _cees(c_nr).p1_abs = 101325 + (NumericUpDown19.Value * 100)         'Pressure [Pa abs]
 
 
+        If init = False Then Exit Sub       'Prevent out of range error
+
         '[mu] Class upper particle diameter limit diameter
-        '_cees(c_nr).dia_big(0) = _cees(c_nr).dia_big(0)   '10
-        '_cees(c_nr).dia_big(1) = _cees(c_nr).dia_big(1)   '15
-        '_cees(c_nr).dia_big(2) = _cees(c_nr).class_load(2).Value   '20
-        '_cees(c_nr).dia_big(3) = _cees(c_nr).class_load(3).Value   '30
-        '_cees(c_nr).dia_big(4) = _cees(c_nr).class_load(4).Value   '40
-        '_cees(c_nr).dia_big(5) = _cees(c_nr).class_load(5).Value   '50
-        '_cees(c_nr).dia_big(6) = _cees(c_nr).class_load(6).Value   '60
-        '_cees(c_nr).dia_big(7) = _cees(c_nr).class_load(7).Value   '80
-        '_cees(c_nr).dia_big(8) = _cees(c_nr).class_load(8).Value   '50
-        '_cees(c_nr).dia_big(9) = _cees(c_nr).class_load(9).Value   '60
-        '_cees(c_nr).dia_big(10) = _cees(c_nr).class_load(10).Value  '80
-
-
         'Percentale van de inlaat stof belasting [%]
-        '_cees(c_nr).class_load(0) = _cees(c_nr).class_load(0) / 100
-        '_cees(c_nr).class_load(1) = _cees(c_nr).class_load(1).Value / 100
-        '_cees(c_nr).class_load(2) = _cees(c_nr).class_load(2).Value / 100
-        '_cees(c_nr).class_load(3) = _cees(c_nr).class_load(3).Value / 100
-        '_cees(c_nr).class_load(4) = numericUpDown10.Value / 100
-        '_cees(c_nr).class_load(5) = numericUpDown11.Value / 100
-        '_cees(c_nr).class_load(6) = numericUpDown12.Value / 100
-        '_cees(c_nr).class_load(7) = numericUpDown13.Value / 100
-        '_cees(c_nr).class_load(8) = NumericUpDown38.Value / 100
-        '_cees(c_nr).class_load(9) = NumericUpDown39.Value / 100
-        '_cees(c_nr).class_load(10) = NumericUpDown40.Value / 100
-
-
-        If init = False Then Exit Sub
-
         For row = 0 To _cees(c_nr).dia_big.Count - 1
-            Debug.WriteLine("line 820")
             If DataGridView6.Rows(row).Cells(0).Value.ToString = "" Then DataGridView6.Rows(row).Cells(0).Value = 0
 
             _cees(c_nr).dia_big(row) = CDbl(DataGridView6.Rows(row).Cells(0).Value)
@@ -840,7 +813,7 @@ Public Class Form1
         'NumericUpDown40.BackColor = CType(IIf(NumericUpDown40.Value > NumericUpDown48.Value, Color.LightGreen, Color.Red), Color)
         'NumericUpDown48.BackColor = CType(IIf(NumericUpDown48.Value >= 0, Color.LightGreen, Color.Red), Color)
 
-        Debug.WriteLine("Fill_array_from_screen DONE")
+
     End Sub
     '-------- Bereken het verlies getal NIET gecorrigeerd -----------
     '----- de input is de GEMIDDELDE korrel grootte-----------
@@ -1327,7 +1300,7 @@ Public Class Form1
         Catch ex As Exception
             MessageBox.Show("Line 6298, " & ex.Message)  ' Show the exception's message.
         End Try
-        Debug.WriteLine("Save_to_disk() ")
+        ' Debug.WriteLine("Save_to_disk() ")
     End Sub
     Private Sub Retrieve_from_disk()
         Dim bf As New System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
@@ -2144,83 +2117,84 @@ Public Class Form1
     ' Private Function Size_classification(dia As Double, noi As Integer) As Double
     Public Sub Size_classification(ByRef g As GvG_Calc_struct, c_nr As Integer)
         If g.dia > 0 Then
+
             Select Case True
-                Case g.dia < _cees(c_nr).dia_big(0)      '0-0.3 [mu]
+                Case g.dia < _cees(c_nr).dia_big(0)     '0-0.3 [mu]
                     g.i_d1 = 0.001                      'Diameter small [mu]
-                    g.i_d2 = _cees(c_nr).dia_big(0)      'Diameter big [mu]
-                    g.i_p1 = _cees(c_nr).class_load(0) / 100 'User lower input percentage
-                    g.i_p1 = _cees(c_nr).class_load(1) / 100 'User upper input percentage
+                    g.i_d2 = _cees(c_nr).dia_big(0)     'Diameter big [mu]
+                    g.i_p1 = _cees(c_nr).class_load(0)  'User lower input percentage
+                    g.i_p1 = _cees(c_nr).class_load(1)  'User upper input percentage
                     g.i_grp = 0
                 Case g.dia >= _cees(c_nr).dia_big(0) And g.dia < _cees(c_nr).dia_big(1)   '>=10 and < 15
-                    g.i_d1 = _cees(c_nr).dia_big(0)      'Diameter small [mu]
-                    g.i_d2 = _cees(c_nr).dia_big(1)      'Diameter big [mu]
-                    g.i_p1 = _cees(c_nr).class_load(0) / 100 'User lower input percentage
-                    g.i_p2 = _cees(c_nr).class_load(1) / 100 'User upper input percentage
+                    g.i_d1 = _cees(c_nr).dia_big(0)     'Diameter small [mu]
+                    g.i_d2 = _cees(c_nr).dia_big(1)     'Diameter big [mu]
+                    g.i_p1 = _cees(c_nr).class_load(0)  'User lower input percentage
+                    g.i_p2 = _cees(c_nr).class_load(1)  'User upper input percentage
                     g.i_grp = 1
                 Case g.dia >= _cees(c_nr).dia_big(1) And g.dia < _cees(c_nr).dia_big(2)
-                    g.i_d1 = _cees(c_nr).dia_big(1)      'Diameter small [mu]
+                    g.i_d1 = _cees(c_nr).dia_big(1)     'Diameter small [mu]
                     g.i_d2 = _cees(c_nr).dia_big(2)     'Diameter big [mu]
-                    g.i_p1 = _cees(c_nr).class_load(1) / 100 'User lower input percentage
-                    g.i_p2 = _cees(c_nr).class_load(2) / 100 'User upper input percentage
+                    g.i_p1 = _cees(c_nr).class_load(1)  'User lower input percentage
+                    g.i_p2 = _cees(c_nr).class_load(2)  'User upper input percentage
                     g.i_grp = 2
                 Case g.dia >= _cees(c_nr).dia_big(2) And g.dia < _cees(c_nr).dia_big(3)
                     g.i_d1 = _cees(c_nr).dia_big(2)
                     g.i_d2 = _cees(c_nr).dia_big(3)
-                    g.i_p1 = _cees(c_nr).class_load(2) / 100
-                    g.i_p2 = _cees(c_nr).class_load(3) / 100
+                    g.i_p1 = _cees(c_nr).class_load(2)
+                    g.i_p2 = _cees(c_nr).class_load(3)
                     g.i_grp = 3
                 Case g.dia >= _cees(c_nr).dia_big(3) And g.dia < _cees(c_nr).dia_big(4)
                     g.i_d1 = _cees(c_nr).dia_big(3)
                     g.i_d2 = _cees(c_nr).dia_big(4)
-                    g.i_p1 = _cees(c_nr).class_load(3) / 100
-                    g.i_p2 = _cees(c_nr).class_load(4) / 100
+                    g.i_p1 = _cees(c_nr).class_load(3)
+                    g.i_p2 = _cees(c_nr).class_load(4)
                     g.i_grp = 4
                 Case g.dia >= _cees(c_nr).dia_big(4) And g.dia < _cees(c_nr).dia_big(5)
                     g.i_d1 = _cees(c_nr).dia_big(4)
                     g.i_d2 = _cees(c_nr).dia_big(5)
-                    g.i_p1 = _cees(c_nr).class_load(4) / 100
-                    g.i_p2 = _cees(c_nr).class_load(5) / 100
+                    g.i_p1 = _cees(c_nr).class_load(4)
+                    g.i_p2 = _cees(c_nr).class_load(5)
                     g.i_grp = 5
                 Case g.dia >= _cees(c_nr).dia_big(5) And g.dia < _cees(c_nr).dia_big(6)
                     g.i_d1 = _cees(c_nr).dia_big(5)
                     g.i_d2 = _cees(c_nr).dia_big(6)
-                    g.i_p1 = _cees(c_nr).class_load(5) / 100
-                    g.i_p2 = _cees(c_nr).class_load(6) / 100
+                    g.i_p1 = _cees(c_nr).class_load(5)
+                    g.i_p2 = _cees(c_nr).class_load(6)
                     g.i_grp = 6
                 Case g.dia >= _cees(c_nr).dia_big(6) And g.dia < _cees(c_nr).dia_big(7)
                     g.i_d1 = _cees(c_nr).dia_big(6)
                     g.i_d2 = _cees(c_nr).dia_big(7)
-                    g.i_p1 = _cees(c_nr).class_load(6) / 100
-                    g.i_p2 = _cees(c_nr).class_load(7) / 100
+                    g.i_p1 = _cees(c_nr).class_load(6)
+                    g.i_p2 = _cees(c_nr).class_load(7)
                     g.i_grp = 7
                 Case g.dia >= _cees(c_nr).dia_big(7) And g.dia < _cees(c_nr).dia_big(8)
                     g.i_d1 = _cees(c_nr).dia_big(7)
                     g.i_d2 = _cees(c_nr).dia_big(8)
-                    g.i_p1 = _cees(c_nr).class_load(7) / 100
-                    g.i_p2 = _cees(c_nr).class_load(8) / 100
+                    g.i_p1 = _cees(c_nr).class_load(7)
+                    g.i_p2 = _cees(c_nr).class_load(8)
                     g.i_grp = 8
                 Case g.dia >= _cees(c_nr).dia_big(8) And g.dia < _cees(c_nr).dia_big(9)
                     g.i_d1 = _cees(c_nr).dia_big(8)
                     g.i_d2 = _cees(c_nr).dia_big(9)
-                    g.i_p1 = _cees(c_nr).class_load(8) / 100
-                    g.i_p2 = _cees(c_nr).class_load(9) / 100
+                    g.i_p1 = _cees(c_nr).class_load(8)
+                    g.i_p2 = _cees(c_nr).class_load(9)
                     g.i_grp = 9
                 Case g.dia >= _cees(c_nr).dia_big(9) And g.dia < _cees(c_nr).dia_big(10)
                     g.i_d1 = _cees(c_nr).dia_big(9)
                     g.i_d2 = _cees(c_nr).dia_big(10)
-                    g.i_p1 = _cees(c_nr).class_load(9) / 100
-                    g.i_p2 = _cees(c_nr).class_load(10) / 100
+                    g.i_p1 = _cees(c_nr).class_load(9)
+                    g.i_p2 = _cees(c_nr).class_load(10)
                     g.i_grp = 10
                 Case g.dia >= _cees(c_nr).dia_big(10) And g.dia < _cees(c_nr).dia_big(11)
                     g.i_d1 = _cees(c_nr).dia_big(10)     'Diameter small
                     g.i_d2 = _cees(c_nr).dia_big(11)          'Diameter big
-                    g.i_p1 = _cees(c_nr).class_load(10) / 100    'User lower input percentage
-                    g.i_p2 = _cees(c_nr).class_load(11) / 100    'User upper input percentage
+                    g.i_p1 = _cees(c_nr).class_load(10)     'User lower input percentage
+                    g.i_p2 = _cees(c_nr).class_load(11)     'User upper input percentage
                     g.i_grp = 11
                 Case Else
                     g.i_d1 = _cees(c_nr).dia_big(11)            'Diameter small [mu]
                     g.i_d2 = 1000                               'Diameter big [mu]
-                    g.i_p1 = _cees(c_nr).class_load(11) / 100   'User lower input percentage
+                    g.i_p1 = _cees(c_nr).class_load(11)  'User lower input percentage
                     g.i_p2 = 0                                  'User upper input percentage
                     g.i_grp = 12
             End Select
@@ -2393,7 +2367,7 @@ Public Class Form1
         cc = CInt(NumericUpDown30.Value)       'Case number
         TextBox24.Text &= "line 2267, save case to array nr" & cc.ToString & vbCrLf
         Fill_array_from_screen(cc)
-        Debug.WriteLine("Save_present_case_to_array")
+        'Debug.WriteLine("Save_present_case_to_array")
     End Sub
 
     Private Sub NumericUpDown30_ValueChanged(sender As Object, e As EventArgs) Handles NumericUpDown30.ValueChanged
@@ -2697,7 +2671,6 @@ Public Class Form1
         DataGridView6.Columns(1).Width = 60
 
         For row = 0 To DataGridView6.Rows.Count - 1
-
             words = start_screen_psd(row).Split(CType(";", Char()))
             DataGridView6.Rows(row).Cells(0).Value = CDbl(words(0))
             DataGridView6.Rows(row).Cells(1).Value = CDbl(words(1))
