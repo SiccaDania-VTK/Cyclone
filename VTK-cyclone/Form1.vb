@@ -237,7 +237,6 @@ Public Class Form1
         DataGridView1.Rows.Clear()
         DataGridView1.Rows.Add(23)
         DataGridView1.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.DisplayedCells
-        DataGridView1.RowHeadersVisible = False
 
         'Initialize the arrays in the struct
         For i = 0 To _cees.Length - 1
