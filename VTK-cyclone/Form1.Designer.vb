@@ -501,6 +501,7 @@ Partial Class Form1
         Me.Label252 = New System.Windows.Forms.Label()
         Me.Button12 = New System.Windows.Forms.Button()
         Me.DataGridView5 = New System.Windows.Forms.DataGridView()
+        Me.TextBox25 = New System.Windows.Forms.TextBox()
         Me.TabPage10.SuspendLayout()
         Me.GroupBox18.SuspendLayout()
         CType(Me.Chart3, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -1793,6 +1794,7 @@ Partial Class Form1
         '
         'TabPage6
         '
+        Me.TabPage6.Controls.Add(Me.TextBox25)
         Me.TabPage6.Controls.Add(Me.TextBox153)
         Me.TabPage6.Controls.Add(Me.TextBox152)
         Me.TabPage6.Controls.Add(Me.TextBox149)
@@ -5762,6 +5764,15 @@ Partial Class Form1
         Me.DataGridView5.Size = New System.Drawing.Size(229, 801)
         Me.DataGridView5.TabIndex = 0
         '
+        'TextBox25
+        '
+        Me.TextBox25.Location = New System.Drawing.Point(521, 559)
+        Me.TextBox25.Multiline = True
+        Me.TextBox25.Name = "TextBox25"
+        Me.TextBox25.Size = New System.Drawing.Size(502, 59)
+        Me.TextBox25.TabIndex = 84
+        Me.TextBox25.Text = "Particulate Matter"
+        '
         'Form1
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -6344,4 +6355,5 @@ Partial Class Form1
     Friend WithEvents DataGridView3 As DataGridView
     Friend WithEvents DataGridView1 As DataGridView
     Friend WithEvents DataGridView6 As DataGridView
+    Friend WithEvents TextBox25 As TextBox
 End Class

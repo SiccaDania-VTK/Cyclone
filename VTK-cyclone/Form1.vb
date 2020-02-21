@@ -343,8 +343,14 @@ Public Class Form1
         TextBox148.Text &= " " & vbCrLf
 
         TextBox20.Text = "All AA cyclones have a diameter of 300mm" & vbCrLf
+        TextBox20.Text &= "Select AC850 and select diameter is 300 mm" & vbCrLf
+        TextBox20.Text &= "AA cyclone are compact and high efficient" & vbCrLf
         TextBox20.Text &= "Load above 5 gr/m3 is considered a high load" & vbCrLf
         TextBox20.Text &= "Cyclones can not choke" & vbCrLf
+
+        TextBox25.Text = "Particulate Matter PM10" & vbCrLf
+        TextBox25.Text &= "All particle smaller then 10mu" & vbCrLf
+        TextBox25.Text &= "PM10 can travel between 100 meter to 50 km" & vbCrLf
 
         TextBox47.Text = "Applications" & vbCrLf
         TextBox47.Text &= "Fly catcher Venezuela before a gasturbine" & vbCrLf
@@ -2120,7 +2126,7 @@ Public Class Form1
 
             Select Case True
                 Case g.dia < _cees(c_nr).dia_big(0)     '0-0.3 [mu]
-                    g.i_d1 = 0.001                      'Diameter small [mu]
+                    g.i_d1 = 0.000                      'Diameter small [mu]
                     g.i_d2 = _cees(c_nr).dia_big(0)     'Diameter big [mu]
                     g.i_p1 = _cees(c_nr).class_load(0)  'User lower input percentage
                     g.i_p1 = _cees(c_nr).class_load(1)  'User upper input percentage
