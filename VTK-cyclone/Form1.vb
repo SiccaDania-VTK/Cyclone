@@ -2201,30 +2201,40 @@ Public Class Form1
 
             Dim w(11) As Double  'Individual particle class weights
 
-            w(0) = _cees(c_nr).class_load(11)
-            w(1) = _cees(c_nr).class_load(10) - w(0)
-            w(2) = _cees(c_nr).class_load(9) - w(1) - w(0)
-            w(3) = _cees(c_nr).class_load(8) - w(2) - w(1) - w(0)
-            w(4) = _cees(c_nr).class_load(7) - w(3) - w(2) - w(1) - w(0)
-            w(5) = _cees(c_nr).class_load(6) - w(4) - w(3) - w(2) - w(1) - w(0)
-            w(6) = _cees(c_nr).class_load(5) - w(5) - w(4) - w(3) - w(2) - w(1) - w(0)
-            w(7) = _cees(c_nr).class_load(4) - w(6) - w(5) - w(4) - w(3) - w(2) - w(1) - w(0)
-            w(8) = _cees(c_nr).class_load(3) - w(7) - w(6) - w(5) - w(4) - w(3) - w(2) - w(1) - w(0)
-            w(9) = _cees(c_nr).class_load(2) - w(8) - w(7) - w(6) - w(5) - w(4) - w(3) - w(2) - w(1) - w(0)
-            w(10) = _cees(c_nr).class_load(1) - w(9) - w(8) - w(7) - w(6) - w(5) - w(4) - w(3) - w(2) - w(1) - w(0)
-            w(11) = _cees(c_nr).class_load(0) - w(10) - w(9) - w(8) - w(7) - w(6) - w(5) - w(4) - w(3) - w(2) - w(1) - w(0)
+            'w(0) = _cees(c_nr).class_load(11)
+            'w(1) = _cees(c_nr).class_load(10) - w(0)
+            'w(2) = _cees(c_nr).class_load(9) - w(1) - w(0)
+            'w(3) = _cees(c_nr).class_load(8) - w(2) - w(1) - w(0)
+            'w(4) = _cees(c_nr).class_load(7) - w(3) - w(2) - w(1) - w(0)
+            'w(5) = _cees(c_nr).class_load(6) - w(4) - w(3) - w(2) - w(1) - w(0)
+            'w(6) = _cees(c_nr).class_load(5) - w(5) - w(4) - w(3) - w(2) - w(1) - w(0)
+            'w(7) = _cees(c_nr).class_load(4) - w(6) - w(5) - w(4) - w(3) - w(2) - w(1) - w(0)
+            'w(8) = _cees(c_nr).class_load(3) - w(7) - w(6) - w(5) - w(4) - w(3) - w(2) - w(1) - w(0)
+            'w(9) = _cees(c_nr).class_load(2) - w(8) - w(7) - w(6) - w(5) - w(4) - w(3) - w(2) - w(1) - w(0)
+            'w(10) = _cees(c_nr).class_load(1) - w(9) - w(8) - w(7) - w(6) - w(5) - w(4) - w(3) - w(2) - w(1) - w(0)
+            'w(11) = _cees(c_nr).class_load(0) - w(10) - w(9) - w(8) - w(7) - w(6) - w(5) - w(4) - w(3) - w(2) - w(1) - w(0)
 
-            TextBox50.Text = w(11).ToString("0.0")
-            TextBox49.Text = w(10).ToString("0.0")
-            TextBox46.Text = w(9).ToString("0.0")
-            TextBox45.Text = w(8).ToString("0.0")
-            TextBox44.Text = w(7).ToString("0.0")
-            TextBox43.Text = w(6).ToString("0.0")
-            TextBox27.Text = w(5).ToString("0.0")
-            TextBox25.Text = w(4).ToString("0.0")
-            TextBox81.Text = w(3).ToString("0.0")
-            TextBox82.Text = w(2).ToString("0.0")
-            TextBox154.Text = w(1).ToString("0.0")
+            '=========== start testing =====================
+            Dim q(11) As Double  'Individual particle class weights
+            Dim qsum(11) As Double  'Sum of weights
+            Dim j As Integer
+
+            qsum(0) = 0
+            For i = 1 To q.Length - 1
+                qsum(i) = qsum(i - 1) - w(i - 1)
+            Next
+
+            For i = 0 To w.Length - 1
+                j = w.Length - 1 - i
+                'q(i) = _cees(c_nr).class_load(j) - Abs(qsum(i))
+                w(i) = _cees(c_nr).class_load(j) - Abs(qsum(i))
+            Next
+            '=========== end testing =====================
+
+            '----------- present "Increment [%] per class" --------------
+            For row = 1 To DataGridView6.Rows.Count - 1
+                DataGridView6.Rows(row).Cells(2).Value = Round(w(w.Length - row) * 100, 1)
+            Next
 
             '-------- Check -- bigger diameter must have bigger cummulative weight
             'NumericUpDown15.BackColor = CType(IIf(_cees(c_nr).dia_big(0) > 0, Color.LightGreen, Color.Red), Color)
@@ -2659,7 +2669,7 @@ Public Class Form1
     End Sub
     Private Sub Build_dgv6()
         Dim words() As String
-        DataGridView6.ColumnCount = 2
+        DataGridView6.ColumnCount = 3
         DataGridView6.Rows.Clear()
         DataGridView6.Rows.Add(start_screen_psd.Length - 1)
         DataGridView6.EnableHeadersVisualStyles = False           'For backcolor
@@ -2667,8 +2677,11 @@ Public Class Form1
 
         DataGridView6.Columns(0).HeaderText = "Upper Dia [um]"
         DataGridView6.Columns(1).HeaderText = "Cumm [%] tot wght"
+        DataGridView6.Columns(2).HeaderText = "Increm. per class"
+
         DataGridView6.Columns(0).Width = 60
         DataGridView6.Columns(1).Width = 60
+        DataGridView6.Columns(2).Width = 60
 
         For row = 0 To DataGridView6.Rows.Count - 1
             words = start_screen_psd(row).Split(CType(";", Char()))
