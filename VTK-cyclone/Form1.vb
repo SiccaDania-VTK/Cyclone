@@ -2175,9 +2175,14 @@ Public Class Form1
             Next
 
             '----------- present "Increment [%] per class" --------------
-            'For row = 1 To DataGridView6.Rows.Count - 1
-            '    DataGridView6.Rows(row).Cells(2).Value = Round(w(w.Length - row) * 100, 1)
-            'Next
+            For i = 1 To DataGridView6.Rows.Count - 1
+                '    DataGridView6.Rows(row).Cells(2).Value = Round(w(w.Length - row) * 100, 1)
+                If _cees(c_nr).dia_big(i) <= _cees(c_nr).dia_big(i - 1) Then
+                    DataGridView6.Rows(i - 1).Cells(0).Style.BackColor = Color.Red
+                Else
+                    DataGridView6.Rows(i - 1).Cells(0).Style.BackColor = Color.LightGreen
+                End If
+            Next
 
             '-------- Check -- bigger diameter must have bigger cummulative weight
             'NumericUpDown15.BackColor = CType(IIf(_cees(c_nr).dia_big(0) > 0, Color.LightGreen, Color.Red), Color)
