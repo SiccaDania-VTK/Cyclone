@@ -2124,140 +2124,166 @@ Public Class Form1
     Public Sub Size_classification(ByRef g As GvG_Calc_struct, c_nr As Integer)
         If g.dia > 0 Then
 
-            Select Case True
-                Case g.dia < _cees(c_nr).dia_big(0)     '0-0.3 [mu]
-                    g.i_d1 = 0.000                      'Diameter small [mu]
-                    g.i_d2 = _cees(c_nr).dia_big(0)     'Diameter big [mu]
-                    g.i_p1 = _cees(c_nr).class_load(0)  'User lower input percentage
-                    g.i_p1 = _cees(c_nr).class_load(1)  'User upper input percentage
-                    g.i_grp = 0
-                Case g.dia >= _cees(c_nr).dia_big(0) And g.dia < _cees(c_nr).dia_big(1)   '>=10 and < 15
-                    g.i_d1 = _cees(c_nr).dia_big(0)     'Diameter small [mu]
-                    g.i_d2 = _cees(c_nr).dia_big(1)     'Diameter big [mu]
-                    g.i_p1 = _cees(c_nr).class_load(0)  'User lower input percentage
-                    g.i_p2 = _cees(c_nr).class_load(1)  'User upper input percentage
-                    g.i_grp = 1
-                Case g.dia >= _cees(c_nr).dia_big(1) And g.dia < _cees(c_nr).dia_big(2)
-                    g.i_d1 = _cees(c_nr).dia_big(1)     'Diameter small [mu]
-                    g.i_d2 = _cees(c_nr).dia_big(2)     'Diameter big [mu]
-                    g.i_p1 = _cees(c_nr).class_load(1)  'User lower input percentage
-                    g.i_p2 = _cees(c_nr).class_load(2)  'User upper input percentage
-                    g.i_grp = 2
-                Case g.dia >= _cees(c_nr).dia_big(2) And g.dia < _cees(c_nr).dia_big(3)
-                    g.i_d1 = _cees(c_nr).dia_big(2)
-                    g.i_d2 = _cees(c_nr).dia_big(3)
-                    g.i_p1 = _cees(c_nr).class_load(2)
-                    g.i_p2 = _cees(c_nr).class_load(3)
-                    g.i_grp = 3
-                Case g.dia >= _cees(c_nr).dia_big(3) And g.dia < _cees(c_nr).dia_big(4)
-                    g.i_d1 = _cees(c_nr).dia_big(3)
-                    g.i_d2 = _cees(c_nr).dia_big(4)
-                    g.i_p1 = _cees(c_nr).class_load(3)
-                    g.i_p2 = _cees(c_nr).class_load(4)
-                    g.i_grp = 4
-                Case g.dia >= _cees(c_nr).dia_big(4) And g.dia < _cees(c_nr).dia_big(5)
-                    g.i_d1 = _cees(c_nr).dia_big(4)
-                    g.i_d2 = _cees(c_nr).dia_big(5)
-                    g.i_p1 = _cees(c_nr).class_load(4)
-                    g.i_p2 = _cees(c_nr).class_load(5)
-                    g.i_grp = 5
-                Case g.dia >= _cees(c_nr).dia_big(5) And g.dia < _cees(c_nr).dia_big(6)
-                    g.i_d1 = _cees(c_nr).dia_big(5)
-                    g.i_d2 = _cees(c_nr).dia_big(6)
-                    g.i_p1 = _cees(c_nr).class_load(5)
-                    g.i_p2 = _cees(c_nr).class_load(6)
-                    g.i_grp = 6
-                Case g.dia >= _cees(c_nr).dia_big(6) And g.dia < _cees(c_nr).dia_big(7)
-                    g.i_d1 = _cees(c_nr).dia_big(6)
-                    g.i_d2 = _cees(c_nr).dia_big(7)
-                    g.i_p1 = _cees(c_nr).class_load(6)
-                    g.i_p2 = _cees(c_nr).class_load(7)
-                    g.i_grp = 7
-                Case g.dia >= _cees(c_nr).dia_big(7) And g.dia < _cees(c_nr).dia_big(8)
-                    g.i_d1 = _cees(c_nr).dia_big(7)
-                    g.i_d2 = _cees(c_nr).dia_big(8)
-                    g.i_p1 = _cees(c_nr).class_load(7)
-                    g.i_p2 = _cees(c_nr).class_load(8)
-                    g.i_grp = 8
-                Case g.dia >= _cees(c_nr).dia_big(8) And g.dia < _cees(c_nr).dia_big(9)
-                    g.i_d1 = _cees(c_nr).dia_big(8)
-                    g.i_d2 = _cees(c_nr).dia_big(9)
-                    g.i_p1 = _cees(c_nr).class_load(8)
-                    g.i_p2 = _cees(c_nr).class_load(9)
-                    g.i_grp = 9
-                Case g.dia >= _cees(c_nr).dia_big(9) And g.dia < _cees(c_nr).dia_big(10)
-                    g.i_d1 = _cees(c_nr).dia_big(9)
-                    g.i_d2 = _cees(c_nr).dia_big(10)
-                    g.i_p1 = _cees(c_nr).class_load(9)
-                    g.i_p2 = _cees(c_nr).class_load(10)
-                    g.i_grp = 10
-                Case g.dia >= _cees(c_nr).dia_big(10) And g.dia < _cees(c_nr).dia_big(11)
-                    g.i_d1 = _cees(c_nr).dia_big(10)     'Diameter small
-                    g.i_d2 = _cees(c_nr).dia_big(11)          'Diameter big
-                    g.i_p1 = _cees(c_nr).class_load(10)     'User lower input percentage
-                    g.i_p2 = _cees(c_nr).class_load(11)     'User upper input percentage
-                    g.i_grp = 11
-                Case Else
-                    g.i_d1 = _cees(c_nr).dia_big(11)            'Diameter small [mu]
-                    g.i_d2 = 1000                               'Diameter big [mu]
-                    g.i_p1 = _cees(c_nr).class_load(11)  'User lower input percentage
-                    g.i_p2 = 0                                  'User upper input percentage
-                    g.i_grp = 12
-            End Select
+            If (g.dia < _cees(c_nr).dia_big(0)) Then
+                g.i_d1 = 0.000                      'Diameter small [mu]
+                g.i_d2 = _cees(c_nr).dia_big(0)     'Diameter big [mu]
+                g.i_p1 = _cees(c_nr).class_load(0)  'User lower input percentage
+                g.i_p1 = _cees(c_nr).class_load(1)  'User upper input percentage
+                g.i_grp = 0                         'Group 0
+            End If
+
+            For i = 1 To 11
+                If (g.dia >= _cees(c_nr).dia_big(i - 1) And g.dia < _cees(c_nr).dia_big(i)) Then
+                    g.i_d1 = _cees(c_nr).dia_big(i - 1)     'Diameter small [mu]
+                    g.i_d2 = _cees(c_nr).dia_big(i)         'Diameter big [mu]
+                    g.i_p1 = _cees(c_nr).class_load(i - 1)  'User lower input percentage
+                    g.i_p2 = _cees(c_nr).class_load(i)      'User upper input percentage
+                    g.i_grp = i                             'Group 1 up and including 11
+                End If
+            Next
+
+            If (g.dia >= _cees(c_nr).dia_big(11)) Then
+                g.i_d1 = _cees(c_nr).dia_big(11)            'Diameter small [mu]
+                g.i_d2 = 1000                               'Diameter big [mu]
+                g.i_p1 = _cees(c_nr).class_load(11)         'User lower input percentage
+                g.i_p2 = 0                                  'User upper input percentage
+                g.i_grp = 12                                'Group 12
+            End If
+
+            'Select Case True
+            '        Case g.dia < _cees(c_nr).dia_big(0)     '0-0.3 [mu]
+            '            g.i_d1 = 0.000                      'Diameter small [mu]
+            '            g.i_d2 = _cees(c_nr).dia_big(0)     'Diameter big [mu]
+            '            g.i_p1 = _cees(c_nr).class_load(0)  'User lower input percentage
+            '            g.i_p1 = _cees(c_nr).class_load(1)  'User upper input percentage
+            '            g.i_grp = 0
+            '        Case g.dia >= _cees(c_nr).dia_big(0) And g.dia < _cees(c_nr).dia_big(1)   '>=10 and < 15
+            '            g.i_d1 = _cees(c_nr).dia_big(0)     'Diameter small [mu]
+            '            g.i_d2 = _cees(c_nr).dia_big(1)     'Diameter big [mu]
+            '            g.i_p1 = _cees(c_nr).class_load(0)  'User lower input percentage
+            '            g.i_p2 = _cees(c_nr).class_load(1)  'User upper input percentage
+            '            g.i_grp = 1
+            '        Case g.dia >= _cees(c_nr).dia_big(1) And g.dia < _cees(c_nr).dia_big(2)
+            '            g.i_d1 = _cees(c_nr).dia_big(1)     'Diameter small [mu]
+            '            g.i_d2 = _cees(c_nr).dia_big(2)     'Diameter big [mu]
+            '            g.i_p1 = _cees(c_nr).class_load(1)  'User lower input percentage
+            '            g.i_p2 = _cees(c_nr).class_load(2)  'User upper input percentage
+            '            g.i_grp = 2
+            '        Case g.dia >= _cees(c_nr).dia_big(2) And g.dia < _cees(c_nr).dia_big(3)
+            '            g.i_d1 = _cees(c_nr).dia_big(2)
+            '            g.i_d2 = _cees(c_nr).dia_big(3)
+            '            g.i_p1 = _cees(c_nr).class_load(2)
+            '            g.i_p2 = _cees(c_nr).class_load(3)
+            '            g.i_grp = 3
+            '        Case g.dia >= _cees(c_nr).dia_big(3) And g.dia < _cees(c_nr).dia_big(4)
+            '            g.i_d1 = _cees(c_nr).dia_big(3)
+            '            g.i_d2 = _cees(c_nr).dia_big(4)
+            '            g.i_p1 = _cees(c_nr).class_load(3)
+            '            g.i_p2 = _cees(c_nr).class_load(4)
+            '            g.i_grp = 4
+            '        Case g.dia >= _cees(c_nr).dia_big(4) And g.dia < _cees(c_nr).dia_big(5)
+            '            g.i_d1 = _cees(c_nr).dia_big(4)
+            '            g.i_d2 = _cees(c_nr).dia_big(5)
+            '            g.i_p1 = _cees(c_nr).class_load(4)
+            '            g.i_p2 = _cees(c_nr).class_load(5)
+            '            g.i_grp = 5
+            '        Case g.dia >= _cees(c_nr).dia_big(5) And g.dia < _cees(c_nr).dia_big(6)
+            '            g.i_d1 = _cees(c_nr).dia_big(5)
+            '            g.i_d2 = _cees(c_nr).dia_big(6)
+            '            g.i_p1 = _cees(c_nr).class_load(5)
+            '            g.i_p2 = _cees(c_nr).class_load(6)
+            '            g.i_grp = 6
+            '        Case g.dia >= _cees(c_nr).dia_big(6) And g.dia < _cees(c_nr).dia_big(7)
+            '            g.i_d1 = _cees(c_nr).dia_big(6)
+            '            g.i_d2 = _cees(c_nr).dia_big(7)
+            '            g.i_p1 = _cees(c_nr).class_load(6)
+            '            g.i_p2 = _cees(c_nr).class_load(7)
+            '            g.i_grp = 7
+            '        Case g.dia >= _cees(c_nr).dia_big(7) And g.dia < _cees(c_nr).dia_big(8)
+            '            g.i_d1 = _cees(c_nr).dia_big(7)
+            '            g.i_d2 = _cees(c_nr).dia_big(8)
+            '            g.i_p1 = _cees(c_nr).class_load(7)
+            '            g.i_p2 = _cees(c_nr).class_load(8)
+            '            g.i_grp = 8
+            '        Case g.dia >= _cees(c_nr).dia_big(8) And g.dia < _cees(c_nr).dia_big(9)
+            '            g.i_d1 = _cees(c_nr).dia_big(8)
+            '            g.i_d2 = _cees(c_nr).dia_big(9)
+            '            g.i_p1 = _cees(c_nr).class_load(8)
+            '            g.i_p2 = _cees(c_nr).class_load(9)
+            '            g.i_grp = 9
+            '        Case g.dia >= _cees(c_nr).dia_big(9) And g.dia < _cees(c_nr).dia_big(10)
+            '            g.i_d1 = _cees(c_nr).dia_big(9)
+            '            g.i_d2 = _cees(c_nr).dia_big(10)
+            '            g.i_p1 = _cees(c_nr).class_load(9)
+            '            g.i_p2 = _cees(c_nr).class_load(10)
+            '            g.i_grp = 10
+            '        Case g.dia >= _cees(c_nr).dia_big(10) And g.dia < _cees(c_nr).dia_big(11)
+            '            g.i_d1 = _cees(c_nr).dia_big(10)     'Diameter small
+            '            g.i_d2 = _cees(c_nr).dia_big(11)          'Diameter big
+            '            g.i_p1 = _cees(c_nr).class_load(10)     'User lower input percentage
+            '            g.i_p2 = _cees(c_nr).class_load(11)     'User upper input percentage
+            '            g.i_grp = 11
+            '        Case Else
+            '            g.i_d1 = _cees(c_nr).dia_big(11)            'Diameter small [mu]
+            '            g.i_d2 = 1000                               'Diameter big [mu]
+            '            g.i_p1 = _cees(c_nr).class_load(11)  'User lower input percentage
+            '            g.i_p2 = 0                                  'User upper input percentage
+            '            g.i_grp = 12
+            '    End Select
 
             Dim w(11) As Double  'Individual particle class weights
 
-            'w(0) = _cees(c_nr).class_load(11)
-            'w(1) = _cees(c_nr).class_load(10) - w(0)
-            'w(2) = _cees(c_nr).class_load(9) - w(1) - w(0)
-            'w(3) = _cees(c_nr).class_load(8) - w(2) - w(1) - w(0)
-            'w(4) = _cees(c_nr).class_load(7) - w(3) - w(2) - w(1) - w(0)
-            'w(5) = _cees(c_nr).class_load(6) - w(4) - w(3) - w(2) - w(1) - w(0)
-            'w(6) = _cees(c_nr).class_load(5) - w(5) - w(4) - w(3) - w(2) - w(1) - w(0)
-            'w(7) = _cees(c_nr).class_load(4) - w(6) - w(5) - w(4) - w(3) - w(2) - w(1) - w(0)
-            'w(8) = _cees(c_nr).class_load(3) - w(7) - w(6) - w(5) - w(4) - w(3) - w(2) - w(1) - w(0)
-            'w(9) = _cees(c_nr).class_load(2) - w(8) - w(7) - w(6) - w(5) - w(4) - w(3) - w(2) - w(1) - w(0)
-            'w(10) = _cees(c_nr).class_load(1) - w(9) - w(8) - w(7) - w(6) - w(5) - w(4) - w(3) - w(2) - w(1) - w(0)
-            'w(11) = _cees(c_nr).class_load(0) - w(10) - w(9) - w(8) - w(7) - w(6) - w(5) - w(4) - w(3) - w(2) - w(1) - w(0)
+                'w(0) = _cees(c_nr).class_load(11)
+                'w(1) = _cees(c_nr).class_load(10) - w(0)
+                'w(2) = _cees(c_nr).class_load(9) - w(1) - w(0)
+                'w(3) = _cees(c_nr).class_load(8) - w(2) - w(1) - w(0)
+                'w(4) = _cees(c_nr).class_load(7) - w(3) - w(2) - w(1) - w(0)
+                'w(5) = _cees(c_nr).class_load(6) - w(4) - w(3) - w(2) - w(1) - w(0)
+                'w(6) = _cees(c_nr).class_load(5) - w(5) - w(4) - w(3) - w(2) - w(1) - w(0)
+                'w(7) = _cees(c_nr).class_load(4) - w(6) - w(5) - w(4) - w(3) - w(2) - w(1) - w(0)
+                'w(8) = _cees(c_nr).class_load(3) - w(7) - w(6) - w(5) - w(4) - w(3) - w(2) - w(1) - w(0)
+                'w(9) = _cees(c_nr).class_load(2) - w(8) - w(7) - w(6) - w(5) - w(4) - w(3) - w(2) - w(1) - w(0)
+                'w(10) = _cees(c_nr).class_load(1) - w(9) - w(8) - w(7) - w(6) - w(5) - w(4) - w(3) - w(2) - w(1) - w(0)
+                'w(11) = _cees(c_nr).class_load(0) - w(10) - w(9) - w(8) - w(7) - w(6) - w(5) - w(4) - w(3) - w(2) - w(1) - w(0)
 
-            '=========== start testing =====================
-            Dim q(11) As Double  'Individual particle class weights
-            Dim qsum(11) As Double  'Sum of weights
-            Dim j As Integer
+                '=========== start testing =====================
+                Dim q(11) As Double  'Individual particle class weights
+                Dim qsum(11) As Double  'Sum of weights
+                Dim j As Integer
 
-            qsum(0) = 0
-            For i = 1 To q.Length - 1
-                qsum(i) = qsum(i - 1) - w(i - 1)
-            Next
+                qsum(0) = 0
+                For i = 1 To q.Length - 1
+                    qsum(i) = qsum(i - 1) - w(i - 1)
+                Next
 
-            For i = 0 To w.Length - 1
-                j = w.Length - 1 - i
-                'q(i) = _cees(c_nr).class_load(j) - Abs(qsum(i))
-                w(i) = _cees(c_nr).class_load(j) - Abs(qsum(i))
-            Next
-            '=========== end testing =====================
+                For i = 0 To w.Length - 1
+                    j = w.Length - 1 - i
+                    'q(i) = _cees(c_nr).class_load(j) - Abs(qsum(i))
+                    w(i) = _cees(c_nr).class_load(j) - Abs(qsum(i))
+                Next
+                '=========== end testing =====================
 
-            '----------- present "Increment [%] per class" --------------
-            For row = 1 To DataGridView6.Rows.Count - 1
-                DataGridView6.Rows(row).Cells(2).Value = Round(w(w.Length - row) * 100, 1)
-            Next
+                '----------- present "Increment [%] per class" --------------
+                For row = 1 To DataGridView6.Rows.Count - 1
+                    DataGridView6.Rows(row).Cells(2).Value = Round(w(w.Length - row) * 100, 1)
+                Next
 
-            '-------- Check -- bigger diameter must have bigger cummulative weight
-            'NumericUpDown15.BackColor = CType(IIf(_cees(c_nr).dia_big(0) > 0, Color.LightGreen, Color.Red), Color)
-            'NumericUpDown23.BackColor = CType(IIf(_cees(c_nr).dia_big(1) >= _cees(c_nr).dia_big(0), Color.LightGreen, Color.Red), Color)
-            '_cees(c_nr).class_load(2).BackColor = CType(IIf(_cees(c_nr).class_load(2).Value >= _cees(c_nr).dia_big(1), Color.LightGreen, Color.Red), Color)
-            '_cees(c_nr).class_load(3).BackColor = CType(IIf(_cees(c_nr).class_load(3).Value >= _cees(c_nr).class_load(2).Value, Color.LightGreen, Color.Red), Color)
-            '_cees(c_nr).class_load(4).BackColor = CType(IIf(_cees(c_nr).class_load(4).Value >= _cees(c_nr).class_load(3).Value, Color.LightGreen, Color.Red), Color)
-            '_cees(c_nr).class_load(5).BackColor = CType(IIf(_cees(c_nr).class_load(5).Value >= _cees(c_nr).class_load(4).Value, Color.LightGreen, Color.Red), Color)
-            '_cees(c_nr).class_load(6).BackColor = CType(IIf(_cees(c_nr).class_load(6).Value >= _cees(c_nr).class_load(5).Value, Color.LightGreen, Color.Red), Color)
-            '_cees(c_nr).class_load(7).BackColor = CType(IIf(_cees(c_nr).class_load(7).Value >= _cees(c_nr).class_load(6).Value, Color.LightGreen, Color.Red), Color)
-            '_cees(c_nr).class_load(8).BackColor = CType(IIf(_cees(c_nr).class_load(8).Value >= _cees(c_nr).class_load(7).Value, Color.LightGreen, Color.Red), Color)
-            '_cees(c_nr).class_load(9).BackColor = CType(IIf(_cees(c_nr).class_load(9).Value >= _cees(c_nr).class_load(8).Value, Color.LightGreen, Color.Red), Color)
-            '_cees(c_nr).class_load(10).BackColor = CType(IIf(_cees(c_nr).class_load(10).Value >= _cees(c_nr).class_load(9).Value, Color.LightGreen, Color.Red), Color)
-            '_cees(c_nr).class_load(11).BackColor = CType(IIf(_cees(c_nr).class_load(11).Value >= _cees(c_nr).class_load(9).Value, Color.LightGreen, Color.Red), Color)
-        Else
-            'MessageBox.Show("Error in line 1946")
-        End If
+                '-------- Check -- bigger diameter must have bigger cummulative weight
+                'NumericUpDown15.BackColor = CType(IIf(_cees(c_nr).dia_big(0) > 0, Color.LightGreen, Color.Red), Color)
+                'NumericUpDown23.BackColor = CType(IIf(_cees(c_nr).dia_big(1) >= _cees(c_nr).dia_big(0), Color.LightGreen, Color.Red), Color)
+                '_cees(c_nr).class_load(2).BackColor = CType(IIf(_cees(c_nr).class_load(2).Value >= _cees(c_nr).dia_big(1), Color.LightGreen, Color.Red), Color)
+                '_cees(c_nr).class_load(3).BackColor = CType(IIf(_cees(c_nr).class_load(3).Value >= _cees(c_nr).class_load(2).Value, Color.LightGreen, Color.Red), Color)
+                '_cees(c_nr).class_load(4).BackColor = CType(IIf(_cees(c_nr).class_load(4).Value >= _cees(c_nr).class_load(3).Value, Color.LightGreen, Color.Red), Color)
+                '_cees(c_nr).class_load(5).BackColor = CType(IIf(_cees(c_nr).class_load(5).Value >= _cees(c_nr).class_load(4).Value, Color.LightGreen, Color.Red), Color)
+                '_cees(c_nr).class_load(6).BackColor = CType(IIf(_cees(c_nr).class_load(6).Value >= _cees(c_nr).class_load(5).Value, Color.LightGreen, Color.Red), Color)
+                '_cees(c_nr).class_load(7).BackColor = CType(IIf(_cees(c_nr).class_load(7).Value >= _cees(c_nr).class_load(6).Value, Color.LightGreen, Color.Red), Color)
+                '_cees(c_nr).class_load(8).BackColor = CType(IIf(_cees(c_nr).class_load(8).Value >= _cees(c_nr).class_load(7).Value, Color.LightGreen, Color.Red), Color)
+                '_cees(c_nr).class_load(9).BackColor = CType(IIf(_cees(c_nr).class_load(9).Value >= _cees(c_nr).class_load(8).Value, Color.LightGreen, Color.Red), Color)
+                '_cees(c_nr).class_load(10).BackColor = CType(IIf(_cees(c_nr).class_load(10).Value >= _cees(c_nr).class_load(9).Value, Color.LightGreen, Color.Red), Color)
+                '_cees(c_nr).class_load(11).BackColor = CType(IIf(_cees(c_nr).class_load(11).Value >= _cees(c_nr).class_load(9).Value, Color.LightGreen, Color.Red), Color)
+            Else
+                'MessageBox.Show("Error in line 1946")
+            End If
     End Sub
     Private Sub Calc_cycl_weight()
         Dim w1, w2, w3, w4, w5, w6 As Double

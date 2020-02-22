@@ -27,7 +27,7 @@
     <ProductName>VTK-Cyclone</ProductName>
     <PublisherName>Pathuis Heavy Industries</PublisherName>
     <ApplicationRevision>36</ApplicationRevision>
-    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <ApplicationVersion>1.0.0.36</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
