@@ -799,10 +799,10 @@ Public Class Form1
         '[mu] Class upper particle diameter limit diameter
         'Percentale van de inlaat stof belasting [%]
         For row = 0 To _cees(c_nr).dia_big.Count - 1
-            If DataGridView6.Rows(row).Cells(0).Value.ToString = "" Then DataGridView6.Rows(row).Cells(0).Value = 0
-
-            _cees(c_nr).dia_big(row) = CDbl(DataGridView6.Rows(row).Cells(0).Value)
-            _cees(c_nr).class_load(row) = CDbl(DataGridView6.Rows(row).Cells(1).Value) / 100
+            If Not DataGridView6.Rows(row).Cells(0).Value.ToString.Equals("-") Then
+                _cees(c_nr).dia_big(row) = CDbl(DataGridView6.Rows(row).Cells(0).Value)
+                _cees(c_nr).class_load(row) = CDbl(DataGridView6.Rows(row).Cells(1).Value) / 100
+            End If
         Next
 
         '-------- Check -- bigger diameter must have bigger cummulative weight
@@ -1227,7 +1227,7 @@ Public Class Form1
     Private Sub Calc_sequence()
         Dim case_nr As Integer = CInt(NumericUpDown30.Value)
 
-        If ComboBox1.SelectedIndex > -1 And ComboBox2.SelectedIndex > -1 Then
+        If ComboBox1.SelectedIndex > -1 And ComboBox2.SelectedIndex > -1 And init = True Then
             Dust_load_correction(case_nr)
             Get_input_calc_1(case_nr)       'This is the CASE number
             Calc_part_dia_loss(case_nr)
@@ -1855,7 +1855,7 @@ Public Class Form1
         Calc_verlies_corrected(_cees(ks).stage1(0), 1)                                '[-] loss overall corrected
         _cees(ks).stage1(0).catch_chart = (1 - _cees(ks).stage1(i).loss_overall_C) * 100     '[%]
 
-        Size_classification(_cees(ks).stage1(0), ks)                                    'Classify this part size
+        Calc_diam_classification(_cees(ks).stage1(0), ks)                                    'Classify this part size
         Calc_k_and_m(_cees(ks).stage1(0))
 
         _cees(ks).stage1(0).psd_cum = Math.E ^ (-((_cees(ks).stage1(i).dia / _cees(ks).stage1(i).i_m) ^ _cees(ks).stage1(i).i_k))
@@ -1907,7 +1907,7 @@ Public Class Form1
             Else
                 _cees(ks).stage1(i).catch_chart = (1 - _cees(ks).stage1(i).loss_overall) * 100    '[%] NOT corrected
             End If
-            Size_classification(_cees(ks).stage1(i), ks)                                   'Classify this part size
+            Calc_diam_classification(_cees(ks).stage1(i), ks)                                   'Classify this part size
 
             '====to prevent silly results====
             If _cees(ks).stage1(i).i_grp <> 11 Then
@@ -2002,7 +2002,7 @@ Public Class Form1
         _cees(ks).stage2(0).loss_overall = Calc_verlies(_cees(ks).stage2(0).d_ave_K, False, _cees(ks).Kstokes2, 2)     '[-] loss overall
         Calc_verlies_corrected(_cees(ks).stage2(0), 2)                               '[-] loss overall corrected
         _cees(ks).stage2(0).catch_chart = (1 - _cees(ks).stage2(0).loss_overall_C) * 100    '[%]
-        Size_classification(_cees(ks).stage2(0), ks)                                  'groepnummer
+        Calc_diam_classification(_cees(ks).stage2(0), ks)                                  'groepnummer
 
         If _cees(ks).stage2(i).i_grp <> 11 Then
             Calc_k_and_m(_cees(ks).stage2(0))
@@ -2061,7 +2061,7 @@ Public Class Form1
             End If
 
 
-            Size_classification(_cees(ks).stage2(i), ks)                                     'Calc
+            Calc_diam_classification(_cees(ks).stage2(i), ks)                                     'Calc
             _cees(ks).stage2(i).i_grp = _cees(ks).stage1(i).i_grp
 
             If _cees(ks).stage2(i).i_grp <> 11 Then
@@ -2122,8 +2122,8 @@ Public Class Form1
         TextBox143.Text = _cees(ks).dust2_Nm3.ToString("F1")    'Dust load [gram/Nm3]
     End Sub
     'Determine the particle diameter class upper and lower limits
-    ' Private Function Size_classification(dia As Double, noi As Integer) As Double
-    Public Sub Size_classification(ByRef g As GvG_Calc_struct, c_nr As Integer)
+    ' Private Function Calc_diam_classification(dia As Double, noi As Integer) As Double
+    Public Sub Calc_diam_classification(ByRef g As GvG_Calc_struct, c_nr As Integer)
         If g.dia > 0 Then
 
             '=========== first entered data point ===========
@@ -2175,9 +2175,9 @@ Public Class Form1
             Next
 
             '----------- present "Increment [%] per class" --------------
-            For row = 1 To DataGridView6.Rows.Count - 1
-                DataGridView6.Rows(row).Cells(2).Value = Round(w(w.Length - row) * 100, 1)
-            Next
+            'For row = 1 To DataGridView6.Rows.Count - 1
+            '    DataGridView6.Rows(row).Cells(2).Value = Round(w(w.Length - row) * 100, 1)
+            'Next
 
             '-------- Check -- bigger diameter must have bigger cummulative weight
             'NumericUpDown15.BackColor = CType(IIf(_cees(c_nr).dia_big(0) > 0, Color.LightGreen, Color.Red), Color)
@@ -2614,7 +2614,7 @@ Public Class Form1
         Dim words() As String
         DataGridView6.ColumnCount = 3
         DataGridView6.Rows.Clear()
-        DataGridView6.Rows.Add(start_screen_psd.Length - 1)
+        DataGridView6.Rows.Add(no_input_stars)
         DataGridView6.EnableHeadersVisualStyles = False           'For backcolor
         DataGridView6.RowHeadersVisible = False
 
@@ -2626,10 +2626,17 @@ Public Class Form1
         DataGridView6.Columns(1).Width = 60
         DataGridView6.Columns(2).Width = 60
 
+        '======== Fill the DVG with example data =======
+
         For row = 0 To DataGridView6.Rows.Count - 1
-            words = start_screen_psd(row).Split(CType(";", Char()))
-            DataGridView6.Rows(row).Cells(0).Value = CDbl(words(0))
-            DataGridView6.Rows(row).Cells(1).Value = CDbl(words(1))
+            If row < start_screen_psd.Length Then
+                words = start_screen_psd(row).Split(CType(";", Char()))
+                DataGridView6.Rows(row).Cells(0).Value = CDbl(words(0))
+                DataGridView6.Rows(row).Cells(1).Value = CDbl(words(1))
+            Else
+                DataGridView6.Rows(row).Cells(0).Value = "-"
+                DataGridView6.Rows(row).Cells(1).Value = "-"
+            End If
 
         Next
         ' DataGridView6.AutoResizeColumns()
