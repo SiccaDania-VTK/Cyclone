@@ -796,7 +796,7 @@ Public Class Form1
         '[mu] Class upper particle diameter limit diameter
         'Percentale van de inlaat stof belasting [%]
         For row = 0 To _cees(c_nr).dia_big.Count - 1
-            If Not DataGridView6.Rows(row).Cells(0).Value.ToString.Equals("-") Then
+            If Not DataGridView6.Rows(row).Cells(0).Value.ToString.Equals("-") And Not DataGridView6.Rows(row).Cells(1).Value.ToString.Equals("-") Then
                 _cees(c_nr).dia_big(row) = CDbl(DataGridView6.Rows(row).Cells(0).Value)
                 _cees(c_nr).class_load(row) = CDbl(DataGridView6.Rows(row).Cells(1).Value) / 100
             End If
