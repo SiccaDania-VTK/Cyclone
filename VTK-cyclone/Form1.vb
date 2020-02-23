@@ -279,7 +279,7 @@ Public Class Form1
         hard_disk_list.Add("134309552747")          'VTK PC, Peter de Wild
 
         nu = Now()
-        nu2 = CDate("2020-04-01 00:00:00")
+        nu2 = CDate("2020-08-01 00:00:00")
         life_time = CInt((nu2 - nu).TotalDays)
         Label101.Text = "Expire " & life_time.ToString
 
