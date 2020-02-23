@@ -2125,7 +2125,6 @@ Public Class Form1
     ' Private Function Calc_diam_classification(dia As Double, noi As Integer) As Double
     Public Sub Calc_diam_classification(ByRef g As GvG_Calc_struct, c_nr As Integer)
         If g.dia > 0 Then
-
             '=========== first entered data point ===========
             If (g.dia < _cees(c_nr).dia_big(0)) Then
                 g.i_d1 = 0.000                      'Diameter small [mu]
@@ -2175,30 +2174,39 @@ Public Class Form1
             Next
 
             '----------- present "Increment [%] per class" --------------
+            '    DataGridView6.Rows(row).Cells(2).Value = Round(w(w.Length - row) * 100, 1)
+
+            '-------------diameters must increase-----------
+            DataGridView6.Rows(0).Cells(0).Style.BackColor = Color.LightGreen
             For i = 1 To DataGridView6.Rows.Count - 1
-                '    DataGridView6.Rows(row).Cells(2).Value = Round(w(w.Length - row) * 100, 1)
                 If _cees(c_nr).dia_big(i) <= _cees(c_nr).dia_big(i - 1) Then
-                    DataGridView6.Rows(i - 1).Cells(0).Style.BackColor = Color.Red
+                    DataGridView6.Rows(i).Cells(0).Style.BackColor = Color.Red
                 Else
-                    DataGridView6.Rows(i - 1).Cells(0).Style.BackColor = Color.LightGreen
+                    DataGridView6.Rows(i).Cells(0).Style.BackColor = Color.LightGreen
                 End If
             Next
 
-            '-------- Check -- bigger diameter must have bigger cummulative weight
-            'NumericUpDown15.BackColor = CType(IIf(_cees(c_nr).dia_big(0) > 0, Color.LightGreen, Color.Red), Color)
-            'NumericUpDown23.BackColor = CType(IIf(_cees(c_nr).dia_big(1) >= _cees(c_nr).dia_big(0), Color.LightGreen, Color.Red), Color)
-            '_cees(c_nr).class_load(2).BackColor = CType(IIf(_cees(c_nr).class_load(2).Value >= _cees(c_nr).dia_big(1), Color.LightGreen, Color.Red), Color)
-            '_cees(c_nr).class_load(3).BackColor = CType(IIf(_cees(c_nr).class_load(3).Value >= _cees(c_nr).class_load(2).Value, Color.LightGreen, Color.Red), Color)
-            '_cees(c_nr).class_load(4).BackColor = CType(IIf(_cees(c_nr).class_load(4).Value >= _cees(c_nr).class_load(3).Value, Color.LightGreen, Color.Red), Color)
-            '_cees(c_nr).class_load(5).BackColor = CType(IIf(_cees(c_nr).class_load(5).Value >= _cees(c_nr).class_load(4).Value, Color.LightGreen, Color.Red), Color)
-            '_cees(c_nr).class_load(6).BackColor = CType(IIf(_cees(c_nr).class_load(6).Value >= _cees(c_nr).class_load(5).Value, Color.LightGreen, Color.Red), Color)
-            '_cees(c_nr).class_load(7).BackColor = CType(IIf(_cees(c_nr).class_load(7).Value >= _cees(c_nr).class_load(6).Value, Color.LightGreen, Color.Red), Color)
-            '_cees(c_nr).class_load(8).BackColor = CType(IIf(_cees(c_nr).class_load(8).Value >= _cees(c_nr).class_load(7).Value, Color.LightGreen, Color.Red), Color)
-            '_cees(c_nr).class_load(9).BackColor = CType(IIf(_cees(c_nr).class_load(9).Value >= _cees(c_nr).class_load(8).Value, Color.LightGreen, Color.Red), Color)
-            '_cees(c_nr).class_load(10).BackColor = CType(IIf(_cees(c_nr).class_load(10).Value >= _cees(c_nr).class_load(9).Value, Color.LightGreen, Color.Red), Color)
-            '_cees(c_nr).class_load(11).BackColor = CType(IIf(_cees(c_nr).class_load(11).Value >= _cees(c_nr).class_load(9).Value, Color.LightGreen, Color.Red), Color)
+            '-------------diameters must increase-----------
+            DataGridView6.Rows(0).Cells(0).Style.BackColor = Color.LightGreen
+            For i = 1 To DataGridView6.Rows.Count - 1
+                If _cees(c_nr).dia_big(i) <= _cees(c_nr).dia_big(i - 1) Then
+                    DataGridView6.Rows(i).Cells(0).Style.BackColor = Color.Red
+                Else
+                    DataGridView6.Rows(i).Cells(0).Style.BackColor = Color.LightGreen
+                End If
+            Next
+
+            '-------------cummulative weight must decrease-----------
+            DataGridView6.Rows(0).Cells(1).Style.BackColor = Color.LightGreen
+            For i = 1 To DataGridView6.Rows.Count - 1
+                If _cees(c_nr).class_load(i) >= _cees(c_nr).class_load(i - 1) Then
+                    DataGridView6.Rows(i).Cells(1).Style.BackColor = Color.Red
+                Else
+                    DataGridView6.Rows(i).Cells(1).Style.BackColor = Color.LightGreen
+                End If
+            Next
         Else
-            'MessageBox.Show("Error in line 1946")
+            MessageBox.Show("Error in line 2209")
         End If
     End Sub
     Private Sub Calc_cycl_weight()
@@ -2642,9 +2650,12 @@ Public Class Form1
                 DataGridView6.Rows(row).Cells(0).Value = "-"
                 DataGridView6.Rows(row).Cells(1).Value = "-"
             End If
-
         Next
-        ' DataGridView6.AutoResizeColumns()
+
     End Sub
 
+    Private Sub DataGridView6_CellEndEdit(sender As Object, e As DataGridViewCellEventArgs) Handles DataGridView6.CellEndEdit
+        'New data entered by user
+        Calc_sequence()
+    End Sub
 End Class
