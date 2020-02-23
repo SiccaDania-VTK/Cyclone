@@ -17,9 +17,9 @@ Imports Word = Microsoft.Office.Interop.Word
     Public Spare_str2 As String     'For future use
     Public Spare_str3 As String     'For future use
 
-    Public FlowT As Double          'Air flow [Am3/h]
-    Public dia_big() As Double      'Particle diameter inlet [mu]
-    Public class_load() As Double   'group_weight_cum in de inlaat stroom [% weight]
+    Public FlowT As Double          '[Am3/h] Air flow 
+    Public dia_big() As Double      '[mu] Particle diameter inlet cyclone 
+    Public class_load() As Double   '[% weight] group_weight_cum in de inlaat stroom 
     Public ro_gas As Double         '[kg/hr] Density 
     Public ro_solid As Double       '[kg/hr] Density 
     Public visco As Double          '[Centi Poise] Visco in 
@@ -277,9 +277,6 @@ Public Class Form1
 
         user_list.Add("Peterdw")
         hard_disk_list.Add("134309552747")          'VTK PC, Peter de Wild
-
-        user_list.Add("Abi")
-        hard_disk_list.Add("174741803447")          'VTK Laptop, Ab van Iterson <a.van.Iterson@vtk.nl>
 
         nu = Now()
         nu2 = CDate("2020-04-01 00:00:00")
@@ -2113,17 +2110,15 @@ Public Class Form1
 
         TextBox66.Text = _cees(ks).Efficiency2.ToString("F3")       '[%] stage #2
         TextBox109.Text = _cees(ks).Efficiency2.ToString("F3")      '[%]
-
         TextBox62.Text = _cees(ks).emmis2_Am3.ToString("F4")        '[gram/Am3] emmissie stage #2
         TextBox108.Text = _cees(ks).emmis2_Am3.ToString("F4")       '[gram/Am3] emmissie stage #2
         TextBox134.Text = _cees(ks).emmis2_Am3.ToString("F4")       '[gram/Am3] emmissie stage #2
         TextBox142.Text = _cees(ks).emmis2_Nm3.ToString("F4")       '[gram/Nm3] emmissie stage #2
-
-        TextBox143.Text = _cees(ks).dust2_Nm3.ToString("F1")    'Dust load [gram/Nm3]
+        TextBox143.Text = _cees(ks).dust2_Nm3.ToString("F1")        'Dust load [gram/Nm3]
     End Sub
-    'Determine the particle diameter class upper and lower limits
-    ' Private Function Calc_diam_classification(dia As Double, noi As Integer) As Double
+
     Public Sub Calc_diam_classification(ByRef g As GvG_Calc_struct, c_nr As Integer)
+        'Determine the particle diameter class 
         If g.dia > 0 Then
             '=========== first entered data point ===========
             If (g.dia < _cees(c_nr).dia_big(0)) Then
@@ -2135,21 +2130,20 @@ Public Class Form1
             End If
 
             '=========== mid section ===========
-
             For i = 1 To (_cees(c_nr).dia_big.Count - 1)
-                If (g.dia >= _cees(c_nr).dia_big(i - 1) And g.dia < _cees(c_nr).dia_big(i)) Then
-                    g.i_d1 = _cees(c_nr).dia_big(i - 1)     'Diameter small [mu]
-                    g.i_d2 = _cees(c_nr).dia_big(i)         'Diameter big [mu]
-                    g.i_p1 = _cees(c_nr).class_load(i - 1)  'User lower input percentage
-                    g.i_p2 = _cees(c_nr).class_load(i)      'User upper input percentage
-                    g.i_grp = i                             'Group 1 up and including 11
+                If (g.dia >= _cees(c_nr).dia_big(i - 1) And g.dia < _cees(c_nr).dia_big(i) And _cees(c_nr).dia_big(i) > 0) Then
+                    g.i_d1 = _cees(c_nr).dia_big(i - 1)         'Diameter small [mu]
+                    g.i_d2 = _cees(c_nr).dia_big(i)             'Diameter big [mu]
+                    g.i_p1 = _cees(c_nr).class_load(i - 1)      'User lower input percentage
+                    g.i_p2 = _cees(c_nr).class_load(i)          'User upper input percentage
+                    g.i_grp = i                                 'Group 1 up and including 11
                 End If
             Next
 
             '=========== last entered data point ===========
             Dim z As Integer = (_cees(c_nr).dia_big.Count - 1)
 
-            If (g.dia >= _cees(c_nr).dia_big(z)) Then
+            If (g.dia >= _cees(c_nr).dia_big(z) And _cees(c_nr).dia_big(z) > 0) Then
                 g.i_d1 = _cees(c_nr).dia_big(z)    'Diameter small [mu]
                 g.i_d2 = 1000                      'Diameter big [mu]
                 g.i_p1 = _cees(c_nr).class_load(z) 'User lower input percentage
@@ -2173,10 +2167,8 @@ Public Class Form1
                 w(i) = _cees(c_nr).class_load(j) - Abs(qsum(i))
             Next
 
-            '----------- present "Increment [%] per class" --------------
-            '    DataGridView6.Rows(row).Cells(2).Value = Round(w(w.Length - row) * 100, 1)
 
-            '-------------diameters must increase-----------
+            '---------CHECK- diameters must increase-----------
             DataGridView6.Rows(0).Cells(0).Style.BackColor = Color.LightGreen
             For i = 1 To DataGridView6.Rows.Count - 1
                 If _cees(c_nr).dia_big(i) <= _cees(c_nr).dia_big(i - 1) Then
@@ -2186,17 +2178,7 @@ Public Class Form1
                 End If
             Next
 
-            '-------------diameters must increase-----------
-            DataGridView6.Rows(0).Cells(0).Style.BackColor = Color.LightGreen
-            For i = 1 To DataGridView6.Rows.Count - 1
-                If _cees(c_nr).dia_big(i) <= _cees(c_nr).dia_big(i - 1) Then
-                    DataGridView6.Rows(i).Cells(0).Style.BackColor = Color.Red
-                Else
-                    DataGridView6.Rows(i).Cells(0).Style.BackColor = Color.LightGreen
-                End If
-            Next
-
-            '-------------cummulative weight must decrease-----------
+            '---------CHECK-cummulative weight must decrease-----------
             DataGridView6.Rows(0).Cells(1).Style.BackColor = Color.LightGreen
             For i = 1 To DataGridView6.Rows.Count - 1
                 If _cees(c_nr).class_load(i) >= _cees(c_nr).class_load(i - 1) Then
