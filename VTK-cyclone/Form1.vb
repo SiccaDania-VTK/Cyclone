@@ -113,7 +113,7 @@ End Structure
 End Structure
 
 Public Class Form1
-    Public Const no_input_stars As Integer = 11
+    Public Const no_input_stars As Integer = 50
     Public _cyl1_dim(20) As Double          'Cyclone stage #1 dimensions
     Public _cyl2_dim(20) As Double          'Cyclone stage #2 dimensions
     Public _istep As Double                 '[mu] Particle size calculation step
