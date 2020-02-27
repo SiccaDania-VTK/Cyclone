@@ -26,8 +26,8 @@
     <InstallUrl>\\DCF1\data2%24\Engineering\VBasic\Cyclone\</InstallUrl>
     <ProductName>VTK-Cyclone</ProductName>
     <PublisherName>Pathuis Heavy Industries</PublisherName>
-    <ApplicationRevision>36</ApplicationRevision>
-    <ApplicationVersion>1.0.0.36</ApplicationVersion>
+    <ApplicationRevision>37</ApplicationRevision>
+    <ApplicationVersion>1.0.1.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
@@ -84,7 +84,7 @@
     <SignManifests>false</SignManifests>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>tornado3.ico</ApplicationIcon>
+    <ApplicationIcon>favicon %288%29.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationManifest>My Project\app.manifest</ApplicationManifest>
@@ -220,6 +220,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Fopspeen.PNG" />
+    <Content Include="favicon %288%29.ico" />
     <Content Include="tornado2.ico" />
     <Content Include="tornado3.ico" />
   </ItemGroup>
