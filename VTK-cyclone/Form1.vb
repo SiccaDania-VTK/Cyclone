@@ -1257,11 +1257,11 @@ Public Class Form1
 
         If ComboBox1.SelectedIndex > -1 And ComboBox2.SelectedIndex > -1 And init = True Then
 
-            If String.Equals(ComboBox1.SelectedItem.ToString, "AA...") Then
+            If String.Equals(ComboBox1.SelectedItem.ToString, "AA850") Then
                 numericUpDown5.Value = 300      '[mm] Diameter
             End If
 
-            If String.Equals(ComboBox2.SelectedItem.ToString, "AA...") Then
+            If String.Equals(ComboBox2.SelectedItem.ToString, "AA850") Then
                 NumericUpDown34.Value = 300     '[mm] Diameter
             End If
 
