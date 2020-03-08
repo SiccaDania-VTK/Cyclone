@@ -113,7 +113,7 @@ End Structure
 End Structure
 
 Public Class Form1
-    Public Const no_input_stars As Integer = 50
+    Public Const no_PDS_input_points As Integer = 50
     Public _cyl1_dim(20) As Double          'Cyclone stage #1 dimensions
     Public _cyl2_dim(20) As Double          'Cyclone stage #2 dimensions
     Public _istep As Double                 '[mu] Particle size calculation step
@@ -260,8 +260,8 @@ Public Class Form1
         'Initialize the arrays in the struct
         For i = 0 To _cees.Length - 1
             _cees(i).case_name = ""
-            ReDim _cees(i).dia_big(no_input_stars)       'Initialize diameter groups
-            ReDim _cees(i).class_load(no_input_stars)    'Initialize
+            ReDim _cees(i).dia_big(no_PDS_input_points)       'Initialize diameter groups
+            ReDim _cees(i).class_load(no_PDS_input_points)    'Initialize
             ReDim _cees(i).stage1(150)              'Initialize
             ReDim _cees(i).stage2(150)              'Initialize
         Next
@@ -812,10 +812,17 @@ Public Class Form1
 
         If init = False Then Exit Sub       'Prevent out of range error
 
+
+        '==== read dgv and do not trip on "-" ====
         '[mu] Class upper particle diameter limit diameter
         'Percentale van de inlaat stof belasting [%]
+        Dim a, b As Double
+
         For row = 0 To _cees(c_nr).dia_big.Count - 1
-            If Not DataGridView6.Rows(row).Cells(0).Value.ToString.Equals("-") And Not DataGridView6.Rows(row).Cells(1).Value.ToString.Equals("-") Then
+            Double.TryParse(DataGridView6.Rows(row).Cells(0).Value.ToString, a)
+            Double.TryParse(DataGridView6.Rows(row).Cells(1).Value.ToString, b)
+
+            If a > 0 And b > 0 Then
                 _cees(c_nr).dia_big(row) = CDbl(DataGridView6.Rows(row).Cells(0).Value)
                 _cees(c_nr).class_load(row) = CDbl(DataGridView6.Rows(row).Cells(1).Value) / 100
             End If
@@ -1255,26 +1262,26 @@ Public Class Form1
 
 
             Dust_load_correction(case_nr)
-                Get_input_calc_1(case_nr)       'This is the CASE number
-                Calc_part_dia_loss(case_nr)
+            Get_input_calc_1(case_nr)       'This is the CASE number
+            Calc_part_dia_loss(case_nr)
 
-                Calc_stage1(case_nr)            'Calc according stage #1
-                Calc_stage2(case_nr)            'Calc according stage #2
+            Calc_stage1(case_nr)            'Calc according stage #1
+            Calc_stage2(case_nr)            'Calc according stage #2
 
-                Calc_stage1(case_nr)            'Calc according stage #1
-                Calc_stage2(case_nr)            'Calc according stage #2
+            Calc_stage1(case_nr)            'Calc according stage #1
+            Calc_stage2(case_nr)            'Calc according stage #2
 
-                Calc_stage1(case_nr)            'Calc according stage #1
-                Calc_stage2(case_nr)            'Calc according stage #2
-                Calc_stage1_2_comb()            'Calc stage #1 and stage #2 combined
+            Calc_stage1(case_nr)            'Calc according stage #1
+            Calc_stage2(case_nr)            'Calc according stage #2
+            Calc_stage1_2_comb()            'Calc stage #1 and stage #2 combined
 
-                Present_loss_grid1()            'Present the results stage #1
-                Present_loss_grid2()            'Present the results stage #2
-                Present_Datagridview1(case_nr)  'Present the results stage #1
+            Present_loss_grid1()            'Present the results stage #1
+            Present_loss_grid2()            'Present the results stage #2
+            Present_Datagridview1(case_nr)  'Present the results stage #1
 
-                Draw_chart1(Chart1)             'Present the results 
-                Draw_chart2(Chart2)             'Present the results loss curve
-            End If
+            Draw_chart1(Chart1)             'Present the results 
+            Draw_chart2(Chart2)             'Present the results loss curve
+        End If
     End Sub
 
     Private Sub Button3_Click(sender As Object, e As EventArgs) Handles Button3.Click
@@ -1929,11 +1936,6 @@ Public Class Form1
             _cees(ks).stage1(i).loss_overall = Calc_verlies(_cees(ks).stage1(i).d_ave, False, _cees(ks).Kstokes1, 1)   '[-] loss overall
             Calc_verlies_corrected(_cees(ks).stage1(i), 1)                                              '[-] loss overall corrected
 
-
-            'If _cees(ks).stage1(i).loss_overall_C <> _cees(ks).stage1(i).loss_overall Then
-            '    MsgBox(_cees(ks).stage1(i).loss_overall_C.ToString & ",  " & _cees(ks).stage1(i).loss_overall.ToString)
-            'End If
-
             If CheckBox2.Checked Then
                 _cees(ks).stage1(i).catch_chart = (1 - _cees(ks).stage1(i).loss_overall_C) * 100  '[%] Corrected
             Else
@@ -1943,7 +1945,7 @@ Public Class Form1
             Calc_diam_classification(_cees(ks).stage1(i), ks)                                   'Classify this part size
 
             '====to prevent silly results====
-            If _cees(ks).stage1(i).i_grp <> 11 Then
+            If _cees(ks).stage1(i).i_grp < no_PDS_input_points Then
                 Calc_k_and_m(_cees(ks).stage1(i))
                 _cees(ks).stage1(i).psd_cum = Math.E ^ (-((_cees(ks).stage1(i).dia / _cees(ks).stage1(i).i_m) ^ _cees(ks).stage1(i).i_k))
                 _cees(ks).stage1(i).psd_cum_pro = _cees(ks).stage1(i).psd_cum * 100
@@ -1954,6 +1956,7 @@ Public Class Form1
                 _cees(ks).stage1(i).psd_cum = 0
                 _cees(ks).stage1(i).psd_cum_pro = 0
                 _cees(ks).stage1(i).psd_dif = 0
+                _cees(ks).stage1(i).i_grp = 0
             End If
 
             _cees(ks).stage1(i).loss_abs = _cees(ks).stage1(i).loss_overall * _cees(ks).stage1(i).psd_dif
@@ -2040,7 +2043,7 @@ Public Class Form1
         _cees(ks).stage2(0).catch_chart = (1 - _cees(ks).stage2(0).loss_overall_C) * 100    '[%]
         Calc_diam_classification(_cees(ks).stage2(0), ks)                                  'groepnummer
 
-        If _cees(ks).stage2(i).i_grp <> 11 Then
+        If _cees(ks).stage2(i).i_grp < no_PDS_input_points Then
             Calc_k_and_m(_cees(ks).stage2(0))
             _cees(ks).stage2(0).psd_cum = Math.E ^ (-((_cees(ks).stage2(0).dia / _cees(ks).stage2(0).i_m) ^ _cees(ks).stage2(0).i_k))
             _cees(ks).stage2(0).psd_cum_pro = _cees(ks).stage2(0).psd_cum * 100 '[%]
@@ -2100,7 +2103,8 @@ Public Class Form1
             Calc_diam_classification(_cees(ks).stage2(i), ks)                                     'Calc
             _cees(ks).stage2(i).i_grp = _cees(ks).stage1(i).i_grp
 
-            If _cees(ks).stage2(i).i_grp <> 11 Then
+
+            If _cees(ks).stage2(i).i_grp < no_PDS_input_points Then
                 Calc_k_and_m(_cees(ks).stage2(i))
                 _cees(ks).stage2(i).psd_cum = Math.E ^ (-(_cees(ks).stage2(i).dia / _cees(ks).stage2(i).i_m) ^ _cees(ks).stage2(i).i_k)
                 _cees(ks).stage2(i).psd_cum_pro = _cees(ks).stage2(i).psd_cum * 100 '[%]
@@ -2158,11 +2162,17 @@ Public Class Form1
 
     Public Sub Calc_diam_classification(ByRef g As GvG_Calc_struct, c_nr As Integer)
         'Determine the particle diameter class 
+        Dim grp_count As Integer = 0
+
+        '=========== Determine how many PSD groups are there? ============
+        For i = 0 To no_PDS_input_points - 1
+            If (_cees(c_nr).dia_big(i) > 0) And (_cees(c_nr).class_load(i) > 0) Then grp_count += 1
+        Next
+        TextBox27.Text = grp_count.ToString
+        g.i_grp = 0
+
+
         If g.dia > 0 Then
-
-            '=========== Number of PSD input stars ===========
-            Dim z As Integer = no_input_stars
-
             '=========== first entered data point ===========
             If (g.dia < _cees(c_nr).dia_big(0)) Then
                 g.i_d1 = 0.000                      'Diameter small [mu]
@@ -2173,7 +2183,7 @@ Public Class Form1
             End If
 
             '=========== mid section ===========
-            For i = 1 To z - 1
+            For i = 1 To grp_count
                 If (g.dia >= _cees(c_nr).dia_big(i - 1) And g.dia < _cees(c_nr).dia_big(i) And _cees(c_nr).dia_big(i) > 0) Then
                     g.i_d1 = _cees(c_nr).dia_big(i - 1)         'Diameter small [mu]
                     g.i_d2 = _cees(c_nr).dia_big(i)             'Diameter big [mu]
@@ -2184,25 +2194,25 @@ Public Class Form1
             Next
 
             '=========== last entered PSD data point ===========
-            If (g.dia >= _cees(c_nr).dia_big(z) And _cees(c_nr).dia_big(z) > 0) Then
-                g.i_d1 = _cees(c_nr).dia_big(z)    'Diameter small [mu]
-                g.i_d2 = 1000                      'Diameter big [mu]
-                g.i_p1 = _cees(c_nr).class_load(z) 'User lower input percentage
-                g.i_p2 = 0                         'User upper input percentage
-                g.i_grp = z                        'Last PSD input star
+            If (g.dia >= _cees(c_nr).dia_big(no_PDS_input_points) And _cees(c_nr).dia_big(no_PDS_input_points) > 0) Then
+                g.i_d1 = _cees(c_nr).dia_big(no_PDS_input_points)    'Diameter small [mu]
+                g.i_d2 = 1000                                        'Diameter big [mu]
+                g.i_p1 = _cees(c_nr).class_load(no_PDS_input_points) 'User lower input percentage
+                g.i_p2 = 0                                           'User upper input percentage
+                g.i_grp = grp_count                                 'Last PSD input star
             End If
 
-            Dim w(z) As Double  'Individual particle class weights 
-            Dim q(z) As Double  'Individual particle class weights 
-            Dim qsum(z) As Double  'Sum of weights
+            Dim w(no_PDS_input_points) As Double    'Individual particle class weights 
+            Dim q(no_PDS_input_points) As Double    'Individual particle class weights 
+            Dim qsum(no_PDS_input_points) As Double 'Sum of weights
             Dim j As Integer
 
             qsum(0) = 0
-            For i = 1 To z - 1
+            For i = 1 To no_PDS_input_points - 1
                 qsum(i) = qsum(i - 1) - w(i - 1)
             Next
 
-            For i = 0 To z - 1
+            For i = 0 To no_PDS_input_points - 1
                 j = (w.Length - 1 - i)
                 w(i) = _cees(c_nr).class_load(j) - Abs(qsum(i))
             Next
@@ -2651,9 +2661,13 @@ Public Class Form1
     Private Sub Build_dgv6()
         DataGridView6.ColumnCount = 3
         DataGridView6.Rows.Clear()
-        DataGridView6.Rows.Add(no_input_stars)
+        DataGridView6.Rows.Add(no_PDS_input_points)
         DataGridView6.EnableHeadersVisualStyles = False           'For backcolor
         DataGridView6.RowHeadersVisible = False
+
+        DataGridView6.Columns(0).DefaultCellStyle.Format = "N2"
+        DataGridView6.Columns(1).DefaultCellStyle.Format = "N2"
+        DataGridView6.Columns(2).DefaultCellStyle.Format = "N2"
 
         DataGridView6.Columns(0).HeaderText = "Upper Dia [um]"
         DataGridView6.Columns(1).HeaderText = "Cumm [%] tot wght"
@@ -2699,8 +2713,8 @@ Public Class Form1
                 DataGridView6.Rows(row).Cells(0).Value = CDbl(words(0))
                 DataGridView6.Rows(row).Cells(1).Value = CDbl(words(1))
             Else
-                DataGridView6.Rows(row).Cells(0).Value = "-"
-                DataGridView6.Rows(row).Cells(1).Value = "-"
+                DataGridView6.Rows(row).Cells(0).Value = ""
+                DataGridView6.Rows(row).Cells(1).Value = ""
             End If
         Next
     End Sub
@@ -2714,8 +2728,8 @@ Public Class Form1
                 DataGridView6.Rows(row).Cells(0).Value = CDbl(words(0))
                 DataGridView6.Rows(row).Cells(1).Value = CDbl(words(1))
             Else
-                DataGridView6.Rows(row).Cells(0).Value = "-"
-                DataGridView6.Rows(row).Cells(1).Value = "-"
+                DataGridView6.Rows(row).Cells(0).Value = ""
+                DataGridView6.Rows(row).Cells(1).Value = ""
             End If
         Next
     End Sub
@@ -2729,8 +2743,8 @@ Public Class Form1
                 DataGridView6.Rows(row).Cells(0).Value = CDbl(words(0))
                 DataGridView6.Rows(row).Cells(1).Value = CDbl(words(1))
             Else
-                DataGridView6.Rows(row).Cells(0).Value = "-"
-                DataGridView6.Rows(row).Cells(1).Value = "-"
+                DataGridView6.Rows(row).Cells(0).Value = ""
+                DataGridView6.Rows(row).Cells(1).Value = ""
             End If
         Next
     End Sub
@@ -2757,8 +2771,8 @@ Public Class Form1
                 DataGridView6.Rows(row).Cells(0).Value = CDbl(words(0))
                 DataGridView6.Rows(row).Cells(1).Value = CDbl(words(1))
             Else
-                DataGridView6.Rows(row).Cells(0).Value = "-"
-                DataGridView6.Rows(row).Cells(1).Value = "-"
+                DataGridView6.Rows(row).Cells(0).Value = ""
+                DataGridView6.Rows(row).Cells(1).Value = ""
             End If
         Next
     End Sub
