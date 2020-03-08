@@ -214,8 +214,8 @@ Public Class Form1
     "40;   10",
     "50;   6.7",
     "60;   4.5",
-    "80;   2"}
-
+    "80;   2",
+    "100;  0"}
 
     'Start screen (cumulatief[%], particle diameter[mu])
     ReadOnly start_screen_psd() As String = {
@@ -254,6 +254,7 @@ Public Class Form1
         DataGridView1.ColumnCount = 10
         DataGridView1.Rows.Clear()
         DataGridView1.Rows.Add(23)
+        DataGridView1.RowHeadersVisible = False
         DataGridView1.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.DisplayedCells
 
         'Initialize the arrays in the struct
@@ -1719,6 +1720,7 @@ Public Class Form1
         DataGridView2.ColumnCount = 18
         DataGridView2.Rows.Clear()
         DataGridView2.Rows.Add(111)
+        DataGridView2.RowHeadersVisible = False
 
         DataGridView2.EnableHeadersVisualStyles = False                     'For backcolor
         DataGridView2.Columns(0).HeaderText = "Dia upper [mu]"              '
@@ -1784,6 +1786,7 @@ Public Class Form1
         DataGridView3.ColumnCount = 19
         DataGridView3.Rows.Clear()
         DataGridView3.Rows.Add(111)
+        DataGridView3.RowHeadersVisible = False
 
         DataGridView3.EnableHeadersVisualStyles = False                         'For backcolor
         DataGridView3.Columns(0).HeaderText = "Dia upper [mu]"                  '
@@ -2207,7 +2210,7 @@ Public Class Form1
             '---------CHECK- diameters must increase-----------
             DataGridView6.Rows(0).Cells(0).Style.BackColor = Color.LightGreen
             For i = 1 To DataGridView6.Rows.Count - 1
-                If _cees(c_nr).dia_big(i) <= _cees(c_nr).dia_big(i - 1) Then
+                If _cees(c_nr).dia_big(i) <= _cees(c_nr).dia_big(i - 1) And _cees(c_nr).dia_big(i) <> 0 Then
                     DataGridView6.Rows(i).Cells(0).Style.BackColor = Color.Red
                 Else
                     DataGridView6.Rows(i).Cells(0).Style.BackColor = Color.LightGreen
@@ -2217,7 +2220,7 @@ Public Class Form1
             '---------CHECK-cummulative weight must decrease-----------
             DataGridView6.Rows(0).Cells(1).Style.BackColor = Color.LightGreen
             For i = 1 To DataGridView6.Rows.Count - 1
-                If _cees(c_nr).class_load(i) >= _cees(c_nr).class_load(i - 1) Then
+                If _cees(c_nr).class_load(i) >= _cees(c_nr).class_load(i - 1) And _cees(c_nr).class_load(i) <> 0 Then
                     DataGridView6.Rows(i).Cells(1).Style.BackColor = Color.Red
                 Else
                     DataGridView6.Rows(i).Cells(1).Style.BackColor = Color.LightGreen
@@ -2434,6 +2437,7 @@ Public Class Form1
             DataGridView4.Rows.Clear()
             DataGridView4.Rows.Add(111)
             DataGridView4.EnableHeadersVisualStyles = False                         'For backcolor
+            DataGridView4.RowHeadersVisible = False
 
             DataGridView4.Columns(0).HeaderText = "Dia class [mu]"                  'Chart
             DataGridView4.Columns(1).HeaderText = "In abs [g/Am3]"
@@ -2631,6 +2635,7 @@ Public Class Form1
         DataGridView5.Rows.Clear()
         DataGridView5.Rows.Add(DSM_psd_example.Length - 1)
         DataGridView5.EnableHeadersVisualStyles = False           'For backcolor
+        DataGridView5.RowHeadersVisible = False
 
         DataGridView5.Columns(0).HeaderText = "Dia [um]"
         DataGridView5.Columns(1).HeaderText = "Cumm [%]"
