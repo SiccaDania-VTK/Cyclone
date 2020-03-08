@@ -818,13 +818,18 @@ Public Class Form1
         'Percentale van de inlaat stof belasting [%]
         Dim a, b As Double
 
-        For row = 0 To _cees(c_nr).dia_big.Count - 1
+
+        For row = 0 To no_PDS_input_points - 1 '_cees(c_nr).dia_big.Count - 1
             Double.TryParse(DataGridView6.Rows(row).Cells(0).Value.ToString, a)
             Double.TryParse(DataGridView6.Rows(row).Cells(1).Value.ToString, b)
 
             If a > 0 And b > 0 Then
                 _cees(c_nr).dia_big(row) = CDbl(DataGridView6.Rows(row).Cells(0).Value)
                 _cees(c_nr).class_load(row) = CDbl(DataGridView6.Rows(row).Cells(1).Value) / 100
+            Else
+                _cees(c_nr).dia_big(row) = 0
+                _cees(c_nr).class_load(row) = 0
+
             End If
         Next
 
