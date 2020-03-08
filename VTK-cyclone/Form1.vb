@@ -135,7 +135,7 @@ Public Class Form1
     "AC-850+afz;0.203;0.457;0.6;0.564;0.3;0.307;0.428;0.892;3.797;1.312;2.485;0.4;0.6;0.6;0.25",
     "AC-1850;0.136;0.31;0.6;0.53;0.3;0.15;0.25;0.892;3.797;1.312;2.485;0.4;0.6;0.6;0.25",
     "AC-1850+afz;0.136;0.31;0.6;0.53;0.3;0.15;0.25;0.892;3.797;1.312;2.485;0.4;0.6;0.6;0.25",
-    "AA...;0.203;0.457;0.6;0.564;0.3;0.307;0.428;0.892;3.797;1.312;2.485;0.4;0.6;0.6;0.25"      'NOT UP TO DATE CHECK !!!!!!
+    "AA850;0.203;0.457;0.6;0.564;0.3;0.307;0.428;0.892;3.797;1.312;2.485;0.4;0.6;0.6;0.25"      'NOT UP TO DATE CHECK !!!!!!
     }
 
     'Nieuwe reken methode, verdeling volgens Weibull verdeling
@@ -152,7 +152,7 @@ Public Class Form1
     "AC850+afz; 10;     0.5187; 1.6412; 0.8386;     4.2781;     0.06777;0.3315; 0;      0",
     "AC1850;    9.3;    0.50;   1.1927; 0.5983;     -0.196;     1.3687; 0.6173; 14.5;   0",
     "AC1850+afz;10.45;  0.4617; 0.2921; 0.4560;     -0.2396;    0.1269; 0.3633; 0;      0",
-    "AA...;     7.8;    0.52;   1.9418; 0.73705;    -0.1060;    2.0197; 0.7077; 9.5;    6.172"
+    "AA850;     7.8;    0.52;   1.9418; 0.73705;    -0.1060;    2.0197; 0.7077; 9.5;    6.172"
     }
 
     'DSM polymer power DSM Geleen (cumulatief[%], particle diameter[mu])
@@ -204,6 +204,18 @@ Public Class Form1
     "80;    20",
     "150;   4",
     "200;   1"}
+
+    'GvG Excelsheet, Cumulatief[%], particle diameter[mu])
+    ReadOnly GvG_excel() As String = {
+    "10;   99.2",
+    "15;   85.2",
+    "20;   57.5",
+    "30;   15.4",
+    "40;   10",
+    "50;   6.7",
+    "60;   4.5",
+    "80;   2"}
+
 
     'Start screen (cumulatief[%], particle diameter[mu])
     ReadOnly start_screen_psd() As String = {
@@ -1711,7 +1723,7 @@ Public Class Form1
         DataGridView2.EnableHeadersVisualStyles = False                     'For backcolor
         DataGridView2.Columns(0).HeaderText = "Dia upper [mu]"              '
         DataGridView2.Columns(1).HeaderText = "Dia (aver.) class [mu]"      '         
-        DataGridView2.Columns(2).HeaderText = "Dia/k [-]"                   '
+        DataGridView2.Columns(2).HeaderText = "Dia/ k_stokes [-]"            '
         DataGridView2.Columns(3).HeaderText = "Loss overall [-]"            '
         DataGridView2.Columns(4).HeaderText = "Loss overall Corrected"      '
         DataGridView2.Columns(5).HeaderText = "Grade eff. (st1) [%]"        'Catch [%]
@@ -1776,7 +1788,7 @@ Public Class Form1
         DataGridView3.EnableHeadersVisualStyles = False                         'For backcolor
         DataGridView3.Columns(0).HeaderText = "Dia upper [mu]"                  '
         DataGridView3.Columns(1).HeaderText = "Dia (aver.) class [mu]"          '
-        DataGridView3.Columns(2).HeaderText = "Dia/k [-]"                       '
+        DataGridView3.Columns(2).HeaderText = "Dia/ k_stokes [-]"                       '
         DataGridView3.Columns(3).HeaderText = "Loss overall [-]"                '
         DataGridView3.Columns(4).HeaderText = "Loss overall Corrected [-]"      '
         DataGridView3.Columns(5).HeaderText = "Grade eff. (st2) [%]"            'Catch chart [%]
@@ -2632,7 +2644,6 @@ Public Class Form1
         Next
     End Sub
     Private Sub Build_dgv6()
-        Dim words() As String
         DataGridView6.ColumnCount = 3
         DataGridView6.Rows.Clear()
         DataGridView6.Rows.Add(no_input_stars)
@@ -2648,7 +2659,50 @@ Public Class Form1
         DataGridView6.Columns(2).Width = 60
 
         '======== Fill the DVG with example data =======
+        PSD_start_screen_psd()
+    End Sub
 
+    Private Sub DataGridView6_CellEndEdit(sender As Object, e As DataGridViewCellEventArgs) Handles DataGridView6.CellEndEdit
+        'New data entered by user
+        Calc_sequence()
+    End Sub
+
+    Private Sub Button13_Click(sender As Object, e As EventArgs) Handles Button13.Click
+        PSD_maltodesxtrine()
+        Calc_sequence()
+    End Sub
+
+    Private Sub Button14_Click(sender As Object, e As EventArgs) Handles Button14.Click
+        PSD_GvG_excel()
+        Calc_sequence()
+    End Sub
+    Private Sub Button15_Click(sender As Object, e As EventArgs) Handles Button15.Click
+        PSD_start_screen_psd()
+        Calc_sequence()
+    End Sub
+    Private Sub Button16_Click(sender As Object, e As EventArgs) Handles Button16.Click
+        DSM_psd()
+        Calc_sequence()
+    End Sub
+
+    Private Sub PSD_maltodesxtrine()
+        '======== Fill the DVG with OSD example data =======
+        Dim words() As String
+        For row = 0 To DataGridView6.Rows.Count - 1
+            If row < maltodextrine_psd.Length Then
+                words = maltodextrine_psd(row).Split(CType(";", Char()))
+                DataGridView6.Rows(row).Cells(0).Value = CDbl(words(0))
+                DataGridView6.Rows(row).Cells(1).Value = CDbl(words(1))
+            Else
+                DataGridView6.Rows(row).Cells(0).Value = "-"
+                DataGridView6.Rows(row).Cells(1).Value = "-"
+            End If
+        Next
+    End Sub
+
+    Private Sub PSD_start_screen_psd()
+        '======== Fill the DVG with OSD example data =======
+        Dim words() As String
         For row = 0 To DataGridView6.Rows.Count - 1
             If row < start_screen_psd.Length Then
                 words = start_screen_psd(row).Split(CType(";", Char()))
@@ -2659,11 +2713,50 @@ Public Class Form1
                 DataGridView6.Rows(row).Cells(1).Value = "-"
             End If
         Next
-
     End Sub
 
-    Private Sub DataGridView6_CellEndEdit(sender As Object, e As DataGridViewCellEventArgs) Handles DataGridView6.CellEndEdit
-        'New data entered by user
-        Calc_sequence()
+    Private Sub DSM_psd()
+        '======== Fill the DVG with DSM polymere example data =======
+        Dim words() As String
+        For row = 0 To DataGridView6.Rows.Count - 1
+            If row < DSM_psd_example.Length Then
+                words = DSM_psd_example(row).Split(CType(";", Char()))
+                DataGridView6.Rows(row).Cells(0).Value = CDbl(words(0))
+                DataGridView6.Rows(row).Cells(1).Value = CDbl(words(1))
+            Else
+                DataGridView6.Rows(row).Cells(0).Value = "-"
+                DataGridView6.Rows(row).Cells(1).Value = "-"
+            End If
+        Next
     End Sub
+
+    Private Sub PSD_GvG_excel()
+        TextBox28.Text = "GvG_test_excel"
+        NumericUpDown1.Value = 58900        'Am3/h]
+        NumericUpDown18.Value = 45          '[c]
+        NumericUpDown19.Value = -30         '[mbar]
+        numericUpDown2.Value = 1500         '[kg/m3]
+        numericUpDown3.Value = CDec(1.073)  '[kg/m3]
+        numericUpDown14.Value = CDec(0.02)  '[mPas=cP]
+        NumericUpDown4.Value = 77           '[g/Am3]
+
+        ComboBox1.SelectedIndex = 5     'AC850
+        numericUpDown5.Value = 1250     '[mm] diameter cycloon
+        NumericUpDown20.Value = 6       '[-] parallel cycloon
+
+        '======== Fill the DVG with DSM polymere example data =======
+        Dim words() As String
+        For row = 0 To DataGridView6.Rows.Count - 1
+            If row < GvG_excel.Length Then
+                words = GvG_excel(row).Split(CType(";", Char()))
+                DataGridView6.Rows(row).Cells(0).Value = CDbl(words(0))
+                DataGridView6.Rows(row).Cells(1).Value = CDbl(words(1))
+            Else
+                DataGridView6.Rows(row).Cells(0).Value = "-"
+                DataGridView6.Rows(row).Cells(1).Value = "-"
+            End If
+        Next
+    End Sub
+
+
 End Class
