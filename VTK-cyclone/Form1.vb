@@ -134,7 +134,26 @@ Public Class Form1
     "AC-850;0.203;0.457;0.6;0.564;0.3;0.307;0.428;0.892;3.797;1.312;2.485;0.4;0.6;0.6;0.25",
     "AC-850+afz;0.203;0.457;0.6;0.564;0.3;0.307;0.428;0.892;3.797;1.312;2.485;0.4;0.6;0.6;0.25",
     "AC-1850;0.136;0.31;0.6;0.53;0.3;0.15;0.25;0.892;3.797;1.312;2.485;0.4;0.6;0.6;0.25",
-    "AC-1850+afz;0.136;0.31;0.6;0.53;0.3;0.15;0.25;0.892;3.797;1.312;2.485;0.4;0.6;0.6;0.25"}
+    "AC-1850+afz;0.136;0.31;0.6;0.53;0.3;0.15;0.25;0.892;3.797;1.312;2.485;0.4;0.6;0.6;0.25",
+    "AA...;0.203;0.457;0.6;0.564;0.3;0.307;0.428;0.892;3.797;1.312;2.485;0.4;0.6;0.6;0.25"      'NOT UP TO DATE CHECK !!!!!!
+    }
+
+    'Nieuwe reken methode, verdeling volgens Weibull verdeling
+    'm1,k1,a1 als d < d_krit
+    'm2,k2,a2 als d > d_krit
+    'type; d/krit; m1; k1; a1; m2; k2; a2; drukcoef air;drukcoef dust
+    ReadOnly rekenlijnen() As String = {
+    "AC300;     12.2;   1.15;   7.457;  1.005;      8.5308;     1.6102; 0.4789; 7;      0",
+    "AC350;     10.2;   1.0;    5.3515; 1.0474;     4.4862;     2.4257; 0.6472; 7;      7.927",
+    "AC435;     8.93;   0.69;   4.344;  1.139;      4.2902;     1.3452; 0.5890; 7;      8.26",
+    "AC550;     8.62;   0.527;  3.4708; 0.9163;     3.3211;     1.7857; 0.7104; 7;      7.615",
+    "AC750;     8.3;    0.50;   2.8803; 0.8355;     4.0940;     1.0519; 0.6010; 7.5;    6.606",
+    "AC850;     7.8;    0.52;   1.9418; 0.73705;    -0.1060;    2.0197; 0.7077; 9.5;    6.172",
+    "AC850+afz; 10;     0.5187; 1.6412; 0.8386;     4.2781;     0.06777;0.3315; 0;      0",
+    "AC1850;    9.3;    0.50;   1.1927; 0.5983;     -0.196;     1.3687; 0.6173; 14.5;   0",
+    "AC1850+afz;10.45;  0.4617; 0.2921; 0.4560;     -0.2396;    0.1269; 0.3633; 0;      0",
+    "AA...;     7.8;    0.52;   1.9418; 0.73705;    -0.1060;    2.0197; 0.7077; 9.5;    6.172"
+    }
 
     'DSM polymer power DSM Geleen (cumulatief[%], particle diameter[mu])
     ReadOnly DSM_psd_example() As String = {
@@ -201,20 +220,6 @@ Public Class Form1
     "50;   0.5",
     "60;   0.1"}
 
-    'Nieuwe reken methode, verdeling volgens Weibull verdeling
-    'm1,k1,a1 als d < d_krit
-    'm2,k2,a2 als d > d_krit
-    'type; d/krit; m1; k1; a1; m2; k2; a2; drukcoef air;drukcoef dust
-    ReadOnly rekenlijnen() As String = {
-    "AC300;     12.2;   1.15;   7.457;  1.005;      8.5308;     1.6102; 0.4789; 7;      0",
-    "AC350;     10.2;   1.0;    5.3515; 1.0474;     4.4862;     2.4257; 0.6472; 7;      7.927",
-    "AC435;     8.93;   0.69;   4.344;  1.139;      4.2902;     1.3452; 0.5890; 7;      8.26",
-    "AC550;     8.62;   0.527;  3.4708; 0.9163;     3.3211;     1.7857; 0.7104; 7;      7.615",
-    "AC750;     8.3;    0.50;   2.8803; 0.8355;     4.0940;     1.0519; 0.6010; 7.5;    6.606",
-    "AC850;     7.8;    0.52;   1.9418; 0.73705;    -0.1060;    2.0197; 0.7077; 9.5;    6.172",
-    "AC850+afz; 10;     0.5187; 1.6412; 0.8386;     4.2781;     0.06777;0.3315; 0;      0",
-    "AC1850;    9.3;    0.50;   1.1927; 0.5983;     -0.196;     1.3687; 0.6173; 14.5;   0",
-    "AC1850+afz;10.45;  0.4617; 0.2921; 0.4560;     -0.2396;    0.1269; 0.3633; 0;      0"}
 
     '----------- directory's-----------
     ReadOnly dirpath_Eng As String = "N:\Engineering\VBasic\Cyclone_sizing_input\"
@@ -322,7 +327,8 @@ Public Class Form1
         ComboBox1.SelectedIndex = 2                 'Select Cyclone type AC_435
         ComboBox2.SelectedIndex = 5                 'Select Cyclone type AC_850
 
-        TextBox148.Text = "Het d50 getal geeft de diameter aan waarbij 50% gevangen wordt en 50% verloren gaat." & vbCrLf
+        TextBox148.Text = "Het d50 getal geeft de diameter aan waarbij 50% verloren gat 50% wordt gevangen." & vbCrLf
+        TextBox148.Text = "Het d100 getal geeft de diameter aan waarbij 100% verloren gaat." & vbCrLf
         TextBox148.Text &= " " & vbCrLf
         TextBox148.Text &= "In de cirkel is voor iedere cycloon de verhouding van het d50 getal tov" & vbCrLf
         TextBox148.Text &= "het d50 getal voor AC435 cycloon bij het debiet Qv aangegeven." & vbCrLf
@@ -1225,27 +1231,37 @@ Public Class Form1
         Dim case_nr As Integer = CInt(NumericUpDown30.Value)
 
         If ComboBox1.SelectedIndex > -1 And ComboBox2.SelectedIndex > -1 And init = True Then
+
+            If String.Equals(ComboBox1.SelectedItem.ToString, "AA...") Then
+                numericUpDown5.Value = 300      '[mm] Diameter
+            End If
+
+            If String.Equals(ComboBox2.SelectedItem.ToString, "AA...") Then
+                NumericUpDown34.Value = 300     '[mm] Diameter
+            End If
+
+
             Dust_load_correction(case_nr)
-            Get_input_calc_1(case_nr)       'This is the CASE number
-            Calc_part_dia_loss(case_nr)
+                Get_input_calc_1(case_nr)       'This is the CASE number
+                Calc_part_dia_loss(case_nr)
 
-            Calc_stage1(case_nr)            'Calc according stage #1
-            Calc_stage2(case_nr)            'Calc according stage #2
+                Calc_stage1(case_nr)            'Calc according stage #1
+                Calc_stage2(case_nr)            'Calc according stage #2
 
-            Calc_stage1(case_nr)            'Calc according stage #1
-            Calc_stage2(case_nr)            'Calc according stage #2
+                Calc_stage1(case_nr)            'Calc according stage #1
+                Calc_stage2(case_nr)            'Calc according stage #2
 
-            Calc_stage1(case_nr)            'Calc according stage #1
-            Calc_stage2(case_nr)            'Calc according stage #2
-            Calc_stage1_2_comb()            'Calc stage #1 and stage #2 combined
+                Calc_stage1(case_nr)            'Calc according stage #1
+                Calc_stage2(case_nr)            'Calc according stage #2
+                Calc_stage1_2_comb()            'Calc stage #1 and stage #2 combined
 
-            Present_loss_grid1()            'Present the results stage #1
-            Present_loss_grid2()            'Present the results stage #2
-            Present_Datagridview1(case_nr)  'Present the results stage #1
+                Present_loss_grid1()            'Present the results stage #1
+                Present_loss_grid2()            'Present the results stage #2
+                Present_Datagridview1(case_nr)  'Present the results stage #1
 
-            Draw_chart1(Chart1)             'Present the results 
-            Draw_chart2(Chart2)             'Present the results loss curve
-        End If
+                Draw_chart1(Chart1)             'Present the results 
+                Draw_chart2(Chart2)             'Present the results loss curve
+            End If
     End Sub
 
     Private Sub Button3_Click(sender As Object, e As EventArgs) Handles Button3.Click
@@ -1884,15 +1900,19 @@ Public Class Form1
         _cees(ks).Dmax1 = Calc_dia_particle(perc_smallest_part1, _cees(ks).Kstokes1, 1)     '=100% loss (biggest particle)
         _cees(ks).Dmin1 = _cees(ks).Kstokes1 * fac_m        'diameter smallest particle caught
 
+        ' TextBox24.Text &= "_cees(ks).Kstokes1= " & _cees(ks).Kstokes1.ToString & ",  fac_m= " & fac_m.ToString & ",  _cees(ks).Dmin1= " & _cees(ks).Dmin1.ToString & vbCrLf
+
         '------------ Particle diameter calculation step -----
         _istep = (_cees(ks).Dmax1 / _cees(ks).Dmin2) ^ (1 / 110) 'Calculation step
 
+        TextBox24.Text &= "_istep= " & _istep.ToString & ",  _cees(ks).Dmax1= " & _cees(ks).Dmax1.ToString & vbCrLf
+
         For i = 1 To 110
             _cees(ks).stage1(i).dia = _cees(ks).stage1(i - 1).dia * _istep
-            _cees(ks).stage1(i).d_ave = (_cees(ks).stage1(i - 1).dia + _cees(ks).stage1(i).dia) / 2       'Average diameter
-            _cees(ks).stage1(i).d_ave_K = _cees(ks).stage1(i).d_ave / _cees(ks).Kstokes1        'dia/k_stokes
+            _cees(ks).stage1(i).d_ave = ((_cees(ks).stage1(i - 1).dia + _cees(ks).stage1(i).dia)) / 2   'Average diameter
+            _cees(ks).stage1(i).d_ave_K = _cees(ks).stage1(i).d_ave / _cees(ks).Kstokes1                'dia/k_stokes
             _cees(ks).stage1(i).loss_overall = Calc_verlies(_cees(ks).stage1(i).d_ave, False, _cees(ks).Kstokes1, 1)   '[-] loss overall
-            Calc_verlies_corrected(_cees(ks).stage1(i), 1)                               '[-] loss overall corrected
+            Calc_verlies_corrected(_cees(ks).stage1(i), 1)                                              '[-] loss overall corrected
 
 
             'If _cees(ks).stage1(i).loss_overall_C <> _cees(ks).stage1(i).loss_overall Then
@@ -1900,10 +1920,11 @@ Public Class Form1
             'End If
 
             If CheckBox2.Checked Then
-                _cees(ks).stage1(i).catch_chart = (1 - _cees(ks).stage1(i).loss_overall_C) * 100 '[%] Corrected
+                _cees(ks).stage1(i).catch_chart = (1 - _cees(ks).stage1(i).loss_overall_C) * 100  '[%] Corrected
             Else
                 _cees(ks).stage1(i).catch_chart = (1 - _cees(ks).stage1(i).loss_overall) * 100    '[%] NOT corrected
             End If
+
             Calc_diam_classification(_cees(ks).stage1(i), ks)                                   'Classify this part size
 
             '====to prevent silly results====
@@ -1919,6 +1940,7 @@ Public Class Form1
                 _cees(ks).stage1(i).psd_cum_pro = 0
                 _cees(ks).stage1(i).psd_dif = 0
             End If
+
             _cees(ks).stage1(i).loss_abs = _cees(ks).stage1(i).loss_overall * _cees(ks).stage1(i).psd_dif
             _cees(ks).stage1(i).loss_abs_C = _cees(ks).stage1(i).loss_overall_C * _cees(ks).stage1(i).psd_dif
 
@@ -1927,6 +1949,8 @@ Public Class Form1
             _cees(ks).sum_loss1 += _cees(ks).stage1(i).loss_abs
             _cees(ks).sum_loss_C1 += _cees(ks).stage1(i).loss_abs_C
         Next
+
+
         _cees(ks).loss_total1 = _cees(ks).sum_loss_C1 + ((100 - _cees(ks).sum_psd_diff1) * perc_smallest_part1)
 
         _cees(ks).emmis1_Am3 = NumericUpDown4.Value * (_cees(ks).loss_total1 / 100)  '[g/Am3]
@@ -1958,7 +1982,7 @@ Public Class Form1
 
         '----------- Dust load correction stage #1 ------------------
         If CheckBox2.Checked Then
-            _cees(ks).emmis1_Am3 = _cees(ks).emmis1_Am3
+            _cees(ks).emmis1_Am3 = _cees(ks).emmis1_Am3             '?????????????? Huh check
             _cees(ks).emmis1_Nm3 = _cees(ks).emmis1_Am3 * density_ratio1
             TextBox58.Text = _cees(ks).loss_total1.ToString("F3")    '[%] Corrected 
         Else
@@ -1997,7 +2021,7 @@ Public Class Form1
         _cees(ks).stage2(0).d_ave = _cees(ks).stage2(0).dia / 2                             'Average diameter
         _cees(ks).stage2(0).d_ave_K = _cees(ks).stage2(0).d_ave / _cees(ks).Kstokes2        'dia/k_stokes
         _cees(ks).stage2(0).loss_overall = Calc_verlies(_cees(ks).stage2(0).d_ave_K, False, _cees(ks).Kstokes2, 2)     '[-] loss overall
-        Calc_verlies_corrected(_cees(ks).stage2(0), 2)                               '[-] loss overall corrected
+        Calc_verlies_corrected(_cees(ks).stage2(0), 2)                                      '[-] loss overall corrected
         _cees(ks).stage2(0).catch_chart = (1 - _cees(ks).stage2(0).loss_overall_C) * 100    '[%]
         Calc_diam_classification(_cees(ks).stage2(0), ks)                                  'groepnummer
 
@@ -2044,11 +2068,11 @@ Public Class Form1
         For i = 1 To 110    '=========Stage #2, Grid lines 1...============ 
             If Double.IsNaN(_cees(ks).stage1(ks).dia) Or Double.IsInfinity(_cees(ks).stage1(ks).dia) Then Exit Sub
 
-            _cees(ks).stage2(i).dia = _cees(ks).stage1(i).dia        'Diameter Copy stage #1
-            _cees(ks).stage2(i).d_ave = _cees(ks).stage1(i).d_ave            'Average diameter
-            _cees(ks).stage2(i).d_ave_K = _cees(ks).stage2(i).d_ave / _cees(ks).Kstokes2          'dia/k_stokes
+            _cees(ks).stage2(i).dia = _cees(ks).stage1(i).dia                               'Diameter Copy stage #1
+            _cees(ks).stage2(i).d_ave = _cees(ks).stage1(i).d_ave                           'Average diameter
+            _cees(ks).stage2(i).d_ave_K = _cees(ks).stage2(i).d_ave / _cees(ks).Kstokes2    'dia/k_stokes
             _cees(ks).stage2(i).loss_overall = Calc_verlies(_cees(ks).stage2(i).d_ave, False, _cees(ks).Kstokes2, 2)   '[-] loss overall
-            Calc_verlies_corrected(_cees(ks).stage2(i), 2)                                '[-] loss overall corrected
+            Calc_verlies_corrected(_cees(ks).stage2(i), 2)                                  '[-] loss overall corrected
 
             '------------- Load correction stage #2 -------------------
             If CheckBox3.Checked Then
@@ -2120,6 +2144,10 @@ Public Class Form1
     Public Sub Calc_diam_classification(ByRef g As GvG_Calc_struct, c_nr As Integer)
         'Determine the particle diameter class 
         If g.dia > 0 Then
+
+            '=========== Number of PSD input stars ===========
+            Dim z As Integer = no_input_stars
+
             '=========== first entered data point ===========
             If (g.dia < _cees(c_nr).dia_big(0)) Then
                 g.i_d1 = 0.000                      'Diameter small [mu]
@@ -2130,7 +2158,7 @@ Public Class Form1
             End If
 
             '=========== mid section ===========
-            For i = 1 To (_cees(c_nr).dia_big.Count - 1)
+            For i = 1 To z - 1
                 If (g.dia >= _cees(c_nr).dia_big(i - 1) And g.dia < _cees(c_nr).dia_big(i) And _cees(c_nr).dia_big(i) > 0) Then
                     g.i_d1 = _cees(c_nr).dia_big(i - 1)         'Diameter small [mu]
                     g.i_d2 = _cees(c_nr).dia_big(i)             'Diameter big [mu]
@@ -2140,33 +2168,29 @@ Public Class Form1
                 End If
             Next
 
-            '=========== last entered data point ===========
-            Dim z As Integer = (_cees(c_nr).dia_big.Count - 1)
-
+            '=========== last entered PSD data point ===========
             If (g.dia >= _cees(c_nr).dia_big(z) And _cees(c_nr).dia_big(z) > 0) Then
                 g.i_d1 = _cees(c_nr).dia_big(z)    'Diameter small [mu]
                 g.i_d2 = 1000                      'Diameter big [mu]
                 g.i_p1 = _cees(c_nr).class_load(z) 'User lower input percentage
                 g.i_p2 = 0                         'User upper input percentage
-                g.i_grp = (z + 1)                  'Group 12
+                g.i_grp = z                        'Last PSD input star
             End If
 
-
-            Dim w(11) As Double  'Individual particle class weights
-            Dim q(11) As Double  'Individual particle class weights
-            Dim qsum(11) As Double  'Sum of weights
+            Dim w(z) As Double  'Individual particle class weights 
+            Dim q(z) As Double  'Individual particle class weights 
+            Dim qsum(z) As Double  'Sum of weights
             Dim j As Integer
 
             qsum(0) = 0
-            For i = 1 To q.Length - 1
+            For i = 1 To z - 1
                 qsum(i) = qsum(i - 1) - w(i - 1)
             Next
 
-            For i = 0 To w.Length - 1
+            For i = 0 To z - 1
                 j = (w.Length - 1 - i)
                 w(i) = _cees(c_nr).class_load(j) - Abs(qsum(i))
             Next
-
 
             '---------CHECK- diameters must increase-----------
             DataGridView6.Rows(0).Cells(0).Style.BackColor = Color.LightGreen
@@ -2187,8 +2211,10 @@ Public Class Form1
                     DataGridView6.Rows(i).Cells(1).Style.BackColor = Color.LightGreen
                 End If
             Next
+            Label1.Visible = False  'Error message
         Else
-            MessageBox.Show("Error in line 2209")
+            'MessageBox.Show("Error in Calc_diam_classification")
+            Label1.Visible = True   'Error message
         End If
     End Sub
     Private Sub Calc_cycl_weight()
