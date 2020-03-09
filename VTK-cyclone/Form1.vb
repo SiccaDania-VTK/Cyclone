@@ -1084,25 +1084,29 @@ Public Class Form1
         ks = CInt(NumericUpDown30.Value)        'Case number
 
         '----------------------------- Plot Input stars-----------------------
-        For i = 0 To (_cees(ks).dia_big.Count - 1)        'Number of input data points
+        If CheckBox15.Checked Then
+            For i = 0 To (_cees(ks).dia_big.Count - 1)        'Number of input data points
 
-            'What is the star position
-            a = _cees(ks).dia_big(i)              '[mu] Class upper particle diameter limit diameter
-            b = _cees(ks).class_load(i) * 100     'Percentale van de inlaat stof belasting
+                'What is the star position
+                a = _cees(ks).dia_big(i)              '[mu] Class upper particle diameter limit diameter
+                b = _cees(ks).class_load(i) * 100     'Percentale van de inlaat stof belasting
 
-            '--------------- plot-----------------
-            ch.Series(0).Points.AddXY(a, b)
-            ch.Series(0).Points(i).MarkerStyle = MarkerStyle.Star10
-            ch.Series(0).Points(i).MarkerSize = 15
-        Next
+                '--------------- plot-----------------
+                ch.Series(0).Points.AddXY(a, b)
+                ch.Series(0).Points(i).MarkerStyle = MarkerStyle.Star10
+                ch.Series(0).Points(i).MarkerSize = 15
+            Next
+            ch.Series(0).Points(5).Label = "Input"
+        End If
 
         '------ PSD Input Rosin Rammler stage #1 -------------
-        For h = 0 To 110 Step 3   'Fill line chart
-            a = _cees(ks).stage1(h).dia
-            b = _cees(ks).stage1(h).psd_cum_pro
-            ch.Series(1).Points.AddXY(a, b)
-        Next h
-
+        If CheckBox14.Checked Then
+            For h = 0 To 110 Step 3   'Fill line chart
+                a = _cees(ks).stage1(h).dia
+                b = _cees(ks).stage1(h).psd_cum_pro
+                ch.Series(1).Points.AddXY(a, b)
+            Next h
+        End If
 
         '------ Plot Stage #2 output-------------
         '------ Data from DataGridView2 -------------
@@ -1119,8 +1123,8 @@ Public Class Form1
         Next h
 
         '----- labels on chart ------------
-        ch.Series(0).Points(5).Label = "Input"
         ch.Series(4).Points(30).Label = "Eff #1"
+
         If CheckBox6.Checked Then ch.Series(5).Points(45).Label = "Eff #2"
 
         '------ Data from DataGridView4 -------------
@@ -1133,7 +1137,6 @@ Public Class Form1
 
             '------- Plot stage #2  --------
             If CheckBox6.Checked Then
-                'loss2 = CDbl((DataGridView4.Rows(h).Cells(8).Value))   'get data Loss 2
                 loss2 = CDbl((DataGridView3.Rows(h).Cells(14).Value))   'get data Loss 2
 
                 b = CDbl((DataGridView4.Rows(h).Cells(9).Value))        'get data Eff 1&2 [%]
@@ -1249,7 +1252,7 @@ Public Class Form1
         ch.Series(0).Points(6).Label = "Load correction"
     End Sub
 
-    Private Sub Button2_Click(sender As Object, e As EventArgs) Handles TabPage9.Enter, CheckBox6.CheckedChanged, CheckBox7.CheckedChanged, CheckBox4.CheckedChanged, CheckBox9.CheckedChanged, CheckBox8.CheckedChanged, CheckBox10.CheckedChanged, CheckBox5.CheckedChanged, CheckBox12.CheckedChanged, CheckBox11.CheckedChanged, CheckBox1.CheckedChanged, CheckBox13.CheckedChanged
+    Private Sub Button2_Click(sender As Object, e As EventArgs) Handles TabPage9.Enter, CheckBox6.CheckedChanged, CheckBox7.CheckedChanged, CheckBox4.CheckedChanged, CheckBox9.CheckedChanged, CheckBox8.CheckedChanged, CheckBox10.CheckedChanged, CheckBox5.CheckedChanged, CheckBox12.CheckedChanged, CheckBox11.CheckedChanged, CheckBox1.CheckedChanged, CheckBox13.CheckedChanged, CheckBox14.CheckedChanged, CheckBox15.CheckedChanged
         Calc_sequence()
     End Sub
     Private Sub Calc_sequence()
@@ -1865,6 +1868,10 @@ Public Class Form1
         '==== preventing errors =====
         If Double.IsNaN(k) Then k = 1
         If Double.IsNaN(m) Then m = 1
+        'Debug.WriteLine("")
+        'Debug.WriteLine("g.i_p1= " & g.i_p1.ToString & ", g.i_p2= " & g.i_p2.ToString)
+        'Debug.WriteLine("g.i_d1= " & g.i_d1.ToString & ", g.i_d2= " & g.i_d2.ToString)
+        'Debug.WriteLine("k= " & k.ToString & ", g.m= " & m.ToString)
 
         g.i_k = k
         g.i_m = m
@@ -1925,7 +1932,7 @@ Public Class Form1
 
         perc_smallest_part1 = 0.0000001                      'smallest particle [%]
         _cees(ks).Dmax1 = Calc_dia_particle(perc_smallest_part1, _cees(ks).Kstokes1, 1)     '=100% loss (biggest particle)
-        _cees(ks).Dmin1 = _cees(ks).Kstokes1 * fac_m        'diameter smallest particle caught
+        _cees(ks).Dmin1 = _cees(ks).Kstokes1 * fac_m        'diameter smallest particle caught by this type cyclone
 
         ' TextBox24.Text &= "_cees(ks).Kstokes1= " & _cees(ks).Kstokes1.ToString & ",  fac_m= " & fac_m.ToString & ",  _cees(ks).Dmin1= " & _cees(ks).Dmin1.ToString & vbCrLf
 
@@ -2144,6 +2151,7 @@ Public Class Form1
         TextBox110.Text = _cees(ks).Dmax2.ToString("F2")    'diameter [mu] 100% catch
         TextBox111.Text = _cees(ks).Dmin2.ToString("F2")    'diameter [mu] 100% loss
         TextBox116.Text = _istep.ToString("F5")             'Calculation step stage #2
+        TextBox43.Text = _cees(ks).Dmin1.ToString("F5")    'Smallest part caught by the second stage cyclone
 
         TextBox117.Text = _cees(ks).sum_psd_diff2.ToString("F3")
         TextBox68.Text = _cees(ks).sum_loss2.ToString("F3")
@@ -2176,12 +2184,11 @@ Public Class Form1
         TextBox27.Text = grp_count.ToString
         g.i_grp = 0
 
-
-        If g.dia > 0 Then
+        If g.dia >= 0 Then
             '=========== first entered data point ===========
             If (g.dia < _cees(c_nr).dia_big(0)) Then
-                g.i_d1 = 0.000                      'Diameter small [mu]
-                g.i_d2 = _cees(c_nr).dia_big(0)     'Diameter big [mu]
+                g.i_d1 = _cees(c_nr).dia_big(0)     'Diameter small [mu]
+                g.i_d2 = _cees(c_nr).dia_big(1)     'Diameter big [mu]
                 g.i_p1 = _cees(c_nr).class_load(0)  'User lower input percentage
                 g.i_p1 = _cees(c_nr).class_load(1)  'User upper input percentage
                 g.i_grp = 0                         'Group 0
