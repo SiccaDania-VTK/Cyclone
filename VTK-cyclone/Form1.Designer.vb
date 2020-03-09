@@ -22,16 +22,16 @@ Partial Class Form1
     'Do not modify it using the code editor.
     <System.Diagnostics.DebuggerStepThrough()>
     Private Sub InitializeComponent()
-        Dim ChartArea28 As System.Windows.Forms.DataVisualization.Charting.ChartArea = New System.Windows.Forms.DataVisualization.Charting.ChartArea()
-        Dim Legend28 As System.Windows.Forms.DataVisualization.Charting.Legend = New System.Windows.Forms.DataVisualization.Charting.Legend()
-        Dim Series28 As System.Windows.Forms.DataVisualization.Charting.Series = New System.Windows.Forms.DataVisualization.Charting.Series()
+        Dim ChartArea1 As System.Windows.Forms.DataVisualization.Charting.ChartArea = New System.Windows.Forms.DataVisualization.Charting.ChartArea()
+        Dim Legend1 As System.Windows.Forms.DataVisualization.Charting.Legend = New System.Windows.Forms.DataVisualization.Charting.Legend()
+        Dim Series1 As System.Windows.Forms.DataVisualization.Charting.Series = New System.Windows.Forms.DataVisualization.Charting.Series()
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(Form1))
-        Dim ChartArea29 As System.Windows.Forms.DataVisualization.Charting.ChartArea = New System.Windows.Forms.DataVisualization.Charting.ChartArea()
-        Dim Legend29 As System.Windows.Forms.DataVisualization.Charting.Legend = New System.Windows.Forms.DataVisualization.Charting.Legend()
-        Dim Series29 As System.Windows.Forms.DataVisualization.Charting.Series = New System.Windows.Forms.DataVisualization.Charting.Series()
-        Dim ChartArea30 As System.Windows.Forms.DataVisualization.Charting.ChartArea = New System.Windows.Forms.DataVisualization.Charting.ChartArea()
-        Dim Legend30 As System.Windows.Forms.DataVisualization.Charting.Legend = New System.Windows.Forms.DataVisualization.Charting.Legend()
-        Dim Series30 As System.Windows.Forms.DataVisualization.Charting.Series = New System.Windows.Forms.DataVisualization.Charting.Series()
+        Dim ChartArea2 As System.Windows.Forms.DataVisualization.Charting.ChartArea = New System.Windows.Forms.DataVisualization.Charting.ChartArea()
+        Dim Legend2 As System.Windows.Forms.DataVisualization.Charting.Legend = New System.Windows.Forms.DataVisualization.Charting.Legend()
+        Dim Series2 As System.Windows.Forms.DataVisualization.Charting.Series = New System.Windows.Forms.DataVisualization.Charting.Series()
+        Dim ChartArea3 As System.Windows.Forms.DataVisualization.Charting.ChartArea = New System.Windows.Forms.DataVisualization.Charting.ChartArea()
+        Dim Legend3 As System.Windows.Forms.DataVisualization.Charting.Legend = New System.Windows.Forms.DataVisualization.Charting.Legend()
+        Dim Series3 As System.Windows.Forms.DataVisualization.Charting.Series = New System.Windows.Forms.DataVisualization.Charting.Series()
         Me.OpenFileDialog1 = New System.Windows.Forms.OpenFileDialog()
         Me.TabPage10 = New System.Windows.Forms.TabPage()
         Me.Button10 = New System.Windows.Forms.Button()
@@ -295,7 +295,6 @@ Partial Class Form1
         Me.TextBox59 = New System.Windows.Forms.TextBox()
         Me.DataGridView2 = New System.Windows.Forms.DataGridView()
         Me.TabPage1 = New System.Windows.Forms.TabPage()
-        Me.TextBox27 = New System.Windows.Forms.TextBox()
         Me.Button16 = New System.Windows.Forms.Button()
         Me.Button15 = New System.Windows.Forms.Button()
         Me.Button14 = New System.Windows.Forms.Button()
@@ -494,15 +493,20 @@ Partial Class Form1
         Me.TabPage11 = New System.Windows.Forms.TabPage()
         Me.SplitContainer1 = New System.Windows.Forms.SplitContainer()
         Me.Chart1 = New System.Windows.Forms.DataVisualization.Charting.Chart()
+        Me.GroupBox22 = New System.Windows.Forms.GroupBox()
+        Me.CheckBox15 = New System.Windows.Forms.CheckBox()
+        Me.CheckBox14 = New System.Windows.Forms.CheckBox()
         Me.GroupBox21 = New System.Windows.Forms.GroupBox()
+        Me.CheckBox18 = New System.Windows.Forms.CheckBox()
         Me.CheckBox5 = New System.Windows.Forms.CheckBox()
         Me.GroupBox20 = New System.Windows.Forms.GroupBox()
+        Me.CheckBox17 = New System.Windows.Forms.CheckBox()
         Me.CheckBox6 = New System.Windows.Forms.CheckBox()
         Me.CheckBox12 = New System.Windows.Forms.CheckBox()
         Me.CheckBox1 = New System.Windows.Forms.CheckBox()
         Me.GroupBox19 = New System.Windows.Forms.GroupBox()
-        Me.CheckBox14 = New System.Windows.Forms.CheckBox()
-        Me.CheckBox15 = New System.Windows.Forms.CheckBox()
+        Me.CheckBox19 = New System.Windows.Forms.CheckBox()
+        Me.CheckBox16 = New System.Windows.Forms.CheckBox()
         Me.CheckBox9 = New System.Windows.Forms.CheckBox()
         Me.CheckBox10 = New System.Windows.Forms.CheckBox()
         Me.CheckBox11 = New System.Windows.Forms.CheckBox()
@@ -516,11 +520,6 @@ Partial Class Form1
         Me.Label252 = New System.Windows.Forms.Label()
         Me.Button12 = New System.Windows.Forms.Button()
         Me.DataGridView5 = New System.Windows.Forms.DataGridView()
-        Me.CheckBox16 = New System.Windows.Forms.CheckBox()
-        Me.CheckBox17 = New System.Windows.Forms.CheckBox()
-        Me.CheckBox18 = New System.Windows.Forms.CheckBox()
-        Me.GroupBox22 = New System.Windows.Forms.GroupBox()
-        Me.CheckBox19 = New System.Windows.Forms.CheckBox()
         Me.TabPage10.SuspendLayout()
         Me.GroupBox18.SuspendLayout()
         CType(Me.Chart3, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -598,13 +597,13 @@ Partial Class Form1
         Me.SplitContainer1.Panel2.SuspendLayout()
         Me.SplitContainer1.SuspendLayout()
         CType(Me.Chart1, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.GroupBox22.SuspendLayout()
         Me.GroupBox21.SuspendLayout()
         Me.GroupBox20.SuspendLayout()
         Me.GroupBox19.SuspendLayout()
         Me.GroupBox12.SuspendLayout()
         Me.TabPage13.SuspendLayout()
         CType(Me.DataGridView5, System.ComponentModel.ISupportInitialize).BeginInit()
-        Me.GroupBox22.SuspendLayout()
         Me.SuspendLayout()
         '
         'OpenFileDialog1
@@ -645,17 +644,17 @@ Partial Class Form1
         '
         'Chart3
         '
-        ChartArea28.Name = "ChartArea1"
-        Me.Chart3.ChartAreas.Add(ChartArea28)
+        ChartArea1.Name = "ChartArea1"
+        Me.Chart3.ChartAreas.Add(ChartArea1)
         Me.Chart3.Dock = System.Windows.Forms.DockStyle.Fill
-        Legend28.Name = "Legend1"
-        Me.Chart3.Legends.Add(Legend28)
+        Legend1.Name = "Legend1"
+        Me.Chart3.Legends.Add(Legend1)
         Me.Chart3.Location = New System.Drawing.Point(3, 16)
         Me.Chart3.Name = "Chart3"
-        Series28.ChartArea = "ChartArea1"
-        Series28.Legend = "Legend1"
-        Series28.Name = "Series1"
-        Me.Chart3.Series.Add(Series28)
+        Series1.ChartArea = "ChartArea1"
+        Series1.Legend = "Legend1"
+        Series1.Name = "Series1"
+        Me.Chart3.Series.Add(Series1)
         Me.Chart3.Size = New System.Drawing.Size(551, 374)
         Me.Chart3.TabIndex = 81
         Me.Chart3.Text = "Chart3"
@@ -3430,7 +3429,6 @@ Partial Class Form1
         '
         'TabPage1
         '
-        Me.TabPage1.Controls.Add(Me.TextBox27)
         Me.TabPage1.Controls.Add(Me.Button16)
         Me.TabPage1.Controls.Add(Me.Button15)
         Me.TabPage1.Controls.Add(Me.Button14)
@@ -3454,15 +3452,6 @@ Partial Class Form1
         Me.TabPage1.TabIndex = 0
         Me.TabPage1.Text = "Data Input"
         Me.TabPage1.UseVisualStyleBackColor = True
-        '
-        'TextBox27
-        '
-        Me.TextBox27.Enabled = False
-        Me.TextBox27.Location = New System.Drawing.Point(1070, 736)
-        Me.TextBox27.Name = "TextBox27"
-        Me.TextBox27.Size = New System.Drawing.Size(64, 20)
-        Me.TextBox27.TabIndex = 97
-        Me.TextBox27.TextAlign = System.Windows.Forms.HorizontalAlignment.Center
         '
         'Button16
         '
@@ -4417,16 +4406,16 @@ Partial Class Form1
         '
         'Chart2
         '
-        ChartArea29.Name = "ChartArea1"
-        Me.Chart2.ChartAreas.Add(ChartArea29)
-        Legend29.Name = "Legend1"
-        Me.Chart2.Legends.Add(Legend29)
+        ChartArea2.Name = "ChartArea1"
+        Me.Chart2.ChartAreas.Add(ChartArea2)
+        Legend2.Name = "Legend1"
+        Me.Chart2.Legends.Add(Legend2)
         Me.Chart2.Location = New System.Drawing.Point(891, 379)
         Me.Chart2.Name = "Chart2"
-        Series29.ChartArea = "ChartArea1"
-        Series29.Legend = "Legend1"
-        Series29.Name = "Series1"
-        Me.Chart2.Series.Add(Series29)
+        Series2.ChartArea = "ChartArea1"
+        Series2.Legend = "Legend1"
+        Series2.Name = "Series1"
+        Me.Chart2.Series.Add(Series2)
         Me.Chart2.Size = New System.Drawing.Size(382, 224)
         Me.Chart2.TabIndex = 80
         Me.Chart2.Text = "Chart2"
@@ -5695,21 +5684,54 @@ Partial Class Form1
         'Chart1
         '
         Me.Chart1.AllowDrop = True
-        ChartArea30.Name = "ChartArea1"
-        Me.Chart1.ChartAreas.Add(ChartArea30)
+        ChartArea3.Name = "ChartArea1"
+        Me.Chart1.ChartAreas.Add(ChartArea3)
         Me.Chart1.Dock = System.Windows.Forms.DockStyle.Fill
         Me.Chart1.Enabled = False
-        Legend30.Name = "Legend1"
-        Me.Chart1.Legends.Add(Legend30)
+        Legend3.Name = "Legend1"
+        Me.Chart1.Legends.Add(Legend3)
         Me.Chart1.Location = New System.Drawing.Point(0, 0)
         Me.Chart1.Name = "Chart1"
-        Series30.ChartArea = "ChartArea1"
-        Series30.Legend = "Legend1"
-        Series30.Name = "Series1"
-        Me.Chart1.Series.Add(Series30)
+        Series3.ChartArea = "ChartArea1"
+        Series3.Legend = "Legend1"
+        Series3.Name = "Series1"
+        Me.Chart1.Series.Add(Series3)
         Me.Chart1.Size = New System.Drawing.Size(1077, 825)
         Me.Chart1.TabIndex = 68
         Me.Chart1.Text = "Chart1"
+        '
+        'GroupBox22
+        '
+        Me.GroupBox22.Controls.Add(Me.CheckBox15)
+        Me.GroupBox22.Controls.Add(Me.CheckBox14)
+        Me.GroupBox22.Location = New System.Drawing.Point(13, 124)
+        Me.GroupBox22.Name = "GroupBox22"
+        Me.GroupBox22.Size = New System.Drawing.Size(162, 69)
+        Me.GroupBox22.TabIndex = 118
+        Me.GroupBox22.TabStop = False
+        Me.GroupBox22.Text = "Input"
+        '
+        'CheckBox15
+        '
+        Me.CheckBox15.AutoSize = True
+        Me.CheckBox15.Checked = True
+        Me.CheckBox15.CheckState = System.Windows.Forms.CheckState.Checked
+        Me.CheckBox15.Location = New System.Drawing.Point(13, 19)
+        Me.CheckBox15.Name = "CheckBox15"
+        Me.CheckBox15.Size = New System.Drawing.Size(91, 17)
+        Me.CheckBox15.TabIndex = 118
+        Me.CheckBox15.Text = "Input stars #1"
+        Me.CheckBox15.UseVisualStyleBackColor = True
+        '
+        'CheckBox14
+        '
+        Me.CheckBox14.AutoSize = True
+        Me.CheckBox14.Location = New System.Drawing.Point(13, 42)
+        Me.CheckBox14.Name = "CheckBox14"
+        Me.CheckBox14.Size = New System.Drawing.Size(142, 17)
+        Me.CheckBox14.TabIndex = 11
+        Me.CheckBox14.Text = "Rosin Rammler stage #1"
+        Me.CheckBox14.UseVisualStyleBackColor = True
         '
         'GroupBox21
         '
@@ -5721,6 +5743,18 @@ Partial Class Form1
         Me.GroupBox21.TabIndex = 117
         Me.GroupBox21.TabStop = False
         Me.GroupBox21.Text = "Stages combined"
+        '
+        'CheckBox18
+        '
+        Me.CheckBox18.AutoSize = True
+        Me.CheckBox18.Checked = True
+        Me.CheckBox18.CheckState = System.Windows.Forms.CheckState.Checked
+        Me.CheckBox18.Location = New System.Drawing.Point(15, 19)
+        Me.CheckBox18.Name = "CheckBox18"
+        Me.CheckBox18.Size = New System.Drawing.Size(121, 17)
+        Me.CheckBox18.TabIndex = 121
+        Me.CheckBox18.Text = "Efficiency combined"
+        Me.CheckBox18.UseVisualStyleBackColor = True
         '
         'CheckBox5
         '
@@ -5744,6 +5778,18 @@ Partial Class Form1
         Me.GroupBox20.TabIndex = 116
         Me.GroupBox20.TabStop = False
         Me.GroupBox20.Text = "Stage #2"
+        '
+        'CheckBox17
+        '
+        Me.CheckBox17.AutoSize = True
+        Me.CheckBox17.Checked = True
+        Me.CheckBox17.CheckState = System.Windows.Forms.CheckState.Checked
+        Me.CheckBox17.Location = New System.Drawing.Point(14, 39)
+        Me.CheckBox17.Name = "CheckBox17"
+        Me.CheckBox17.Size = New System.Drawing.Size(88, 17)
+        Me.CheckBox17.TabIndex = 120
+        Me.CheckBox17.Text = "Efficiency #2"
+        Me.CheckBox17.UseVisualStyleBackColor = True
         '
         'CheckBox6
         '
@@ -5791,27 +5837,29 @@ Partial Class Form1
         Me.GroupBox19.TabStop = False
         Me.GroupBox19.Text = "Stage #1"
         '
-        'CheckBox14
+        'CheckBox19
         '
-        Me.CheckBox14.AutoSize = True
-        Me.CheckBox14.Location = New System.Drawing.Point(13, 42)
-        Me.CheckBox14.Name = "CheckBox14"
-        Me.CheckBox14.Size = New System.Drawing.Size(142, 17)
-        Me.CheckBox14.TabIndex = 11
-        Me.CheckBox14.Text = "Rosin Rammler stage #1"
-        Me.CheckBox14.UseVisualStyleBackColor = True
+        Me.CheckBox19.AutoSize = True
+        Me.CheckBox19.Checked = True
+        Me.CheckBox19.CheckState = System.Windows.Forms.CheckState.Checked
+        Me.CheckBox19.Location = New System.Drawing.Point(14, 19)
+        Me.CheckBox19.Name = "CheckBox19"
+        Me.CheckBox19.Size = New System.Drawing.Size(119, 17)
+        Me.CheckBox19.TabIndex = 121
+        Me.CheckBox19.Text = "Show loss stage #1"
+        Me.CheckBox19.UseVisualStyleBackColor = True
         '
-        'CheckBox15
+        'CheckBox16
         '
-        Me.CheckBox15.AutoSize = True
-        Me.CheckBox15.Checked = True
-        Me.CheckBox15.CheckState = System.Windows.Forms.CheckState.Checked
-        Me.CheckBox15.Location = New System.Drawing.Point(13, 19)
-        Me.CheckBox15.Name = "CheckBox15"
-        Me.CheckBox15.Size = New System.Drawing.Size(91, 17)
-        Me.CheckBox15.TabIndex = 118
-        Me.CheckBox15.Text = "Input stars #1"
-        Me.CheckBox15.UseVisualStyleBackColor = True
+        Me.CheckBox16.AutoSize = True
+        Me.CheckBox16.Checked = True
+        Me.CheckBox16.CheckState = System.Windows.Forms.CheckState.Checked
+        Me.CheckBox16.Location = New System.Drawing.Point(13, 40)
+        Me.CheckBox16.Name = "CheckBox16"
+        Me.CheckBox16.Size = New System.Drawing.Size(88, 17)
+        Me.CheckBox16.TabIndex = 119
+        Me.CheckBox16.Text = "Efficiency #1"
+        Me.CheckBox16.UseVisualStyleBackColor = True
         '
         'CheckBox9
         '
@@ -5949,65 +5997,6 @@ Partial Class Form1
         Me.DataGridView5.Size = New System.Drawing.Size(229, 801)
         Me.DataGridView5.TabIndex = 0
         '
-        'CheckBox16
-        '
-        Me.CheckBox16.AutoSize = True
-        Me.CheckBox16.Checked = True
-        Me.CheckBox16.CheckState = System.Windows.Forms.CheckState.Checked
-        Me.CheckBox16.Location = New System.Drawing.Point(13, 40)
-        Me.CheckBox16.Name = "CheckBox16"
-        Me.CheckBox16.Size = New System.Drawing.Size(88, 17)
-        Me.CheckBox16.TabIndex = 119
-        Me.CheckBox16.Text = "Efficiency #1"
-        Me.CheckBox16.UseVisualStyleBackColor = True
-        '
-        'CheckBox17
-        '
-        Me.CheckBox17.AutoSize = True
-        Me.CheckBox17.Checked = True
-        Me.CheckBox17.CheckState = System.Windows.Forms.CheckState.Checked
-        Me.CheckBox17.Location = New System.Drawing.Point(14, 39)
-        Me.CheckBox17.Name = "CheckBox17"
-        Me.CheckBox17.Size = New System.Drawing.Size(88, 17)
-        Me.CheckBox17.TabIndex = 120
-        Me.CheckBox17.Text = "Efficiency #2"
-        Me.CheckBox17.UseVisualStyleBackColor = True
-        '
-        'CheckBox18
-        '
-        Me.CheckBox18.AutoSize = True
-        Me.CheckBox18.Checked = True
-        Me.CheckBox18.CheckState = System.Windows.Forms.CheckState.Checked
-        Me.CheckBox18.Location = New System.Drawing.Point(15, 19)
-        Me.CheckBox18.Name = "CheckBox18"
-        Me.CheckBox18.Size = New System.Drawing.Size(121, 17)
-        Me.CheckBox18.TabIndex = 121
-        Me.CheckBox18.Text = "Efficiency combined"
-        Me.CheckBox18.UseVisualStyleBackColor = True
-        '
-        'GroupBox22
-        '
-        Me.GroupBox22.Controls.Add(Me.CheckBox15)
-        Me.GroupBox22.Controls.Add(Me.CheckBox14)
-        Me.GroupBox22.Location = New System.Drawing.Point(13, 124)
-        Me.GroupBox22.Name = "GroupBox22"
-        Me.GroupBox22.Size = New System.Drawing.Size(162, 69)
-        Me.GroupBox22.TabIndex = 118
-        Me.GroupBox22.TabStop = False
-        Me.GroupBox22.Text = "Input"
-        '
-        'CheckBox19
-        '
-        Me.CheckBox19.AutoSize = True
-        Me.CheckBox19.Checked = True
-        Me.CheckBox19.CheckState = System.Windows.Forms.CheckState.Checked
-        Me.CheckBox19.Location = New System.Drawing.Point(14, 19)
-        Me.CheckBox19.Name = "CheckBox19"
-        Me.CheckBox19.Size = New System.Drawing.Size(119, 17)
-        Me.CheckBox19.TabIndex = 121
-        Me.CheckBox19.Text = "Show loss stage #1"
-        Me.CheckBox19.UseVisualStyleBackColor = True
-        '
         'Form1
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -6113,6 +6102,8 @@ Partial Class Form1
         CType(Me.SplitContainer1, System.ComponentModel.ISupportInitialize).EndInit()
         Me.SplitContainer1.ResumeLayout(False)
         CType(Me.Chart1, System.ComponentModel.ISupportInitialize).EndInit()
+        Me.GroupBox22.ResumeLayout(False)
+        Me.GroupBox22.PerformLayout()
         Me.GroupBox21.ResumeLayout(False)
         Me.GroupBox21.PerformLayout()
         Me.GroupBox20.ResumeLayout(False)
@@ -6124,8 +6115,6 @@ Partial Class Form1
         Me.TabPage13.ResumeLayout(False)
         Me.TabPage13.PerformLayout()
         CType(Me.DataGridView5, System.ComponentModel.ISupportInitialize).EndInit()
-        Me.GroupBox22.ResumeLayout(False)
-        Me.GroupBox22.PerformLayout()
         Me.ResumeLayout(False)
 
     End Sub
@@ -6604,7 +6593,6 @@ Partial Class Form1
     Friend WithEvents Button14 As Button
     Friend WithEvents Button15 As Button
     Friend WithEvents Button16 As Button
-    Friend WithEvents TextBox27 As TextBox
     Friend WithEvents GroupBox21 As GroupBox
     Friend WithEvents GroupBox20 As GroupBox
     Friend WithEvents GroupBox19 As GroupBox

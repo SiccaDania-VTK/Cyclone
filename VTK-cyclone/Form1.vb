@@ -461,7 +461,7 @@ Public Class Form1
         _cees(ks).dust1_Nm3 = _cees(ks).dust1_Am3 * ratio             'gram/Nm3
 
         '--------- present -------------
-        TextBox132.Text = _cees(ks).dust1_Nm3.ToString("F2")          'gram/Nm3
+        TextBox132.Text = _cees(ks).dust1_Nm3.ToString("F3")          'gram/Nm3
         TextBox129.Text = _cees(ks).Ro_gas1_Nm3.ToString("F3")        'kg/Nm3 inlet gas
 
         If (ComboBox1.SelectedIndex > -1) And (ComboBox2.SelectedIndex > -1) Then 'Prevent exceptions
@@ -661,8 +661,8 @@ Public Class Form1
             Fill_array_from_screen(CInt(NumericUpDown30.Value))
 
             TextBox39.Text = kgh.ToString("F0")                 'Stof inlet [kg/(h.cyclone)]
-            TextBox40.Text = tot_kgh.ToString("F0")             'Dust inlet [g/Am3] 
-            TextBox71.Text = _cees(ks).dust1_Am3.ToString("F1") 'Dust inlet [g/Am3]
+            TextBox40.Text = tot_kgh.ToString("F0")             'Dust inlet [kg/h] 
+            TextBox71.Text = _cees(ks).dust1_Am3.ToString("F3") 'Dust inlet [g/Am3]
         End If
     End Sub
     Private Sub Present_Datagridview1(ks As Integer)
@@ -1985,7 +1985,7 @@ Public Class Form1
         TextBox52.Text = _cees(ks).Dmin1.ToString("F2")     'diameter [mu] 100% loss
         TextBox56.Text = ComboBox1.Text                     'Cyclone type
         TextBox57.Text = CheckBox2.Checked.ToString         'Correction stage #1
-        TextBox70.Text = _cees(ks).dust2_Am3.ToString("F2") 'Dust load [gram/Am3]
+        TextBox70.Text = _cees(ks).dust2_Am3.ToString("F3") 'Dust load [gram/Am3]
 
         TextBox118.Text = _cees(ks).sum_psd_diff1.ToString("F3")
         TextBox54.Text = _cees(ks).sum_loss1.ToString("F3")
@@ -2152,7 +2152,7 @@ Public Class Form1
         TextBox108.Text = _cees(ks).emmis2_Am3.ToString("F4")       '[gram/Am3] emmissie stage #2
         TextBox134.Text = _cees(ks).emmis2_Am3.ToString("F4")       '[gram/Am3] emmissie stage #2
         TextBox142.Text = _cees(ks).emmis2_Nm3.ToString("F4")       '[gram/Nm3] emmissie stage #2
-        TextBox143.Text = _cees(ks).dust2_Nm3.ToString("F1")        'Dust load [gram/Nm3]
+        TextBox143.Text = _cees(ks).dust2_Nm3.ToString("F3")        'Dust load [gram/Nm3]
     End Sub
 
     Public Sub Calc_diam_classification(ByRef g As GvG_Calc_struct, c_nr As Integer)
@@ -2163,7 +2163,6 @@ Public Class Form1
         For i = 0 To no_PDS_input_points - 1
             If (_cees(c_nr).dia_big(i) > 0) And (_cees(c_nr).class_load(i) > 0) Then grp_count += 1
         Next
-        TextBox27.Text = grp_count.ToString
         g.i_grp = 0
 
         If g.dia >= 0 Then
