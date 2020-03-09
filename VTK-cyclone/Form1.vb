@@ -217,21 +217,19 @@ Public Class Form1
     "80;   2",
     "100;  0"}
 
-    'Start screen (cumulatief[%], particle diameter[mu])
-    ReadOnly start_screen_psd() As String = {
-    "0.3;  99.999",
-    "5.0;  94",
-    "10;   82",
-    "15;   61.1",
-    "20;   40.5",
-    "25;   24.5",
-    "30;   13.8",
-    "35;   7.0",
-    "40;   3.4",
-    "45;   1.5",
-    "50;   0.5",
-    "60;   0.1"}
-
+    'Whey (cumulatief[%], particle diameter[mu])
+    ReadOnly psd_whey_A6605() As String = {
+    "3.0;	99.975",
+    "5.0;	99.955",
+    "8.0;	99.92",
+    "15;	99.8",
+    "25;	99.5",
+    "50;	98",
+    "100;	88",
+    "200;	58",
+    "400;	20",
+    "600;	8",
+    "1000;	2"}
 
     '----------- directory's-----------
     ReadOnly dirpath_Eng As String = "N:\Engineering\VBasic\Cyclone_sizing_input\"
@@ -262,8 +260,8 @@ Public Class Form1
             _cees(i).case_name = ""
             ReDim _cees(i).dia_big(no_PDS_input_points)       'Initialize diameter groups
             ReDim _cees(i).class_load(no_PDS_input_points)    'Initialize
-            ReDim _cees(i).stage1(150)              'Initialize
-            ReDim _cees(i).stage2(150)              'Initialize
+            ReDim _cees(i).stage1(150)                        'Initialize
+            ReDim _cees(i).stage2(150)                        'Initialize
         Next
 
         '------ allowed users with hard disc id's -----
@@ -809,17 +807,15 @@ Public Class Form1
         _cees(c_nr).Temp = NumericUpDown18.Value                'Temperature [c]
         _cees(c_nr).p1_abs = 101325 + (NumericUpDown19.Value * 100)         'Pressure [Pa abs]
 
-
         If init = False Then Exit Sub       'Prevent out of range error
-
 
         '==== read dgv and do not trip on "-" ====
         '[mu] Class upper particle diameter limit diameter
         'Percentale van de inlaat stof belasting [%]
         Dim a, b As Double
 
+        For row = 0 To no_PDS_input_points - 1
 
-        For row = 0 To no_PDS_input_points - 1 '_cees(c_nr).dia_big.Count - 1
             Double.TryParse(DataGridView6.Rows(row).Cells(0).Value.ToString, a)
             Double.TryParse(DataGridView6.Rows(row).Cells(1).Value.ToString, b)
 
@@ -832,22 +828,6 @@ Public Class Form1
 
             End If
         Next
-
-        '-------- Check -- bigger diameter must have bigger cummulative weight
-
-        'numericUpDown6.BackColor = CType(IIf(_cees(c_nr).class_load(0) > _cees(c_nr).class_load(1).Value, Color.LightGreen, Color.Red), Color)
-        '_cees(c_nr).class_load(1).BackColor = CType(IIf(_cees(c_nr).class_load(1).Value > _cees(c_nr).class_load(2).Value, Color.LightGreen, Color.Red), Color)
-        '_cees(c_nr).class_load(2).BackColor = CType(IIf(_cees(c_nr).class_load(2).Value > _cees(c_nr).class_load(3).Value, Color.LightGreen, Color.Red), Color)
-        '_cees(c_nr).class_load(3).BackColor = CType(IIf(_cees(c_nr).class_load(3).Value > numericUpDown10.Value, Color.LightGreen, Color.Red), Color)
-        'numericUpDown10.BackColor = CType(IIf(numericUpDown10.Value > numericUpDown11.Value, Color.LightGreen, Color.Red), Color)
-        'numericUpDown11.BackColor = CType(IIf(numericUpDown11.Value > numericUpDown12.Value, Color.LightGreen, Color.Red), Color)
-        'numericUpDown12.BackColor = CType(IIf(numericUpDown12.Value > numericUpDown13.Value, Color.LightGreen, Color.Red), Color)
-        'numericUpDown13.BackColor = CType(IIf(numericUpDown13.Value > NumericUpDown38.Value, Color.LightGreen, Color.Red), Color)
-        'NumericUpDown38.BackColor = CType(IIf(NumericUpDown38.Value > NumericUpDown39.Value, Color.LightGreen, Color.Red), Color)
-        'NumericUpDown39.BackColor = CType(IIf(NumericUpDown39.Value > NumericUpDown40.Value, Color.LightGreen, Color.Red), Color)
-        'NumericUpDown40.BackColor = CType(IIf(NumericUpDown40.Value > NumericUpDown48.Value, Color.LightGreen, Color.Red), Color)
-        'NumericUpDown48.BackColor = CType(IIf(NumericUpDown48.Value >= 0, Color.LightGreen, Color.Red), Color)
-
 
     End Sub
     '-------- Bereken het verlies getal NIET gecorrigeerd -----------
@@ -1003,8 +983,6 @@ Public Class Form1
     Public Sub Draw_chart1(ch As Chart)
         Dim ks As Integer
         Dim a, b As Double
-        Dim eff1, eff2 As Double
-        Dim loss1, loss2 As Double
 
         ch.Series.Clear()
         ch.ChartAreas.Clear()
@@ -1077,21 +1055,17 @@ Public Class Form1
         End If
 
         ch.ChartAreas("ChartArea0").AxisX.IsLogarithmic = True
-        ch.ChartAreas("ChartArea0").AxisX.Minimum = 0.1     'Particle size
-        ch.ChartAreas("ChartArea0").AxisX.Maximum = 100     'Particle size
+        ch.ChartAreas("ChartArea0").AxisX.Minimum = 1       'Particle size
+        ' ch.ChartAreas("ChartArea0").AxisX.Maximum = 5000    'Particle size
 
         '----- now start plotting ------------------------
         ks = CInt(NumericUpDown30.Value)        'Case number
 
         '----------------------------- Plot Input stars-----------------------
         If CheckBox15.Checked Then
-            For i = 0 To (_cees(ks).dia_big.Count - 1)        'Number of input data points
-
-                'What is the star position
-                a = _cees(ks).dia_big(i)              '[mu] Class upper particle diameter limit diameter
-                b = _cees(ks).class_load(i) * 100     'Percentale van de inlaat stof belasting
-
-                '--------------- plot-----------------
+            For i = 0 To (_cees(ks).dia_big.Count - 1)      'Number of input data points
+                a = _cees(ks).dia_big(i)                    '[mu] Class upper particle diameter limit diameter
+                b = _cees(ks).class_load(i) * 100           'Percentale van de inlaat stof belasting
                 ch.Series(0).Points.AddXY(a, b)
                 ch.Series(0).Points(i).MarkerStyle = MarkerStyle.Star10
                 ch.Series(0).Points(i).MarkerSize = 15
@@ -1101,7 +1075,7 @@ Public Class Form1
 
         '------ PSD Input Rosin Rammler stage #1 -------------
         If CheckBox14.Checked Then
-            For h = 0 To 110 Step 3   'Fill line chart
+            For h = 0 To 110 Step 5   'Fill line chart
                 a = _cees(ks).stage1(h).dia
                 b = _cees(ks).stage1(h).psd_cum_pro
                 ch.Series(1).Points.AddXY(a, b)
@@ -1110,40 +1084,50 @@ Public Class Form1
 
         '------ Plot Stage #2 output-------------
         '------ Data from DataGridView2 -------------
-        For h = 0 To DataGridView2.Rows.Count - 1                      'Fill line chart
-            a = CDbl((DataGridView2.Rows(h).Cells(0).Value))           'Particle size
-            eff1 = CDbl((DataGridView2.Rows(h).Cells(5).Value))        'Get data eff1
-            eff2 = CDbl((DataGridView3.Rows(h).Cells(5).Value))        'Get data eff2
+        If CheckBox16.Checked Then
+            For h = 0 To DataGridView2.Rows.Count - 1                   'Fill line chart
+                a = CDbl((DataGridView2.Rows(h).Cells(0).Value))        'Particle size
+                b = CDbl((DataGridView2.Rows(h).Cells(5).Value))        'Get data eff1
+                ch.Series(4).Points.AddXY(a, b)                         'Plot eff #1
+            Next h
+        End If
 
-            '------- Plot efficiency --------
-            ch.Series(4).Points.AddXY(a, eff1)                         'Plot eff #1
-            If CheckBox6.Checked Then
-                ch.Series(5).Points.AddXY(a, eff2)                     'Plot eff #2
-            End If
-        Next h
+        If CheckBox17.Checked Then
+            For h = 0 To DataGridView2.Rows.Count - 1                   'Fill line chart
+                a = CDbl((DataGridView2.Rows(h).Cells(0).Value))        'Particle size
+                b = CDbl((DataGridView3.Rows(h).Cells(5).Value))        'Get data eff2
+                ch.Series(5).Points.AddXY(a, b)                         'Plot eff #2
+            Next h
+        End If
+
+        If CheckBox18.Checked Then
+            For h = 0 To DataGridView2.Rows.Count - 1                   'Fill line chart
+                a = CDbl((DataGridView4.Rows(h).Cells(0).Value))        'Particle size
+                b = CDbl((DataGridView4.Rows(h).Cells(9).Value))        'get data Eff 1&2 [%]
+                ch.Series(6).Points.AddXY(a, b)                         'Plot Eff 1&2 [%]
+            Next h
+        End If
 
         '----- labels on chart ------------
-        ch.Series(4).Points(30).Label = "Eff #1"
+        If CheckBox16.Checked Then ch.Series(4).Points(30).Label = "Eff #1"
+        If CheckBox17.Checked Then ch.Series(5).Points(45).Label = "Eff #2"
 
-        If CheckBox6.Checked Then ch.Series(5).Points(45).Label = "Eff #2"
 
-        '------ Data from DataGridView4 -------------
-        For h = 0 To DataGridView4.Rows.Count - 1                       'Fill line chart
-            a = CDbl((DataGridView4.Rows(h).Cells(0).Value))            'Particle size
-            loss1 = CDbl((DataGridView4.Rows(h).Cells(5).Value))        'Get data Loss 1
+        If CheckBox19.Checked Then
+            For h = 0 To DataGridView4.Rows.Count - 1                   'Fill line chart
+                a = CDbl((DataGridView4.Rows(h).Cells(0).Value))        'Particle size
+                b = CDbl((DataGridView4.Rows(h).Cells(5).Value))        'Get data Loss 1
+                ch.Series(2).Points.AddXY(a, b)                         'Plot Loss 1
+            Next
+        End If
 
-            '------- Plot stage #1  --------
-            ch.Series(2).Points.AddXY(a, loss1)                         'Plot Loss 1
-
-            '------- Plot stage #2  --------
-            If CheckBox6.Checked Then
-                loss2 = CDbl((DataGridView3.Rows(h).Cells(14).Value))   'get data Loss 2
-
-                b = CDbl((DataGridView4.Rows(h).Cells(9).Value))        'get data Eff 1&2 [%]
-                ch.Series(3).Points.AddXY(a, loss2)                     'Plot Loss 2
-                ch.Series(6).Points.AddXY(a, b)                         'Plot Eff 1&2 [%]
-            End If
-        Next h
+        If CheckBox6.Checked Then
+            For h = 0 To DataGridView4.Rows.Count - 1                   'Fill line chart
+                a = CDbl((DataGridView4.Rows(h).Cells(0).Value))        'Particle size
+                b = CDbl((DataGridView3.Rows(h).Cells(14).Value))       'Get data Loss 2
+                ch.Series(3).Points.AddXY(a, b)                         'Plot Loss 2
+            Next h
+        End If
 
     End Sub
     Public Sub Log_now(ks As Integer, line As Integer, r As String)
@@ -1252,7 +1236,7 @@ Public Class Form1
         ch.Series(0).Points(6).Label = "Load correction"
     End Sub
 
-    Private Sub Button2_Click(sender As Object, e As EventArgs) Handles TabPage9.Enter, CheckBox6.CheckedChanged, CheckBox7.CheckedChanged, CheckBox4.CheckedChanged, CheckBox9.CheckedChanged, CheckBox8.CheckedChanged, CheckBox10.CheckedChanged, CheckBox5.CheckedChanged, CheckBox12.CheckedChanged, CheckBox11.CheckedChanged, CheckBox1.CheckedChanged, CheckBox13.CheckedChanged, CheckBox14.CheckedChanged, CheckBox15.CheckedChanged
+    Private Sub Button2_Click(sender As Object, e As EventArgs) Handles TabPage9.Enter, CheckBox6.CheckedChanged, CheckBox7.CheckedChanged, CheckBox4.CheckedChanged, CheckBox9.CheckedChanged, CheckBox8.CheckedChanged, CheckBox10.CheckedChanged, CheckBox5.CheckedChanged, CheckBox12.CheckedChanged, CheckBox11.CheckedChanged, CheckBox1.CheckedChanged, CheckBox13.CheckedChanged, CheckBox14.CheckedChanged, CheckBox15.CheckedChanged, CheckBox16.CheckedChanged, CheckBox17.CheckedChanged, CheckBox18.CheckedChanged, CheckBox19.CheckedChanged
         Calc_sequence()
     End Sub
     Private Sub Calc_sequence()
@@ -1289,6 +1273,7 @@ Public Class Form1
 
             Draw_chart1(Chart1)             'Present the results 
             Draw_chart2(Chart2)             'Present the results loss curve
+            Screen_contrast()               'White text on ted background 
         End If
     End Sub
 
@@ -1307,7 +1292,6 @@ Public Class Form1
         Dim filename, user As String
         Dim bf As New System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
 
-        'TextBox24.Text &= "line 1162, save project to disk" & vbCrLf
         If TextBox28.Text.Trim.Length = 0 Or TextBox29.Text.Trim.Length = 0 Then
             MessageBox.Show("Complete Quote and Tag number")
             Exit Sub
@@ -2111,10 +2095,8 @@ Public Class Form1
                 _cees(ks).stage2(i).catch_chart = (1 - _cees(ks).stage2(i).loss_overall) * 100    '[%] NOT corrected
             End If
 
-
             Calc_diam_classification(_cees(ks).stage2(i), ks)                                     'Calc
             _cees(ks).stage2(i).i_grp = _cees(ks).stage1(i).i_grp
-
 
             If _cees(ks).stage2(i).i_grp < no_PDS_input_points Then
                 Calc_k_and_m(_cees(ks).stage2(i))
@@ -2208,7 +2190,7 @@ Public Class Form1
             '=========== last entered PSD data point ===========
             If (g.dia >= _cees(c_nr).dia_big(no_PDS_input_points) And _cees(c_nr).dia_big(no_PDS_input_points) > 0) Then
                 g.i_d1 = _cees(c_nr).dia_big(no_PDS_input_points)    'Diameter small [mu]
-                g.i_d2 = 1000                                        'Diameter big [mu]
+                g.i_d2 = 2000                                        'Diameter big [mu]
                 g.i_p1 = _cees(c_nr).class_load(no_PDS_input_points) 'User lower input percentage
                 g.i_p2 = 0                                           'User upper input percentage
                 g.i_grp = grp_count                                 'Last PSD input star
@@ -2690,7 +2672,7 @@ Public Class Form1
         DataGridView6.Columns(2).Width = 60
 
         '======== Fill the DVG with example data =======
-        PSD_start_screen_psd()
+        PSD_Whey()
     End Sub
 
     Private Sub DataGridView6_CellEndEdit(sender As Object, e As DataGridViewCellEventArgs) Handles DataGridView6.CellEndEdit
@@ -2708,7 +2690,7 @@ Public Class Form1
         Calc_sequence()
     End Sub
     Private Sub Button15_Click(sender As Object, e As EventArgs) Handles Button15.Click
-        PSD_start_screen_psd()
+        PSD_whey()
         Calc_sequence()
     End Sub
     Private Sub Button16_Click(sender As Object, e As EventArgs) Handles Button16.Click
@@ -2717,7 +2699,26 @@ Public Class Form1
     End Sub
 
     Private Sub PSD_maltodesxtrine()
-        '======== Fill the DVG with OSD example data =======
+        TextBox28.Text = "Cargill China"
+        TextBox29.Text = "Q20.1021"
+        TextBox53.Text = "--"
+        NumericUpDown1.Value = 75000        '[Am3/h] Flow
+        NumericUpDown18.Value = 120         '[c]
+        NumericUpDown19.Value = -30         '[mbar] 
+        numericUpDown2.Value = 1200         '[kg/m3] density
+        numericUpDown3.Value = CDec(0.8977) '[kg/m3] ro air
+        numericUpDown14.Value = CDec(0.0227)  '[mPas=cP] visco air
+        NumericUpDown4.Value = 20           '[g/Am3]
+
+        ComboBox1.SelectedIndex = 5         'AC850 stage #1
+        numericUpDown5.Value = 1000         '[mm] diameter cycloon
+        NumericUpDown20.Value = 8           '[-] parallel cycloon
+
+        ComboBox2.SelectedIndex = 5        'AC850 stage #2
+        NumericUpDown34.Value = 700        '[mm] diameter cycloon
+        NumericUpDown33.Value = 24         '[-] parallel cycloon
+
+        '======== Fill the DVG with PSD example data =======
         Dim words() As String
         For row = 0 To DataGridView6.Rows.Count - 1
             If row < maltodextrine_psd.Length Then
@@ -2731,12 +2732,30 @@ Public Class Form1
         Next
     End Sub
 
-    Private Sub PSD_start_screen_psd()
-        '======== Fill the DVG with OSD example data =======
+    Private Sub PSD_Whey()
+        TextBox28.Text = "PSD Whey"
+        TextBox29.Text = "Q20.1018"
+        TextBox53.Text = "--"
+        NumericUpDown1.Value = 155952       '[Am3/h] Flow
+        NumericUpDown18.Value = 77          '[c]
+        NumericUpDown19.Value = -20         '[mbar] 
+        numericUpDown2.Value = 1600         '[kg/m3] density
+        numericUpDown3.Value = CDec(1.278)  '[kg/m3] ro air
+        numericUpDown14.Value = CDec(0.0208)  '[mPas=cP] visco air
+        NumericUpDown4.Value = 20           '[g/Am3]
+
+        ComboBox1.SelectedIndex = 2         'AC435 stage #1
+        numericUpDown5.Value = 2200         '[mm] diameter cycloon
+        NumericUpDown20.Value = 3           '[-] parallel cycloon
+
+        ComboBox2.SelectedIndex = 5         'AC850 stage #2
+        NumericUpDown34.Value = 2200        '[mm] diameter cycloon
+        NumericUpDown33.Value = 6           '[-] parallel cycloon
+        '======== Fill the DVG with PSD example data =======
         Dim words() As String
         For row = 0 To DataGridView6.Rows.Count - 1
-            If row < start_screen_psd.Length Then
-                words = start_screen_psd(row).Split(CType(";", Char()))
+            If row < psd_whey_A6605.Length Then
+                words = psd_whey_A6605(row).Split(CType(";", Char()))
                 DataGridView6.Rows(row).Cells(0).Value = CDbl(words(0))
                 DataGridView6.Rows(row).Cells(1).Value = CDbl(words(1))
             Else
@@ -2763,6 +2782,8 @@ Public Class Form1
 
     Private Sub PSD_GvG_excel()
         TextBox28.Text = "GvG_test_excel"
+        TextBox29.Text = "--"
+        TextBox53.Text = "--"
         NumericUpDown1.Value = 58900        'Am3/h]
         NumericUpDown18.Value = 45          '[c]
         NumericUpDown19.Value = -30         '[mbar]
@@ -2771,9 +2792,14 @@ Public Class Form1
         numericUpDown14.Value = CDec(0.02)  '[mPas=cP]
         NumericUpDown4.Value = 77           '[g/Am3]
 
-        ComboBox1.SelectedIndex = 5     'AC850
-        numericUpDown5.Value = 1250     '[mm] diameter cycloon
-        NumericUpDown20.Value = 6       '[-] parallel cycloon
+        ComboBox1.SelectedIndex = 5         'AC850 stage #1
+        numericUpDown5.Value = 1250         '[mm] diameter cycloon
+        NumericUpDown20.Value = 6           '[-] parallel cycloon
+
+        ComboBox2.SelectedIndex = 5         'AC850 stage #2
+        NumericUpDown34.Value = 1250        '[mm] diameter cycloon
+        NumericUpDown33.Value = 6           '[-] parallel cycloon
+
 
         '======== Fill the DVG with DSM polymere example data =======
         Dim words() As String
@@ -2789,5 +2815,58 @@ Public Class Form1
         Next
     End Sub
 
+    Private Sub Screen_contrast()
+        '====This fuction is to increase the readability=====
+        '==== of the red text ===============================
+        Dim all_txt, all_num, all_lab As New List(Of Control)
 
+        '-------- find all Text box controls -----------------
+        FindControlRecursive(all_txt, Me, GetType(TextBox))   'Find the control
+        For i = 0 To all_txt.Count - 1
+            Dim grbx As TextBox = CType(all_txt(i), TextBox)
+            If grbx.BackColor.Equals(Color.Red) Then
+                grbx.Enabled = True
+                grbx.ForeColor = Color.White
+            Else
+                grbx.ForeColor = Color.Black
+            End If
+        Next
+
+        '-------- find all numeric controls -----------------
+        FindControlRecursive(all_num, Me, GetType(NumericUpDown))   'Find the control
+        For i = 0 To all_num.Count - 1
+            Dim grbx As NumericUpDown = CType(all_num(i), NumericUpDown)
+            If grbx.BackColor.Equals(Color.Red) Then
+                grbx.ForeColor = Color.White
+            Else
+                grbx.ForeColor = Color.Black
+            End If
+        Next
+
+        '-------- find all label controls -----------------
+        FindControlRecursive(all_lab, Me, GetType(Label))   'Find the control
+        For i = 0 To all_lab.Count - 1
+            Dim grbx As Label = CType(all_lab(i), Label)
+            If grbx.BackColor.Equals(Color.Red) Then
+                grbx.Enabled = True
+                grbx.ForeColor = Color.White
+            Else
+                grbx.ForeColor = Color.Black
+            End If
+        Next
+    End Sub
+
+    '----------- Find all controls on form1------
+    'Nota Bene, sequence of found control may be differen, List sort is required
+    Public Shared Function FindControlRecursive(ByVal list As List(Of Control), ByVal parent As Control, ByVal ctrlType As System.Type) As List(Of Control)
+        If parent Is Nothing Then Return list
+
+        If parent.GetType Is ctrlType Then
+            list.Add(parent)
+        End If
+        For Each child As Control In parent.Controls
+            FindControlRecursive(list, child, ctrlType)
+        Next
+        Return list
+    End Function
 End Class
