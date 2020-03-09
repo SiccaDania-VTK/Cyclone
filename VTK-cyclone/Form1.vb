@@ -2190,7 +2190,7 @@ Public Class Form1
                 g.i_d1 = _cees(c_nr).dia_big(0)     'Diameter small [mu]
                 g.i_d2 = _cees(c_nr).dia_big(1)     'Diameter big [mu]
                 g.i_p1 = _cees(c_nr).class_load(0)  'User lower input percentage
-                g.i_p1 = _cees(c_nr).class_load(1)  'User upper input percentage
+                g.i_p2 = _cees(c_nr).class_load(1)  'User upper input percentage
                 g.i_grp = 0                         'Group 0
             End If
 
