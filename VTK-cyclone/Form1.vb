@@ -141,7 +141,7 @@ Public Class Form1
     'Nieuwe reken methode, verdeling volgens Weibull verdeling
     'm1,k1,a1 als d < d_krit
     'm2,k2,a2 als d > d_krit
-    'type; d/krit; m1; k1; a1; m2; k2; a2; drukcoef air;drukcoef dust
+    'type; d/krit; m1; k1; a1; m2; k2; a2; drukcoef air; drukcoef dust
     ReadOnly rekenlijnen() As String = {
     "AC300;     12.2;   1.15;   7.457;  1.005;      8.5308;     1.6102; 0.4789; 7;      0",
     "AC350;     10.2;   1.0;    5.3515; 1.0474;     4.4862;     2.4257; 0.6472; 7;      7.927",
@@ -152,7 +152,7 @@ Public Class Form1
     "AC850+afz; 10;     0.5187; 1.6412; 0.8386;     4.2781;     0.06777;0.3315; 0;      0",
     "AC1850;    9.3;    0.50;   1.1927; 0.5983;     -0.196;     1.3687; 0.6173; 14.5;   0",
     "AC1850+afz;10.45;  0.4617; 0.2921; 0.4560;     -0.2396;    0.1269; 0.3633; 0;      0",
-    "AA850;     7.8;    0.52;   1.9418; 0.73705;    -0.1060;    2.0197; 0.7077; 9.5;    6.172"
+    "AA850;     7.8;    0.52;   1.9418; 0.73705;    -0.1060;    2.0197; 0.7077; 10;    6.172"
     }
 
     'DSM polymer power DSM Geleen (cumulatief[%], particle diameter[mu])
@@ -216,6 +216,21 @@ Public Class Form1
     "60;   4.5",
     "80;   2",
     "100;  0"}
+
+    'AA850 test GvG Excelsheet, Cumulatief[%], particle diameter[mu])
+    ReadOnly AA_excel() As String = {
+    "2;   99.9973",
+    "3;   99.92",
+    "4;   99.61",
+    "6;   97.3",
+    "8;   91.72",
+    "11;   76.4",
+    "14;   53.1",
+    "16;   35.5",
+    "18;  19.5",
+    "20;   8.7",
+    "22;   3.3",
+    "50;  0.001"}
 
     'Whey (cumulatief[%], particle diameter[mu])
     ReadOnly psd_whey_A6605() As String = {
@@ -397,8 +412,6 @@ Public Class Form1
         TextBox126.Text &= "psd_dif gesommeerd over de 110 fracties moet de 1.0 (100%) naderen." & vbCrLf
         TextBox126.Text &= "Emissie= Total_loss * inlaat_stof_belasting" & vbCrLf
         TextBox126.Text &= "" & vbCrLf
-        TextBox126.Text &= "" & vbCrLf
-        TextBox126.Text &= "" & vbCrLf
         TextBox126.Text &= "Opmerking 1) deeltjes < 0.5-0.7 mu kunnen niet gevangen worden ivm fysische mechanismen groter dan de centrifugaal kracht."
 
         TextBox145.Text = "Particles may breakup into smaller ones inside a cyclone" & vbCrLf
@@ -501,8 +514,10 @@ Public Class Form1
             visco = numericUpDown14.Value               '[cPoise]
 
             '=========== Stage #1 ==============
-            _cees(ks).inv1 = _cees(ks).Flow1 / (_cees(ks).inb1 * _cees(ks).inh1)
-            _cees(ks).outv1 = _cees(ks).Flow1 / ((PI / 4) * _cees(ks).dout1 ^ 2)   '[m/s]
+            _cees(ks).inv1 = _cees(ks).Flow1 / (_cees(ks).inb1 * _cees(ks).inh1)    '[m/s]
+            _cees(ks).outv1 = _cees(ks).Flow1 / ((PI / 4) * _cees(ks).dout1 ^ 2)    '[m/s]
+            If _cees(ks).inv1 < 1 Then _cees(ks).inv1 = 1               '[m/s] Prevent silly results
+            If _cees(ks).inv1 > 60 Then _cees(ks).inv1 = 60             '[m/s] Prevent silly results
 
             If ComboBox1.SelectedIndex > -1 Then
                 words = rekenlijnen(ComboBox1.SelectedIndex).Split(CType(";", Char()))
@@ -1055,8 +1070,18 @@ Public Class Form1
         End If
 
         ch.ChartAreas("ChartArea0").AxisX.IsLogarithmic = True
-        ch.ChartAreas("ChartArea0").AxisX.Minimum = 1       'Particle size
-        ' ch.ChartAreas("ChartArea0").AxisX.Maximum = 5000    'Particle size
+
+        Select Case True
+            Case RadioButton1.Checked
+                ch.ChartAreas("ChartArea0").AxisX.Minimum = 0.1     'Particle size
+                ch.ChartAreas("ChartArea0").AxisX.Maximum = 1000    'Particle size
+            Case RadioButton2.Checked
+                ch.ChartAreas("ChartArea0").AxisX.Minimum = 1       'Particle size
+                ch.ChartAreas("ChartArea0").AxisX.Maximum = 10000   'Particle size
+            Case Else
+                ch.ChartAreas("ChartArea0").AxisX.Minimum = 0.1     'Particle size
+                ch.ChartAreas("ChartArea0").AxisX.Maximum = 10000    'Particle size
+        End Select
 
         '----- now start plotting ------------------------
         ks = CInt(NumericUpDown30.Value)        'Case number
@@ -1236,7 +1261,7 @@ Public Class Form1
         ch.Series(0).Points(6).Label = "Load correction"
     End Sub
 
-    Private Sub Button2_Click(sender As Object, e As EventArgs) Handles TabPage9.Enter, CheckBox6.CheckedChanged, CheckBox7.CheckedChanged, CheckBox4.CheckedChanged, CheckBox9.CheckedChanged, CheckBox8.CheckedChanged, CheckBox10.CheckedChanged, CheckBox5.CheckedChanged, CheckBox12.CheckedChanged, CheckBox11.CheckedChanged, CheckBox1.CheckedChanged, CheckBox13.CheckedChanged, CheckBox14.CheckedChanged, CheckBox15.CheckedChanged, CheckBox16.CheckedChanged, CheckBox17.CheckedChanged, CheckBox18.CheckedChanged, CheckBox19.CheckedChanged
+    Private Sub Button2_Click(sender As Object, e As EventArgs) Handles TabPage9.Enter, CheckBox6.CheckedChanged, CheckBox7.CheckedChanged, CheckBox4.CheckedChanged, CheckBox9.CheckedChanged, CheckBox8.CheckedChanged, CheckBox10.CheckedChanged, CheckBox5.CheckedChanged, CheckBox12.CheckedChanged, CheckBox11.CheckedChanged, CheckBox1.CheckedChanged, CheckBox13.CheckedChanged, CheckBox14.CheckedChanged, CheckBox15.CheckedChanged, CheckBox16.CheckedChanged, CheckBox17.CheckedChanged, CheckBox18.CheckedChanged, CheckBox19.CheckedChanged, RadioButton2.CheckedChanged, RadioButton1.CheckedChanged
         Calc_sequence()
     End Sub
     Private Sub Calc_sequence()
@@ -2652,6 +2677,7 @@ Public Class Form1
         Next
     End Sub
     Private Sub Build_dgv6()
+        'This is the user input mechanism for entering the PSD data
         DataGridView6.ColumnCount = 3
         DataGridView6.Rows.Clear()
         DataGridView6.Rows.Add(no_PDS_input_points)
@@ -2697,6 +2723,45 @@ Public Class Form1
         Calc_sequence()
     End Sub
 
+    Private Sub Button17_Click(sender As Object, e As EventArgs) Handles Button17.Click
+        AA850_psd()
+        Calc_sequence()
+    End Sub
+    Private Sub AA850_psd()
+        TextBox28.Text = "AA850 test"
+        TextBox29.Text = "--"
+        TextBox53.Text = "--"
+        NumericUpDown1.Value = 55000            '[Am3/h] Flow
+        NumericUpDown18.Value = 60              '[c]
+        NumericUpDown19.Value = -80             '[mbar] 
+        numericUpDown2.Value = 1500             '[kg/m3] density
+        numericUpDown3.Value = CDec(0.903)      '[kg/m3] ro air
+        numericUpDown14.Value = CDec(0.0204)    '[mPas=cP] visco air
+        NumericUpDown4.Value = 139              '[g/Am3]
+        NumericUpDown30.Value = 0               '[-] Case number
+
+        NumericUpDown20.Value = 80              '[-] parallel cycloon
+        ComboBox1.SelectedIndex = 9             'AA850 stage #1
+        numericUpDown5.Value = 300              '[mm] diameter cycloon
+
+        NumericUpDown33.Value = 80              '[-] parallel cycloon
+        ComboBox2.SelectedIndex = 9             'AA850 stage #2
+        NumericUpDown34.Value = 300             '[mm] diameter cycloon
+
+        '======== Fill the DVG with PSD example data =======
+        Dim words() As String
+        For row = 0 To DataGridView6.Rows.Count - 1
+            If row < AA_excel.Length Then
+                words = AA_excel(row).Split(CType(";", Char()))
+                DataGridView6.Rows(row).Cells(0).Value = CDbl(words(0))
+                DataGridView6.Rows(row).Cells(1).Value = CDbl(words(1))
+            Else
+                DataGridView6.Rows(row).Cells(0).Value = ""
+                DataGridView6.Rows(row).Cells(1).Value = ""
+            End If
+        Next
+    End Sub
+
     Private Sub PSD_maltodesxtrine()
         TextBox28.Text = "Cargill China"
         TextBox29.Text = "Q20.1021"
@@ -2708,14 +2773,15 @@ Public Class Form1
         numericUpDown3.Value = CDec(0.8977) '[kg/m3] ro air
         numericUpDown14.Value = CDec(0.0227)  '[mPas=cP] visco air
         NumericUpDown4.Value = 20           '[g/Am3]
+        NumericUpDown30.Value = 0           '[-] Case number
 
+        NumericUpDown20.Value = 8           '[-] parallel cycloon
         ComboBox1.SelectedIndex = 5         'AC850 stage #1
         numericUpDown5.Value = 1000         '[mm] diameter cycloon
-        NumericUpDown20.Value = 8           '[-] parallel cycloon
 
-        ComboBox2.SelectedIndex = 5        'AC850 stage #2
-        NumericUpDown34.Value = 700        '[mm] diameter cycloon
-        NumericUpDown33.Value = 24         '[-] parallel cycloon
+        NumericUpDown33.Value = 24          '[-] parallel cycloon
+        ComboBox2.SelectedIndex = 5         'AC850 stage #2
+        NumericUpDown34.Value = 700         '[mm] diameter cycloon
 
         '======== Fill the DVG with PSD example data =======
         Dim words() As String
@@ -2742,14 +2808,16 @@ Public Class Form1
         numericUpDown3.Value = CDec(1.278)  '[kg/m3] ro air
         numericUpDown14.Value = CDec(0.0208)  '[mPas=cP] visco air
         NumericUpDown4.Value = 20           '[g/Am3]
+        NumericUpDown30.Value = 0           '[-] Case number
 
+        NumericUpDown20.Value = 3           '[-] parallel cycloon
         ComboBox1.SelectedIndex = 2         'AC435 stage #1
         numericUpDown5.Value = 2200         '[mm] diameter cycloon
-        NumericUpDown20.Value = 3           '[-] parallel cycloon
 
+        NumericUpDown33.Value = 6           '[-] parallel cycloon
         ComboBox2.SelectedIndex = 5         'AC850 stage #2
         NumericUpDown34.Value = 2200        '[mm] diameter cycloon
-        NumericUpDown33.Value = 6           '[-] parallel cycloon
+
         '======== Fill the DVG with PSD example data =======
         Dim words() As String
         For row = 0 To DataGridView6.Rows.Count - 1
@@ -2790,14 +2858,15 @@ Public Class Form1
         numericUpDown3.Value = CDec(1.073)  '[kg/m3]
         numericUpDown14.Value = CDec(0.02)  '[mPas=cP]
         NumericUpDown4.Value = 77           '[g/Am3]
+        NumericUpDown30.Value = 0           '[-] Case number
 
+        NumericUpDown20.Value = 6           '[-] parallel cycloon
         ComboBox1.SelectedIndex = 5         'AC850 stage #1
         numericUpDown5.Value = 1250         '[mm] diameter cycloon
-        NumericUpDown20.Value = 6           '[-] parallel cycloon
 
+        NumericUpDown33.Value = 6           '[-] parallel cycloon
         ComboBox2.SelectedIndex = 5         'AC850 stage #2
         NumericUpDown34.Value = 1250        '[mm] diameter cycloon
-        NumericUpDown33.Value = 6           '[-] parallel cycloon
 
 
         '======== Fill the DVG with DSM polymere example data =======
@@ -2868,4 +2937,6 @@ Public Class Form1
         Next
         Return list
     End Function
+
+
 End Class
