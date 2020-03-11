@@ -135,7 +135,8 @@ Public Class Form1
     "AC-850+afz;0.203;0.457;0.6;0.564;0.3;0.307;0.428;0.892;3.797;1.312;2.485;0.4;0.6;0.6;0.25",
     "AC-1850;0.136;0.31;0.6;0.53;0.3;0.15;0.25;0.892;3.797;1.312;2.485;0.4;0.6;0.6;0.25",
     "AC-1850+afz;0.136;0.31;0.6;0.53;0.3;0.15;0.25;0.892;3.797;1.312;2.485;0.4;0.6;0.6;0.25",
-    "AA850;0.203;0.457;0.6;0.564;0.3;0.307;0.428;0.892;3.797;1.312;2.485;0.4;0.6;0.6;0.25"      'NOT UP TO DATE CHECK !!!!!!
+    "AA850;0.203;0.457;0.6;0.564;0.3;0.307;0.428;0.892;3.797;1.312;2.485;0.4;0.6;0.6;0.25",    'NOT UP TO DATE CHECK !!!!!!
+    "Void;0.203;0.457;0.6;0.564;0.3;0.307;0.428;0.892;3.797;1.312;2.485;0.4;0.6;0.6;0.25"      'NOT UP TO DATE CHECK !!!!!!
     }
 
     'Nieuwe reken methode, verdeling volgens Weibull verdeling
@@ -152,7 +153,8 @@ Public Class Form1
     "AC850+afz; 10;     0.5187; 1.6412; 0.8386;     4.2781;     0.06777;0.3315; 0;      0",
     "AC1850;    9.3;    0.50;   1.1927; 0.5983;     -0.196;     1.3687; 0.6173; 14.5;   0",
     "AC1850+afz;10.45;  0.4617; 0.2921; 0.4560;     -0.2396;    0.1269; 0.3633; 0;      0",
-    "AA850;     7.8;    0.52;   1.9418; 0.73705;    -0.1060;    2.0197; 0.7077; 10;    6.172"
+    "AA850;     7.8;    0.52;   1.9418; 0.73705;    -0.1060;    2.0197; 0.7077; 10;     6.8",
+    "Void;      7.8;    0.52;   1.9418; 0.73705;    -0.1060;    2.0197; 0.7077; 0;      0"
     }
 
     'DSM polymer power DSM Geleen (cumulatief[%], particle diameter[mu])
@@ -576,109 +578,116 @@ Public Class Form1
             TextBox128.Text = _cees(ks).Ro_gas2_Nm3.ToString("F3")      '[kg/Nm3] density
             TextBox36.Text = (_cees(ks).FlowT / 3600).ToString("F4")    '[m3/s] flow
 
-            '----------- presenteren afmetingen in [mm] ----------------------------
+
+            If (ComboBox1.SelectedIndex = 9) Then
+                groupBox3.Visible = False
+            Else
+                groupBox3.Visible = True
+            End If
+
+            '----------- presenteren afmetingen AC cyclonen in [mm] ----------------------------
             TextBox1.Text = (_cees(ks).inh1).ToString("F3")          'inlaat breedte
-            TextBox2.Text = (_cees(ks).inb1).ToString("F3")          'Inlaat hoogte
-            TextBox3.Text = (_cyl1_dim(3) * db1).ToString("F3")      'Inlaat lengte
-            TextBox4.Text = (_cyl1_dim(4) * db1).ToString("F3")      'Inlaat hartmaat
-            TextBox5.Text = (_cyl1_dim(5) * db1).ToString("F3")      'Inlaat afschuining
-            TextBox6.Text = (_cyl1_dim(6) * db1).ToString("F3")      'Uitlaat keeldia inw.
-            TextBox7.Text = (_cyl1_dim(7) * db1).ToString("F3")      'Uitlaat flensdiameter inw.
-            TextBox8.Text = (_cyl1_dim(8) * db1).ToString("F3")      'Lengte insteekpijp inw.
-            TextBox9.Text = (_cyl1_dim(9) * db1).ToString("F3")      'Lengte romp + conus
-            TextBox10.Text = (_cyl1_dim(10) * db1).ToString("F3")    'Lengte romp
-            TextBox11.Text = (_cyl1_dim(11) * db1).ToString("F3")    'Lengte çonus
-            TextBox12.Text = (_cyl1_dim(12) * db1).ToString("F3")    'Dia_conus / 3P-pijp
-            TextBox13.Text = (_cyl1_dim(13) * db1).ToString("F3")    'Lengte 3P-pijp
-            TextBox14.Text = (_cyl1_dim(14) * db1).ToString("F3")    'Lengte 3P conus
-            TextBox15.Text = (_cyl1_dim(15) * db1).ToString("F3")    'Kleine dia 3P-conus
+                TextBox2.Text = (_cees(ks).inb1).ToString("F3")          'Inlaat hoogte
+                TextBox3.Text = (_cyl1_dim(3) * db1).ToString("F3")      'Inlaat lengte
+                TextBox4.Text = (_cyl1_dim(4) * db1).ToString("F3")      'Inlaat hartmaat
+                TextBox5.Text = (_cyl1_dim(5) * db1).ToString("F3")      'Inlaat afschuining
+                TextBox6.Text = (_cyl1_dim(6) * db1).ToString("F3")      'Uitlaat keeldia inw.
+                TextBox7.Text = (_cyl1_dim(7) * db1).ToString("F3")      'Uitlaat flensdiameter inw.
+                TextBox8.Text = (_cyl1_dim(8) * db1).ToString("F3")      'Lengte insteekpijp inw.
+                TextBox9.Text = (_cyl1_dim(9) * db1).ToString("F3")      'Lengte romp + conus
+                TextBox10.Text = (_cyl1_dim(10) * db1).ToString("F3")    'Lengte romp
+                TextBox11.Text = (_cyl1_dim(11) * db1).ToString("F3")    'Lengte çonus
+                TextBox12.Text = (_cyl1_dim(12) * db1).ToString("F3")    'Dia_conus / 3P-pijp
+                TextBox13.Text = (_cyl1_dim(13) * db1).ToString("F3")    'Lengte 3P-pijp
+                TextBox14.Text = (_cyl1_dim(14) * db1).ToString("F3")    'Lengte 3P conus
+                TextBox15.Text = (_cyl1_dim(15) * db1).ToString("F3")    'Kleine dia 3P-conus
 
-            TextBox84.Text = (_cees(ks).inh2).ToString("F3")         'inlaat breedte
-            TextBox85.Text = (_cees(ks).inb2).ToString("F3")         'Inlaat hoogte
-            TextBox86.Text = (_cyl1_dim(3) * db2).ToString("F3")     'Inlaat lengte
-            TextBox87.Text = (_cyl1_dim(4) * db2).ToString("F3")     'Inlaat hartmaat
-            TextBox88.Text = (_cyl1_dim(5) * db2).ToString("F3")     'Inlaat afschuining
-            TextBox89.Text = (_cyl1_dim(6) * db2).ToString("F3")     'Uitlaat keeldia inw.
-            TextBox90.Text = (_cyl1_dim(7) * db2).ToString("F3")     'Uitlaat flensdiameter inw.
-            TextBox91.Text = (_cyl1_dim(8) * db2).ToString("F3")     'Lengte insteekpijp inw.
-            TextBox92.Text = (_cyl1_dim(9) * db2).ToString("F3")     'Lengte romp + conus
-            TextBox93.Text = (_cyl1_dim(10) * db2).ToString("F3")    'Lengte romp
-            TextBox94.Text = (_cyl1_dim(11) * db2).ToString("F3")    'Lengte çonus
-            TextBox95.Text = (_cyl1_dim(12) * db2).ToString("F3")    'Dia_conus / 3P-pijp
-            TextBox96.Text = (_cyl1_dim(13) * db2).ToString("F3")    'Lengte 3P-pijp
-            TextBox97.Text = (_cyl1_dim(14) * db2).ToString("F3")    'Lengte 3P conus
-            TextBox98.Text = (_cyl1_dim(15) * db2).ToString("F3")    'Kleine dia 3P-conus
-            TextBox150.Text = halfconeapex1.ToString("F1")           '1/2 cone apex
-            TextBox151.Text = halfconeapex2.ToString("F1")           '1/2 cone apex
+                TextBox84.Text = (_cees(ks).inh2).ToString("F3")         'inlaat breedte
+                TextBox85.Text = (_cees(ks).inb2).ToString("F3")         'Inlaat hoogte
+                TextBox86.Text = (_cyl1_dim(3) * db2).ToString("F3")     'Inlaat lengte
+                TextBox87.Text = (_cyl1_dim(4) * db2).ToString("F3")     'Inlaat hartmaat
+                TextBox88.Text = (_cyl1_dim(5) * db2).ToString("F3")     'Inlaat afschuining
+                TextBox89.Text = (_cyl1_dim(6) * db2).ToString("F3")     'Uitlaat keeldia inw.
+                TextBox90.Text = (_cyl1_dim(7) * db2).ToString("F3")     'Uitlaat flensdiameter inw.
+                TextBox91.Text = (_cyl1_dim(8) * db2).ToString("F3")     'Lengte insteekpijp inw.
+                TextBox92.Text = (_cyl1_dim(9) * db2).ToString("F3")     'Lengte romp + conus
+                TextBox93.Text = (_cyl1_dim(10) * db2).ToString("F3")    'Lengte romp
+                TextBox94.Text = (_cyl1_dim(11) * db2).ToString("F3")    'Lengte çonus
+                TextBox95.Text = (_cyl1_dim(12) * db2).ToString("F3")    'Dia_conus / 3P-pijp
+                TextBox96.Text = (_cyl1_dim(13) * db2).ToString("F3")    'Lengte 3P-pijp
+                TextBox97.Text = (_cyl1_dim(14) * db2).ToString("F3")    'Lengte 3P conus
+                TextBox98.Text = (_cyl1_dim(15) * db2).ToString("F3")    'Kleine dia 3P-conus
+                TextBox150.Text = halfconeapex1.ToString("F1")           '1/2 cone apex
+                TextBox151.Text = halfconeapex2.ToString("F1")           '1/2 cone apex
 
-            TextBox113.Text = (_cees(ks).Flow1 * 3600).ToString("0")    '[Am3/s] Cycloone Flow
-            TextBox112.Text = (_cees(ks).Flow2 * 3600).ToString("0")    '[Am3/s] Cycloone Flow
+                TextBox113.Text = (_cees(ks).Flow1 * 3600).ToString("0")    '[Am3/s] Cycloone Flow
+                TextBox112.Text = (_cees(ks).Flow2 * 3600).ToString("0")    '[Am3/s] Cycloone Flow
 
-            TextBox16.Text = _cees(ks).inv1.ToString("0.0")             'inlaat snelheid
-            TextBox80.Text = _cees(ks).inv2.ToString("0.0")             'inlaat snelheid
+                TextBox16.Text = _cees(ks).inv1.ToString("0.0")             'inlaat snelheid
+                TextBox80.Text = _cees(ks).inv2.ToString("0.0")             'inlaat snelheid
 
-            TextBox17.Text = _cees(ks).dpgas1.ToString("0")             '[Pa] Pressure loss inlet-gas
-            TextBox79.Text = _cees(ks).dpgas2.ToString("0")             '[Pa] Pressure loss inlet-gas
+                TextBox17.Text = _cees(ks).dpgas1.ToString("0")             '[Pa] Pressure loss inlet-gas
+                TextBox79.Text = _cees(ks).dpgas2.ToString("0")             '[Pa] Pressure loss inlet-gas
 
-            TextBox48.Text = _cees(ks).dpdust1.ToString("0")            '[Pa] Pressure loss inlet-dust
-            TextBox76.Text = _cees(ks).dpdust2.ToString("0")            '[Pa] Pressure loss inlet-dust
+                TextBox48.Text = _cees(ks).dpdust1.ToString("0")            '[Pa] Pressure loss inlet-dust
+                TextBox76.Text = _cees(ks).dpdust2.ToString("0")            '[Pa] Pressure loss inlet-dust
 
-            TextBox22.Text = _cees(ks).outv1.ToString("0.0")            'uitlaat snelheid
-            TextBox77.Text = _cees(ks).outv2.ToString("0.0")            'uitlaat snelheid
+                TextBox22.Text = _cees(ks).outv1.ToString("0.0")            'uitlaat snelheid
+                TextBox77.Text = _cees(ks).outv2.ToString("0.0")            'uitlaat snelheid
 
-            TextBox23.Text = _cees(ks).Kstokes1.ToString("F4")          'Stokes waarde stage#1
-            TextBox78.Text = _cees(ks).Kstokes2.ToString("F4")          'Stokes waarde stage#2
+                TextBox23.Text = _cees(ks).Kstokes1.ToString("F4")          'Stokes waarde stage#1
+                TextBox78.Text = _cees(ks).Kstokes2.ToString("F4")          'Stokes waarde stage#2
 
-            TextBox37.Text = _cees(ks).db1.ToString                     'Cycloone diameter stage#1
-            TextBox74.Text = _cees(ks).db2.ToString                     'Cycloone diameter stage#2
+                TextBox37.Text = _cees(ks).db1.ToString                     'Cycloone diameter stage#1
+                TextBox74.Text = _cees(ks).db2.ToString                     'Cycloone diameter stage#2
 
-            TextBox38.Text = CType(ComboBox1.SelectedItem, String)      'Cycloon type
-            TextBox73.Text = CType(ComboBox2.SelectedItem, String)      'Cycloon type
+                TextBox38.Text = CType(ComboBox1.SelectedItem, String)      'Cycloon type
+                TextBox73.Text = CType(ComboBox2.SelectedItem, String)      'Cycloon type
 
-            '---------- Pressure abs --------------
-            TextBox131.Text = _cees(ks).p1_abs.ToString("F0")           '[Pa abs]
-            TextBox130.Text = _cees(ks).p2_abs.ToString("F0")           '[Pa abs]
+                '---------- Pressure abs --------------
+                TextBox131.Text = _cees(ks).p1_abs.ToString("F0")           '[Pa abs]
+                TextBox130.Text = _cees(ks).p2_abs.ToString("F0")           '[Pa abs]
 
-            '---------- Density --------------
-            TextBox75.Text = _cees(ks).Ro_gas1_Am3.ToString("F3")       '[kg/Am3]
-            TextBox19.Text = _cees(ks).Ro_gas2_Am3.ToString("F3")       '[kg/Am3]
+                '---------- Density --------------
+                TextBox75.Text = _cees(ks).Ro_gas1_Am3.ToString("F3")       '[kg/Am3]
+                TextBox19.Text = _cees(ks).Ro_gas2_Am3.ToString("F3")       '[kg/Am3]
 
-            '---------- Check inlet speed [m/s] stage #1---------------
-            If _cees(ks).inv1 < 10 Or _cees(ks).inv1 > 30 Then
-                TextBox16.BackColor = Color.Red
-            Else
-                TextBox16.BackColor = Color.LightGreen
+                '---------- Check inlet speed [m/s] stage #1---------------
+                If _cees(ks).inv1 < 10 Or _cees(ks).inv1 > 30 Then
+                    TextBox16.BackColor = Color.Red
+                Else
+                    TextBox16.BackColor = Color.LightGreen
+                End If
+
+                '---------- Check inlet speed stage #2---------------
+                If _cees(ks).inv2 < 10 Or _cees(ks).inv2 > 30 Then
+                    TextBox80.BackColor = Color.Red
+                Else
+                    TextBox80.BackColor = Color.LightGreen
+                End If
+
+                '---------- Check dp [pa] stage #1---------------
+                If _cees(ks).dpgas1 > 3000 Then
+                    TextBox17.BackColor = Color.Red
+                Else
+                    TextBox17.BackColor = Color.LightGreen
+                End If
+
+                '---------- Check dp stage #2---------------
+                If _cees(ks).dpgas2 > 3000 Then
+                    TextBox79.BackColor = Color.Red
+                Else
+                    TextBox79.BackColor = Color.LightGreen
+                End If
+
+                '--------- Get Inlet korrel-groep data ----------
+                'Save data of screen into the _cees array
+                Fill_array_from_screen(CInt(NumericUpDown30.Value))
+
+                TextBox39.Text = kgh.ToString("F0")                 'Stof inlet [kg/(h.cyclone)]
+                TextBox40.Text = tot_kgh.ToString("F0")             'Dust inlet [kg/h] 
+                TextBox71.Text = _cees(ks).dust1_Am3.ToString("F3") 'Dust inlet [g/Am3]
             End If
-
-            '---------- Check inlet speed stage #2---------------
-            If _cees(ks).inv2 < 10 Or _cees(ks).inv2 > 30 Then
-                TextBox80.BackColor = Color.Red
-            Else
-                TextBox80.BackColor = Color.LightGreen
-            End If
-
-            '---------- Check dp [pa] stage #1---------------
-            If _cees(ks).dpgas1 > 3000 Then
-                TextBox17.BackColor = Color.Red
-            Else
-                TextBox17.BackColor = Color.LightGreen
-            End If
-
-            '---------- Check dp stage #2---------------
-            If _cees(ks).dpgas2 > 3000 Then
-                TextBox79.BackColor = Color.Red
-            Else
-                TextBox79.BackColor = Color.LightGreen
-            End If
-
-            '--------- Get Inlet korrel-groep data ----------
-            'Save data of screen into the _cees array
-            Fill_array_from_screen(CInt(NumericUpDown30.Value))
-
-            TextBox39.Text = kgh.ToString("F0")                 'Stof inlet [kg/(h.cyclone)]
-            TextBox40.Text = tot_kgh.ToString("F0")             'Dust inlet [kg/h] 
-            TextBox71.Text = _cees(ks).dust1_Am3.ToString("F3") 'Dust inlet [g/Am3]
-        End If
     End Sub
     Private Sub Present_Datagridview1(ks As Integer)
 
@@ -882,6 +891,15 @@ Public Class Form1
                 verlies = 1.0        '100% loss (very small particle)
             End If
 
+            '=========== check cyclone type for not installed ===
+            If (stage = 1) And String.Equals(ComboBox1.SelectedItem.ToString, "Void") Then
+                verlies = 1.0
+                ' MsgBox("stage 1 not installed")
+            End If
+            If (stage = 2) And String.Equals(ComboBox2.SelectedItem.ToString, "Void") Then
+                verlies = 1.0
+                'MsgBox("stage 2 not installed")
+            End If
         End If
         Return (verlies)
     End Function
@@ -898,7 +916,6 @@ Public Class Form1
             If (stage = 1) Then                         'Stage #1 cyclone
                 cor1 = NumericUpDown22.Value            'Correctie insteek pijp stage #1
                 Double.TryParse(TextBox55.Text, cor2)   'Hoge stof belasting correctie acc VT-UK
-
             Else                                        'Stage #2 cyclone
                 cor1 = NumericUpDown43.Value            'Correctie insteek pijp stage #2
                 Double.TryParse(TextBox67.Text, cor2)   'Hoge stof belasting correctie acc VT-UK
