@@ -113,7 +113,7 @@ End Structure
 End Structure
 
 Public Class Form1
-    Public Const no_PDS_input_points As Integer = 50
+    Public Const no_PDS_input_points As Integer = 70
     Public _cyl1_dim(20) As Double          'Cyclone stage #1 dimensions
     Public _cyl2_dim(20) As Double          'Cyclone stage #2 dimensions
     Public _istep As Double                 '[mu] Particle size calculation step
@@ -191,21 +191,77 @@ Public Class Form1
     "735;100",
     "875;100"}
 
-    'Cargill China (cumulatief[%], particle diameter[mu])
+    ''Cargill China (cumulatief[%], particle diameter[mu])
+    'ReadOnly maltodextrine_psd() As String = {
+    '"1.0;   99.9",
+    '"2.0;   98.5",
+    '"4.0;   97",
+    '"5.0;   96",
+    '"7.0;   93",
+    '"9.0;   90",
+    '"11;    86",
+    '"20;    68",
+    '"40;    45",
+    '"60;    30",
+    '"80;    20",
+    '"150;   4",
+    '"200;   1"}
+
+    ''Cargill China (cumulatief[%], particle diameter[mu])
     ReadOnly maltodextrine_psd() As String = {
-    "1.0;   99.9",
-    "2.0;   98.5",
-    "4.0;   97",
-    "5.0;   96",
-    "7.0;   93",
-    "9.0;   90",
-    "11;    86",
-    "20;    68",
-    "40;    45",
-    "60;    30",
-    "80;    20",
-    "150;   4",
-    "200;   1"}
+    "	0.359;99.999	",
+"	0.652;99.990	",
+"	0.717;99.980	",
+"	0.799;99.940	",
+"	0.899;99.900	",
+"	1.001;99.840	",
+"	1.116;99.770	",
+"	1.242;99.700	",
+"	1.379;99.610	",
+"	1.535;99.510	",
+"	1.709;99.400	",
+"	1.902;99.270	",
+"	2.117;99.120	",
+"	2.356;98.920	",
+"	2.622;98.740	",
+"	2.919;98.510	",
+"	3.249;98.240	",
+"	3.611;97.950	",
+"	4.020;97.620	",
+"	4.478;97.250	",
+"	4.984;96.850	",
+"	5.549;96.390	",
+"	6.175;95.890	",
+"	6.873;95.330	",
+"	7.650;94.700	",
+"	8.515;94.000	",
+"	9.435;93.200	",
+"	10.505;92.300	",
+"	11.745;91.290	",
+"	13.070;90.160	",
+"	14.540;88.920	",
+"	16.410;87.590	",
+"	18.235;86.180	",
+"	20.090;84.680	",
+"	22.360;83.140	",
+"	24.835;81.520	",
+"	27.640;79.810	",
+"	30.630;77.960	",
+"	34.605;75.930	",
+"	38.610;73.650	",
+"	42.520;71.060	",
+"	47.315;68.200	",
+"	52.550;64.720	",
+"	58.485;60.870	",
+"	65.095;56.560	",
+"	70.955;51.820	",
+"	79.140;46.720	",
+"	89.750;41.350	",
+"	99.875;35.840	",
+"	111.150;30.290	",
+"	158.550;0.001	"
+     }
+
 
     'GvG Excelsheet, Cumulatief[%], particle diameter[mu])
     ReadOnly GvG_excel() As String = {
@@ -1478,7 +1534,7 @@ Public Class Form1
 
             '---------------Inlet data-------------------------------
             'Insert a table, fill it with data and change the column widths.
-            oTable = oDoc.Tables.Add(oDoc.Bookmarks.Item("\endofdoc").Range, 16, 3)
+            oTable = oDoc.Tables.Add(oDoc.Bookmarks.Item("\endofdoc").Range, 13, 3)
             oTable.Range.ParagraphFormat.SpaceAfter = 1
             oTable.Range.Font.Size = 11
             oTable.Range.Font.Bold = CInt(False)
@@ -1524,18 +1580,6 @@ Public Class Form1
             oTable.Cell(row, 1).Range.Text = "Dust load (1 cyclone)"
             oTable.Cell(row, 2).Range.Text = TextBox39.Text
             oTable.Cell(row, 3).Range.Text = "[kg/hr]"
-            row += 1
-            oTable.Cell(row, 1).Range.Text = "dp(50) "
-            oTable.Cell(row, 2).Range.Text = TextBox32.Text
-            oTable.Cell(row, 3).Range.Text = "[mu]"
-            row += 1
-            oTable.Cell(row, 1).Range.Text = "Emission"
-            oTable.Cell(row, 2).Range.Text = TextBox18.Text
-            oTable.Cell(row, 3).Range.Text = "[g/Am3]"
-            row += 1
-            oTable.Cell(row, 1).Range.Text = "Efficiency"
-            oTable.Cell(row, 2).Range.Text = TextBox21.Text
-            oTable.Cell(row, 3).Range.Text = "[%]"
 
             oTable.Columns(1).Width = oWord.InchesToPoints(2.0)   'Change width of columns 
             oTable.Columns(2).Width = oWord.InchesToPoints(1)
@@ -1546,7 +1590,7 @@ Public Class Form1
 
             '---------------cyclone data-------------------------------
             'Insert a table, fill it with data and change the column widths.
-            oTable = oDoc.Tables.Add(oDoc.Bookmarks.Item("\endofdoc").Range, 7, 3)
+            oTable = oDoc.Tables.Add(oDoc.Bookmarks.Item("\endofdoc").Range, 8, 3)
             oTable.Range.ParagraphFormat.SpaceAfter = 1
             oTable.Range.Font.Size = 10
             oTable.Range.Font.Bold = CInt(False)
@@ -1566,7 +1610,7 @@ Public Class Form1
             oTable.Cell(row, 1).Range.Text = "No parallel #1"
             oTable.Cell(row, 2).Range.Text = NumericUpDown20.Value.ToString
             oTable.Cell(row, 3).Range.Text = "[-]"
-            row += 1
+            row += 2
             '----------- stage #2 ---------------
             oTable.Cell(row, 1).Range.Text = "Cyclone type stage #2 "
             oTable.Cell(row, 2).Range.Text = ComboBox2.SelectedItem.ToString
@@ -1589,7 +1633,7 @@ Public Class Form1
 
             '---------------Process data-------------------------------
             'Insert a table, fill it with data and change the column widths.
-            oTable = oDoc.Tables.Add(oDoc.Bookmarks.Item("\endofdoc").Range, 7, 3)
+            oTable = oDoc.Tables.Add(oDoc.Bookmarks.Item("\endofdoc").Range, 18, 3)
             oTable.Range.ParagraphFormat.SpaceAfter = 1
             oTable.Range.Font.Size = 10
             oTable.Range.Font.Bold = CInt(False)
@@ -1610,6 +1654,14 @@ Public Class Form1
             oTable.Cell(row, 2).Range.Text = TextBox17.Text
             oTable.Cell(row, 3).Range.Text = "[Pa]"
             row += 1
+            oTable.Cell(row, 1).Range.Text = "Efficiency #1"
+            oTable.Cell(row, 2).Range.Text = TextBox21.Text
+            oTable.Cell(row, 3).Range.Text = "[%]"
+            row += 1
+            oTable.Cell(row, 1).Range.Text = "Emission #1"
+            oTable.Cell(row, 2).Range.Text = TextBox18.Text
+            oTable.Cell(row, 3).Range.Text = "[gr/Am3]"
+            row += 2
             '----------- stage #2 ---------------
             oTable.Cell(row, 1).Range.Text = "Inlet speed #2 "
             oTable.Cell(row, 2).Range.Text = TextBox80.Text
@@ -1622,6 +1674,35 @@ Public Class Form1
             oTable.Cell(row, 1).Range.Text = "Pressure loss #2"
             oTable.Cell(row, 2).Range.Text = TextBox79.Text
             oTable.Cell(row, 3).Range.Text = "[Pa]"
+            row += 1
+            oTable.Cell(row, 1).Range.Text = "Efficiency #2"
+            oTable.Cell(row, 2).Range.Text = TextBox109.Text
+            oTable.Cell(row, 3).Range.Text = "[%]"
+            row += 1
+            oTable.Cell(row, 1).Range.Text = "Emission #2"
+            oTable.Cell(row, 2).Range.Text = TextBox108.Text
+            oTable.Cell(row, 3).Range.Text = "[gr/Am3]"
+            row += 2
+            oTable.Cell(row, 1).Range.Text = "Efficiency #1+2"
+            oTable.Cell(row, 2).Range.Text = TextBox120.Text
+            oTable.Cell(row, 3).Range.Text = "[%]"
+            row += 1
+            oTable.Cell(row, 1).Range.Text = "Emission #1+2"
+            oTable.Cell(row, 2).Range.Text = TextBox134.Text
+            oTable.Cell(row, 3).Range.Text = "[gr/Am3]"
+            row += 1
+            oTable.Cell(row, 1).Range.Text = "dp(100)"
+            oTable.Cell(row, 2).Range.Text = TextBox119.Text
+            oTable.Cell(row, 3).Range.Text = "[mu] (100% loss)"
+            row += 1
+            oTable.Cell(row, 1).Range.Text = "dp(50)"
+            oTable.Cell(row, 2).Range.Text = TextBox123.Text
+            oTable.Cell(row, 3).Range.Text = "[mu]"
+            row += 1
+            oTable.Cell(row, 1).Range.Text = "dp(5)"
+            oTable.Cell(row, 2).Range.Text = TextBox125.Text
+            oTable.Cell(row, 3).Range.Text = "[mu]"
+
 
 
             oTable.Columns(1).Width = oWord.InchesToPoints(2.0)   'Change width of columns 
@@ -1633,43 +1714,43 @@ Public Class Form1
 
             '---------------Calculation date stage #1-------------------------------
             'Insert a table, fill it with data and change the column widths.
-            oTable = oDoc.Tables.Add(oDoc.Bookmarks.Item("\endofdoc").Range, 24, 10)
-            oTable.Range.ParagraphFormat.SpaceAfter = 1
-            oTable.Range.Font.Size = 10
-            oTable.Range.Font.Bold = CInt(False)
-            oTable.Rows(1).Range.Font.Bold = CInt(True)
-            row = 1
-            oTable.Cell(row, 1).Range.Text = "Stage #1"
-            row += 1
+            'oTable = oDoc.Tables.Add(oDoc.Bookmarks.Item("\endofdoc").Range, 24, 10)
+            'oTable.Range.ParagraphFormat.SpaceAfter = 1
+            'oTable.Range.Font.Size = 10
+            'oTable.Range.Font.Bold = CInt(False)
+            'oTable.Rows(1).Range.Font.Bold = CInt(True)
+            'row = 1
+            'oTable.Cell(row, 1).Range.Text = "Stage #1"
+            'row += 1
 
-            oTable.Cell(row, 1).Range.Text = "Dia class[mu]"
-            oTable.Cell(row, 2).Range.Text = "Feed psd cumm [%]"
-            oTable.Cell(row, 3).Range.Text = "Feed psd diff [%]"
-            oTable.Cell(row, 4).Range.Text = "Loss of feed [%]"
-            oTable.Cell(row, 5).Range.Text = "Loss abs [%]"
-            oTable.Cell(row, 6).Range.Text = "Loss cum [%]"
-            oTable.Cell(row, 7).Range.Text = "Catch abs [%]"
-            oTable.Cell(row, 8).Range.Text = "Catch cum [%]"
-            oTable.Cell(row, 9).Range.Text = "Efficiency [%]"
+            'oTable.Cell(row, 1).Range.Text = "Dia class[mu]"
+            'oTable.Cell(row, 2).Range.Text = "Feed psd cumm [%]"
+            'oTable.Cell(row, 3).Range.Text = "Feed psd diff [%]"
+            'oTable.Cell(row, 4).Range.Text = "Loss of feed [%]"
+            'oTable.Cell(row, 5).Range.Text = "Loss abs [%]"
+            'oTable.Cell(row, 6).Range.Text = "Loss cum [%]"
+            'oTable.Cell(row, 7).Range.Text = "Catch abs [%]"
+            'oTable.Cell(row, 8).Range.Text = "Catch cum [%]"
+            'oTable.Cell(row, 9).Range.Text = "Efficiency [%]"
 
-            For j = 0 To 22
-                row += 1
-                oTable.Cell(row, 1).Range.Text = CType(DataGridView1.Rows(j).Cells(0).Value, String)
-                oTable.Cell(row, 2).Range.Text = CType(DataGridView1.Rows(j).Cells(1).Value, String)
-                oTable.Cell(row, 3).Range.Text = CType(DataGridView1.Rows(j).Cells(2).Value, String)
-                oTable.Cell(row, 4).Range.Text = CType(DataGridView1.Rows(j).Cells(3).Value, String)
-                oTable.Cell(row, 5).Range.Text = CType(DataGridView1.Rows(j).Cells(4).Value, String)
-                oTable.Cell(row, 6).Range.Text = CType(DataGridView1.Rows(j).Cells(5).Value, String)
-                oTable.Cell(row, 7).Range.Text = CType(DataGridView1.Rows(j).Cells(6).Value, String)
-                oTable.Cell(row, 8).Range.Text = CType(DataGridView1.Rows(j).Cells(7).Value, String)
-                oTable.Cell(row, 9).Range.Text = CType(DataGridView1.Rows(j).Cells(8).Value, String)
-            Next
+            'For j = 0 To 22
+            '    row += 1
+            '    oTable.Cell(row, 1).Range.Text = CType(DataGridView1.Rows(j).Cells(0).Value, String)
+            '    oTable.Cell(row, 2).Range.Text = CType(DataGridView1.Rows(j).Cells(1).Value, String)
+            '    oTable.Cell(row, 3).Range.Text = CType(DataGridView1.Rows(j).Cells(2).Value, String)
+            '    oTable.Cell(row, 4).Range.Text = CType(DataGridView1.Rows(j).Cells(3).Value, String)
+            '    oTable.Cell(row, 5).Range.Text = CType(DataGridView1.Rows(j).Cells(4).Value, String)
+            '    oTable.Cell(row, 6).Range.Text = CType(DataGridView1.Rows(j).Cells(5).Value, String)
+            '    oTable.Cell(row, 7).Range.Text = CType(DataGridView1.Rows(j).Cells(6).Value, String)
+            '    oTable.Cell(row, 8).Range.Text = CType(DataGridView1.Rows(j).Cells(7).Value, String)
+            '    oTable.Cell(row, 9).Range.Text = CType(DataGridView1.Rows(j).Cells(8).Value, String)
+            'Next
 
-            For j = 1 To 8
-                oTable.Columns(j).Width = oWord.InchesToPoints(0.75)   'Change width of columns 
-            Next
-            oTable.Rows(1).Range.Font.Bold = CInt(True)
-            oDoc.Bookmarks.Item("\endofdoc").Range.InsertParagraphAfter()
+            'For j = 1 To 8
+            '    oTable.Columns(j).Width = oWord.InchesToPoints(0.75)   'Change width of columns 
+            'Next
+            'oTable.Rows(1).Range.Font.Bold = CInt(True)
+            'oDoc.Bookmarks.Item("\endofdoc").Range.InsertParagraphAfter()
 
             ''---------------Calculation date stage #2-------------------------------
             ''Insert a table, fill it with data and change the column widths.
@@ -2794,11 +2875,11 @@ Public Class Form1
 
         NumericUpDown20.Value = 8           '[-] parallel cycloon
         ComboBox1.SelectedIndex = 5         'AC850 stage #1
-        numericUpDown5.Value = 1000         '[mm] diameter cycloon
+        numericUpDown5.Value = 1350         '[mm] diameter cycloon
 
-        NumericUpDown33.Value = 24          '[-] parallel cycloon
-        ComboBox2.SelectedIndex = 5         'AC850 stage #2
-        NumericUpDown34.Value = 700         '[mm] diameter cycloon
+        NumericUpDown33.Value = 160         '[-] parallel cycloon
+        ComboBox2.SelectedIndex = 9         'AA850 stage #2
+        NumericUpDown34.Value = 300         '[mm] diameter cycloon
 
         '======== Fill the DVG with PSD example data =======
         Dim words() As String
