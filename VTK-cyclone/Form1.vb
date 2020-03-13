@@ -1525,7 +1525,7 @@ Public Class Form1
             'oDoc.PageSetup.VerticalAlignment = Word.WdVerticalAlignment.wdAlignVerticalCenter
 
             oPara1 = oDoc.Content.Paragraphs.Add
-            oPara1.Range.Text = "VTK Sales, cyclone single stage"
+            oPara1.Range.Text = "VTK Sales, Cyclone sizing"
             oPara1.Range.Font.Name = "Arial"
             oPara1.Range.Font.Size = 14
             oPara1.Range.Font.Bold = CInt(True)
@@ -2873,11 +2873,11 @@ Public Class Form1
         NumericUpDown4.Value = 20           '[g/Am3]
         NumericUpDown30.Value = 0           '[-] Case number
 
-        NumericUpDown20.Value = 8           '[-] parallel cycloon
-        ComboBox1.SelectedIndex = 5         'AC850 stage #1
-        numericUpDown5.Value = 1350         '[mm] diameter cycloon
+        NumericUpDown20.Value = 120         '[-] parallel cycloon
+        ComboBox1.SelectedIndex = 9         'AA850 stage #1
+        numericUpDown5.Value = 300          '[mm] diameter cycloon
 
-        NumericUpDown33.Value = 160         '[-] parallel cycloon
+        NumericUpDown33.Value = 120         '[-] parallel cycloon
         ComboBox2.SelectedIndex = 9         'AA850 stage #2
         NumericUpDown34.Value = 300         '[mm] diameter cycloon
 
