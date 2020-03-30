@@ -440,6 +440,10 @@ Public Class Form1
         TextBox25.Text &= "All particle smaller then 10mu" & vbCrLf
         TextBox25.Text &= "PM10 can travel between 100 meter to 50 km" & vbCrLf
 
+        TextBox27.Text = "Van Tongeren USA" & vbCrLf
+        TextBox27.Text &= "The multicyclones have a 168mm diameter instead of 300mm" & vbCrLf
+        TextBox27.Text &= " " & vbCrLf
+
         TextBox47.Text = "Applications" & vbCrLf
         TextBox47.Text &= "Fly catcher Venezuela before a gasturbine" & vbCrLf
         TextBox47.Text &= "Spark catcher (metalic particles)" & vbCrLf
