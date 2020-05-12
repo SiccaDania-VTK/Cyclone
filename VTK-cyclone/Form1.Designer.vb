@@ -147,6 +147,7 @@ Partial Class Form1
         Me.label7 = New System.Windows.Forms.Label()
         Me.label12 = New System.Windows.Forms.Label()
         Me.TabPage6 = New System.Windows.Forms.TabPage()
+        Me.TextBox27 = New System.Windows.Forms.TextBox()
         Me.TextBox25 = New System.Windows.Forms.TextBox()
         Me.TextBox153 = New System.Windows.Forms.TextBox()
         Me.TextBox152 = New System.Windows.Forms.TextBox()
@@ -525,7 +526,6 @@ Partial Class Form1
         Me.Label252 = New System.Windows.Forms.Label()
         Me.Button12 = New System.Windows.Forms.Button()
         Me.DataGridView5 = New System.Windows.Forms.DataGridView()
-        Me.TextBox27 = New System.Windows.Forms.TextBox()
         Me.TabPage10.SuspendLayout()
         Me.GroupBox18.SuspendLayout()
         CType(Me.Chart3, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -1854,6 +1854,15 @@ Partial Class Form1
         Me.TabPage6.TabIndex = 5
         Me.TabPage6.Text = "Various"
         Me.TabPage6.UseVisualStyleBackColor = True
+        '
+        'TextBox27
+        '
+        Me.TextBox27.Location = New System.Drawing.Point(521, 624)
+        Me.TextBox27.Multiline = True
+        Me.TextBox27.Name = "TextBox27"
+        Me.TextBox27.Size = New System.Drawing.Size(502, 59)
+        Me.TextBox27.TabIndex = 85
+        Me.TextBox27.Text = "VTK USA"
         '
         'TextBox25
         '
@@ -5053,7 +5062,7 @@ Partial Class Form1
         '
         Me.Label128.AutoSize = True
         Me.Label128.Font = New System.Drawing.Font("Microsoft Sans Serif", 11.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label128.Location = New System.Drawing.Point(17, 139)
+        Me.Label128.Location = New System.Drawing.Point(17, 136)
         Me.Label128.Name = "Label128"
         Me.Label128.Size = New System.Drawing.Size(152, 18)
         Me.Label128.TabIndex = 99
@@ -5147,7 +5156,7 @@ Partial Class Form1
         '
         Me.Label86.AutoSize = True
         Me.Label86.Font = New System.Drawing.Font("Microsoft Sans Serif", 11.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label86.Location = New System.Drawing.Point(17, 88)
+        Me.Label86.Location = New System.Drawing.Point(17, 86)
         Me.Label86.Name = "Label86"
         Me.Label86.Size = New System.Drawing.Size(82, 18)
         Me.Label86.TabIndex = 70
@@ -5259,7 +5268,7 @@ Partial Class Form1
         '
         Me.Label14.AutoSize = True
         Me.Label14.Font = New System.Drawing.Font("Microsoft Sans Serif", 11.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label14.Location = New System.Drawing.Point(17, 115)
+        Me.Label14.Location = New System.Drawing.Point(17, 111)
         Me.Label14.Name = "Label14"
         Me.Label14.Size = New System.Drawing.Size(72, 18)
         Me.Label14.TabIndex = 64
@@ -6061,15 +6070,6 @@ Partial Class Form1
         Me.DataGridView5.Name = "DataGridView5"
         Me.DataGridView5.Size = New System.Drawing.Size(229, 801)
         Me.DataGridView5.TabIndex = 0
-        '
-        'TextBox27
-        '
-        Me.TextBox27.Location = New System.Drawing.Point(521, 624)
-        Me.TextBox27.Multiline = True
-        Me.TextBox27.Name = "TextBox27"
-        Me.TextBox27.Size = New System.Drawing.Size(502, 59)
-        Me.TextBox27.TabIndex = 85
-        Me.TextBox27.Text = "VTK USA"
         '
         'Form1
         '

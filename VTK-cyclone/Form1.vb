@@ -132,12 +132,12 @@ Public Class Form1
     "AC-550;0.25;0.57;0.6;0.58;0.3;0.45;0.56;0.892;3.36;1.312;2.048;0.4;0.6;0.6;0.25",
     "AC-750;0.216;0.486;0.6;0.57;0.3;0.365;0.56;0.892;3.36;1.312;2.048;0.4;0.6;0.6;0.25",
     "AC-850;0.203;0.457;0.6;0.564;0.3;0.307;0.428;0.892;3.797;1.312;2.485;0.4;0.6;0.6;0.25",
-    "AC-850+afz;0.203;0.457;0.6;0.564;0.3;0.307;0.428;0.892;3.797;1.312;2.485;0.4;0.6;0.6;0.25",
-    "AC-1850;0.136;0.31;0.6;0.53;0.3;0.15;0.25;0.892;3.797;1.312;2.485;0.4;0.6;0.6;0.25",
-    "AC-1850+afz;0.136;0.31;0.6;0.53;0.3;0.15;0.25;0.892;3.797;1.312;2.485;0.4;0.6;0.6;0.25",
-    "AA850;0.203;0.457;0.6;0.564;0.3;0.307;0.428;0.892;3.797;1.312;2.485;0.4;0.6;0.6;0.25",    'NOT UP TO DATE CHECK !!!!!!
-    "Void;0.203;0.457;0.6;0.564;0.3;0.307;0.428;0.892;3.797;1.312;2.485;0.4;0.6;0.6;0.25"      'NOT UP TO DATE CHECK !!!!!!
-    }
+    "AC-1850;0.136;0.31;0.6;0.53;0.3;0.15;0.25;0.892;3.797;1.312;2.485;0.4;0.6;0.6;0.25"}
+    '"AC-850+afz;0.203;0.457;0.6;0.564;0.3;0.307;0.428;0.892;3.797;1.312;2.485;0.4;0.6;0.6;0.25",
+    '"AC-1850+afz;0.136;0.31;0.6;0.53;0.3;0.15;0.25;0.892;3.797;1.312;2.485;0.4;0.6;0.6;0.25",
+    '"AA850;0.203;0.457;0.6;0.564;0.3;0.307;0.428;0.892;3.797;1.312;2.485;0.4;0.6;0.6;0.25",    'NOT UP TO DATE CHECK !!!!!!
+    '"Void;0.203;0.457;0.6;0.564;0.3;0.307;0.428;0.892;3.797;1.312;2.485;0.4;0.6;0.6;0.25"      'NOT UP TO DATE CHECK !!!!!!
+    '}
 
     'Nieuwe reken methode, verdeling volgens Weibull verdeling
     'm1,k1,a1 als d < d_krit
@@ -399,6 +399,9 @@ Public Class Form1
             MessageBox.Show("Program lease Is Expired, contact GPa")
             Environment.Exit(0)
         End If
+
+        Rights_Control()        'Indicate the tab visible to the user
+
 
         Thread.CurrentThread.CurrentCulture = New CultureInfo("en-US")
         Thread.CurrentThread.CurrentUICulture = New CultureInfo("en-US")
@@ -3040,5 +3043,38 @@ Public Class Form1
         Return list
     End Function
 
+    Private Sub Rights_Control()
+        Dim id As String        'This is the present user
+
+        id = Environment.UserName     'User name 
+        Debug.WriteLine(id.ToString)
+
+        Button14.Visible = False
+        Button16.Visible = False
+        Button17.Visible = False
+
+        '========= Remove page Tabs for everybody ===============
+        TabControl1.TabPages.Remove(TabPage2)   '2nd stage separation
+        TabControl1.TabPages.Remove(TabPage3)   'VTK Cyclone efficiency
+        TabControl1.TabPages.Remove(TabPage4)   'STD cyclone efficiency
+        TabControl1.TabPages.Remove(TabPage5)   'Stress calculation
+        TabControl1.TabPages.Remove(TabPage6)   'Various
+        TabControl1.TabPages.Remove(TabPage7)   'Cyclone dimensions
+        TabControl1.TabPages.Remove(TabPage8)   'Logging
+        TabControl1.TabPages.Remove(TabPage9)   '1st stage separation
+        TabControl1.TabPages.Remove(TabPage10)  'High dustload 
+        TabControl1.TabPages.Remove(TabPage11)  'Charts
+        TabControl1.TabPages.Remove(TabPage12)  'Combined stage1&2
+        TabControl1.TabPages.Remove(TabPage13)  'PSC Conversion
+
+        '========= add page Tabs for everybody ===============
+        TabControl1.TabPages.Insert(1, TabPage11) 'Charts
+
+        'If (LCase(id) = "gp" Or LCase(id) = "gerritp" Or LCase(id) = "user") Then
+        '    TabControl1.TabPages("TabPage8").Enabled = True     '
+        '    TabControl1.TabPages("TabPage13").Enabled = True    '
+        'End If
+
+    End Sub
 
 End Class
