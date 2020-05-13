@@ -17,8 +17,9 @@ Imports Word = Microsoft.Office.Interop.Word
     Public Spare_str2 As String     'For future use
     Public Spare_str3 As String     'For future use
 
+    '====== INPUT DATA ======
     Public FlowT As Double          '[Am3/h] Air flow 
-    Public dia_big() As Double      '[mu] Particle diameter inlet cyclone 
+    Public dia_big() As Double      '[mu] Particle diameter inlet cyclone (input data)
     Public class_load() As Double   '[% weight] group_weight_cum in de inlaat stroom 
     Public ro_gas As Double         '[kg/hr] Density 
     Public ro_solid As Double       '[kg/hr] Density 
@@ -55,8 +56,8 @@ Imports Word = Microsoft.Office.Interop.Word
     Public Kstokes1 As Double       'Stokes getal
     Public m1 As Double             'm factor loss curve d< dia critical
     Public stage1() As GvG_Calc_struct   'tbv calculatie stage #1
-    Public Dmin1 As Double          'Smallest particle in calculation
-    Public Dmax1 As Double          'Biggest particle in calculation
+    Public Dmin1 As Double          'Smallest particle 100% loss
+    Public Dmax1 As Double          'Biggest particle 100% catch
 
     '===== stage #2 parameters ======
     Public Flow2 As Double          '[Am3/s] Air flow per cyclone 
@@ -86,8 +87,8 @@ Imports Word = Microsoft.Office.Interop.Word
 
     Public m2 As Double             'm factor loss curve d< dia critical
     Public stage2() As GvG_Calc_struct   'tbv calculatie stage #2
-    Public Dmin2 As Double          'Smallest particle in calculation
-    Public Dmax2 As Double          'Biggest particle in calculation
+    Public Dmin2 As Double          'Smallest particle 100% loss
+    Public Dmax2 As Double          'Biggest particle 100% catch
 End Structure
 
 'Variables used by GvG in calculation
@@ -96,8 +97,8 @@ End Structure
     Public d_ave As Double          '[mu] Average diameter 
     Public d_ave_K As Double        '[-] Average diam/K_stokes 
     Public i_grp As Double          'Particle Groepnummer (stage 2= stage 1)
-    Public i_d1 As Double           '[mu] particle diameter lower Class
-    Public i_d2 As Double           '[mu] particle diameter upper Class
+    Public i_d1 As Double           '[mu] smallest particle diameter in Class
+    Public i_d2 As Double           '[mu] biggest particle diameter in Class
     Public i_p1 As Double           '[%] User Input percentage 1
     Public i_p2 As Double           '[%] User Input percentage 2
     Public i_k As Double            '[-] Parameter k
@@ -132,11 +133,11 @@ Public Class Form1
     "AC-550;0.25;0.57;0.6;0.58;0.3;0.45;0.56;0.892;3.36;1.312;2.048;0.4;0.6;0.6;0.25",
     "AC-750;0.216;0.486;0.6;0.57;0.3;0.365;0.56;0.892;3.36;1.312;2.048;0.4;0.6;0.6;0.25",
     "AC-850;0.203;0.457;0.6;0.564;0.3;0.307;0.428;0.892;3.797;1.312;2.485;0.4;0.6;0.6;0.25",
-    "AC-1850;0.136;0.31;0.6;0.53;0.3;0.15;0.25;0.892;3.797;1.312;2.485;0.4;0.6;0.6;0.25"}
-    '"AC-850+afz;0.203;0.457;0.6;0.564;0.3;0.307;0.428;0.892;3.797;1.312;2.485;0.4;0.6;0.6;0.25",
-    '"AC-1850+afz;0.136;0.31;0.6;0.53;0.3;0.15;0.25;0.892;3.797;1.312;2.485;0.4;0.6;0.6;0.25",
-    '"AA850;0.203;0.457;0.6;0.564;0.3;0.307;0.428;0.892;3.797;1.312;2.485;0.4;0.6;0.6;0.25",    'NOT UP TO DATE CHECK !!!!!!
-    '"Void;0.203;0.457;0.6;0.564;0.3;0.307;0.428;0.892;3.797;1.312;2.485;0.4;0.6;0.6;0.25"      'NOT UP TO DATE CHECK !!!!!!
+    "AC-1850;0.136;0.31;0.6;0.53;0.3;0.15;0.25;0.892;3.797;1.312;2.485;0.4;0.6;0.6;0.25",
+    "AC-850+afz;0.203;0.457;0.6;0.564;0.3;0.307;0.428;0.892;3.797;1.312;2.485;0.4;0.6;0.6;0.25",
+    "AC-1850+afz;0.136;0.31;0.6;0.53;0.3;0.15;0.25;0.892;3.797;1.312;2.485;0.4;0.6;0.6;0.25",
+    "AA850;0.203;0.457;0.6;0.564;0.3;0.307;0.428;0.892;3.797;1.312;2.485;0.4;0.6;0.6;0.25"}    'NOT UP TO DATE CHECK !!!!!!
+    '"Void;0.203;0.457;0.6;0.564;0.3;0.307;0.428;0.892;3.797;1.312;2.485;0.4;0.6;0.6;0.25"     'NOT UP TO DATE CHECK !!!!!!
     '}
 
     'Nieuwe reken methode, verdeling volgens Weibull verdeling
@@ -531,6 +532,8 @@ Public Class Form1
 
         '------ dust load NORMAL conditions ----
         _cees(ks).Ro_gas1_Am3 = numericUpDown3.Value                    '[kg/Am3]
+        _cees(ks).Temp = NumericUpDown18.Value                          'Temperature [c]
+        _cees(ks).p1_abs = NumericUpDown19.Value * 100 + 101325         'Pressure [mbar]
         _cees(ks).Ro_gas1_Nm3 = Calc_Normal_density(_cees(ks).Ro_gas1_Am3, _cees(ks).p1_abs, _cees(ks).Temp)
 
         '--------- ratio  Nm2 and Am3 ---------
@@ -557,7 +560,7 @@ Public Class Form1
 
             _cees(ks).Noc1 = CInt(NumericUpDown20.Value) 'Parallel cyclones #1
             _cees(ks).Noc2 = CInt(NumericUpDown33.Value) 'Parallel cyclones #2
-            _cees(ks).p1_abs = NumericUpDown19.Value * 100 + 101325  'Pressure [mbar]
+
 
             db1 = numericUpDown5.Value                   '[m] Body diameter
             db2 = NumericUpDown34.Value                  '[m] Body diameter
@@ -756,8 +759,8 @@ Public Class Form1
 
         '--------- HeaderText --------------------
         DataGridView1.Columns(0).HeaderText = "Dia class"
-        DataGridView1.Columns(1).HeaderText = "Feed psd cum"
-        DataGridView1.Columns(2).HeaderText = "Feed psd diff"
+        DataGridView1.Columns(1).HeaderText = "Cyc feed psd cum"
+        DataGridView1.Columns(2).HeaderText = "Cyc feed psd diff"
         DataGridView1.Columns(3).HeaderText = "Loss [%] of feed"
         DataGridView1.Columns(4).HeaderText = "Loss abs [%]"
         DataGridView1.Columns(5).HeaderText = "Loss psd cum"
@@ -876,7 +879,7 @@ Public Class Form1
 
         'MsgBox("Line 877, Now filling array nr= " & c_nr.ToString)
 
-        TextBox24.Text &= "line 660, Fill array from screen, nr " & c_nr.ToString & vbCrLf
+        ' TextBox24.Text &= "line 660, Fill array from screen, nr " & c_nr.ToString & vbCrLf
 
         _cees(c_nr).Quote_no = TextBox28.Text                   'Quote number
         _cees(c_nr).Tag_no = TextBox29.Text                     'The Tag number
@@ -909,6 +912,8 @@ Public Class Form1
         '[mu] Class upper particle diameter limit diameter
         'Percentale van de inlaat stof belasting [%]
         Dim a, b As Double
+
+        'MsgBox("Read the input data from the data grid")
 
         For row = 0 To no_PDS_input_points - 1
             Double.TryParse(DataGridView6.Rows(row).Cells(0).Value.ToString, a)
@@ -1358,14 +1363,16 @@ Public Class Form1
         If ComboBox1.SelectedIndex > -1 And ComboBox2.SelectedIndex > -1 And init = True Then
 
             If String.Equals(ComboBox1.SelectedItem.ToString, "AA850") Then
-                numericUpDown5.Value = CDec(0.3)      '[mm] Diameter
+                numericUpDown5.Value = CDec(0.3)      '[m] Diameter
             End If
 
             If String.Equals(ComboBox2.SelectedItem.ToString, "AA850") Then
-                NumericUpDown34.Value = CDec(0.3)     '[mm] Diameter
+                NumericUpDown34.Value = CDec(0.3)     '[m] Diameter
             End If
 
+            Fill_array_from_screen(0) 'Read input data from sceen
             Dust_load_correction(0)
+
             Get_input_calc_1(0)       'This is the CASE number
             Calc_part_dia_loss(0)
 
@@ -1377,15 +1384,15 @@ Public Class Form1
 
             Calc_stage1(0)            'Calc according stage #1
             Calc_stage2(0)            'Calc according stage #2
-            Calc_stage1_2_comb(0)            'Calc stage #1 and stage #2 combined
+            Calc_stage1_2_comb(0)     'Calc stage #1 and stage #2 combined
 
             Present_loss_grid1(0)     'Present the results stage #1
             Present_loss_grid2(0)     'Present the results stage #2
             Present_Datagridview1(0)  'Present the results stage #1
 
-            Draw_chart1(Chart1, 0)             'Present the results 
-            Draw_chart2(Chart2, 0)             'Present the results loss curve
-            Screen_contrast()               'White text on ted background 
+            Draw_chart1(Chart1, 0)    'Present the results 
+            Draw_chart2(Chart2, 0)    'Present the results loss curve
+            Screen_contrast()         'White text on ted background 
         End If
     End Sub
 
@@ -1717,95 +1724,12 @@ Public Class Form1
             oTable.Cell(row, 2).Range.Text = TextBox125.Text
             oTable.Cell(row, 3).Range.Text = "[mu]"
 
-
-
             oTable.Columns(1).Width = oWord.InchesToPoints(2.0)   'Change width of columns 
             oTable.Columns(2).Width = oWord.InchesToPoints(1)
             oTable.Columns(3).Width = oWord.InchesToPoints(2)
 
             oTable.Rows(1).Range.Font.Bold = CInt(True)
             oDoc.Bookmarks.Item("\endofdoc").Range.InsertParagraphAfter()
-
-            '---------------Calculation date stage #1-------------------------------
-            'Insert a table, fill it with data and change the column widths.
-            'oTable = oDoc.Tables.Add(oDoc.Bookmarks.Item("\endofdoc").Range, 24, 10)
-            'oTable.Range.ParagraphFormat.SpaceAfter = 1
-            'oTable.Range.Font.Size = 10
-            'oTable.Range.Font.Bold = CInt(False)
-            'oTable.Rows(1).Range.Font.Bold = CInt(True)
-            'row = 1
-            'oTable.Cell(row, 1).Range.Text = "Stage #1"
-            'row += 1
-
-            'oTable.Cell(row, 1).Range.Text = "Dia class[mu]"
-            'oTable.Cell(row, 2).Range.Text = "Feed psd cumm [%]"
-            'oTable.Cell(row, 3).Range.Text = "Feed psd diff [%]"
-            'oTable.Cell(row, 4).Range.Text = "Loss of feed [%]"
-            'oTable.Cell(row, 5).Range.Text = "Loss abs [%]"
-            'oTable.Cell(row, 6).Range.Text = "Loss cum [%]"
-            'oTable.Cell(row, 7).Range.Text = "Catch abs [%]"
-            'oTable.Cell(row, 8).Range.Text = "Catch cum [%]"
-            'oTable.Cell(row, 9).Range.Text = "Efficiency [%]"
-
-            'For j = 0 To 22
-            '    row += 1
-            '    oTable.Cell(row, 1).Range.Text = CType(DataGridView1.Rows(j).Cells(0).Value, String)
-            '    oTable.Cell(row, 2).Range.Text = CType(DataGridView1.Rows(j).Cells(1).Value, String)
-            '    oTable.Cell(row, 3).Range.Text = CType(DataGridView1.Rows(j).Cells(2).Value, String)
-            '    oTable.Cell(row, 4).Range.Text = CType(DataGridView1.Rows(j).Cells(3).Value, String)
-            '    oTable.Cell(row, 5).Range.Text = CType(DataGridView1.Rows(j).Cells(4).Value, String)
-            '    oTable.Cell(row, 6).Range.Text = CType(DataGridView1.Rows(j).Cells(5).Value, String)
-            '    oTable.Cell(row, 7).Range.Text = CType(DataGridView1.Rows(j).Cells(6).Value, String)
-            '    oTable.Cell(row, 8).Range.Text = CType(DataGridView1.Rows(j).Cells(7).Value, String)
-            '    oTable.Cell(row, 9).Range.Text = CType(DataGridView1.Rows(j).Cells(8).Value, String)
-            'Next
-
-            'For j = 1 To 8
-            '    oTable.Columns(j).Width = oWord.InchesToPoints(0.75)   'Change width of columns 
-            'Next
-            'oTable.Rows(1).Range.Font.Bold = CInt(True)
-            'oDoc.Bookmarks.Item("\endofdoc").Range.InsertParagraphAfter()
-
-            ''---------------Calculation date stage #2-------------------------------
-            ''Insert a table, fill it with data and change the column widths.
-            'oTable = oDoc.Tables.Add(oDoc.Bookmarks.Item("\endofdoc").Range, 24, 10)
-            'oTable.Range.ParagraphFormat.SpaceAfter = 1
-            'oTable.Range.Font.Size = 10
-            'oTable.Range.Font.Bold = CInt(False)
-            'oTable.Rows(1).Range.Font.Bold = CInt(True)
-            'row = 1
-            'oTable.Cell(row, 1).Range.Text = "Stage #2"
-            'row += 1
-
-            'oTable.Cell(row, 1).Range.Text = "Dia class[mu]"
-            'oTable.Cell(row, 2).Range.Text = "Feed psd cumm [%]"
-            'oTable.Cell(row, 3).Range.Text = "Feed psd diff [%]"
-            'oTable.Cell(row, 4).Range.Text = "Loss of feed [%]"
-            'oTable.Cell(row, 5).Range.Text = "Loss abs [%]"
-            'oTable.Cell(row, 6).Range.Text = "Loss cum [%]"
-            'oTable.Cell(row, 7).Range.Text = "Catch abs [%]"
-            'oTable.Cell(row, 8).Range.Text = "Catch cum [%]"
-            'oTable.Cell(row, 9).Range.Text = "Efficiency [%]"
-
-            'For j = 0 To 22
-            '    row += 1
-            '    oTable.Cell(row, 1).Range.Text = CType(DataGridView1.Rows(j).Cells(0).Value, String)
-            '    oTable.Cell(row, 2).Range.Text = CType(DataGridView1.Rows(j).Cells(1).Value, String)
-            '    oTable.Cell(row, 3).Range.Text = CType(DataGridView1.Rows(j).Cells(2).Value, String)
-            '    oTable.Cell(row, 4).Range.Text = CType(DataGridView1.Rows(j).Cells(3).Value, String)
-            '    oTable.Cell(row, 5).Range.Text = CType(DataGridView1.Rows(j).Cells(4).Value, String)
-            '    oTable.Cell(row, 6).Range.Text = CType(DataGridView1.Rows(j).Cells(5).Value, String)
-            '    oTable.Cell(row, 7).Range.Text = CType(DataGridView1.Rows(j).Cells(6).Value, String)
-            '    oTable.Cell(row, 8).Range.Text = CType(DataGridView1.Rows(j).Cells(7).Value, String)
-            '    oTable.Cell(row, 9).Range.Text = CType(DataGridView1.Rows(j).Cells(8).Value, String)
-            'Next
-
-            'For j = 1 To 8
-            '    oTable.Columns(j).Width = oWord.InchesToPoints(0.75)   'Change width of columns 
-            'Next
-            'oTable.Rows(1).Range.Font.Bold = CInt(True)
-            'oDoc.Bookmarks.Item("\endofdoc").Range.InsertParagraphAfter()
-
 
             '------------------save Chart2 (Loss curve)---------------- 
             Draw_chart2(Chart2, 0)
@@ -2006,7 +1930,8 @@ Public Class Form1
         '------ the idea is that the smallest diameter cyclone determines
         '------ the smallest particle diameter used in the calculation
         '------ for the stage #1 cyclone
-        If numericUpDown5.Value > _cees(ks).class_load(8) Then
+        ' If numericUpDown5.Value > _cees(ks).class_load(8) Then  '???? must be wrong
+        If numericUpDown5.Value > NumericUpDown34.Value Then
             _cees(ks).stage1(0).dia = Calc_dia_particle(1.0, _cees(ks).Kstokes2, 2) 'stage #2 cyclone
         Else
             _cees(ks).stage1(0).dia = Calc_dia_particle(1.0, _cees(ks).Kstokes1, 1) 'stage #1 cyclone
@@ -2018,8 +1943,8 @@ Public Class Form1
         Calc_verlies_corrected(_cees(ks).stage1(0), 1)                                '[-] loss overall corrected
         _cees(ks).stage1(0).catch_chart = (1 - _cees(ks).stage1(i).loss_overall_C) * 100     '[%]
 
-        Calc_diam_classification(_cees(ks).stage1(0), ks)                                    'Classify this part size
-        Calc_k_and_m(_cees(ks).stage1(0))
+        Calc_diam_classification(_cees(ks).stage1(0), ks)        'Classify this part size
+        Calc_k_and_m(_cees(ks).stage1(0))                        'Calculate i_m and i_k
 
         _cees(ks).stage1(0).psd_cum = Math.E ^ (-((_cees(ks).stage1(i).dia / _cees(ks).stage1(i).i_m) ^ _cees(ks).stage1(i).i_k))
         _cees(ks).stage1(0).psd_cum_pro = _cees(ks).stage1(i).psd_cum * 100
@@ -2031,7 +1956,7 @@ Public Class Form1
         '----- initial values --------
         _cees(ks).sum_psd_diff1 = _cees(ks).stage1(0).psd_dif
         _cees(ks).sum_loss1 = _cees(ks).stage1(0).loss_abs
-        _cees(ks).sum_loss_C1 = _cees(ks).stage1(0).loss_abs_C
+        _cees(ks).sum_loss_C1 =    _cees(ks).stage1(0).loss_abs_C
 
         '------ increment step --------
         'stapgrootte bij 110-staps logaritmische verdeling van het
@@ -2040,7 +1965,7 @@ Public Class Form1
         'verliescurve.
 
         '-------------- korrelgrootte factoren ------
-        If ComboBox1.SelectedIndex > -1 Then
+        If ComboBox1.SelectedIndex > -1 Then    'Prevent start up problems
             words = rekenlijnen(ComboBox1.SelectedIndex).Split(CType(";", Char()))
             '---- diameter kleiner dan dia kritisch
             fac_m = CDbl(words(2))
@@ -2070,11 +1995,11 @@ Public Class Form1
                 _cees(ks).stage1(i).catch_chart = (1 - _cees(ks).stage1(i).loss_overall) * 100    '[%] NOT corrected
             End If
 
-            Calc_diam_classification(_cees(ks).stage1(i), ks)                                   'Classify this part size
+            Calc_diam_classification(_cees(ks).stage1(i), ks)         'Classify this part size (result is  .i_grp)
 
             '====to prevent silly results====
-            If _cees(ks).stage1(i).i_grp < no_PDS_input_points Then
-                Calc_k_and_m(_cees(ks).stage1(i))
+            If _cees(ks).stage1(i).i_grp < no_PDS_input_points Then  'OK in this one counts
+                Calc_k_and_m(_cees(ks).stage1(i))       'Calculate i_m and i_k (based on particle dia. and percentages)
                 _cees(ks).stage1(i).psd_cum = Math.E ^ (-((_cees(ks).stage1(i).dia / _cees(ks).stage1(i).i_m) ^ _cees(ks).stage1(i).i_k))
                 _cees(ks).stage1(i).psd_cum_pro = _cees(ks).stage1(i).psd_cum * 100
                 _cees(ks).stage1(i).psd_dif = 100 * (_cees(ks).stage1(i - 1).psd_cum - _cees(ks).stage1(i).psd_cum)
@@ -2127,7 +2052,7 @@ Public Class Form1
         density_ratio1 = _cees(ks).Ro_gas1_Nm3 / _cees(ks).Ro_gas1_Am3  '[-]
 
         '----------- Dust load correction stage #1 ------------------
-        If CheckBox2.Checked Then
+        If CheckBox2.Checked Then 'High load
             _cees(ks).emmis1_Am3 = _cees(ks).emmis1_Am3             '?????????????? Huh check
             _cees(ks).emmis1_Nm3 = _cees(ks).emmis1_Am3 * density_ratio1
             TextBox58.Text = _cees(ks).loss_total1.ToString("F3")    '[%] Corrected 
@@ -2287,42 +2212,42 @@ Public Class Form1
         TextBox143.Text = _cees(ks).dust2_Nm3.ToString("F3")        'Dust load [gram/Nm3]
     End Sub
 
-    Public Sub Calc_diam_classification(ByRef g As GvG_Calc_struct, c_nr As Integer)
+    Public Sub Calc_diam_classification(ByRef g As GvG_Calc_struct, ks As Integer)
         'Determine the particle diameter class 
         Dim grp_count As Integer = 0
 
         '=========== Determine how many PSD groups are there? ============
         For i = 0 To no_PDS_input_points - 1
-            If (_cees(c_nr).dia_big(i) > 0) And (_cees(c_nr).class_load(i) > 0) Then grp_count += 1
+            If (_cees(ks).dia_big(i) > 0) And (_cees(ks).class_load(i) > 0) Then grp_count += 1
         Next
         g.i_grp = 0
 
         If g.dia >= 0 Then
             '=========== first entered data point ===========
-            If (g.dia < _cees(c_nr).dia_big(0)) Then
-                g.i_d1 = _cees(c_nr).dia_big(0)     'Diameter small [mu]
-                g.i_d2 = _cees(c_nr).dia_big(1)     'Diameter big [mu]
-                g.i_p1 = _cees(c_nr).class_load(0)  'User lower input percentage
-                g.i_p2 = _cees(c_nr).class_load(1)  'User upper input percentage
+            If (g.dia < _cees(ks).dia_big(0)) Then
+                g.i_d1 = _cees(ks).dia_big(0)     'Diameter small [mu]
+                g.i_d2 = _cees(ks).dia_big(1)     'Diameter big [mu]
+                g.i_p1 = _cees(ks).class_load(0)  'User lower input percentage
+                g.i_p2 = _cees(ks).class_load(1)  'User upper input percentage
                 g.i_grp = 0                         'Group 0
             End If
 
             '=========== mid section ===========
             For i = 1 To grp_count
-                If (g.dia >= _cees(c_nr).dia_big(i - 1) And g.dia < _cees(c_nr).dia_big(i) And _cees(c_nr).dia_big(i) > 0) Then
-                    g.i_d1 = _cees(c_nr).dia_big(i - 1)         'Diameter small [mu]
-                    g.i_d2 = _cees(c_nr).dia_big(i)             'Diameter big [mu]
-                    g.i_p1 = _cees(c_nr).class_load(i - 1)      'User lower input percentage
-                    g.i_p2 = _cees(c_nr).class_load(i)          'User upper input percentage
+                If (g.dia >= _cees(ks).dia_big(i - 1) And g.dia < _cees(ks).dia_big(i) And _cees(ks).dia_big(i) > 0) Then
+                    g.i_d1 = _cees(ks).dia_big(i - 1)         'Diameter small [mu]
+                    g.i_d2 = _cees(ks).dia_big(i)             'Diameter big [mu]
+                    g.i_p1 = _cees(ks).class_load(i - 1)      'User lower input percentage
+                    g.i_p2 = _cees(ks).class_load(i)          'User upper input percentage
                     g.i_grp = i                                 'Group 1 up and including 11
                 End If
             Next
 
             '=========== last entered PSD data point ===========
-            If (g.dia >= _cees(c_nr).dia_big(no_PDS_input_points) And _cees(c_nr).dia_big(no_PDS_input_points) > 0) Then
-                g.i_d1 = _cees(c_nr).dia_big(no_PDS_input_points)    'Diameter small [mu]
+            If (g.dia >= _cees(ks).dia_big(no_PDS_input_points) And _cees(ks).dia_big(no_PDS_input_points) > 0) Then
+                g.i_d1 = _cees(ks).dia_big(no_PDS_input_points)    'Diameter small [mu]
                 g.i_d2 = 2000                                        'Diameter big [mu]
-                g.i_p1 = _cees(c_nr).class_load(no_PDS_input_points) 'User lower input percentage
+                g.i_p1 = _cees(ks).class_load(no_PDS_input_points) 'User lower input percentage
                 g.i_p2 = 0                                           'User upper input percentage
                 g.i_grp = grp_count                                 'Last PSD input star
             End If
@@ -2339,13 +2264,13 @@ Public Class Form1
 
             For i = 0 To no_PDS_input_points - 1
                 j = (w.Length - 1 - i)
-                w(i) = _cees(c_nr).class_load(j) - Abs(qsum(i))
+                w(i) = _cees(ks).class_load(j) - Abs(qsum(i))
             Next
 
             '---------CHECK- diameters must increase-----------
             DataGridView6.Rows(0).Cells(0).Style.BackColor = Color.LightGreen
             For i = 1 To DataGridView6.Rows.Count - 1
-                If _cees(c_nr).dia_big(i) <= _cees(c_nr).dia_big(i - 1) And _cees(c_nr).dia_big(i) <> 0 Then
+                If _cees(ks).dia_big(i) <= _cees(ks).dia_big(i - 1) And _cees(ks).dia_big(i) <> 0 Then
                     DataGridView6.Rows(i).Cells(0).Style.BackColor = Color.Red
                 Else
                     DataGridView6.Rows(i).Cells(0).Style.BackColor = Color.LightGreen
@@ -2355,7 +2280,7 @@ Public Class Form1
             '---------CHECK-cummulative weight must decrease-----------
             DataGridView6.Rows(0).Cells(1).Style.BackColor = Color.LightGreen
             For i = 1 To DataGridView6.Rows.Count - 1
-                If _cees(c_nr).class_load(i) >= _cees(c_nr).class_load(i - 1) And _cees(c_nr).class_load(i) <> 0 Then
+                If _cees(ks).class_load(i) >= _cees(ks).class_load(i - 1) And _cees(ks).class_load(i) <> 0 Then
                     DataGridView6.Rows(i).Cells(1).Style.BackColor = Color.Red
                 Else
                     DataGridView6.Rows(i).Cells(1).Style.BackColor = Color.LightGreen
@@ -2926,22 +2851,22 @@ Public Class Form1
         TextBox28.Text = "PSD Whey"
         TextBox29.Text = "Q20.1018"
         TextBox53.Text = "--"
-        NumericUpDown1.Value = 155952       '[Am3/h] Flow
-        NumericUpDown18.Value = 77          '[c]
-        NumericUpDown19.Value = -20         '[mbar] 
+        NumericUpDown1.Value = 77500        '[Am3/h] Flow
+        NumericUpDown18.Value = 53          '[c]
+        NumericUpDown19.Value = -25         '[mbar] 
         numericUpDown2.Value = 1600         '[kg/m3] density
-        numericUpDown3.Value = CDec(1.278)  '[kg/m3] ro air
-        numericUpDown14.Value = CDec(0.0208)  '[mPas=cP] visco air
+        numericUpDown3.Value = CDec(0.99)   '[kg/m3] ro air
+        numericUpDown14.Value = CDec(0.019) '[mPas=cP] visco air
         NumericUpDown4.Value = 20           '[g/Am3]
         NumericUpDown30.Value = 1           '[-] Case number
 
         NumericUpDown20.Value = 3           '[-] parallel cycloon
         ComboBox1.SelectedIndex = 2         'AC435 stage #1
-        numericUpDown5.Value = CDec(2.2)         '[m] diameter cycloon
+        numericUpDown5.Value = CDec(1.7)    '[m] diameter cycloon
 
         NumericUpDown33.Value = 6           '[-] parallel cycloon
         ComboBox2.SelectedIndex = 5         'AC850 stage #2
-        NumericUpDown34.Value = CDec(2.2)        '[m] diameter cycloon
+        NumericUpDown34.Value = CDec(1.25)  '[m] diameter cycloon
 
         '======== Fill the DVG with PSD example data =======
         Dim words() As String
@@ -3069,28 +2994,28 @@ Public Class Form1
         id = Environment.UserName     'User name 
         Debug.WriteLine(id.ToString)
 
-        Button14.Visible = False
-        Button16.Visible = False
-        Button17.Visible = False
+        'Button14.Visible = False
+        'Button16.Visible = False
+        'Button17.Visible = False
 
         '========= Remove page Tabs for everybody ===============
-        TabControl1.TabPages.Remove(TabPage2)   '2nd stage separation
-        TabControl1.TabPages.Remove(TabPage3)   'VTK Cyclone efficiency
-        TabControl1.TabPages.Remove(TabPage4)   'STD cyclone efficiency
-        TabControl1.TabPages.Remove(TabPage5)   'Stress calculation
-        TabControl1.TabPages.Remove(TabPage6)   'Various
-        TabControl1.TabPages.Remove(TabPage7)   'Cyclone dimensions
-        TabControl1.TabPages.Remove(TabPage8)   'Logging
-        TabControl1.TabPages.Remove(TabPage9)   '1st stage separation
-        TabControl1.TabPages.Remove(TabPage10)  'High dustload 
-        TabControl1.TabPages.Remove(TabPage11)  'Charts
-        TabControl1.TabPages.Remove(TabPage12)  'Combined stage1&2
-        TabControl1.TabPages.Remove(TabPage13)  'PSC Conversion
+        'TabControl1.TabPages.Remove(TabPage2)   '2nd stage separation
+        'TabControl1.TabPages.Remove(TabPage3)   'VTK Cyclone efficiency
+        'TabControl1.TabPages.Remove(TabPage4)   'STD cyclone efficiency
+        'TabControl1.TabPages.Remove(TabPage5)   'Stress calculation
+        'TabControl1.TabPages.Remove(TabPage6)   'Various
+        'TabControl1.TabPages.Remove(TabPage7)   'Cyclone dimensions
+        'TabControl1.TabPages.Remove(TabPage8)   'Logging
+        'TabControl1.TabPages.Remove(TabPage9)   '1st stage separation
+        'TabControl1.TabPages.Remove(TabPage10)  'High dustload 
+        'TabControl1.TabPages.Remove(TabPage11)  'Charts
+        'TabControl1.TabPages.Remove(TabPage12)  'Combined stage1&2
+        'TabControl1.TabPages.Remove(TabPage13)  'PSC Conversion
 
-        '========= add page Tabs for everybody ===============
-        TabControl1.TabPages.Insert(1, TabPage11) 'Charts
-        TabControl1.TabPages.Insert(2, TabPage8)   'Logging
-        TabControl1.TabPages.Insert(3, TabPage7)   'Cyclone dimensions
+        ''========= add page Tabs for everybody ===============
+        'TabControl1.TabPages.Insert(1, TabPage11) 'Charts
+        'TabControl1.TabPages.Insert(2, TabPage8)   'Logging
+        'TabControl1.TabPages.Insert(3, TabPage7)   'Cyclone dimensions
 
         'If (LCase(id) = "gp" Or LCase(id) = "gerritp" Or LCase(id) = "user") Then
         '    TabControl1.TabPages("TabPage8").Enabled = True     '
