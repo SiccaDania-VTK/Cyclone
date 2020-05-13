@@ -4533,10 +4533,12 @@ Partial Class Form1
         Me.NumericUpDown30.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.NumericUpDown30.Location = New System.Drawing.Point(110, 92)
         Me.NumericUpDown30.Maximum = New Decimal(New Integer() {7, 0, 0, 0})
+        Me.NumericUpDown30.Minimum = New Decimal(New Integer() {1, 0, 0, 0})
         Me.NumericUpDown30.Name = "NumericUpDown30"
         Me.NumericUpDown30.Size = New System.Drawing.Size(68, 22)
         Me.NumericUpDown30.TabIndex = 121
         Me.NumericUpDown30.TextAlign = System.Windows.Forms.HorizontalAlignment.Center
+        Me.NumericUpDown30.Value = New Decimal(New Integer() {1, 0, 0, 0})
         '
         'Label126
         '
@@ -5148,9 +5150,9 @@ Partial Class Form1
         Me.Label64.Font = New System.Drawing.Font("Microsoft Sans Serif", 11.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Label64.Location = New System.Drawing.Point(375, 62)
         Me.Label64.Name = "Label64"
-        Me.Label64.Size = New System.Drawing.Size(42, 18)
+        Me.Label64.Size = New System.Drawing.Size(29, 18)
         Me.Label64.TabIndex = 70
-        Me.Label64.Text = "[mm]"
+        Me.Label64.Text = "[m]"
         '
         'Label86
         '
@@ -5231,16 +5233,17 @@ Partial Class Form1
         'numericUpDown5
         '
         Me.numericUpDown5.BackColor = System.Drawing.Color.Yellow
+        Me.numericUpDown5.DecimalPlaces = 2
         Me.numericUpDown5.Font = New System.Drawing.Font("Microsoft Sans Serif", 11.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.numericUpDown5.Increment = New Decimal(New Integer() {50, 0, 0, 0})
+        Me.numericUpDown5.Increment = New Decimal(New Integer() {1, 0, 0, 65536})
         Me.numericUpDown5.Location = New System.Drawing.Point(183, 59)
-        Me.numericUpDown5.Maximum = New Decimal(New Integer() {3000, 0, 0, 0})
-        Me.numericUpDown5.Minimum = New Decimal(New Integer() {200, 0, 0, 0})
+        Me.numericUpDown5.Maximum = New Decimal(New Integer() {5, 0, 0, 0})
+        Me.numericUpDown5.Minimum = New Decimal(New Integer() {1, 0, 0, 65536})
         Me.numericUpDown5.Name = "numericUpDown5"
         Me.numericUpDown5.Size = New System.Drawing.Size(64, 24)
         Me.numericUpDown5.TabIndex = 65
         Me.numericUpDown5.TextAlign = System.Windows.Forms.HorizontalAlignment.Center
-        Me.numericUpDown5.Value = New Decimal(New Integer() {1700, 0, 0, 0})
+        Me.numericUpDown5.Value = New Decimal(New Integer() {17, 0, 0, 65536})
         '
         'TextBox78
         '
@@ -5253,16 +5256,17 @@ Partial Class Form1
         'NumericUpDown34
         '
         Me.NumericUpDown34.BackColor = System.Drawing.Color.Yellow
+        Me.NumericUpDown34.DecimalPlaces = 2
         Me.NumericUpDown34.Font = New System.Drawing.Font("Microsoft Sans Serif", 11.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.NumericUpDown34.Increment = New Decimal(New Integer() {50, 0, 0, 0})
+        Me.NumericUpDown34.Increment = New Decimal(New Integer() {1, 0, 0, 65536})
         Me.NumericUpDown34.Location = New System.Drawing.Point(304, 60)
-        Me.NumericUpDown34.Maximum = New Decimal(New Integer() {3000, 0, 0, 0})
-        Me.NumericUpDown34.Minimum = New Decimal(New Integer() {300, 0, 0, 0})
+        Me.NumericUpDown34.Maximum = New Decimal(New Integer() {5, 0, 0, 0})
+        Me.NumericUpDown34.Minimum = New Decimal(New Integer() {1, 0, 0, 65536})
         Me.NumericUpDown34.Name = "NumericUpDown34"
         Me.NumericUpDown34.Size = New System.Drawing.Size(64, 24)
         Me.NumericUpDown34.TabIndex = 65
         Me.NumericUpDown34.TextAlign = System.Windows.Forms.HorizontalAlignment.Center
-        Me.NumericUpDown34.Value = New Decimal(New Integer() {1250, 0, 0, 0})
+        Me.NumericUpDown34.Value = New Decimal(New Integer() {17, 0, 0, 65536})
         '
         'Label14
         '

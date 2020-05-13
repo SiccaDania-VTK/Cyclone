@@ -45,7 +45,7 @@ Imports Word = Microsoft.Office.Interop.Word
     Public Ro_gas1_Am3 As Double    '[kg/Am3] density gas
     Public Ro_gas1_Nm3 As Double    '[kg/Nm3] density gas
     Public Ct1 As Integer           '[-] Cyclone type (eg AC435)
-    Public Noc1 As Integer          '[-] Number paralle Cyclones
+    Public Noc1 As Double           '[-] Number paralle Cyclones
     Public db1 As Double            '[m] Diameter cyclone body
     Public inh1 As Double           '[m] inlet hoogte
     Public inb1 As Double           '[m] inlet breedte
@@ -75,7 +75,7 @@ Imports Word = Microsoft.Office.Interop.Word
     Public Ro_gas2_Am3 As Double    '[kg/Am3] density gas
     Public Ro_gas2_Nm3 As Double    '[kg/Nm3] density gas
     Public Ct2 As Integer           '[-] Cyclone type (eg AC435)
-    Public Noc2 As Integer          '[-] Number paralle Cyclones
+    Public Noc2 As Double           '[-] Number paralle Cyclones
     Public db2 As Double            '[m] Diameter cyclone body
     Public inh2 As Double           '[m] inlet hoogte
     Public inb2 As Double           '[m] inlet breedte
@@ -117,7 +117,7 @@ Public Class Form1
     Public _cyl1_dim(20) As Double          'Cyclone stage #1 dimensions
     Public _cyl2_dim(20) As Double          'Cyclone stage #2 dimensions
     Public _istep As Double                 '[mu] Particle size calculation step
-    Public _cees(20) As Input_struct        '20 Case's data
+    Public _cees(20) As Input_struct        '20 Case's data     (case 0 is for calculations ONLY)
     Dim k41 As Double                       'sum loss abs (for DataGridView1)
     Dim init As Boolean = False             'Initialize done
 
@@ -555,12 +555,12 @@ Public Class Form1
                 _cyl2_dim(hh) = CDbl(words(hh))          'Cyclone dimensions
             Next
 
-            _cees(ks).Noc1 = CInt(NumericUpDown20.Value) 'Paralelle cyclonen
-            _cees(ks).Noc2 = CInt(NumericUpDown33.Value) 'Paralelle cyclonen
+            _cees(ks).Noc1 = CInt(NumericUpDown20.Value) 'Parallel cyclones #1
+            _cees(ks).Noc2 = CInt(NumericUpDown33.Value) 'Parallel cyclones #2
             _cees(ks).p1_abs = NumericUpDown19.Value * 100 + 101325  'Pressure [mbar]
 
-            db1 = numericUpDown5.Value / 1000            '[m] Body diameter
-            db2 = NumericUpDown34.Value / 1000           '[m] Body diameter
+            db1 = numericUpDown5.Value                   '[m] Body diameter
+            db2 = NumericUpDown34.Value                  '[m] Body diameter
             _cees(ks).db1 = db1                          '[m] Body diameter
             _cees(ks).db2 = db2                          '[m] Body diameter
             _cees(ks).inh1 = _cyl1_dim(1) * db1          '[m] inlet hoog
@@ -617,14 +617,14 @@ Public Class Form1
             _cees(ks).dpdust2 = 0.5 * _cees(ks).Ro_gas2_Am3 * _cees(ks).inv2 ^ 2 * wc_dust2
 
             '----------- 1/2 cone apex #1-----------
-            kortezijde = (db1 - _cyl1_dim(12) * db1) * 0.5
-            langezijde = _cyl1_dim(11) * db1
+            kortezijde = (db1 - _cyl1_dim(12) * db1) * 0.5          '[m]
+            langezijde = _cyl1_dim(11) * db1                        '[m]
             halfconeapex1 = Atan(kortezijde / langezijde)           '[rad]
             halfconeapex1 = halfconeapex1 / (PI / 2) * 90           '[degree]
 
             '----------- 1/2 cone apex #2-----------
-            kortezijde = (db2 - _cyl1_dim(12) * db2) * 0.5
-            langezijde = _cyl1_dim(11) * db2
+            kortezijde = (db2 - _cyl1_dim(12) * db2) * 0.5          '[m]
+            langezijde = _cyl1_dim(11) * db2                        '[m]
             halfconeapex2 = Atan(kortezijde / langezijde)           '[rad] 
             halfconeapex2 = halfconeapex2 / (PI / 2) * 90           '[degree]
 
@@ -648,109 +648,109 @@ Public Class Form1
                 groupBox3.Visible = True
             End If
 
-            '----------- presenteren afmetingen AC cyclonen in [mm] ----------------------------
+            '----------- presenteren afmetingen AC cyclonen in [m] ----------------------------
             TextBox1.Text = (_cees(ks).inh1).ToString("F3")          'inlaat breedte
-                TextBox2.Text = (_cees(ks).inb1).ToString("F3")          'Inlaat hoogte
-                TextBox3.Text = (_cyl1_dim(3) * db1).ToString("F3")      'Inlaat lengte
-                TextBox4.Text = (_cyl1_dim(4) * db1).ToString("F3")      'Inlaat hartmaat
-                TextBox5.Text = (_cyl1_dim(5) * db1).ToString("F3")      'Inlaat afschuining
-                TextBox6.Text = (_cyl1_dim(6) * db1).ToString("F3")      'Uitlaat keeldia inw.
-                TextBox7.Text = (_cyl1_dim(7) * db1).ToString("F3")      'Uitlaat flensdiameter inw.
-                TextBox8.Text = (_cyl1_dim(8) * db1).ToString("F3")      'Lengte insteekpijp inw.
-                TextBox9.Text = (_cyl1_dim(9) * db1).ToString("F3")      'Lengte romp + conus
-                TextBox10.Text = (_cyl1_dim(10) * db1).ToString("F3")    'Lengte romp
-                TextBox11.Text = (_cyl1_dim(11) * db1).ToString("F3")    'Lengte çonus
-                TextBox12.Text = (_cyl1_dim(12) * db1).ToString("F3")    'Dia_conus / 3P-pijp
-                TextBox13.Text = (_cyl1_dim(13) * db1).ToString("F3")    'Lengte 3P-pijp
-                TextBox14.Text = (_cyl1_dim(14) * db1).ToString("F3")    'Lengte 3P conus
-                TextBox15.Text = (_cyl1_dim(15) * db1).ToString("F3")    'Kleine dia 3P-conus
+            TextBox2.Text = (_cees(ks).inb1).ToString("F3")          'Inlaat hoogte
+            TextBox3.Text = (_cyl1_dim(3) * db1).ToString("F3")      'Inlaat lengte
+            TextBox4.Text = (_cyl1_dim(4) * db1).ToString("F3")      'Inlaat hartmaat
+            TextBox5.Text = (_cyl1_dim(5) * db1).ToString("F3")      'Inlaat afschuining
+            TextBox6.Text = (_cyl1_dim(6) * db1).ToString("F3")      'Uitlaat keeldia inw.
+            TextBox7.Text = (_cyl1_dim(7) * db1).ToString("F3")      'Uitlaat flensdiameter inw.
+            TextBox8.Text = (_cyl1_dim(8) * db1).ToString("F3")      'Lengte insteekpijp inw.
+            TextBox9.Text = (_cyl1_dim(9) * db1).ToString("F3")      'Lengte romp + conus
+            TextBox10.Text = (_cyl1_dim(10) * db1).ToString("F3")    'Lengte romp
+            TextBox11.Text = (_cyl1_dim(11) * db1).ToString("F3")    'Lengte çonus
+            TextBox12.Text = (_cyl1_dim(12) * db1).ToString("F3")    'Dia_conus / 3P-pijp
+            TextBox13.Text = (_cyl1_dim(13) * db1).ToString("F3")    'Lengte 3P-pijp
+            TextBox14.Text = (_cyl1_dim(14) * db1).ToString("F3")    'Lengte 3P conus
+            TextBox15.Text = (_cyl1_dim(15) * db1).ToString("F3")    'Kleine dia 3P-conus
 
-                TextBox84.Text = (_cees(ks).inh2).ToString("F3")         'inlaat breedte
-                TextBox85.Text = (_cees(ks).inb2).ToString("F3")         'Inlaat hoogte
-                TextBox86.Text = (_cyl1_dim(3) * db2).ToString("F3")     'Inlaat lengte
-                TextBox87.Text = (_cyl1_dim(4) * db2).ToString("F3")     'Inlaat hartmaat
-                TextBox88.Text = (_cyl1_dim(5) * db2).ToString("F3")     'Inlaat afschuining
-                TextBox89.Text = (_cyl1_dim(6) * db2).ToString("F3")     'Uitlaat keeldia inw.
-                TextBox90.Text = (_cyl1_dim(7) * db2).ToString("F3")     'Uitlaat flensdiameter inw.
-                TextBox91.Text = (_cyl1_dim(8) * db2).ToString("F3")     'Lengte insteekpijp inw.
-                TextBox92.Text = (_cyl1_dim(9) * db2).ToString("F3")     'Lengte romp + conus
-                TextBox93.Text = (_cyl1_dim(10) * db2).ToString("F3")    'Lengte romp
-                TextBox94.Text = (_cyl1_dim(11) * db2).ToString("F3")    'Lengte çonus
-                TextBox95.Text = (_cyl1_dim(12) * db2).ToString("F3")    'Dia_conus / 3P-pijp
-                TextBox96.Text = (_cyl1_dim(13) * db2).ToString("F3")    'Lengte 3P-pijp
-                TextBox97.Text = (_cyl1_dim(14) * db2).ToString("F3")    'Lengte 3P conus
-                TextBox98.Text = (_cyl1_dim(15) * db2).ToString("F3")    'Kleine dia 3P-conus
-                TextBox150.Text = halfconeapex1.ToString("F1")           '1/2 cone apex
-                TextBox151.Text = halfconeapex2.ToString("F1")           '1/2 cone apex
+            TextBox84.Text = (_cees(ks).inh2).ToString("F3")         'inlaat breedte
+            TextBox85.Text = (_cees(ks).inb2).ToString("F3")         'Inlaat hoogte
+            TextBox86.Text = (_cyl1_dim(3) * db2).ToString("F3")     'Inlaat lengte
+            TextBox87.Text = (_cyl1_dim(4) * db2).ToString("F3")     'Inlaat hartmaat
+            TextBox88.Text = (_cyl1_dim(5) * db2).ToString("F3")     'Inlaat afschuining
+            TextBox89.Text = (_cyl1_dim(6) * db2).ToString("F3")     'Uitlaat keeldia inw.
+            TextBox90.Text = (_cyl1_dim(7) * db2).ToString("F3")     'Uitlaat flensdiameter inw.
+            TextBox91.Text = (_cyl1_dim(8) * db2).ToString("F3")     'Lengte insteekpijp inw.
+            TextBox92.Text = (_cyl1_dim(9) * db2).ToString("F3")     'Lengte romp + conus
+            TextBox93.Text = (_cyl1_dim(10) * db2).ToString("F3")    'Lengte romp
+            TextBox94.Text = (_cyl1_dim(11) * db2).ToString("F3")    'Lengte çonus
+            TextBox95.Text = (_cyl1_dim(12) * db2).ToString("F3")    'Dia_conus / 3P-pijp
+            TextBox96.Text = (_cyl1_dim(13) * db2).ToString("F3")    'Lengte 3P-pijp
+            TextBox97.Text = (_cyl1_dim(14) * db2).ToString("F3")    'Lengte 3P conus
+            TextBox98.Text = (_cyl1_dim(15) * db2).ToString("F3")    'Kleine dia 3P-conus
+            TextBox150.Text = halfconeapex1.ToString("F1")           '1/2 cone apex
+            TextBox151.Text = halfconeapex2.ToString("F1")           '1/2 cone apex
 
-                TextBox113.Text = (_cees(ks).Flow1 * 3600).ToString("0")    '[Am3/s] Cycloone Flow
-                TextBox112.Text = (_cees(ks).Flow2 * 3600).ToString("0")    '[Am3/s] Cycloone Flow
+            TextBox113.Text = (_cees(ks).Flow1 * 3600).ToString("0")    '[Am3/s] Cycloone Flow
+            TextBox112.Text = (_cees(ks).Flow2 * 3600).ToString("0")    '[Am3/s] Cycloone Flow
 
-                TextBox16.Text = _cees(ks).inv1.ToString("0.0")             'inlaat snelheid
-                TextBox80.Text = _cees(ks).inv2.ToString("0.0")             'inlaat snelheid
+            TextBox16.Text = _cees(ks).inv1.ToString("0.0")             'inlaat snelheid
+            TextBox80.Text = _cees(ks).inv2.ToString("0.0")             'inlaat snelheid
 
-                TextBox17.Text = _cees(ks).dpgas1.ToString("0")             '[Pa] Pressure loss inlet-gas
-                TextBox79.Text = _cees(ks).dpgas2.ToString("0")             '[Pa] Pressure loss inlet-gas
+            TextBox17.Text = _cees(ks).dpgas1.ToString("0")             '[Pa] Pressure loss inlet-gas
+            TextBox79.Text = _cees(ks).dpgas2.ToString("0")             '[Pa] Pressure loss inlet-gas
 
-                TextBox48.Text = _cees(ks).dpdust1.ToString("0")            '[Pa] Pressure loss inlet-dust
-                TextBox76.Text = _cees(ks).dpdust2.ToString("0")            '[Pa] Pressure loss inlet-dust
+            TextBox48.Text = _cees(ks).dpdust1.ToString("0")            '[Pa] Pressure loss inlet-dust
+            TextBox76.Text = _cees(ks).dpdust2.ToString("0")            '[Pa] Pressure loss inlet-dust
 
-                TextBox22.Text = _cees(ks).outv1.ToString("0.0")            'uitlaat snelheid
-                TextBox77.Text = _cees(ks).outv2.ToString("0.0")            'uitlaat snelheid
+            TextBox22.Text = _cees(ks).outv1.ToString("0.0")            'uitlaat snelheid
+            TextBox77.Text = _cees(ks).outv2.ToString("0.0")            'uitlaat snelheid
 
-                TextBox23.Text = _cees(ks).Kstokes1.ToString("F4")          'Stokes waarde stage#1
-                TextBox78.Text = _cees(ks).Kstokes2.ToString("F4")          'Stokes waarde stage#2
+            TextBox23.Text = _cees(ks).Kstokes1.ToString("F4")          'Stokes waarde stage#1
+            TextBox78.Text = _cees(ks).Kstokes2.ToString("F4")          'Stokes waarde stage#2
 
-                TextBox37.Text = _cees(ks).db1.ToString                     'Cycloone diameter stage#1
-                TextBox74.Text = _cees(ks).db2.ToString                     'Cycloone diameter stage#2
+            TextBox37.Text = _cees(ks).db1.ToString                     '[m] Cycloone diameter stage#1
+            TextBox74.Text = _cees(ks).db2.ToString                     '[m] Cycloone diameter stage#2
 
-                TextBox38.Text = CType(ComboBox1.SelectedItem, String)      'Cycloon type
-                TextBox73.Text = CType(ComboBox2.SelectedItem, String)      'Cycloon type
+            TextBox38.Text = CType(ComboBox1.SelectedItem, String)      'Cycloon type
+            TextBox73.Text = CType(ComboBox2.SelectedItem, String)      'Cycloon type
 
-                '---------- Pressure abs --------------
-                TextBox131.Text = _cees(ks).p1_abs.ToString("F0")           '[Pa abs]
-                TextBox130.Text = _cees(ks).p2_abs.ToString("F0")           '[Pa abs]
+            '---------- Pressure abs --------------
+            TextBox131.Text = _cees(ks).p1_abs.ToString("F0")           '[Pa abs]
+            TextBox130.Text = _cees(ks).p2_abs.ToString("F0")           '[Pa abs]
 
-                '---------- Density --------------
-                TextBox75.Text = _cees(ks).Ro_gas1_Am3.ToString("F3")       '[kg/Am3]
-                TextBox19.Text = _cees(ks).Ro_gas2_Am3.ToString("F3")       '[kg/Am3]
+            '---------- Density --------------
+            TextBox75.Text = _cees(ks).Ro_gas1_Am3.ToString("F3")       '[kg/Am3]
+            TextBox19.Text = _cees(ks).Ro_gas2_Am3.ToString("F3")       '[kg/Am3]
 
-                '---------- Check inlet speed [m/s] stage #1---------------
-                If _cees(ks).inv1 < 10 Or _cees(ks).inv1 > 30 Then
-                    TextBox16.BackColor = Color.Red
-                Else
-                    TextBox16.BackColor = Color.LightGreen
-                End If
-
-                '---------- Check inlet speed stage #2---------------
-                If _cees(ks).inv2 < 10 Or _cees(ks).inv2 > 30 Then
-                    TextBox80.BackColor = Color.Red
-                Else
-                    TextBox80.BackColor = Color.LightGreen
-                End If
-
-                '---------- Check dp [pa] stage #1---------------
-                If _cees(ks).dpgas1 > 3000 Then
-                    TextBox17.BackColor = Color.Red
-                Else
-                    TextBox17.BackColor = Color.LightGreen
-                End If
-
-                '---------- Check dp stage #2---------------
-                If _cees(ks).dpgas2 > 3000 Then
-                    TextBox79.BackColor = Color.Red
-                Else
-                    TextBox79.BackColor = Color.LightGreen
-                End If
-
-                '--------- Get Inlet korrel-groep data ----------
-                'Save data of screen into the _cees array
-                Fill_array_from_screen(CInt(NumericUpDown30.Value))
-
-                TextBox39.Text = kgh.ToString("F0")                 'Stof inlet [kg/(h.cyclone)]
-                TextBox40.Text = tot_kgh.ToString("F0")             'Dust inlet [kg/h] 
-                TextBox71.Text = _cees(ks).dust1_Am3.ToString("F3") 'Dust inlet [g/Am3]
+            '---------- Check inlet speed [m/s] stage #1---------------
+            If _cees(ks).inv1 < 10 Or _cees(ks).inv1 > 30 Then
+                TextBox16.BackColor = Color.Red
+            Else
+                TextBox16.BackColor = Color.LightGreen
             End If
+
+            '---------- Check inlet speed stage #2---------------
+            If _cees(ks).inv2 < 10 Or _cees(ks).inv2 > 30 Then
+                TextBox80.BackColor = Color.Red
+            Else
+                TextBox80.BackColor = Color.LightGreen
+            End If
+
+            '---------- Check dp [pa] stage #1---------------
+            If _cees(ks).dpgas1 > 3000 Then
+                TextBox17.BackColor = Color.Red
+            Else
+                TextBox17.BackColor = Color.LightGreen
+            End If
+
+            '---------- Check dp stage #2---------------
+            If _cees(ks).dpgas2 > 3000 Then
+                TextBox79.BackColor = Color.Red
+            Else
+                TextBox79.BackColor = Color.LightGreen
+            End If
+
+            '--------- Get Inlet korrel-groep data ----------
+            'Save data of screen into the _cees array
+            'Fill_array_from_screen(CInt(NumericUpDown30.Value))
+
+            TextBox39.Text = kgh.ToString("F0")                 'Stof inlet [kg/(h.cyclone)]
+            TextBox40.Text = tot_kgh.ToString("F0")             'Dust inlet [kg/h] 
+            TextBox71.Text = _cees(ks).dust1_Am3.ToString("F3") 'Dust inlet [g/Am3]
+        End If
     End Sub
     Private Sub Present_Datagridview1(ks As Integer)
 
@@ -874,25 +874,34 @@ Public Class Form1
 
     Private Sub Fill_array_from_screen(c_nr As Integer)
 
+        'MsgBox("Line 877, Now filling array nr= " & c_nr.ToString)
+
         TextBox24.Text &= "line 660, Fill array from screen, nr " & c_nr.ToString & vbCrLf
 
-        _cees(c_nr).Quote_no = TextBox28.Text                  'Quote number
-        _cees(c_nr).Tag_no = TextBox29.Text                    'The Tag number
+        _cees(c_nr).Quote_no = TextBox28.Text                   'Quote number
+        _cees(c_nr).Tag_no = TextBox29.Text                     'The Tag number
         _cees(c_nr).case_name = TextBox53.Text                  'The case name
 
         _cees(c_nr).FlowT = NumericUpDown1.Value                'Air flow [Am3/hr]
         _cees(c_nr).dust1_Am3 = NumericUpDown4.Value            'Dust inlet [g/Am3] 
         _cees(c_nr).Ct1 = ComboBox1.SelectedIndex               'Cyclone type Stage #1
         _cees(c_nr).Ct2 = ComboBox2.SelectedIndex               'Cyclone type Stage #2
-        _cees(c_nr).Noc1 = CInt(NumericUpDown20.Value)          'Cyclone in parallel
-        _cees(c_nr).Noc2 = CInt(NumericUpDown33.Value)          'Cyclone in parallel
-        _cees(c_nr).db1 = numericUpDown5.Value                  'Diameter cyclone Stage #1
-        _cees(c_nr).db2 = NumericUpDown34.Value                 'Diameter cyclone Stage #2
+        _cees(c_nr).Noc1 = CInt(NumericUpDown20.Value)          'Cyclone no in parallel #1
+        _cees(c_nr).Noc2 = CInt(NumericUpDown33.Value)          'Cyclone no in parallel #2
+        _cees(c_nr).db1 = numericUpDown5.Value                  '[m] Diameter cyclone Stage #1
+        _cees(c_nr).db2 = NumericUpDown34.Value                 '[m] Diameter cyclone Stage #2
         _cees(c_nr).ro_gas = numericUpDown3.Value               'Density [kg/hr]
         _cees(c_nr).ro_solid = numericUpDown2.Value             'Density [kg/hr]
         _cees(c_nr).visco = numericUpDown14.Value               'Visco in [Centi Poise]
         _cees(c_nr).Temp = NumericUpDown18.Value                'Temperature [c]
         _cees(c_nr).p1_abs = 101325 + (NumericUpDown19.Value * 100)         'Pressure [Pa abs]
+
+        Debug.WriteLine("c_nr= " & c_nr.ToString & ",  fill array _cees(c_nr).Noc1= " & _cees(c_nr).Noc1.ToString)
+        Debug.WriteLine("c_nr= " & c_nr.ToString & ",  fill array _cees(c_nr).Noc2= " & _cees(c_nr).Noc2.ToString)
+        Debug.WriteLine("fill array _cees(c_nr).db1= " & _cees(c_nr).db1.ToString)
+        Debug.WriteLine("fill array _cees(c_nr).db2= " & _cees(c_nr).db2.ToString)
+
+        Dump_log_to_box24()
 
         If init = False Then Exit Sub       'Prevent out of range error
 
@@ -902,7 +911,6 @@ Public Class Form1
         Dim a, b As Double
 
         For row = 0 To no_PDS_input_points - 1
-
             Double.TryParse(DataGridView6.Rows(row).Cells(0).Value.ToString, a)
             Double.TryParse(DataGridView6.Rows(row).Cells(1).Value.ToString, b)
 
@@ -912,10 +920,8 @@ Public Class Form1
             Else
                 _cees(c_nr).dia_big(row) = 0
                 _cees(c_nr).class_load(row) = 0
-
             End If
         Next
-
     End Sub
     '-------- Bereken het verlies getal NIET gecorrigeerd -----------
     '----- de input is de GEMIDDELDE korrel grootte-----------
@@ -1075,8 +1081,7 @@ Public Class Form1
         TextBox67.Text = f_used.ToString("F3")
     End Sub
 
-    Public Sub Draw_chart1(ch As Chart)
-        Dim ks As Integer
+    Public Sub Draw_chart1(ch As Chart, ks As Integer)
         Dim a, b As Double
 
         ch.Series.Clear()
@@ -1164,7 +1169,6 @@ Public Class Form1
         End Select
 
         '----- now start plotting ------------------------
-        ks = CInt(NumericUpDown30.Value)        'Case number
 
         '----------------------------- Plot Input stars-----------------------
         If CheckBox15.Checked Then
@@ -1247,12 +1251,11 @@ Public Class Form1
         'TextBox24.Text &= "  verschil=" & verschil.ToString & vbCrLf
     End Sub
 
-    Private Sub Draw_chart2(ch As Chart)
+    Private Sub Draw_chart2(ch As Chart, ks As Integer)
         'Small chart on the first tab
         Dim s_points(50, 2) As Double
         Dim h As Integer
         Dim sdia As Integer
-        Dim ks As Integer   'Case number
 
         ch.Series.Clear()
         ch.ChartAreas.Clear()
@@ -1284,7 +1287,7 @@ Public Class Form1
         s_points(0, 0) = sdia                                   'Particle diameter [mu]
         s_points(0, 1) = 100                                    '100% loss
         s_points(0, 2) = 100                                    '100% loss
-        ks = CInt(NumericUpDown30.Value)
+
         For h = 1 To 30                                          'Particle diameter [mu]
             s_points(h, 0) = h                                   'Particle diameter [mu]
             s_points(h, 1) = Calc_verlies(h, False, _cees(ks).Kstokes1, 1) * 100  'stage #1 Loss [%]
@@ -1347,37 +1350,41 @@ Public Class Form1
     Private Sub Calc_sequence()
         Dim case_nr As Integer = CInt(NumericUpDown30.Value)
 
+        '============== ALL calculation is done is Case(0) ========
+        '============== other cases are for storage ===============
+        _cees(0) = _cees(case_nr)   'Transfer data to case(0)
+        '==========================================================
+
         If ComboBox1.SelectedIndex > -1 And ComboBox2.SelectedIndex > -1 And init = True Then
 
             If String.Equals(ComboBox1.SelectedItem.ToString, "AA850") Then
-                numericUpDown5.Value = 300      '[mm] Diameter
+                numericUpDown5.Value = CDec(0.3)      '[mm] Diameter
             End If
 
             If String.Equals(ComboBox2.SelectedItem.ToString, "AA850") Then
-                NumericUpDown34.Value = 300     '[mm] Diameter
+                NumericUpDown34.Value = CDec(0.3)     '[mm] Diameter
             End If
 
+            Dust_load_correction(0)
+            Get_input_calc_1(0)       'This is the CASE number
+            Calc_part_dia_loss(0)
 
-            Dust_load_correction(case_nr)
-            Get_input_calc_1(case_nr)       'This is the CASE number
-            Calc_part_dia_loss(case_nr)
+            Calc_stage1(0)            'Calc according stage #1
+            Calc_stage2(0)            'Calc according stage #2
 
-            Calc_stage1(case_nr)            'Calc according stage #1
-            Calc_stage2(case_nr)            'Calc according stage #2
+            Calc_stage1(0)            'Calc according stage #1
+            Calc_stage2(0)            'Calc according stage #2
 
-            Calc_stage1(case_nr)            'Calc according stage #1
-            Calc_stage2(case_nr)            'Calc according stage #2
+            Calc_stage1(0)            'Calc according stage #1
+            Calc_stage2(0)            'Calc according stage #2
+            Calc_stage1_2_comb(0)            'Calc stage #1 and stage #2 combined
 
-            Calc_stage1(case_nr)            'Calc according stage #1
-            Calc_stage2(case_nr)            'Calc according stage #2
-            Calc_stage1_2_comb()            'Calc stage #1 and stage #2 combined
+            Present_loss_grid1(0)     'Present the results stage #1
+            Present_loss_grid2(0)     'Present the results stage #2
+            Present_Datagridview1(0)  'Present the results stage #1
 
-            Present_loss_grid1()            'Present the results stage #1
-            Present_loss_grid2()            'Present the results stage #2
-            Present_Datagridview1(case_nr)  'Present the results stage #1
-
-            Draw_chart1(Chart1)             'Present the results 
-            Draw_chart2(Chart2)             'Present the results loss curve
+            Draw_chart1(Chart1, 0)             'Present the results 
+            Draw_chart2(Chart2, 0)             'Present the results loss curve
             Screen_contrast()               'White text on ted background 
         End If
     End Sub
@@ -1423,7 +1430,7 @@ Public Class Form1
                 filename = dirpath_Eng & filename 'used at VTK with intranet
             Else
                 filename = dirpath_tmp & filename 'used at VTK with intranet'used at home
-                MessageBox.Show("VTK intranet not acceasable, save on " & filename)
+                MessageBox.Show("VTK intranet not acceasable, saved on " & filename)
             End If
 
             '--- Delete existing file -------
@@ -1443,7 +1450,7 @@ Public Class Form1
     Private Sub Retrieve_from_disk()
         Dim bf As New System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
 
-        OpenFileDialog1.FileName = "Cyclone_select_*"
+        OpenFileDialog1.FileName = "Cyclone_select_*.vtk2"
 
         If Directory.Exists(dirpath_Eng) Then
             OpenFileDialog1.InitialDirectory = dirpath_Eng  'used at VTK
@@ -1451,8 +1458,8 @@ Public Class Form1
             OpenFileDialog1.InitialDirectory = dirpath_tmp  'used at home
         End If
 
-        OpenFileDialog1.Title = "Open a Text File"
-        OpenFileDialog1.Filter = "VTK2 Files|*.vtk2|VTK1 file|*.vtk"
+        OpenFileDialog1.Title = "Open a VTK2 File"
+        OpenFileDialog1.Filter = "VTK2 Files|*.vtk2"
         If OpenFileDialog1.ShowDialog() = System.Windows.Forms.DialogResult.OK Then
             Try
                 Dim fStream As New FileStream(OpenFileDialog1.FileName, FileMode.Open) With {
@@ -1471,7 +1478,7 @@ Public Class Form1
         'Retrieve project from disk and goto case nr 0
 
         Retrieve_from_disk()        'Read from disk to array
-        Fill_Screen_from_array(0)   'Refresh screen data case 0
+        Update_Screen_from_array(CInt(NumericUpDown30.Value))   'Refresh screen data case 0
         Calc_sequence()
     End Sub
 
@@ -1612,7 +1619,7 @@ Public Class Form1
             row += 1
             oTable.Cell(row, 1).Range.Text = "Body diameter #1"
             oTable.Cell(row, 2).Range.Text = numericUpDown5.Value.ToString
-            oTable.Cell(row, 3).Range.Text = "[mm]"
+            oTable.Cell(row, 3).Range.Text = "[m]"
             row += 1
             oTable.Cell(row, 1).Range.Text = "No parallel #1"
             oTable.Cell(row, 2).Range.Text = NumericUpDown20.Value.ToString
@@ -1625,7 +1632,7 @@ Public Class Form1
             row += 1
             oTable.Cell(row, 1).Range.Text = "Body diameter #2"
             oTable.Cell(row, 2).Range.Text = NumericUpDown34.Value.ToString
-            oTable.Cell(row, 3).Range.Text = "[mm]"
+            oTable.Cell(row, 3).Range.Text = "[m]"
             row += 1
             oTable.Cell(row, 1).Range.Text = "No parallel #2"
             oTable.Cell(row, 2).Range.Text = NumericUpDown33.Value.ToString
@@ -1801,7 +1808,7 @@ Public Class Form1
 
 
             '------------------save Chart2 (Loss curve)---------------- 
-            Draw_chart2(Chart2)
+            Draw_chart2(Chart2, 0)
             file_name = dirpath_Temp & "Chart_loss.Jpeg"
             'Chart2.SaveImage(file_name, System.Drawing.Imaging.ImageFormat.Jpeg)
             Chart1.SaveImage(file_name, System.Drawing.Imaging.ImageFormat.Jpeg)
@@ -1838,14 +1845,12 @@ Public Class Form1
         Return (vis * 100)    '[kg/m-s]-->[centi Poise]
     End Function
 
-    Private Sub Present_loss_grid1()
-        Dim ks As Integer   'present Case
+    Private Sub Present_loss_grid1(ks As Integer)
         Dim j As Integer
         Dim total_abs_loss_C As Double = 0
         Dim total_abs_loss As Double = 0
         Dim total_psd_diff As Double = 0
 
-        ks = CInt(NumericUpDown30.Value)   'present Case
         DataGridView2.ColumnCount = 18
         DataGridView2.Rows.Clear()
         DataGridView2.Rows.Add(111)
@@ -1902,15 +1907,12 @@ Public Class Form1
         DataGridView2.Rows(111).Cells(17).Value = _cees(ks).sum_loss_C1.ToString("F5") 'total_abs_loss_C.ToString("F5")
     End Sub
 
-    Private Sub Present_loss_grid2()
+    Private Sub Present_loss_grid2(ks As Integer)
         Dim j As Integer
-        Dim ks As Integer 'Present case number
         Dim total_abs_loss_C As Double = 0
         Dim total_abs_loss As Double = 0
         Dim total_psd_diff1 As Double = 0
         Dim total_psd_diff2 As Double = 0
-
-        ks = CInt(NumericUpDown30.Value)
 
         DataGridView3.ColumnCount = 19
         DataGridView3.Rows.Clear()
@@ -2053,7 +2055,7 @@ Public Class Form1
         '------------ Particle diameter calculation step -----
         _istep = (_cees(ks).Dmax1 / _cees(ks).Dmin2) ^ (1 / 110) 'Calculation step
 
-        TextBox24.Text &= "_istep= " & _istep.ToString & ",  _cees(ks).Dmax1= " & _cees(ks).Dmax1.ToString & vbCrLf
+        'TextBox24.Text &= "_istep= " & _istep.ToString & ",  _cees(ks).Dmax1= " & _cees(ks).Dmax1.ToString & vbCrLf
 
         For i = 1 To 110
             _cees(ks).stage1(i).dia = _cees(ks).stage1(i - 1).dia * _istep
@@ -2382,7 +2384,7 @@ Public Class Form1
         '========== Stage cyclone #1 =====
         plt_top1 = NumericUpDown32.Value        '[mm] top plate
         plt_body1 = NumericUpDown31.Value       '[mm] rest of the cyclone
-        _db = numericUpDown5.Value / 1000       '[m] Body diameter
+        _db = numericUpDown5.Value              '[m] Body diameter
 
         'weight top plate
         w1 = PI / 4 * _db ^ 2 * plt_top1 / 1000 * ro_steel
@@ -2419,9 +2421,9 @@ Public Class Form1
 
 
         '========== Stage cyclone #2 ========
-        plt_top2 = NumericUpDown41.Value                '[mm] top plate
-        plt_body2 = NumericUpDown42.Value               '[mm] rest of the cyclone
-        _db = NumericUpDown34.Value / 1000              '[m] Body diameter
+        plt_top2 = NumericUpDown41.Value                    '[mm] top plate
+        plt_body2 = NumericUpDown42.Value                   '[mm] rest of the cyclone
+        _db = NumericUpDown34.Value                         '[m] Body diameter
 
         'weight top plate
         w1 = PI / 4 * _db ^ 2 * plt_top2 / 1000 * ro_steel
@@ -2487,27 +2489,26 @@ Public Class Form1
         'Save data of screen into the _cees array
 
         cc = CInt(NumericUpDown30.Value)       'Case number
-        TextBox24.Text &= "line 2267, save case to array nr" & cc.ToString & vbCrLf
         Fill_array_from_screen(cc)
         'Debug.WriteLine("Save_present_case_to_array")
     End Sub
 
     Private Sub NumericUpDown30_ValueChanged(sender As Object, e As EventArgs) Handles NumericUpDown30.ValueChanged
-        Dim zz As Integer = CInt(NumericUpDown30.Value)    'Case number
-
-        Fill_Screen_from_array(zz)
+        '==== Different case is selected =====
+        Update_Screen_from_array(CInt(NumericUpDown30.Value)) 'Case number
+        _cees(0) = _cees(CInt(NumericUpDown30.Value))       'For calculation
     End Sub
-    Private Sub Fill_Screen_from_array(zz As Integer)
+
+    Private Sub Update_Screen_from_array(zz As Integer)
         Dim p1_rel As Double
 
-        TextBox24.Text &= "line 2276, Fill_Screen_from_array nr" & zz.ToString & vbCrLf
-
-        If _cees(zz).case_name.Length > 0 Then
-
+        If init Then
+            TextBox24.Text &= "line 2276, Update_Screen_from_array nr" & zz.ToString & vbCrLf
+            '  MsgBox("Update_Screen_from_array zz= " & zz.ToString)
             '----------- General (not calculated) data------------------
-            TextBox28.Text = _cees(zz).Quote_no                 'Quote number
-            TextBox29.Text = _cees(zz).Tag_no                   'The Tag number
-            TextBox53.Text = _cees(zz).case_name                'Case name
+            TextBox28.Text = _cees(1).Quote_no                 'Quote number (not case dependent)
+            TextBox29.Text = _cees(1).Tag_no                   'The Tag number (not case dependent)
+            TextBox53.Text = _cees(zz).case_name               'Case name
 
             Chck_value(NumericUpDown1, CDec(_cees(zz).FlowT))       'Air flow total
             Chck_value(NumericUpDown4, CDec(_cees(zz).dust1_Am3))   'Dust inlet [g/Am3] 
@@ -2515,9 +2516,17 @@ Public Class Form1
             ComboBox1.SelectedIndex = _cees(zz).Ct1                 'Cyclone type stage #1
             ComboBox2.SelectedIndex = _cees(zz).Ct2                 'Cyclone type stage #2
 
-            Chck_value(NumericUpDown20, _cees(zz).Noc1)              'Cyclone in parallel
-            Chck_value(numericUpDown5, CDec(_cees(zz).db1))          'Diameter cyclone body #1
-            Chck_value(NumericUpDown34, CDec(_cees(zz).db2))         'Diameter cyclone body #2
+            Chck_value(NumericUpDown30, zz)                         'Case number
+            Chck_value(NumericUpDown20, CDec(_cees(zz).Noc1))       'Cyclone in parallel #1
+            Chck_value(NumericUpDown33, CDec(_cees(zz).Noc2))        'Cyclone in parallel #2
+            Chck_value(numericUpDown5, CDec(_cees(zz).db1))    '[m] Diameter cyclone body #1
+            Chck_value(NumericUpDown34, CDec(_cees(zz).db2))  '[m] Diameter cyclone body #2
+
+            Debug.WriteLine("zz= " & zz.ToString & ",  _cees(zz).Noc1= " & _cees(zz).Noc1.ToString)
+            Debug.WriteLine("zz= " & zz.ToString & ",  _cees(zz).Noc2= " & _cees(zz).Noc2.ToString)
+            Debug.WriteLine("zz= " & zz.ToString & ",  _cees(zz).db1= " & _cees(zz).db1.ToString)
+            Debug.WriteLine("zz= " & zz.ToString & ",  _cees(zz).db2= " & _cees(zz).db2.ToString)
+
             Chck_value(numericUpDown3, CDec(_cees(zz).ro_gas))       'Density [kg/hr]
             Chck_value(numericUpDown2, CDec(_cees(zz).ro_solid))     'Density [kg/hr]
             Chck_value(numericUpDown14, CDec(_cees(zz).visco))       'Visco in Centi Poise
@@ -2525,17 +2534,28 @@ Public Class Form1
             p1_rel = (_cees(zz).p1_abs - 101325) / 100
             Chck_value(NumericUpDown19, CDec(p1_rel))                'Pressure [Pa abs]-->[mbar g]
 
+            Dump_log_to_box24()
+
             '[mu] Class upper particle diameter limit diameter
             '[%] Percentage van de inlaat stof belasting
             For row = 0 To _cees(zz).dia_big.Count - 1
                 DataGridView6.Rows(row).Cells(0).Value = _cees(zz).dia_big(row)
                 DataGridView6.Rows(row).Cells(1).Value = _cees(zz).class_load(row) * 100
             Next
-
             Me.Refresh()
         End If
-
     End Sub
+    Private Sub Dump_log_to_box24()
+
+        TextBox24.Text = "----------------------------------------" & vbCrLf
+        For zz = 0 To 4
+            TextBox24.Text &= "zz= " & zz.ToString & ",  _cees(zz).Noc1= " & _cees(zz).Noc1.ToString & vbCrLf
+            TextBox24.Text &= "zz= " & zz.ToString & ",  _cees(zz).Noc2= " & _cees(zz).Noc2.ToString & vbCrLf
+            TextBox24.Text &= "zz= " & zz.ToString & ",  _cees(zz).db1= " & _cees(zz).db1.ToString & vbCrLf
+            TextBox24.Text &= "zz= " & zz.ToString & ",  _cees(zz).db2= " & _cees(zz).db2.ToString & vbCrLf & vbCrLf
+        Next
+    End Sub
+
     Private Sub Chck_value(num As NumericUpDown, value As Decimal)
         'Make sure the numericupdown.value is within the min-max value
 
@@ -2557,8 +2577,8 @@ Public Class Form1
         Calc_sequence()
     End Sub
 
-    Private Sub Calc_stage1_2_comb()
-        Dim ks As Integer = CInt(NumericUpDown30.Value)
+    Private Sub Calc_stage1_2_comb(ks As Integer)
+
         Dim li(11) As Double
         Dim row As Integer
         Dim w19 As Double   'Dust load [kg/Nm3] 1stage
@@ -2843,15 +2863,15 @@ Public Class Form1
         numericUpDown3.Value = CDec(0.903)      '[kg/m3] ro air
         numericUpDown14.Value = CDec(0.0204)    '[mPas=cP] visco air
         NumericUpDown4.Value = 139              '[g/Am3]
-        NumericUpDown30.Value = 0               '[-] Case number
+        NumericUpDown30.Value = 1               '[-] Case number
 
         NumericUpDown20.Value = 80              '[-] parallel cycloon
         ComboBox1.SelectedIndex = 9             'AA850 stage #1
-        numericUpDown5.Value = 300              '[mm] diameter cycloon
+        numericUpDown5.Value = CDec(0.3)       '[m] diameter cycloon
 
         NumericUpDown33.Value = 80              '[-] parallel cycloon
         ComboBox2.SelectedIndex = 9             'AA850 stage #2
-        NumericUpDown34.Value = 300             '[mm] diameter cycloon
+        NumericUpDown34.Value = CDec(0.3)       '[m] diameter cycloon
 
         '======== Fill the DVG with PSD example data =======
         Dim words() As String
@@ -2878,15 +2898,15 @@ Public Class Form1
         numericUpDown3.Value = CDec(0.8977) '[kg/m3] ro air
         numericUpDown14.Value = CDec(0.0227)  '[mPas=cP] visco air
         NumericUpDown4.Value = 20           '[g/Am3]
-        NumericUpDown30.Value = 0           '[-] Case number
+        NumericUpDown30.Value = 1           '[-] Case number
 
         NumericUpDown20.Value = 120         '[-] parallel cycloon
         ComboBox1.SelectedIndex = 9         'AA850 stage #1
-        numericUpDown5.Value = 300          '[mm] diameter cycloon
+        numericUpDown5.Value = CDec(0.3)    '[m] diameter cycloon
 
         NumericUpDown33.Value = 120         '[-] parallel cycloon
         ComboBox2.SelectedIndex = 9         'AA850 stage #2
-        NumericUpDown34.Value = 300         '[mm] diameter cycloon
+        NumericUpDown34.Value = CDec(0.3)   '[m] diameter cycloon
 
         '======== Fill the DVG with PSD example data =======
         Dim words() As String
@@ -2913,15 +2933,15 @@ Public Class Form1
         numericUpDown3.Value = CDec(1.278)  '[kg/m3] ro air
         numericUpDown14.Value = CDec(0.0208)  '[mPas=cP] visco air
         NumericUpDown4.Value = 20           '[g/Am3]
-        NumericUpDown30.Value = 0           '[-] Case number
+        NumericUpDown30.Value = 1           '[-] Case number
 
         NumericUpDown20.Value = 3           '[-] parallel cycloon
         ComboBox1.SelectedIndex = 2         'AC435 stage #1
-        numericUpDown5.Value = 2200         '[mm] diameter cycloon
+        numericUpDown5.Value = CDec(2.2)         '[m] diameter cycloon
 
         NumericUpDown33.Value = 6           '[-] parallel cycloon
         ComboBox2.SelectedIndex = 5         'AC850 stage #2
-        NumericUpDown34.Value = 2200        '[mm] diameter cycloon
+        NumericUpDown34.Value = CDec(2.2)        '[m] diameter cycloon
 
         '======== Fill the DVG with PSD example data =======
         Dim words() As String
@@ -2963,15 +2983,15 @@ Public Class Form1
         numericUpDown3.Value = CDec(1.073)  '[kg/m3]
         numericUpDown14.Value = CDec(0.02)  '[mPas=cP]
         NumericUpDown4.Value = 77           '[g/Am3]
-        NumericUpDown30.Value = 0           '[-] Case number
+        NumericUpDown30.Value = 1           '[-] Case number
 
         NumericUpDown20.Value = 6           '[-] parallel cycloon
         ComboBox1.SelectedIndex = 5         'AC850 stage #1
-        numericUpDown5.Value = 1250         '[mm] diameter cycloon
+        numericUpDown5.Value = CDec(1.25)   '[m] diameter cycloon
 
         NumericUpDown33.Value = 6           '[-] parallel cycloon
         ComboBox2.SelectedIndex = 5         'AC850 stage #2
-        NumericUpDown34.Value = 1250        '[mm] diameter cycloon
+        NumericUpDown34.Value = CDec(1.25)  '[mm] diameter cycloon
 
 
         '======== Fill the DVG with DSM polymere example data =======
@@ -3069,6 +3089,8 @@ Public Class Form1
 
         '========= add page Tabs for everybody ===============
         TabControl1.TabPages.Insert(1, TabPage11) 'Charts
+        TabControl1.TabPages.Insert(2, TabPage8)   'Logging
+        TabControl1.TabPages.Insert(3, TabPage7)   'Cyclone dimensions
 
         'If (LCase(id) = "gp" Or LCase(id) = "gerritp" Or LCase(id) = "user") Then
         '    TabControl1.TabPages("TabPage8").Enabled = True     '
