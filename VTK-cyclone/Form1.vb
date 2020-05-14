@@ -2772,10 +2772,7 @@ Public Class Form1
         Calc_sequence()
     End Sub
 
-    Private Sub Button14_Click(sender As Object, e As EventArgs) Handles Button14.Click
-        PSD_GvG_excel()
-        Calc_sequence()
-    End Sub
+
     Private Sub Button15_Click(sender As Object, e As EventArgs) Handles Button15.Click
         PSD_whey()
         Calc_sequence()
@@ -2908,6 +2905,10 @@ Public Class Form1
             End If
         Next
     End Sub
+    Private Sub Button14_Click(sender As Object, e As EventArgs) Handles Button14.Click
+        PSD_GvG_excel()
+        Calc_sequence()
+    End Sub
 
     Private Sub PSD_GvG_excel()
         TextBox28.Text = "GvG_test_excel"
@@ -2922,8 +2923,8 @@ Public Class Form1
         NumericUpDown4.Value = 77           '[g/Am3]
         NumericUpDown30.Value = 1           '[-] Case number
 
-        NumericUpDown20.Value = 6           '[-] parallel cycloon
-        ComboBox1.SelectedIndex = 5         'AC850 stage #1
+        NumericUpDown20.Value = 3           '[-] parallel cycloon
+        ComboBox1.SelectedIndex = 2         'AC435 stage #1
         numericUpDown5.Value = CDec(1.25)   '[m] diameter cycloon
 
         NumericUpDown33.Value = 6           '[-] parallel cycloon
