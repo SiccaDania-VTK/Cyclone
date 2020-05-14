@@ -531,6 +531,7 @@ Public Class Form1
         Dim kortezijde, langezijde As Double    'tbv atan()
         Dim halfconeapex1 As Double     'Conus hoek
         Dim halfconeapex2 As Double     'Conus hoek
+        Dim lmp1, lmp2 As Double        'Total length
 
         '==== stage 1 ====
 
@@ -648,12 +649,14 @@ Public Class Form1
             TextBox128.Text = _cees(ks).Ro_gas2_Nm3.ToString("F3")      '[kg/Nm3] density
             TextBox36.Text = (_cees(ks).FlowT / 3600).ToString("F4")    '[m3/s] flow
 
-
             If (ComboBox1.SelectedIndex = 9) Then
                 groupBox3.Visible = False
             Else
                 groupBox3.Visible = True
             End If
+
+            lmp1 = ((_cyl1_dim(10) + _cyl1_dim(11) + 3 * _cyl1_dim(12)) * db1)  'Height Cyclone stage 1
+            lmp2 = ((_cyl2_dim(10) + _cyl2_dim(11) + 3 * _cyl2_dim(12)) * db2)  'Height Cyclone stage 2
 
             '----------- presenteren afmetingen AC cyclonen in [m] ----------------------------
             TextBox1.Text = (_cees(ks).inh1).ToString("F3")          'inlaat breedte
@@ -671,24 +674,27 @@ Public Class Form1
             TextBox13.Text = (_cyl1_dim(13) * db1).ToString("F3")    'Lengte 3P-pijp
             TextBox14.Text = (_cyl1_dim(14) * db1).ToString("F3")    'Lengte 3P conus
             TextBox15.Text = (_cyl1_dim(15) * db1).ToString("F3")    'Kleine dia 3P-conus
+            TextBox150.Text = halfconeapex1.ToString("F1")           '1/2 cone apex
+            TextBox44.Text = lmp1.ToString("F3")                     'L+M+3P
+
 
             TextBox84.Text = (_cees(ks).inh2).ToString("F3")         'inlaat breedte
             TextBox85.Text = (_cees(ks).inb2).ToString("F3")         'Inlaat hoogte
-            TextBox86.Text = (_cyl1_dim(3) * db2).ToString("F3")     'Inlaat lengte
-            TextBox87.Text = (_cyl1_dim(4) * db2).ToString("F3")     'Inlaat hartmaat
-            TextBox88.Text = (_cyl1_dim(5) * db2).ToString("F3")     'Inlaat afschuining
-            TextBox89.Text = (_cyl1_dim(6) * db2).ToString("F3")     'Uitlaat keeldia inw.
-            TextBox90.Text = (_cyl1_dim(7) * db2).ToString("F3")     'Uitlaat flensdiameter inw.
-            TextBox91.Text = (_cyl1_dim(8) * db2).ToString("F3")     'Lengte insteekpijp inw.
-            TextBox92.Text = (_cyl1_dim(9) * db2).ToString("F3")     'Lengte romp + conus
-            TextBox93.Text = (_cyl1_dim(10) * db2).ToString("F3")    'Lengte romp
-            TextBox94.Text = (_cyl1_dim(11) * db2).ToString("F3")    'Lengte çonus
-            TextBox95.Text = (_cyl1_dim(12) * db2).ToString("F3")    'Dia_conus / 3P-pijp
-            TextBox96.Text = (_cyl1_dim(13) * db2).ToString("F3")    'Lengte 3P-pijp
-            TextBox97.Text = (_cyl1_dim(14) * db2).ToString("F3")    'Lengte 3P conus
-            TextBox98.Text = (_cyl1_dim(15) * db2).ToString("F3")    'Kleine dia 3P-conus
-            TextBox150.Text = halfconeapex1.ToString("F1")           '1/2 cone apex
+            TextBox86.Text = (_cyl2_dim(3) * db2).ToString("F3")     'Inlaat lengte
+            TextBox87.Text = (_cyl2_dim(4) * db2).ToString("F3")     'Inlaat hartmaat
+            TextBox88.Text = (_cyl2_dim(5) * db2).ToString("F3")     'Inlaat afschuining
+            TextBox89.Text = (_cyl2_dim(6) * db2).ToString("F3")     'Uitlaat keeldia inw.
+            TextBox90.Text = (_cyl2_dim(7) * db2).ToString("F3")     'Uitlaat flensdiameter inw.
+            TextBox91.Text = (_cyl2_dim(8) * db2).ToString("F3")     'Lengte insteekpijp inw.
+            TextBox92.Text = (_cyl2_dim(9) * db2).ToString("F3")     'Lengte romp + conus
+            TextBox93.Text = (_cyl2_dim(10) * db2).ToString("F3")    'Lengte romp
+            TextBox94.Text = (_cyl2_dim(11) * db2).ToString("F3")    'Lengte çonus
+            TextBox95.Text = (_cyl2_dim(12) * db2).ToString("F3")    'Dia_conus / 3P-pijp
+            TextBox96.Text = (_cyl2_dim(13) * db2).ToString("F3")    'Lengte 3P-pijp
+            TextBox97.Text = (_cyl2_dim(14) * db2).ToString("F3")    'Lengte 3P conus
+            TextBox98.Text = (_cyl2_dim(15) * db2).ToString("F3")    'Kleine dia 3P-conus
             TextBox151.Text = halfconeapex2.ToString("F1")           '1/2 cone apex
+            TextBox45.Text = lmp2.ToString("F3")                     'L+M+3P
 
             TextBox113.Text = (_cees(ks).Flow1 * 3600).ToString("0")    '[Am3/s] Cycloone Flow
             TextBox112.Text = (_cees(ks).Flow2 * 3600).ToString("0")    '[Am3/s] Cycloone Flow
@@ -3029,5 +3035,6 @@ Public Class Form1
         'End If
 
     End Sub
+
 
 End Class
