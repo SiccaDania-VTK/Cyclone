@@ -526,6 +526,7 @@ Partial Class Form1
         Me.Label252 = New System.Windows.Forms.Label()
         Me.Button12 = New System.Windows.Forms.Button()
         Me.DataGridView5 = New System.Windows.Forms.DataGridView()
+        Me.Label4 = New System.Windows.Forms.Label()
         Me.TabPage10.SuspendLayout()
         Me.GroupBox18.SuspendLayout()
         CType(Me.Chart3, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -4610,6 +4611,7 @@ Partial Class Form1
         '
         'GroupBox4
         '
+        Me.GroupBox4.Controls.Add(Me.Label4)
         Me.GroupBox4.Controls.Add(Me.Label208)
         Me.GroupBox4.Controls.Add(Me.TextBox130)
         Me.GroupBox4.Controls.Add(Me.Label209)
@@ -4646,7 +4648,7 @@ Partial Class Form1
         Me.GroupBox4.Controls.Add(Me.Label55)
         Me.GroupBox4.Location = New System.Drawing.Point(447, 587)
         Me.GroupBox4.Name = "GroupBox4"
-        Me.GroupBox4.Size = New System.Drawing.Size(420, 220)
+        Me.GroupBox4.Size = New System.Drawing.Size(420, 238)
         Me.GroupBox4.TabIndex = 71
         Me.GroupBox4.TabStop = False
         Me.GroupBox4.Text = "Process data"
@@ -5641,11 +5643,11 @@ Partial Class Form1
         '
         Me.Label245.AutoSize = True
         Me.Label245.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label245.Location = New System.Drawing.Point(9, 345)
+        Me.Label245.Location = New System.Drawing.Point(9, 346)
         Me.Label245.Name = "Label245"
-        Me.Label245.Size = New System.Drawing.Size(173, 13)
+        Me.Label245.Size = New System.Drawing.Size(186, 13)
         Me.Label245.TabIndex = 132
-        Me.Label245.Text = "<0.25 mu all lost, >70 mu all caught"
+        Me.Label245.Text = "<0.25 mu all lost (physically inpossible)"
         '
         'TabControl1
         '
@@ -6074,6 +6076,16 @@ Partial Class Form1
         Me.DataGridView5.Name = "DataGridView5"
         Me.DataGridView5.Size = New System.Drawing.Size(229, 801)
         Me.DataGridView5.TabIndex = 0
+        '
+        'Label4
+        '
+        Me.Label4.AutoSize = True
+        Me.Label4.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Label4.Location = New System.Drawing.Point(15, 220)
+        Me.Label4.Name = "Label4"
+        Me.Label4.Size = New System.Drawing.Size(104, 13)
+        Me.Label4.TabIndex = 104
+        Me.Label4.Text = "100 Pascal = 1 mbar"
         '
         'Form1
         '
@@ -6693,4 +6705,5 @@ Partial Class Form1
     Friend WithEvents RadioButton1 As RadioButton
     Private WithEvents PictureBox4 As PictureBox
     Friend WithEvents TextBox27 As TextBox
+    Private WithEvents Label4 As Label
 End Class

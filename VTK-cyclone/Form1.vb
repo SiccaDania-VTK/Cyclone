@@ -19,8 +19,8 @@ Imports Word = Microsoft.Office.Interop.Word
 
     '====== INPUT DATA ======
     Public FlowT As Double          '[Am3/h] Air flow 
-    Public dia_big() As Double      '[mu] Particle diameter inlet cyclone (input data)
-    Public class_load() As Double   '[% weight] group_weight_cum in de inlaat stroom 
+    'Public dia_big() As Double      '[mu] Particle diameter inlet cyclone (input data)
+    'Public class_load() As Double   '[% weight] group_weight_cum in de inlaat stroom 
     Public ro_gas As Double         '[kg/hr] Density 
     Public ro_solid As Double       '[kg/hr] Density 
     Public visco As Double          '[Centi Poise] Visco in 
@@ -112,15 +112,21 @@ End Structure
     Public loss_overall_C As Double 'Overall loss Corrected
     Public catch_chart As Double    '[%] for chart
 End Structure
+'Variables used by GvG in calculation
+<Serializable()> Public Structure Psd_input_struct
+    Public dia_big As Double      '[mu] Particle diameter inlet cyclone (input data)
+    Public class_load As Double   '[% weight] group_weight_cum in de inlaat stroom 
+End Structure
 
 Public Class Form1
-    Public Const no_PDS_input_points As Integer = 70
-    Public _cyl1_dim(20) As Double          'Cyclone stage #1 dimensions
-    Public _cyl2_dim(20) As Double          'Cyclone stage #2 dimensions
-    Public _istep As Double                 '[mu] Particle size calculation step
-    Public _cees(20) As Input_struct        '20 Case's data     (case 0 is for calculations ONLY)
-    Dim k41 As Double                       'sum loss abs (for DataGridView1)
-    Dim init As Boolean = False             'Initialize done
+    Public Const no_PDS_inputs As Integer = 100     'Data from the customer
+    Public _cyl1_dim(20) As Double                  'Cyclone stage #1 dimensions
+    Public _cyl2_dim(20) As Double                  'Cyclone stage #2 dimensions
+    Public _istep As Double                         '[mu] Particle size calculation step
+    Public _cees(20) As Input_struct                '20 Case's data     (case 0 is for calculations ONLY)
+    Public _input(no_PDS_inputs) As Psd_input_struct   '20 Case's data     (case 0 is for calculations ONLY)
+    Dim k41 As Double                               'sum loss abs (for DataGridView1)
+    Dim init As Boolean = False                     'Initialize done
 
     'Type AC;Inlaatbreedte;Inlaathoogte;Inlaatlengte;Inlaat hartmaat;Inlaat afschuining;
     'Uitlaat keeldia inw.;Uitlaat flensdiameter inw.;Lengte insteekpijp inw.;
@@ -332,8 +338,6 @@ Public Class Form1
         'Initialize the arrays in the struct
         For i = 0 To _cees.Length - 1
             _cees(i).case_name = ""
-            ReDim _cees(i).dia_big(no_PDS_input_points)       'Initialize diameter groups
-            ReDim _cees(i).class_load(no_PDS_input_points)    'Initialize
             ReDim _cees(i).stage1(150)                        'Initialize
             ReDim _cees(i).stage2(150)                        'Initialize
         Next
@@ -913,18 +917,18 @@ Public Class Form1
         'Percentale van de inlaat stof belasting [%]
         Dim a, b As Double
 
-        'MsgBox("Read the input data from the data grid")
+        'MsgBox("Read the input data from the datagridview6")
 
-        For row = 0 To no_PDS_input_points - 1
+        For row = 0 To no_PDS_inputs - 1
             Double.TryParse(DataGridView6.Rows(row).Cells(0).Value.ToString, a)
             Double.TryParse(DataGridView6.Rows(row).Cells(1).Value.ToString, b)
 
             If a > 0 And b > 0 Then
-                _cees(c_nr).dia_big(row) = CDbl(DataGridView6.Rows(row).Cells(0).Value)
-                _cees(c_nr).class_load(row) = CDbl(DataGridView6.Rows(row).Cells(1).Value) / 100
+                _input(row).dia_big = CDbl(DataGridView6.Rows(row).Cells(0).Value)
+                _input(row).class_load = CDbl(DataGridView6.Rows(row).Cells(1).Value) / 100
             Else
-                _cees(c_nr).dia_big(row) = 0
-                _cees(c_nr).class_load(row) = 0
+                _input(row).dia_big = 0
+                _input(row).class_load = 0
             End If
         Next
     End Sub
@@ -1177,9 +1181,9 @@ Public Class Form1
 
         '----------------------------- Plot Input stars-----------------------
         If CheckBox15.Checked Then
-            For i = 0 To (_cees(ks).dia_big.Count - 1)      'Number of input data points
-                a = _cees(ks).dia_big(i)                    '[mu] Class upper particle diameter limit diameter
-                b = _cees(ks).class_load(i) * 100           'Percentale van de inlaat stof belasting
+            For i = 0 To (no_PDS_inputs - 1)       'Number of input data points
+                a = _input(i).dia_big                    '[mu] Class upper particle diameter limit diameter
+                b = _input(i).class_load * 100           'Percentale van de inlaat stof belasting
                 ch.Series(0).Points.AddXY(a, b)
                 ch.Series(0).Points(i).MarkerStyle = MarkerStyle.Star10
                 ch.Series(0).Points(i).MarkerSize = 15
@@ -1448,6 +1452,7 @@ Public Class Form1
             '--- and save new file to disk -------
             Dim fStream As New FileStream(filename, FileMode.CreateNew)
             bf.Serialize(fStream, _cees) ' write to file
+            bf.Serialize(fStream, _input) ' write to file
             fStream.Close()
         Catch ex As Exception
             MessageBox.Show("Line 6298, " & ex.Message)  ' Show the exception's message.
@@ -1473,6 +1478,7 @@ Public Class Form1
                     .Position = 0 ' reset stream pointer
                     }
                 _cees = CType(bf.Deserialize(fStream), Input_struct()) ' read from file
+                _input = CType(bf.Deserialize(fStream), Psd_input_struct()) ' read from file
                 fStream.Close()
             Catch ex As Exception
                 MessageBox.Show("Line 1013, " & ex.Message)  ' Show the exception's message.
@@ -1956,7 +1962,7 @@ Public Class Form1
         '----- initial values --------
         _cees(ks).sum_psd_diff1 = _cees(ks).stage1(0).psd_dif
         _cees(ks).sum_loss1 = _cees(ks).stage1(0).loss_abs
-        _cees(ks).sum_loss_C1 =    _cees(ks).stage1(0).loss_abs_C
+        _cees(ks).sum_loss_C1 = _cees(ks).stage1(0).loss_abs_C
 
         '------ increment step --------
         'stapgrootte bij 110-staps logaritmische verdeling van het
@@ -1998,7 +2004,7 @@ Public Class Form1
             Calc_diam_classification(_cees(ks).stage1(i), ks)         'Classify this part size (result is  .i_grp)
 
             '====to prevent silly results====
-            If _cees(ks).stage1(i).i_grp < no_PDS_input_points Then  'OK in this one counts
+            If _cees(ks).stage1(i).i_grp < no_PDS_inputs Then  'OK in this one counts
                 Calc_k_and_m(_cees(ks).stage1(i))       'Calculate i_m and i_k (based on particle dia. and percentages)
                 _cees(ks).stage1(i).psd_cum = Math.E ^ (-((_cees(ks).stage1(i).dia / _cees(ks).stage1(i).i_m) ^ _cees(ks).stage1(i).i_k))
                 _cees(ks).stage1(i).psd_cum_pro = _cees(ks).stage1(i).psd_cum * 100
@@ -2096,7 +2102,7 @@ Public Class Form1
         _cees(ks).stage2(0).catch_chart = (1 - _cees(ks).stage2(0).loss_overall_C) * 100    '[%]
         Calc_diam_classification(_cees(ks).stage2(0), ks)                                  'groepnummer
 
-        If _cees(ks).stage2(i).i_grp < no_PDS_input_points Then
+        If _cees(ks).stage2(i).i_grp < no_PDS_inputs Then
             Calc_k_and_m(_cees(ks).stage2(0))
             _cees(ks).stage2(0).psd_cum = Math.E ^ (-((_cees(ks).stage2(0).dia / _cees(ks).stage2(0).i_m) ^ _cees(ks).stage2(0).i_k))
             _cees(ks).stage2(0).psd_cum_pro = _cees(ks).stage2(0).psd_cum * 100 '[%]
@@ -2155,7 +2161,7 @@ Public Class Form1
             Calc_diam_classification(_cees(ks).stage2(i), ks)                                     'Calc
             _cees(ks).stage2(i).i_grp = _cees(ks).stage1(i).i_grp
 
-            If _cees(ks).stage2(i).i_grp < no_PDS_input_points Then
+            If _cees(ks).stage2(i).i_grp < no_PDS_inputs Then
                 Calc_k_and_m(_cees(ks).stage2(i))
                 _cees(ks).stage2(i).psd_cum = Math.E ^ (-(_cees(ks).stage2(i).dia / _cees(ks).stage2(i).i_m) ^ _cees(ks).stage2(i).i_k)
                 _cees(ks).stage2(i).psd_cum_pro = _cees(ks).stage2(i).psd_cum * 100 '[%]
@@ -2217,60 +2223,60 @@ Public Class Form1
         Dim grp_count As Integer = 0
 
         '=========== Determine how many PSD groups are there? ============
-        For i = 0 To no_PDS_input_points - 1
-            If (_cees(ks).dia_big(i) > 0) And (_cees(ks).class_load(i) > 0) Then grp_count += 1
+        For i = 0 To no_PDS_inputs - 1
+            If (_input(i).dia_big > 0) And (_input(i).class_load > 0) Then grp_count += 1
         Next
         g.i_grp = 0
 
         If g.dia >= 0 Then
             '=========== first entered data point ===========
-            If (g.dia < _cees(ks).dia_big(0)) Then
-                g.i_d1 = _cees(ks).dia_big(0)     'Diameter small [mu]
-                g.i_d2 = _cees(ks).dia_big(1)     'Diameter big [mu]
-                g.i_p1 = _cees(ks).class_load(0)  'User lower input percentage
-                g.i_p2 = _cees(ks).class_load(1)  'User upper input percentage
-                g.i_grp = 0                         'Group 0
+            If (g.dia < _input(0).dia_big) Then
+                g.i_d1 = _input(0).dia_big     'Diameter small [mu]
+                g.i_d2 = _input(1).dia_big     'Diameter big [mu]
+                g.i_p1 = _input(0).class_load  'User lower input percentage
+                g.i_p2 = _input(1).class_load  'User upper input percentage
+                g.i_grp = 0                    'Group 0
             End If
 
             '=========== mid section ===========
             For i = 1 To grp_count
-                If (g.dia >= _cees(ks).dia_big(i - 1) And g.dia < _cees(ks).dia_big(i) And _cees(ks).dia_big(i) > 0) Then
-                    g.i_d1 = _cees(ks).dia_big(i - 1)         'Diameter small [mu]
-                    g.i_d2 = _cees(ks).dia_big(i)             'Diameter big [mu]
-                    g.i_p1 = _cees(ks).class_load(i - 1)      'User lower input percentage
-                    g.i_p2 = _cees(ks).class_load(i)          'User upper input percentage
+                If (g.dia >= _input(i - 1).dia_big And g.dia < _input(i).dia_big And _input(i).dia_big > 0) Then
+                    g.i_d1 = _input(i - 1).dia_big              'Diameter small [mu]
+                    g.i_d2 = _input(i).dia_big                  'Diameter big [mu]
+                    g.i_p1 = _input(i - 1).class_load           'User lower input percentage
+                    g.i_p2 = _input(i).class_load               'User upper input percentage
                     g.i_grp = i                                 'Group 1 up and including 11
                 End If
             Next
 
             '=========== last entered PSD data point ===========
-            If (g.dia >= _cees(ks).dia_big(no_PDS_input_points) And _cees(ks).dia_big(no_PDS_input_points) > 0) Then
-                g.i_d1 = _cees(ks).dia_big(no_PDS_input_points)    'Diameter small [mu]
-                g.i_d2 = 2000                                        'Diameter big [mu]
-                g.i_p1 = _cees(ks).class_load(no_PDS_input_points) 'User lower input percentage
-                g.i_p2 = 0                                           'User upper input percentage
+            If (g.dia >= _input(no_PDS_inputs).dia_big And _input(no_PDS_inputs).dia_big > 0) Then
+                g.i_d1 = _input(no_PDS_inputs).dia_big        'Diameter small [mu]
+                g.i_d2 = 2000                                       'Diameter big [mu]
+                g.i_p1 = _input(no_PDS_inputs).class_load     'User lower input percentage
+                g.i_p2 = 0                                          'User upper input percentage
                 g.i_grp = grp_count                                 'Last PSD input star
             End If
 
-            Dim w(no_PDS_input_points) As Double    'Individual particle class weights 
-            Dim q(no_PDS_input_points) As Double    'Individual particle class weights 
-            Dim qsum(no_PDS_input_points) As Double 'Sum of weights
+            Dim w(no_PDS_inputs) As Double    'Individual particle class weights 
+            Dim q(no_PDS_inputs) As Double    'Individual particle class weights 
+            Dim qsum(no_PDS_inputs) As Double 'Sum of weights
             Dim j As Integer
 
             qsum(0) = 0
-            For i = 1 To no_PDS_input_points - 1
+            For i = 1 To no_PDS_inputs - 1
                 qsum(i) = qsum(i - 1) - w(i - 1)
             Next
 
-            For i = 0 To no_PDS_input_points - 1
+            For i = 0 To no_PDS_inputs - 1
                 j = (w.Length - 1 - i)
-                w(i) = _cees(ks).class_load(j) - Abs(qsum(i))
+                w(i) = _input(j).class_load - Abs(qsum(i))
             Next
 
             '---------CHECK- diameters must increase-----------
             DataGridView6.Rows(0).Cells(0).Style.BackColor = Color.LightGreen
             For i = 1 To DataGridView6.Rows.Count - 1
-                If _cees(ks).dia_big(i) <= _cees(ks).dia_big(i - 1) And _cees(ks).dia_big(i) <> 0 Then
+                If _input(i).dia_big <= _input(i - 1).dia_big And _input(i).dia_big <> 0 Then
                     DataGridView6.Rows(i).Cells(0).Style.BackColor = Color.Red
                 Else
                     DataGridView6.Rows(i).Cells(0).Style.BackColor = Color.LightGreen
@@ -2280,7 +2286,7 @@ Public Class Form1
             '---------CHECK-cummulative weight must decrease-----------
             DataGridView6.Rows(0).Cells(1).Style.BackColor = Color.LightGreen
             For i = 1 To DataGridView6.Rows.Count - 1
-                If _cees(ks).class_load(i) >= _cees(ks).class_load(i - 1) And _cees(ks).class_load(i) <> 0 Then
+                If _input(i).class_load >= _input(i - 1).class_load And _input(i).class_load <> 0 Then
                     DataGridView6.Rows(i).Cells(1).Style.BackColor = Color.Red
                 Else
                     DataGridView6.Rows(i).Cells(1).Style.BackColor = Color.LightGreen
@@ -2463,9 +2469,9 @@ Public Class Form1
 
             '[mu] Class upper particle diameter limit diameter
             '[%] Percentage van de inlaat stof belasting
-            For row = 0 To _cees(zz).dia_big.Count - 1
-                DataGridView6.Rows(row).Cells(0).Value = _cees(zz).dia_big(row)
-                DataGridView6.Rows(row).Cells(1).Value = _cees(zz).class_load(row) * 100
+            For row = 0 To no_PDS_inputs - 1
+                DataGridView6.Rows(row).Cells(0).Value = _input(row).dia_big
+                DataGridView6.Rows(row).Cells(1).Value = _input(row).class_load * 100
             Next
             Me.Refresh()
         End If
@@ -2730,7 +2736,7 @@ Public Class Form1
         'This is the user input mechanism for entering the PSD data
         DataGridView6.ColumnCount = 3
         DataGridView6.Rows.Clear()
-        DataGridView6.Rows.Add(no_PDS_input_points)
+        DataGridView6.Rows.Add(no_PDS_inputs)
         DataGridView6.EnableHeadersVisualStyles = False           'For backcolor
         DataGridView6.RowHeadersVisible = False
 
@@ -2851,22 +2857,22 @@ Public Class Form1
         TextBox28.Text = "PSD Whey"
         TextBox29.Text = "Q20.1018"
         TextBox53.Text = "--"
-        NumericUpDown1.Value = 77500        '[Am3/h] Flow
-        NumericUpDown18.Value = 53          '[c]
-        NumericUpDown19.Value = -25         '[mbar] 
+        NumericUpDown1.Value = 155952       '[Am3/h] Flow
+        NumericUpDown18.Value = 77          '[c]
+        NumericUpDown19.Value = -20         '[mbar] 
         numericUpDown2.Value = 1600         '[kg/m3] density
-        numericUpDown3.Value = CDec(0.99)   '[kg/m3] ro air
-        numericUpDown14.Value = CDec(0.019) '[mPas=cP] visco air
+        numericUpDown3.Value = CDec(1.278)  '[kg/m3] ro air
+        numericUpDown14.Value = CDec(0.0208) '[mPas=cP] visco air
         NumericUpDown4.Value = 20           '[g/Am3]
         NumericUpDown30.Value = 1           '[-] Case number
 
         NumericUpDown20.Value = 3           '[-] parallel cycloon
         ComboBox1.SelectedIndex = 2         'AC435 stage #1
-        numericUpDown5.Value = CDec(1.7)    '[m] diameter cycloon
+        numericUpDown5.Value = CDec(2.2)    '[m] diameter cycloon
 
         NumericUpDown33.Value = 6           '[-] parallel cycloon
         ComboBox2.SelectedIndex = 5         'AC850 stage #2
-        NumericUpDown34.Value = CDec(1.25)  '[m] diameter cycloon
+        NumericUpDown34.Value = CDec(2.2)   '[m] diameter cycloon
 
         '======== Fill the DVG with PSD example data =======
         Dim words() As String
