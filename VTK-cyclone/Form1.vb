@@ -452,11 +452,20 @@ Public Class Form1
         TextBox27.Text &= "The multicyclones have a 168mm diameter instead of 300mm" & vbCrLf
         TextBox27.Text &= " " & vbCrLf
 
+        TextBox46.Text = "The shape of the particle is influencing the separation results" & vbCrLf
+        TextBox46.Text &= "The original test are performed with sphere shaped products" & vbCrLf
+        TextBox46.Text &= "E.g. plate shaped particles are more difficult to remove due to the" & vbCrLf
+        TextBox46.Text &= "different surface to ratio" & vbCrLf
+
         TextBox47.Text = "Applications" & vbCrLf
         TextBox47.Text &= "Fly catcher Venezuela before a gasturbine" & vbCrLf
         TextBox47.Text &= "Spark catcher (metalic particles)" & vbCrLf
         TextBox47.Text &= "Droplet catcher" & vbCrLf
         TextBox47.Text &= "Patato Starch" & vbCrLf
+
+        TextBox49.Text = "Cyclone feed sampling method" & vbCrLf
+        TextBox49.Text &= "Use isokinetic sampling see BS3405, BS6069, ISO9096" & vbCrLf
+        TextBox49.Text &= "Note a sample is always better then NO sample" & vbCrLf
 
         TextBox126.Text = "Calculation method" & vbCrLf
         TextBox126.Text &= "De cycloon instroom wordt verdeeld in 110 korrel fracties gebaseerd op de diameter " & vbCrLf
@@ -484,8 +493,10 @@ Public Class Form1
         TextBox126.Text &= "" & vbCrLf
         TextBox126.Text &= "Opmerking 1) deeltjes < 0.5-0.7 mu kunnen niet gevangen worden ivm fysische mechanismen groter dan de centrifugaal kracht."
 
-        TextBox145.Text = "Particles may breakup into smaller ones inside a cyclone" & vbCrLf
-        TextBox145.Text &= "See project P10.1070"
+        TextBox145.Text = "Spray dryer outlet pressure range is between 0 and -5 mbar" & vbCrLf
+        TextBox145.Text &= "Dairy industry requires 5-10 mu stack exhaust"
+        TextBox145.Text &= "Fat accumulation on the cyclone inlet wall (called Caramelization, Per Simonsen)"
+        TextBox145.Text &= "Dairy specialists Per Simonsen, Suresh Sundararaj"
 
         TextBox147.Text = "Cyclone is a excellent Spark arrestor" & vbCrLf
         TextBox147.Text &= "Use in front of filter or silo" & vbCrLf
@@ -497,9 +508,9 @@ Public Class Form1
         TextBox152.Text = "Particle Density and Bulk (Volumetric) Density" & vbCrLf
         TextBox152.Text &= "Rule of thumb for foodstuffs, Particle Density= 2 x Bulk density" & vbCrLf
 
-        TextBox153.Text = "Spray dried product are fragile" & vbCrLf
-        TextBox153.Text &= "Inlet speed cyclone is 16 m/s" & vbCrLf
-        TextBox153.Text &= "Spray dryer outlet pressure range is between 0 and -5 mbar" & vbCrLf
+        TextBox153.Text = "Spray dried product are fragile and may breakup See project P10.1070" & vbCrLf
+        TextBox153.Text &= "Inlet speed cyclone is then limited to 16 m/s " & vbCrLf
+        TextBox153.Text &= "Strong product inlet speed is 25 m/s" & vbCrLf
 
         Calc_sequence()
         Build_dgv6()        'PSD input grid
@@ -2914,7 +2925,7 @@ Public Class Form1
         TextBox28.Text = "GvG_test_excel"
         TextBox29.Text = "--"
         TextBox53.Text = "--"
-        NumericUpDown1.Value = 58900        'Am3/h]
+        NumericUpDown1.Value = 58900        '[Am3/h]
         NumericUpDown18.Value = 45          '[c]
         NumericUpDown19.Value = -30         '[mbar]
         numericUpDown2.Value = 1500         '[kg/m3]

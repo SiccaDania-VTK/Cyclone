@@ -22,16 +22,16 @@ Partial Class Form1
     'Do not modify it using the code editor.
     <System.Diagnostics.DebuggerStepThrough()>
     Private Sub InitializeComponent()
-        Dim ChartArea4 As System.Windows.Forms.DataVisualization.Charting.ChartArea = New System.Windows.Forms.DataVisualization.Charting.ChartArea()
-        Dim Legend4 As System.Windows.Forms.DataVisualization.Charting.Legend = New System.Windows.Forms.DataVisualization.Charting.Legend()
-        Dim Series4 As System.Windows.Forms.DataVisualization.Charting.Series = New System.Windows.Forms.DataVisualization.Charting.Series()
+        Dim ChartArea10 As System.Windows.Forms.DataVisualization.Charting.ChartArea = New System.Windows.Forms.DataVisualization.Charting.ChartArea()
+        Dim Legend10 As System.Windows.Forms.DataVisualization.Charting.Legend = New System.Windows.Forms.DataVisualization.Charting.Legend()
+        Dim Series10 As System.Windows.Forms.DataVisualization.Charting.Series = New System.Windows.Forms.DataVisualization.Charting.Series()
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(Form1))
-        Dim ChartArea5 As System.Windows.Forms.DataVisualization.Charting.ChartArea = New System.Windows.Forms.DataVisualization.Charting.ChartArea()
-        Dim Legend5 As System.Windows.Forms.DataVisualization.Charting.Legend = New System.Windows.Forms.DataVisualization.Charting.Legend()
-        Dim Series5 As System.Windows.Forms.DataVisualization.Charting.Series = New System.Windows.Forms.DataVisualization.Charting.Series()
-        Dim ChartArea6 As System.Windows.Forms.DataVisualization.Charting.ChartArea = New System.Windows.Forms.DataVisualization.Charting.ChartArea()
-        Dim Legend6 As System.Windows.Forms.DataVisualization.Charting.Legend = New System.Windows.Forms.DataVisualization.Charting.Legend()
-        Dim Series6 As System.Windows.Forms.DataVisualization.Charting.Series = New System.Windows.Forms.DataVisualization.Charting.Series()
+        Dim ChartArea11 As System.Windows.Forms.DataVisualization.Charting.ChartArea = New System.Windows.Forms.DataVisualization.Charting.ChartArea()
+        Dim Legend11 As System.Windows.Forms.DataVisualization.Charting.Legend = New System.Windows.Forms.DataVisualization.Charting.Legend()
+        Dim Series11 As System.Windows.Forms.DataVisualization.Charting.Series = New System.Windows.Forms.DataVisualization.Charting.Series()
+        Dim ChartArea12 As System.Windows.Forms.DataVisualization.Charting.ChartArea = New System.Windows.Forms.DataVisualization.Charting.ChartArea()
+        Dim Legend12 As System.Windows.Forms.DataVisualization.Charting.Legend = New System.Windows.Forms.DataVisualization.Charting.Legend()
+        Dim Series12 As System.Windows.Forms.DataVisualization.Charting.Series = New System.Windows.Forms.DataVisualization.Charting.Series()
         Me.OpenFileDialog1 = New System.Windows.Forms.OpenFileDialog()
         Me.TabPage10 = New System.Windows.Forms.TabPage()
         Me.Button10 = New System.Windows.Forms.Button()
@@ -531,6 +531,8 @@ Partial Class Form1
         Me.Label252 = New System.Windows.Forms.Label()
         Me.Button12 = New System.Windows.Forms.Button()
         Me.DataGridView5 = New System.Windows.Forms.DataGridView()
+        Me.TextBox46 = New System.Windows.Forms.TextBox()
+        Me.TextBox49 = New System.Windows.Forms.TextBox()
         Me.TabPage10.SuspendLayout()
         Me.GroupBox18.SuspendLayout()
         CType(Me.Chart3, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -657,17 +659,17 @@ Partial Class Form1
         '
         'Chart3
         '
-        ChartArea4.Name = "ChartArea1"
-        Me.Chart3.ChartAreas.Add(ChartArea4)
+        ChartArea10.Name = "ChartArea1"
+        Me.Chart3.ChartAreas.Add(ChartArea10)
         Me.Chart3.Dock = System.Windows.Forms.DockStyle.Fill
-        Legend4.Name = "Legend1"
-        Me.Chart3.Legends.Add(Legend4)
+        Legend10.Name = "Legend1"
+        Me.Chart3.Legends.Add(Legend10)
         Me.Chart3.Location = New System.Drawing.Point(3, 16)
         Me.Chart3.Name = "Chart3"
-        Series4.ChartArea = "ChartArea1"
-        Series4.Legend = "Legend1"
-        Series4.Name = "Series1"
-        Me.Chart3.Series.Add(Series4)
+        Series10.ChartArea = "ChartArea1"
+        Series10.Legend = "Legend1"
+        Series10.Name = "Series1"
+        Me.Chart3.Series.Add(Series10)
         Me.Chart3.Size = New System.Drawing.Size(551, 374)
         Me.Chart3.TabIndex = 81
         Me.Chart3.Text = "Chart3"
@@ -1729,9 +1731,9 @@ Partial Class Form1
         Me.Label34.Font = New System.Drawing.Font("Microsoft Sans Serif", 11.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Label34.Location = New System.Drawing.Point(18, 198)
         Me.Label34.Name = "Label34"
-        Me.Label34.Size = New System.Drawing.Size(106, 18)
+        Me.Label34.Size = New System.Drawing.Size(134, 18)
         Me.Label34.TabIndex = 32
-        Me.Label34.Text = "Pipe length (G)"
+        Me.Label34.Text = "Discharge Pipe (G)"
         '
         'Label28
         '
@@ -1882,6 +1884,8 @@ Partial Class Form1
         '
         'TabPage6
         '
+        Me.TabPage6.Controls.Add(Me.TextBox49)
+        Me.TabPage6.Controls.Add(Me.TextBox46)
         Me.TabPage6.Controls.Add(Me.TextBox27)
         Me.TabPage6.Controls.Add(Me.TextBox25)
         Me.TabPage6.Controls.Add(Me.TextBox153)
@@ -1904,7 +1908,7 @@ Partial Class Form1
         '
         'TextBox27
         '
-        Me.TextBox27.Location = New System.Drawing.Point(521, 624)
+        Me.TextBox27.Location = New System.Drawing.Point(521, 593)
         Me.TextBox27.Multiline = True
         Me.TextBox27.Name = "TextBox27"
         Me.TextBox27.Size = New System.Drawing.Size(502, 59)
@@ -1913,7 +1917,7 @@ Partial Class Form1
         '
         'TextBox25
         '
-        Me.TextBox25.Location = New System.Drawing.Point(521, 559)
+        Me.TextBox25.Location = New System.Drawing.Point(521, 528)
         Me.TextBox25.Multiline = True
         Me.TextBox25.Name = "TextBox25"
         Me.TextBox25.Size = New System.Drawing.Size(502, 59)
@@ -1922,7 +1926,7 @@ Partial Class Form1
         '
         'TextBox153
         '
-        Me.TextBox153.Location = New System.Drawing.Point(13, 724)
+        Me.TextBox153.Location = New System.Drawing.Point(13, 707)
         Me.TextBox153.Multiline = True
         Me.TextBox153.Name = "TextBox153"
         Me.TextBox153.Size = New System.Drawing.Size(502, 49)
@@ -1931,7 +1935,7 @@ Partial Class Form1
         '
         'TextBox152
         '
-        Me.TextBox152.Location = New System.Drawing.Point(13, 669)
+        Me.TextBox152.Location = New System.Drawing.Point(13, 652)
         Me.TextBox152.Multiline = True
         Me.TextBox152.Name = "TextBox152"
         Me.TextBox152.Size = New System.Drawing.Size(502, 49)
@@ -1940,7 +1944,7 @@ Partial Class Form1
         '
         'TextBox149
         '
-        Me.TextBox149.Location = New System.Drawing.Point(12, 614)
+        Me.TextBox149.Location = New System.Drawing.Point(12, 597)
         Me.TextBox149.Multiline = True
         Me.TextBox149.Name = "TextBox149"
         Me.TextBox149.Size = New System.Drawing.Size(502, 49)
@@ -1949,7 +1953,7 @@ Partial Class Form1
         '
         'TextBox147
         '
-        Me.TextBox147.Location = New System.Drawing.Point(12, 559)
+        Me.TextBox147.Location = New System.Drawing.Point(12, 542)
         Me.TextBox147.Multiline = True
         Me.TextBox147.Name = "TextBox147"
         Me.TextBox147.Size = New System.Drawing.Size(502, 49)
@@ -1958,12 +1962,12 @@ Partial Class Form1
         '
         'TextBox145
         '
-        Me.TextBox145.Location = New System.Drawing.Point(13, 494)
+        Me.TextBox145.Location = New System.Drawing.Point(13, 477)
         Me.TextBox145.Multiline = True
         Me.TextBox145.Name = "TextBox145"
         Me.TextBox145.Size = New System.Drawing.Size(502, 59)
         Me.TextBox145.TabIndex = 79
-        Me.TextBox145.Text = "Particles can breakup in the cyclone"
+        Me.TextBox145.Text = "Spray driers"
         '
         'TextBox126
         '
@@ -1971,13 +1975,13 @@ Partial Class Form1
         Me.TextBox126.Location = New System.Drawing.Point(521, 25)
         Me.TextBox126.Multiline = True
         Me.TextBox126.Name = "TextBox126"
-        Me.TextBox126.Size = New System.Drawing.Size(736, 528)
+        Me.TextBox126.Size = New System.Drawing.Size(736, 491)
         Me.TextBox126.TabIndex = 5
         Me.TextBox126.Text = "Calculation method"
         '
         'TextBox47
         '
-        Me.TextBox47.Location = New System.Drawing.Point(13, 401)
+        Me.TextBox47.Location = New System.Drawing.Point(13, 385)
         Me.TextBox47.Multiline = True
         Me.TextBox47.Name = "TextBox47"
         Me.TextBox47.Size = New System.Drawing.Size(502, 87)
@@ -1986,7 +1990,7 @@ Partial Class Form1
         '
         'TextBox20
         '
-        Me.TextBox20.Location = New System.Drawing.Point(12, 323)
+        Me.TextBox20.Location = New System.Drawing.Point(12, 307)
         Me.TextBox20.Multiline = True
         Me.TextBox20.Name = "TextBox20"
         Me.TextBox20.Size = New System.Drawing.Size(502, 72)
@@ -2008,7 +2012,7 @@ Partial Class Form1
         Me.GroupBox11.Controls.Add(Me.Label103)
         Me.GroupBox11.Location = New System.Drawing.Point(8, 154)
         Me.GroupBox11.Name = "GroupBox11"
-        Me.GroupBox11.Size = New System.Drawing.Size(507, 163)
+        Me.GroupBox11.Size = New System.Drawing.Size(507, 146)
         Me.GroupBox11.TabIndex = 2
         Me.GroupBox11.TabStop = False
         Me.GroupBox11.Text = "Air viscocity, Sutherland Equation Range -70 to +1600 [c]"
@@ -2016,7 +2020,7 @@ Partial Class Form1
         'Label249
         '
         Me.Label249.AutoSize = True
-        Me.Label249.Location = New System.Drawing.Point(12, 137)
+        Me.Label249.Location = New System.Drawing.Point(12, 126)
         Me.Label249.Name = "Label249"
         Me.Label249.Size = New System.Drawing.Size(125, 13)
         Me.Label249.TabIndex = 77
@@ -2044,7 +2048,7 @@ Partial Class Form1
         'Label106
         '
         Me.Label106.AutoSize = True
-        Me.Label106.Location = New System.Drawing.Point(12, 115)
+        Me.Label106.Location = New System.Drawing.Point(12, 104)
         Me.Label106.Name = "Label106"
         Me.Label106.Size = New System.Drawing.Size(199, 13)
         Me.Label106.TabIndex = 74
@@ -4492,16 +4496,16 @@ Partial Class Form1
         '
         'Chart2
         '
-        ChartArea5.Name = "ChartArea1"
-        Me.Chart2.ChartAreas.Add(ChartArea5)
-        Legend5.Name = "Legend1"
-        Me.Chart2.Legends.Add(Legend5)
+        ChartArea11.Name = "ChartArea1"
+        Me.Chart2.ChartAreas.Add(ChartArea11)
+        Legend11.Name = "Legend1"
+        Me.Chart2.Legends.Add(Legend11)
         Me.Chart2.Location = New System.Drawing.Point(891, 379)
         Me.Chart2.Name = "Chart2"
-        Series5.ChartArea = "ChartArea1"
-        Series5.Legend = "Legend1"
-        Series5.Name = "Series1"
-        Me.Chart2.Series.Add(Series5)
+        Series11.ChartArea = "ChartArea1"
+        Series11.Legend = "Legend1"
+        Series11.Name = "Series1"
+        Me.Chart2.Series.Add(Series11)
         Me.Chart2.Size = New System.Drawing.Size(382, 224)
         Me.Chart2.TabIndex = 80
         Me.Chart2.Text = "Chart2"
@@ -5787,18 +5791,18 @@ Partial Class Form1
         'Chart1
         '
         Me.Chart1.AllowDrop = True
-        ChartArea6.Name = "ChartArea1"
-        Me.Chart1.ChartAreas.Add(ChartArea6)
+        ChartArea12.Name = "ChartArea1"
+        Me.Chart1.ChartAreas.Add(ChartArea12)
         Me.Chart1.Dock = System.Windows.Forms.DockStyle.Fill
         Me.Chart1.Enabled = False
-        Legend6.Name = "Legend1"
-        Me.Chart1.Legends.Add(Legend6)
+        Legend12.Name = "Legend1"
+        Me.Chart1.Legends.Add(Legend12)
         Me.Chart1.Location = New System.Drawing.Point(0, 0)
         Me.Chart1.Name = "Chart1"
-        Series6.ChartArea = "ChartArea1"
-        Series6.Legend = "Legend1"
-        Series6.Name = "Series1"
-        Me.Chart1.Series.Add(Series6)
+        Series12.ChartArea = "ChartArea1"
+        Series12.Legend = "Legend1"
+        Series12.Name = "Series1"
+        Me.Chart1.Series.Add(Series12)
         Me.Chart1.Size = New System.Drawing.Size(1077, 825)
         Me.Chart1.TabIndex = 68
         Me.Chart1.Text = "Chart1"
@@ -6132,6 +6136,24 @@ Partial Class Form1
         Me.DataGridView5.Name = "DataGridView5"
         Me.DataGridView5.Size = New System.Drawing.Size(229, 801)
         Me.DataGridView5.TabIndex = 0
+        '
+        'TextBox46
+        '
+        Me.TextBox46.Location = New System.Drawing.Point(521, 658)
+        Me.TextBox46.Multiline = True
+        Me.TextBox46.Name = "TextBox46"
+        Me.TextBox46.Size = New System.Drawing.Size(502, 59)
+        Me.TextBox46.TabIndex = 86
+        Me.TextBox46.Text = "Product shape"
+        '
+        'TextBox49
+        '
+        Me.TextBox49.Location = New System.Drawing.Point(521, 724)
+        Me.TextBox49.Multiline = True
+        Me.TextBox49.Name = "TextBox49"
+        Me.TextBox49.Size = New System.Drawing.Size(502, 59)
+        Me.TextBox49.TabIndex = 87
+        Me.TextBox49.Text = "Product sampling"
         '
         'Form1
         '
@@ -6756,4 +6778,6 @@ Partial Class Form1
     Private WithEvents Label16 As Label
     Friend WithEvents TextBox45 As TextBox
     Private WithEvents Label18 As Label
+    Friend WithEvents TextBox46 As TextBox
+    Friend WithEvents TextBox49 As TextBox
 End Class
