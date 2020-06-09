@@ -361,10 +361,11 @@ Public Class Form1
         user_list.Add("JanK")
         hard_disk_list.Add("0025_38B4_71B4_88FC.")  'VTK laptop, Jank
 
-        user_list.Add("JeroenA")
-        hard_disk_list.Add("171095402070")          'VTK desktop, Jeroen
+        user_list.Add("aj.van.gelder")
+        hard_disk_list.Add("0008_0D02_003D_27DB.")  'VTK laptop, AJ
 
         user_list.Add("JeroenA")
+        hard_disk_list.Add("171095402070")          'VTK desktop, Jeroen
         hard_disk_list.Add("170228801578")          'VTK laptop, Jeroen disk 1
         hard_disk_list.Add("MCDBM1M4F3QRBEH6")      'VTK laptop, Jeroen disk 2
         hard_disk_list.Add("0025_388A_81BB_14B5.")  'Zweet kamer, Jeroen 
