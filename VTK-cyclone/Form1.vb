@@ -468,31 +468,42 @@ Public Class Form1
         TextBox49.Text &= "Use isokinetic sampling see BS3405, BS6069, ISO9096" & vbCrLf
         TextBox49.Text &= "Note a sample is always better then NO sample" & vbCrLf
 
-        TextBox126.Text = "Calculation method" & vbCrLf
-        TextBox126.Text &= "De cycloon instroom wordt verdeeld in 110 korrel fracties gebaseerd op de diameter " & vbCrLf
-        TextBox126.Text &= "van de kleinste naar de grootste deeltje" & vbCrLf
-        TextBox126.Text &= "Start met het kleinste klasse van trap 2" & vbCrLf
-        TextBox126.Text &= "Iedere fractie heeft een verlies berekening gebaseerd op Weibull formule" & vbCrLf
-        TextBox126.Text &= "Bepaal Stokes voor de het gemiddelde deeltje en zoek m, k, a voor de gebruikte cycloon." & vbCrLf
-        TextBox126.Text &= "Opgelet m,k,a zijn verschillen voor deeltje groter en kleiner dan de kritische diameter" & vbCrLf
-        TextBox126.Text &= "De kritische diameter is gegeven door het cycloon model (AC300, AC350 enz)" & vbCrLf
-        TextBox126.Text &= "" & vbCrLf
+        TextBox50.Text = "Notes" & vbCrLf
+        TextBox50.Text &= "Group number= There are 11 PSD input groups" & vbCrLf
+        TextBox50.Text &= "PSD= Particle Size Distribution (diameter class)" & vbCrLf
+        TextBox50.Text &= "PSD diff= difference this and previous PSD dia class" & vbCrLf
+        TextBox50.Text &= "Loss overall= Not caught, passed trough cyclone" & vbCrLf
+        TextBox50.Text &= "Loss abs= Absolut loss in this diameter class" & vbCrLf
+        TextBox50.Text &= "Loss abs corr= Correct. for dust load and discharge pipe" & vbCrLf
 
-        TextBox126.Text &= "De klant levert een korrelgroote verdeling zeg 10 fracties(psd= particle size distribution)" & vbCrLf
-        TextBox126.Text &= "Tussen 2 punten van de korrel verdeling word met de Rosin Rammler formule een cumulatieve korrelverdeling getrokken" & vbCrLf
+
+        TextBox126.Text = "Calculation method" & vbCrLf
+        TextBox126.Text &= "The customer delivers a particle size distribution with minimum 10 fractions " & vbCrLf
+        TextBox126.Text &= "Use the Rosin Rammler formula to draw a cumulative particle distribution with the given 10 fractions" & vbCrLf
         TextBox126.Text &= "" & vbCrLf
-        TextBox126.Text &= "Bepaal voor iedere van de 110 korrelfracties" & vbCrLf
-        TextBox126.Text &= "diameter -min[mu], -max[mu], -gem[mu], Stokes en voor de gekozen cycloon m, k, a" & vbCrLf
-        TextBox126.Text &= "Groep nummer (in dit geval 1..10), d1(kleinste diameter vd groep), d2 (grootste)," & vbCrLf
-        TextBox126.Text &= "p1(cumulatief gewicht groep vd ondergrens (0.99990-0.001), p2(cum. gew. bovengrens)" & vbCrLf
-        TextBox126.Text &= "Bepaal het verlies getal 0-1 (0 voor de grote deeltjes en 1 voor de hele kleine deeltjes) " & vbCrLf
-        TextBox126.Text &= "Verwerk correctie voor de stofbelading (hoog > 1-5 gr/m3) en insteekpijp" & vbCrLf
+        TextBox126.Text &= "The cyclone influx is divided into 110 particle fractions based on the "
+        TextBox126.Text &= "diameter (the smallest to the largest particle)" & vbCrLf
         TextBox126.Text &= "" & vbCrLf
-        TextBox126.Text &= "We kunnen nu het verlies per fractie berekenen loss*psd_diff= loss_abs" & vbCrLf
-        TextBox126.Text &= "psd_dif gesommeerd over de 110 fracties moet de 1.0 (100%) naderen." & vbCrLf
-        TextBox126.Text &= "Emissie= Total_loss * inlaat_stof_belasting" & vbCrLf
+        TextBox126.Text &= "Start with the smallest diameter fraction of stage 2" & vbCrLf
+        TextBox126.Text &= "Each fraction has a loss calculation based on the Weibull formula" & vbCrLf
+        TextBox126.Text &= "Determine Stokes for the mean particle and find m, k, a for the cyclone used." & vbCrLf
+        TextBox126.Text &= "Note m, k, a are different for particles larger and smaller than the critical particle diameter" & vbCrLf
+        TextBox126.Text &= "The critical diameter is given by the cyclone model (AC300, AC350 etc)" & vbCrLf
         TextBox126.Text &= "" & vbCrLf
-        TextBox126.Text &= "Opmerking 1) deeltjes < 0.5-0.7 mu kunnen niet gevangen worden ivm fysische mechanismen groter dan de centrifugaal kracht."
+        TextBox126.Text &= "Determine for each of the 110 particle fractions diameter -minimum [mu], -maximum [mu]," & vbCrLf
+        TextBox126.Text &= " -average [mu], Stokes number and factor m, k, a for the chosen cyclone" & vbCrLf
+        TextBox126.Text &= "" & vbCrLf
+        TextBox126.Text &= "Determine for each Group (in this case 1..10), d1(smallest diameter of the group), d2 (biggest diam.)," & vbCrLf
+        TextBox126.Text &= "p1= cumulative weight group lower limit, p2= cum. weight upper limit, the cumulative weight group range is 0.99990-0.001" & vbCrLf
+        TextBox126.Text &= "Determine the loss number 0-1 (zero (0) loss for large particles and total (1.0) loss for tiny particles) " & vbCrLf
+
+        TextBox126.Text &= "Now add corrections for the dust load and and the center discharge tube length (normally we use 1.0)" & vbCrLf
+        TextBox126.Text &= "" & vbCrLf
+        TextBox126.Text &= "We can now calculate the absolute loss per fraction, loss*psd_diff= loss_abs" & vbCrLf
+        TextBox126.Text &= "psd_dif summed over de 110 fractions should approach the 1.0 (100%)." & vbCrLf
+        TextBox126.Text &= "Absolute Emission= Total-loss-ratio * inlet-dust-load" & vbCrLf
+        TextBox126.Text &= "" & vbCrLf
+        TextBox126.Text &= "Note 1) particles <0.5-0.7 mu cannot be captured due to physical mechanisms greater than the centrifugal force."
 
         TextBox145.Text = "Spray dryer outlet pressure range is between 0 and -5 mbar" & vbCrLf
         TextBox145.Text &= "Dairy industry requires 5-10 mu stack exhaust"
