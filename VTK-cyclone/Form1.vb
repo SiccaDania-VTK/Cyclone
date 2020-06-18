@@ -3027,38 +3027,21 @@ Public Class Form1
     Private Sub Rights_Control()
         Dim id As String        'This is the present user
 
-        id = Environment.UserName     'User name 
-        Debug.WriteLine(id.ToString)
+        id = Trim(Environment.UserName)     'User name 
+        id = LCase(id)
 
-        'Button14.Visible = False
-        'Button16.Visible = False
-        'Button17.Visible = False
+        '========= Disable page Tabs for everybody ===============
+        TabControl1.TabPages.Remove(TabPage5)       'Stress calculation
+        TabControl1.TabPages.Remove(TabPage8)       'Logging
+        TabControl1.TabPages.Remove(TabPage10)      'High Dust load
+        TabControl1.TabPages.Remove(TabPage13)      'PSC Conversion
 
-        '========= Remove page Tabs for everybody ===============
-        'TabControl1.TabPages.Remove(TabPage2)   '2nd stage separation
-        'TabControl1.TabPages.Remove(TabPage3)   'VTK Cyclone efficiency
-        'TabControl1.TabPages.Remove(TabPage4)   'STD cyclone efficiency
-        'TabControl1.TabPages.Remove(TabPage5)   'Stress calculation
-        'TabControl1.TabPages.Remove(TabPage6)   'Various
-        'TabControl1.TabPages.Remove(TabPage7)   'Cyclone dimensions
-        'TabControl1.TabPages.Remove(TabPage8)   'Logging
-        'TabControl1.TabPages.Remove(TabPage9)   '1st stage separation
-        'TabControl1.TabPages.Remove(TabPage10)  'High dustload 
-        'TabControl1.TabPages.Remove(TabPage11)  'Charts
-        'TabControl1.TabPages.Remove(TabPage12)  'Combined stage1&2
-        'TabControl1.TabPages.Remove(TabPage13)  'PSC Conversion
-
-        ''========= add page Tabs for everybody ===============
-        'TabControl1.TabPages.Insert(1, TabPage11) 'Charts
-        'TabControl1.TabPages.Insert(2, TabPage8)   'Logging
-        'TabControl1.TabPages.Insert(3, TabPage7)   'Cyclone dimensions
-
-        'If (LCase(id) = "gp" Or LCase(id) = "gerritp" Or LCase(id) = "user") Then
-        '    TabControl1.TabPages("TabPage8").Enabled = True     '
-        '    TabControl1.TabPages("TabPage13").Enabled = True    '
-        'End If
-
+        If (id = "gp" Or id = "gerritp" Or id = "user") Then
+            TabControl1.TabPages.Add(TabPage5)       'Stress calculation
+            TabControl1.TabPages.Add(TabPage8)       'Logging
+            TabControl1.TabPages.Add(TabPage10)      'High Dust load
+            TabControl1.TabPages.Add(TabPage13)      'PSC Conversion
+        End If
     End Sub
-
 
 End Class
