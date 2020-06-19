@@ -366,7 +366,7 @@ Public Class Form1
 
         user_list.Add("Suresh.Sundararaj")
         hard_disk_list.Add("5CD2_E42A_81A1_0D0E.")  'Suresh.Sundararaj Denmark
-
+        hard_disk_list.Add("4C530000100828121514")  'Suresh.Sundararaj Denmark
 
         user_list.Add("JeroenA")
         hard_disk_list.Add("171095402070")          'VTK desktop, Jeroen
@@ -3040,6 +3040,7 @@ Public Class Form1
         TabControl1.TabPages.Remove(TabPage8)       'Logging
         TabControl1.TabPages.Remove(TabPage10)      'High Dust load
         TabControl1.TabPages.Remove(TabPage13)      'PSC Conversion
+        PictureBox4.Visible = False
 
         If (id = "gp" Or id = "gerritp" Or id = "user") Then
             TabControl1.TabPages.Add(TabPage5)       'Stress calculation
