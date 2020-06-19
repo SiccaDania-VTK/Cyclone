@@ -442,6 +442,7 @@ Public Class Form1
         TextBox148.Text &= "in this case the inlet speed must be reduced to 14-16 m/s(also depends on moisture content)." & vbCrLf
         TextBox148.Text &= "Patato starch does the opposite, less particles come out than go in. " & vbCrLf
         TextBox148.Text &= " " & vbCrLf
+        TextBox148.Text &= "Siccadania Denmark uses Mastersizer 2000 for PSD determination." & vbCrLf
 
         TextBox20.Text = "All AA cyclones have a diameter of 300mm" & vbCrLf
         TextBox20.Text &= "Select AC850 and select diameter is 300 mm" & vbCrLf
