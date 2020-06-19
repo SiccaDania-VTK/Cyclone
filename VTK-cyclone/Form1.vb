@@ -153,10 +153,10 @@ Public Class Form1
     ReadOnly rekenlijnen() As String = {
     "AC300;     12.2;   1.15;   7.457;  1.005;      8.5308;     1.6102; 0.4789; 7;      0",
     "AC350;     10.2;   1.0;    5.3515; 1.0474;     4.4862;     2.4257; 0.6472; 7;      7.927",
-    "AC435;     8.93;   0.69;   4.344;  1.139;      4.2902;     1.3452; 0.5890; 7;      8.26",
+    "AC435.;    8.93;   0.69;   4.344;  1.139;      4.2902;     1.3452; 0.5890; 7;      8.26",
     "AC550;     8.62;   0.527;  3.4708; 0.9163;     3.3211;     1.7857; 0.7104; 7;      7.615",
     "AC750;     8.3;    0.50;   2.8803; 0.8355;     4.0940;     1.0519; 0.6010; 7.5;    6.606",
-    "AC850;     7.8;    0.52;   1.9418; 0.73705;    -0.1060;    2.0197; 0.7077; 9.5;    6.172",
+    "AC850.;    7.8;    0.52;   1.9418; 0.73705;    -0.1060;    2.0197; 0.7077; 9.5;    6.172",
     "AC850+afz; 10;     0.5187; 1.6412; 0.8386;     4.2781;     0.06777;0.3315; 0;      0",
     "AC1850;    9.3;    0.50;   1.1927; 0.5983;     -0.196;     1.3687; 0.6173; 14.5;   0",
     "AC1850+afz;10.45;  0.4617; 0.2921; 0.4560;     -0.2396;    0.1269; 0.3633; 0;      0",
@@ -364,6 +364,10 @@ Public Class Form1
         user_list.Add("aj.van.gelder")
         hard_disk_list.Add("0008_0D02_003D_27DB.")  'VTK laptop, AJ
 
+        user_list.Add("Suresh.Sundararaj")
+        hard_disk_list.Add("5CD2_E42A_81A1_0D)E.")  'Suresh.Sundararaj Denmark
+
+
         user_list.Add("JeroenA")
         hard_disk_list.Add("171095402070")          'VTK desktop, Jeroen
         hard_disk_list.Add("170228801578")          'VTK laptop, Jeroen disk 1
@@ -374,7 +378,7 @@ Public Class Form1
         hard_disk_list.Add("134309552747")          'VTK PC, Peter de Wild
 
         nu = Now()
-        nu2 = CDate("2020-08-01 00:00:00")
+        nu2 = CDate("2020-12-01 00:00:00")
         life_time = CInt((nu2 - nu).TotalDays)
         Label101.Text = "Expire " & life_time.ToString
 
