@@ -365,7 +365,7 @@ Public Class Form1
         hard_disk_list.Add("0008_0D02_003D_27DB.")  'VTK laptop, AJ
 
         user_list.Add("Suresh.Sundararaj")
-        hard_disk_list.Add("5CD2_E42A_81A1_0D)E.")  'Suresh.Sundararaj Denmark
+        hard_disk_list.Add("5CD2_E42A_81A1_0D0E.")  'Suresh.Sundararaj Denmark
 
 
         user_list.Add("JeroenA")
