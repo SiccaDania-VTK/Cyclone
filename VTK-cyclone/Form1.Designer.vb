@@ -5437,7 +5437,7 @@ Partial Class Form1
         Me.NumericUpDown4.Increment = New Decimal(New Integer() {1, 0, 0, 65536})
         Me.NumericUpDown4.Location = New System.Drawing.Point(146, 186)
         Me.NumericUpDown4.Maximum = New Decimal(New Integer() {300, 0, 0, 0})
-        Me.NumericUpDown4.Minimum = New Decimal(New Integer() {1, 0, 0, 0})
+        Me.NumericUpDown4.Minimum = New Decimal(New Integer() {1, 0, 0, 65536})
         Me.NumericUpDown4.Name = "NumericUpDown4"
         Me.NumericUpDown4.Size = New System.Drawing.Size(83, 20)
         Me.NumericUpDown4.TabIndex = 25
