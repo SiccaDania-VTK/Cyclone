@@ -146,6 +146,16 @@ Public Class Form1
     '"Void;0.203;0.457;0.6;0.564;0.3;0.307;0.428;0.892;3.797;1.312;2.485;0.4;0.6;0.6;0.25"     'NOT UP TO DATE CHECK !!!!!!
     '}
 
+    ReadOnly Tangent_out_dimensions() As String = {
+    "AC-300 ;0.6956;0.5440;0.5440;0.5100;0.3400;0.0340;0.5780;0.0680",
+    "AC-350 ;0.6456;0.5040;0.5040;0.4725;0.3150;0.0315;0.5355;0.0630",
+    "AC-435 ;0.5756;0.4480;0.4480;0.4200;0.2800;0.0280;0.4760;0.0560",
+    "AC-550 ;0.5600;0.4480;0.4480;0.4200;0,2800;0.0280;0.4760;0.0560",
+    "AC-750 ;0.5600;0.4480;0.4480;0.4200;0.2800;0.0280;0.4760;0.0560",
+    "AC-850 ;0.4280;0.3424;0.3424;0.3210;0.2140;0.0214;0.3638;0.0428",
+    "AC-1850;0.2500;0.2000;0.2000;0.1875;0.1250;0.0125;0.2125;0.0250"
+    }
+
     'Nieuwe reken methode, verdeling volgens Weibull verdeling
     'm1,k1,a1 als d < d_krit
     'm2,k2,a2 als d > d_krit
@@ -937,12 +947,12 @@ Public Class Form1
         _cees(c_nr).Temp = NumericUpDown18.Value                'Temperature [c]
         _cees(c_nr).p1_abs = 101325 + (NumericUpDown19.Value * 100)         'Pressure [Pa abs]
 
-        Debug.WriteLine("c_nr= " & c_nr.ToString & ",  fill array _cees(c_nr).Noc1= " & _cees(c_nr).Noc1.ToString)
-        Debug.WriteLine("c_nr= " & c_nr.ToString & ",  fill array _cees(c_nr).Noc2= " & _cees(c_nr).Noc2.ToString)
-        Debug.WriteLine("fill array _cees(c_nr).db1= " & _cees(c_nr).db1.ToString)
-        Debug.WriteLine("fill array _cees(c_nr).db2= " & _cees(c_nr).db2.ToString)
+        'Debug.WriteLine("c_nr= " & c_nr.ToString & ",  fill array _cees(c_nr).Noc1= " & _cees(c_nr).Noc1.ToString)
+        'Debug.WriteLine("c_nr= " & c_nr.ToString & ",  fill array _cees(c_nr).Noc2= " & _cees(c_nr).Noc2.ToString)
+        'Debug.WriteLine("fill array _cees(c_nr).db1= " & _cees(c_nr).db1.ToString)
+        'Debug.WriteLine("fill array _cees(c_nr).db2= " & _cees(c_nr).db2.ToString)
 
-        Dump_log_to_box24()
+        ' Dump_log_to_box24()
 
         If init = False Then Exit Sub       'Prevent out of range error
 
@@ -958,8 +968,8 @@ Public Class Form1
             Double.TryParse(DataGridView6.Rows(row).Cells(1).Value.ToString, b)
 
             If a > 0 And b > 0 Then
-                _input(row).dia_big = CDbl(DataGridView6.Rows(row).Cells(0).Value)
-                _input(row).class_load = CDbl(DataGridView6.Rows(row).Cells(1).Value) / 100
+                _input(row).dia_big = a
+                _input(row).class_load = b / 100
             Else
                 _input(row).dia_big = 0
                 _input(row).class_load = 0
@@ -1393,12 +1403,15 @@ Public Class Form1
     Private Sub Calc_sequence()
         Dim case_nr As Integer = CInt(NumericUpDown30.Value)
 
-        '============== ALL calculation is done is Case(0) ========
-        '============== other cases are for storage ===============
-        _cees(0) = _cees(case_nr)   'Transfer data to case(0)
-        '==========================================================
 
         If ComboBox1.SelectedIndex > -1 And ComboBox2.SelectedIndex > -1 And init = True Then
+            ProgressBar1.Visible = True
+            ProgressBar1.Value = 50
+
+            '============== ALL calculation is done is Case(0) ========
+            '============== other cases are for storage ===============
+            _cees(0) = _cees(case_nr)   'Transfer data to case(0)
+            '==========================================================
 
             If String.Equals(ComboBox1.SelectedItem.ToString, "AA850") Then
                 numericUpDown5.Value = CDec(0.3)      '[m] Diameter
@@ -1422,15 +1435,18 @@ Public Class Form1
 
             Calc_stage1(0)            'Calc according stage #1
             Calc_stage2(0)            'Calc according stage #2
+
             Calc_stage1_2_comb(0)     'Calc stage #1 and stage #2 combined
 
             Present_loss_grid1(0)     'Present the results stage #1
             Present_loss_grid2(0)     'Present the results stage #2
             Present_Datagridview1(0)  'Present the results stage #1
 
+            ProgressBar1.Value = 80
             Draw_chart1(Chart1, 0)    'Present the results 
             Draw_chart2(Chart2, 0)    'Present the results loss curve
             Screen_contrast()         'White text on ted background 
+            ProgressBar1.Visible = False
         End If
     End Sub
 
@@ -1496,6 +1512,7 @@ Public Class Form1
     Private Sub Retrieve_from_disk()
         Dim bf As New System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
 
+        ProgressBar1.Visible = True
         OpenFileDialog1.FileName = "Cyclone_select_*.vtk2"
 
         If Directory.Exists(dirpath_Eng) Then
@@ -1507,18 +1524,19 @@ Public Class Form1
         OpenFileDialog1.Title = "Open a VTK2 File"
         OpenFileDialog1.Filter = "VTK2 Files|*.vtk2"
         If OpenFileDialog1.ShowDialog() = System.Windows.Forms.DialogResult.OK Then
-            Try
-                Dim fStream As New FileStream(OpenFileDialog1.FileName, FileMode.Open) With {
+            ProgressBar1.Value = 30
+            Dim fStream As New FileStream(OpenFileDialog1.FileName, FileMode.Open) With {
                     .Position = 0 ' reset stream pointer
                     }
-                _cees = CType(bf.Deserialize(fStream), Input_struct()) ' read from file
-                _input = CType(bf.Deserialize(fStream), Psd_input_struct()) ' read from file
-                fStream.Close()
-            Catch ex As Exception
-                MessageBox.Show("Line 1013, " & ex.Message)  ' Show the exception's message.
-            End Try
-            TextBox24.Text &= "line 1220, Retrieved  project from disk" & vbCrLf
+            ProgressBar1.Value = 60
+            _cees = CType(bf.Deserialize(fStream), Input_struct()) ' read from file
+            ProgressBar1.Value = 90
+            _input = CType(bf.Deserialize(fStream), Psd_input_struct()) ' read from file
+            fStream.Close()
+
+            TextBox24.Text &= "line 1522, Retrieved  project from disk" & vbCrLf
         End If
+        ProgressBar1.Visible = False
     End Sub
 
     Private Sub Button4_Click(sender As Object, e As EventArgs) Handles Button4.Click
@@ -1527,6 +1545,7 @@ Public Class Form1
         Retrieve_from_disk()        'Read from disk to array
         Update_Screen_from_array(CInt(NumericUpDown30.Value))   'Refresh screen data case 0
         Calc_sequence()
+
     End Sub
 
     Public Function HardDisc_Id() As String
@@ -1572,220 +1591,215 @@ Public Class Form1
         Dim chart_size As Integer = 65  '% of original picture size
         Dim file_name As String
         Dim row As Integer = 0
-        Try
-            oWord = CType(CreateObject("Word.Application"), Word.Application)
-            oWord.Visible = True
-            oDoc = oWord.Documents.Add
 
-            oDoc.PageSetup.LeftMargin = 60
-            oDoc.PageSetup.TopMargin = 35
-            oDoc.PageSetup.BottomMargin = 10
-            oDoc.PageSetup.RightMargin = 20
-            oDoc.PageSetup.Orientation = Word.WdOrientation.wdOrientPortrait
-            oDoc.PageSetup.PaperSize = Word.WdPaperSize.wdPaperA4
-            'oDoc.PageSetup.VerticalAlignment = Word.WdVerticalAlignment.wdAlignVerticalCenter
+        oWord = CType(CreateObject("Word.Application"), Word.Application)
+        oWord.Visible = True
+        oDoc = oWord.Documents.Add
 
-            oPara1 = oDoc.Content.Paragraphs.Add
-            oPara1.Range.Text = "VTK Sales, Cyclone sizing"
-            oPara1.Range.Font.Name = "Arial"
-            oPara1.Range.Font.Size = 14
-            oPara1.Range.Font.Bold = CInt(True)
-            oPara1.Format.SpaceAfter = 0.5                '24 pt spacing after paragraph. 
-            oPara1.Range.InsertParagraphAfter()
+        oDoc.PageSetup.LeftMargin = 60
+        oDoc.PageSetup.TopMargin = 35
+        oDoc.PageSetup.BottomMargin = 10
+        oDoc.PageSetup.RightMargin = 20
+        oDoc.PageSetup.Orientation = Word.WdOrientation.wdOrientPortrait
+        oDoc.PageSetup.PaperSize = Word.WdPaperSize.wdPaperA4
+        'oDoc.PageSetup.VerticalAlignment = Word.WdVerticalAlignment.wdAlignVerticalCenter
 
-            '---------------Inlet data-------------------------------
-            'Insert a table, fill it with data and change the column widths.
-            oTable = oDoc.Tables.Add(oDoc.Bookmarks.Item("\endofdoc").Range, 13, 3)
-            oTable.Range.ParagraphFormat.SpaceAfter = 1
-            oTable.Range.Font.Size = 11
-            oTable.Range.Font.Bold = CInt(False)
-            oTable.Rows(1).Range.Font.Bold = CInt(True)
-            row = 2
-            oTable.Cell(row, 1).Range.Text = "Project number"
-            oTable.Cell(row, 2).Range.Text = TextBox28.Text
-            row += 1
-            oTable.Cell(row, 1).Range.Text = "Tag nummer "
-            oTable.Cell(row, 2).Range.Text = TextBox29.Text
-            row += 1
-            oTable.Cell(row, 1).Range.Text = "Print date"
-            oTable.Cell(row, 2).Range.Text = Now().ToString("MM-dd-yyyy")
-            row += 2
-            oTable.Cell(row, 1).Range.Text = "Flow"
-            oTable.Cell(row, 2).Range.Text = NumericUpDown1.Value.ToString("F0")
-            oTable.Cell(row, 3).Range.Text = "[Am3/hr]"
-            row += 1
-            oTable.Cell(row, 1).Range.Text = "Temperature"
-            oTable.Cell(row, 2).Range.Text = NumericUpDown18.Value.ToString("F0")
-            oTable.Cell(row, 3).Range.Text = "[c]"
-            row += 1
-            oTable.Cell(row, 1).Range.Text = "Inlet pressure"
-            oTable.Cell(row, 2).Range.Text = NumericUpDown19.Value.ToString("F1")
-            oTable.Cell(row, 3).Range.Text = "[mbar abs]"
-            row += 1
-            oTable.Cell(row, 1).Range.Text = "Particle density "
-            oTable.Cell(row, 2).Range.Text = numericUpDown2.Value.ToString("F0")
-            oTable.Cell(row, 3).Range.Text = "[kg/m3]"
-            row += 1
-            oTable.Cell(row, 1).Range.Text = "Gas density "
-            oTable.Cell(row, 2).Range.Text = numericUpDown3.Value.ToString("F3")
-            oTable.Cell(row, 3).Range.Text = "[kg/m3]"
-            row += 1
-            oTable.Cell(row, 1).Range.Text = "Air viscosity"
-            oTable.Cell(row, 2).Range.Text = numericUpDown14.Value.ToString("F3")
-            oTable.Cell(row, 3).Range.Text = "[centi Poise]"
-            row += 1
-            oTable.Cell(row, 1).Range.Text = "Dust load"
-            oTable.Cell(row, 2).Range.Text = NumericUpDown4.Value.ToString("F2")
-            oTable.Cell(row, 3).Range.Text = "[gr/Am3]"
-            row += 1
-            oTable.Cell(row, 1).Range.Text = "Dust load (1 cyclone)"
-            oTable.Cell(row, 2).Range.Text = TextBox39.Text
-            oTable.Cell(row, 3).Range.Text = "[kg/hr]"
+        oPara1 = oDoc.Content.Paragraphs.Add
+        oPara1.Range.Text = "VTK Sales, Cyclone sizing"
+        oPara1.Range.Font.Name = "Arial"
+        oPara1.Range.Font.Size = 14
+        oPara1.Range.Font.Bold = CInt(True)
+        oPara1.Format.SpaceAfter = 0.5                '24 pt spacing after paragraph. 
+        oPara1.Range.InsertParagraphAfter()
 
-            oTable.Columns(1).Width = oWord.InchesToPoints(2.0)   'Change width of columns 
-            oTable.Columns(2).Width = oWord.InchesToPoints(1)
-            oTable.Columns(3).Width = oWord.InchesToPoints(2)
+        '---------------Inlet data-------------------------------
+        'Insert a table, fill it with data and change the column widths.
+        oTable = oDoc.Tables.Add(oDoc.Bookmarks.Item("\endofdoc").Range, 13, 3)
+        oTable.Range.ParagraphFormat.SpaceAfter = 1
+        oTable.Range.Font.Size = 11
+        oTable.Range.Font.Bold = CInt(False)
+        oTable.Rows(1).Range.Font.Bold = CInt(True)
+        row = 2
+        oTable.Cell(row, 1).Range.Text = "Project number"
+        oTable.Cell(row, 2).Range.Text = TextBox28.Text
+        row += 1
+        oTable.Cell(row, 1).Range.Text = "Tag nummer "
+        oTable.Cell(row, 2).Range.Text = TextBox29.Text
+        row += 1
+        oTable.Cell(row, 1).Range.Text = "Print date"
+        oTable.Cell(row, 2).Range.Text = Now().ToString("MM-dd-yyyy")
+        row += 2
+        oTable.Cell(row, 1).Range.Text = "Flow"
+        oTable.Cell(row, 2).Range.Text = NumericUpDown1.Value.ToString("F0")
+        oTable.Cell(row, 3).Range.Text = "[Am3/hr]"
+        row += 1
+        oTable.Cell(row, 1).Range.Text = "Temperature"
+        oTable.Cell(row, 2).Range.Text = NumericUpDown18.Value.ToString("F0")
+        oTable.Cell(row, 3).Range.Text = "[c]"
+        row += 1
+        oTable.Cell(row, 1).Range.Text = "Inlet pressure"
+        oTable.Cell(row, 2).Range.Text = NumericUpDown19.Value.ToString("F1")
+        oTable.Cell(row, 3).Range.Text = "[mbar abs]"
+        row += 1
+        oTable.Cell(row, 1).Range.Text = "Particle density "
+        oTable.Cell(row, 2).Range.Text = numericUpDown2.Value.ToString("F0")
+        oTable.Cell(row, 3).Range.Text = "[kg/m3]"
+        row += 1
+        oTable.Cell(row, 1).Range.Text = "Gas density "
+        oTable.Cell(row, 2).Range.Text = numericUpDown3.Value.ToString("F3")
+        oTable.Cell(row, 3).Range.Text = "[kg/m3]"
+        row += 1
+        oTable.Cell(row, 1).Range.Text = "Air viscosity"
+        oTable.Cell(row, 2).Range.Text = numericUpDown14.Value.ToString("F3")
+        oTable.Cell(row, 3).Range.Text = "[centi Poise]"
+        row += 1
+        oTable.Cell(row, 1).Range.Text = "Dust load"
+        oTable.Cell(row, 2).Range.Text = NumericUpDown4.Value.ToString("F2")
+        oTable.Cell(row, 3).Range.Text = "[gr/Am3]"
+        row += 1
+        oTable.Cell(row, 1).Range.Text = "Dust load (1 cyclone)"
+        oTable.Cell(row, 2).Range.Text = TextBox39.Text
+        oTable.Cell(row, 3).Range.Text = "[kg/hr]"
 
-            oTable.Rows(1).Range.Font.Bold = CInt(True)
-            oDoc.Bookmarks.Item("\endofdoc").Range.InsertParagraphAfter()
+        oTable.Columns(1).Width = oWord.InchesToPoints(2.0)   'Change width of columns 
+        oTable.Columns(2).Width = oWord.InchesToPoints(1)
+        oTable.Columns(3).Width = oWord.InchesToPoints(2)
 
-            '---------------cyclone data-------------------------------
-            'Insert a table, fill it with data and change the column widths.
-            oTable = oDoc.Tables.Add(oDoc.Bookmarks.Item("\endofdoc").Range, 8, 3)
-            oTable.Range.ParagraphFormat.SpaceAfter = 1
-            oTable.Range.Font.Size = 10
-            oTable.Range.Font.Bold = CInt(False)
-            oTable.Rows(1).Range.Font.Bold = CInt(True)
-            row = 1
-            oTable.Cell(row, 1).Range.Text = "Cyclone data"
-            row += 1
-            '----------- stage #1 ---------------
-            oTable.Cell(row, 1).Range.Text = "Cyclone type stage #1 "
-            oTable.Cell(row, 2).Range.Text = ComboBox1.SelectedItem.ToString
-            oTable.Cell(row, 3).Range.Text = "[-]"
-            row += 1
-            oTable.Cell(row, 1).Range.Text = "Body diameter #1"
-            oTable.Cell(row, 2).Range.Text = numericUpDown5.Value.ToString
-            oTable.Cell(row, 3).Range.Text = "[m]"
-            row += 1
-            oTable.Cell(row, 1).Range.Text = "No parallel #1"
-            oTable.Cell(row, 2).Range.Text = NumericUpDown20.Value.ToString
-            oTable.Cell(row, 3).Range.Text = "[-]"
-            row += 2
-            '----------- stage #2 ---------------
-            oTable.Cell(row, 1).Range.Text = "Cyclone type stage #2 "
-            oTable.Cell(row, 2).Range.Text = ComboBox2.SelectedItem.ToString
-            oTable.Cell(row, 3).Range.Text = "[-]"
-            row += 1
-            oTable.Cell(row, 1).Range.Text = "Body diameter #2"
-            oTable.Cell(row, 2).Range.Text = NumericUpDown34.Value.ToString
-            oTable.Cell(row, 3).Range.Text = "[m]"
-            row += 1
-            oTable.Cell(row, 1).Range.Text = "No parallel #2"
-            oTable.Cell(row, 2).Range.Text = NumericUpDown33.Value.ToString
-            oTable.Cell(row, 3).Range.Text = "[-]"
+        oTable.Rows(1).Range.Font.Bold = CInt(True)
+        oDoc.Bookmarks.Item("\endofdoc").Range.InsertParagraphAfter()
 
-            oTable.Columns(1).Width = oWord.InchesToPoints(2.0)   'Change width of columns 
-            oTable.Columns(2).Width = oWord.InchesToPoints(1)
-            oTable.Columns(3).Width = oWord.InchesToPoints(2)
+        '---------------cyclone data-------------------------------
+        'Insert a table, fill it with data and change the column widths.
+        oTable = oDoc.Tables.Add(oDoc.Bookmarks.Item("\endofdoc").Range, 8, 3)
+        oTable.Range.ParagraphFormat.SpaceAfter = 1
+        oTable.Range.Font.Size = 10
+        oTable.Range.Font.Bold = CInt(False)
+        oTable.Rows(1).Range.Font.Bold = CInt(True)
+        row = 1
+        oTable.Cell(row, 1).Range.Text = "Cyclone data"
+        row += 1
+        '----------- stage #1 ---------------
+        oTable.Cell(row, 1).Range.Text = "Cyclone type stage #1 "
+        oTable.Cell(row, 2).Range.Text = ComboBox1.SelectedItem.ToString
+        oTable.Cell(row, 3).Range.Text = "[-]"
+        row += 1
+        oTable.Cell(row, 1).Range.Text = "Body diameter #1"
+        oTable.Cell(row, 2).Range.Text = numericUpDown5.Value.ToString
+        oTable.Cell(row, 3).Range.Text = "[m]"
+        row += 1
+        oTable.Cell(row, 1).Range.Text = "No parallel #1"
+        oTable.Cell(row, 2).Range.Text = NumericUpDown20.Value.ToString
+        oTable.Cell(row, 3).Range.Text = "[-]"
+        row += 2
+        '----------- stage #2 ---------------
+        oTable.Cell(row, 1).Range.Text = "Cyclone type stage #2 "
+        oTable.Cell(row, 2).Range.Text = ComboBox2.SelectedItem.ToString
+        oTable.Cell(row, 3).Range.Text = "[-]"
+        row += 1
+        oTable.Cell(row, 1).Range.Text = "Body diameter #2"
+        oTable.Cell(row, 2).Range.Text = NumericUpDown34.Value.ToString
+        oTable.Cell(row, 3).Range.Text = "[m]"
+        row += 1
+        oTable.Cell(row, 1).Range.Text = "No parallel #2"
+        oTable.Cell(row, 2).Range.Text = NumericUpDown33.Value.ToString
+        oTable.Cell(row, 3).Range.Text = "[-]"
 
-            oTable.Rows(1).Range.Font.Bold = CInt(True)
-            oDoc.Bookmarks.Item("\endofdoc").Range.InsertParagraphAfter()
+        oTable.Columns(1).Width = oWord.InchesToPoints(2.0)   'Change width of columns 
+        oTable.Columns(2).Width = oWord.InchesToPoints(1)
+        oTable.Columns(3).Width = oWord.InchesToPoints(2)
+        oTable.Rows(1).Range.Font.Bold = CInt(True)
+        oDoc.Bookmarks.Item("\endofdoc").Range.InsertParagraphAfter()
 
-            '---------------Process data-------------------------------
-            'Insert a table, fill it with data and change the column widths.
-            oTable = oDoc.Tables.Add(oDoc.Bookmarks.Item("\endofdoc").Range, 18, 3)
-            oTable.Range.ParagraphFormat.SpaceAfter = 1
-            oTable.Range.Font.Size = 10
-            oTable.Range.Font.Bold = CInt(False)
-            oTable.Rows(1).Range.Font.Bold = CInt(True)
-            row = 1
-            oTable.Cell(row, 1).Range.Text = "Process data"
-            row += 1
-            '----------- stage #1 ---------------
-            oTable.Cell(row, 1).Range.Text = "Inlet speed #1 "
-            oTable.Cell(row, 2).Range.Text = TextBox16.Text
-            oTable.Cell(row, 3).Range.Text = "[m/s]"
-            row += 1
-            oTable.Cell(row, 1).Range.Text = "Outlet speed #1"
-            oTable.Cell(row, 2).Range.Text = TextBox22.Text
-            oTable.Cell(row, 3).Range.Text = "[m/s]"
-            row += 1
-            oTable.Cell(row, 1).Range.Text = "Pressure loss #1"
-            oTable.Cell(row, 2).Range.Text = TextBox17.Text
-            oTable.Cell(row, 3).Range.Text = "[Pa]"
-            row += 1
-            oTable.Cell(row, 1).Range.Text = "Efficiency #1"
-            oTable.Cell(row, 2).Range.Text = TextBox21.Text
-            oTable.Cell(row, 3).Range.Text = "[%]"
-            row += 1
-            oTable.Cell(row, 1).Range.Text = "Emission #1"
-            oTable.Cell(row, 2).Range.Text = TextBox18.Text
-            oTable.Cell(row, 3).Range.Text = "[gr/Am3]"
-            row += 2
-            '----------- stage #2 ---------------
-            oTable.Cell(row, 1).Range.Text = "Inlet speed #2 "
-            oTable.Cell(row, 2).Range.Text = TextBox80.Text
-            oTable.Cell(row, 3).Range.Text = "[m/s]"
-            row += 1
-            oTable.Cell(row, 1).Range.Text = "Outlet speed #2"
-            oTable.Cell(row, 2).Range.Text = TextBox77.Text
-            oTable.Cell(row, 3).Range.Text = "[m/s]"
-            row += 1
-            oTable.Cell(row, 1).Range.Text = "Pressure loss #2"
-            oTable.Cell(row, 2).Range.Text = TextBox79.Text
-            oTable.Cell(row, 3).Range.Text = "[Pa]"
-            row += 1
-            oTable.Cell(row, 1).Range.Text = "Efficiency #2"
-            oTable.Cell(row, 2).Range.Text = TextBox109.Text
-            oTable.Cell(row, 3).Range.Text = "[%]"
-            row += 1
-            oTable.Cell(row, 1).Range.Text = "Emission #2"
-            oTable.Cell(row, 2).Range.Text = TextBox108.Text
-            oTable.Cell(row, 3).Range.Text = "[gr/Am3]"
-            row += 2
-            oTable.Cell(row, 1).Range.Text = "Efficiency #1+2"
-            oTable.Cell(row, 2).Range.Text = TextBox120.Text
-            oTable.Cell(row, 3).Range.Text = "[%]"
-            row += 1
-            oTable.Cell(row, 1).Range.Text = "Emission #1+2"
-            oTable.Cell(row, 2).Range.Text = TextBox134.Text
-            oTable.Cell(row, 3).Range.Text = "[gr/Am3]"
-            row += 1
-            oTable.Cell(row, 1).Range.Text = "dp(100)"
-            oTable.Cell(row, 2).Range.Text = TextBox119.Text
-            oTable.Cell(row, 3).Range.Text = "[mu] (100% loss)"
-            row += 1
-            oTable.Cell(row, 1).Range.Text = "dp(50)"
-            oTable.Cell(row, 2).Range.Text = TextBox123.Text
-            oTable.Cell(row, 3).Range.Text = "[mu]"
-            row += 1
-            oTable.Cell(row, 1).Range.Text = "dp(5)"
-            oTable.Cell(row, 2).Range.Text = TextBox125.Text
-            oTable.Cell(row, 3).Range.Text = "[mu]"
+        '---------------Process data-------------------------------
+        'Insert a table, fill it with data and change the column widths.
+        oTable = oDoc.Tables.Add(oDoc.Bookmarks.Item("\endofdoc").Range, 18, 3)
+        oTable.Range.ParagraphFormat.SpaceAfter = 1
+        oTable.Range.Font.Size = 10
+        oTable.Range.Font.Bold = CInt(False)
+        oTable.Rows(1).Range.Font.Bold = CInt(True)
+        row = 1
+        oTable.Cell(row, 1).Range.Text = "Process data"
+        row += 1
+        '----------- stage #1 ---------------
+        oTable.Cell(row, 1).Range.Text = "Inlet speed #1 "
+        oTable.Cell(row, 2).Range.Text = TextBox16.Text
+        oTable.Cell(row, 3).Range.Text = "[m/s]"
+        row += 1
+        oTable.Cell(row, 1).Range.Text = "Outlet speed #1"
+        oTable.Cell(row, 2).Range.Text = TextBox22.Text
+        oTable.Cell(row, 3).Range.Text = "[m/s]"
+        row += 1
+        oTable.Cell(row, 1).Range.Text = "Pressure loss #1"
+        oTable.Cell(row, 2).Range.Text = TextBox17.Text
+        oTable.Cell(row, 3).Range.Text = "[Pa]"
+        row += 1
+        oTable.Cell(row, 1).Range.Text = "Efficiency #1"
+        oTable.Cell(row, 2).Range.Text = TextBox21.Text
+        oTable.Cell(row, 3).Range.Text = "[%]"
+        row += 1
+        oTable.Cell(row, 1).Range.Text = "Emission #1"
+        oTable.Cell(row, 2).Range.Text = TextBox18.Text
+        oTable.Cell(row, 3).Range.Text = "[gr/Am3]"
+        row += 2
+        '----------- stage #2 ---------------
+        oTable.Cell(row, 1).Range.Text = "Inlet speed #2 "
+        oTable.Cell(row, 2).Range.Text = TextBox80.Text
+        oTable.Cell(row, 3).Range.Text = "[m/s]"
+        row += 1
+        oTable.Cell(row, 1).Range.Text = "Outlet speed #2"
+        oTable.Cell(row, 2).Range.Text = TextBox77.Text
+        oTable.Cell(row, 3).Range.Text = "[m/s]"
+        row += 1
+        oTable.Cell(row, 1).Range.Text = "Pressure loss #2"
+        oTable.Cell(row, 2).Range.Text = TextBox79.Text
+        oTable.Cell(row, 3).Range.Text = "[Pa]"
+        row += 1
+        oTable.Cell(row, 1).Range.Text = "Efficiency #2"
+        oTable.Cell(row, 2).Range.Text = TextBox109.Text
+        oTable.Cell(row, 3).Range.Text = "[%]"
+        row += 1
+        oTable.Cell(row, 1).Range.Text = "Emission #2"
+        oTable.Cell(row, 2).Range.Text = TextBox108.Text
+        oTable.Cell(row, 3).Range.Text = "[gr/Am3]"
+        row += 2
+        oTable.Cell(row, 1).Range.Text = "Efficiency #1+2"
+        oTable.Cell(row, 2).Range.Text = TextBox120.Text
+        oTable.Cell(row, 3).Range.Text = "[%]"
+        row += 1
+        oTable.Cell(row, 1).Range.Text = "Emission #1+2"
+        oTable.Cell(row, 2).Range.Text = TextBox134.Text
+        oTable.Cell(row, 3).Range.Text = "[gr/Am3]"
+        row += 1
+        oTable.Cell(row, 1).Range.Text = "dp(100)"
+        oTable.Cell(row, 2).Range.Text = TextBox119.Text
+        oTable.Cell(row, 3).Range.Text = "[mu] (100% loss)"
+        row += 1
+        oTable.Cell(row, 1).Range.Text = "dp(50)"
+        oTable.Cell(row, 2).Range.Text = TextBox123.Text
+        oTable.Cell(row, 3).Range.Text = "[mu]"
+        row += 1
+        oTable.Cell(row, 1).Range.Text = "dp(5)"
+        oTable.Cell(row, 2).Range.Text = TextBox125.Text
+        oTable.Cell(row, 3).Range.Text = "[mu]"
 
-            oTable.Columns(1).Width = oWord.InchesToPoints(2.0)   'Change width of columns 
-            oTable.Columns(2).Width = oWord.InchesToPoints(1)
-            oTable.Columns(3).Width = oWord.InchesToPoints(2)
+        oTable.Columns(1).Width = oWord.InchesToPoints(2.0)   'Change width of columns 
+        oTable.Columns(2).Width = oWord.InchesToPoints(1)
+        oTable.Columns(3).Width = oWord.InchesToPoints(2)
 
-            oTable.Rows(1).Range.Font.Bold = CInt(True)
-            oDoc.Bookmarks.Item("\endofdoc").Range.InsertParagraphAfter()
+        oTable.Rows(1).Range.Font.Bold = CInt(True)
+        oDoc.Bookmarks.Item("\endofdoc").Range.InsertParagraphAfter()
 
-            '------------------save Chart2 (Loss curve)---------------- 
-            Draw_chart2(Chart2, 0)
-            file_name = dirpath_Temp & "Chart_loss.Jpeg"
-            'Chart2.SaveImage(file_name, System.Drawing.Imaging.ImageFormat.Jpeg)
-            Chart1.SaveImage(file_name, System.Drawing.Imaging.ImageFormat.Jpeg)
-            oPara4 = oDoc.Content.Paragraphs.Add
-            oPara4.Alignment = Word.WdParagraphAlignment.wdAlignParagraphCenter
-            oPara4.Range.InlineShapes.AddPicture(file_name)
-            oPara4.Range.InlineShapes.Item(1).LockAspectRatio = CType(True, Microsoft.Office.Core.MsoTriState)
-            oPara4.Range.InlineShapes.Item(1).ScaleWidth = chart_size       'Size
-            oPara4.Range.InsertParagraphAfter()
-
-        Catch ex As Exception
-            MessageBox.Show(ex.Message & " Problem writing to Commercial data to Word ")  ' Show the exception's message.
-        End Try
+        '------------------save Chart2 (Loss curve)---------------- 
+        Draw_chart2(Chart2, 0)
+        file_name = dirpath_Temp & "Chart_loss.Jpeg"
+        'Chart2.SaveImage(file_name, System.Drawing.Imaging.ImageFormat.Jpeg)
+        Chart1.SaveImage(file_name, System.Drawing.Imaging.ImageFormat.Jpeg)
+        oPara4 = oDoc.Content.Paragraphs.Add
+        oPara4.Alignment = Word.WdParagraphAlignment.wdAlignParagraphCenter
+        oPara4.Range.InlineShapes.AddPicture(file_name)
+        oPara4.Range.InlineShapes.Item(1).LockAspectRatio = CType(True, Microsoft.Office.Core.MsoTriState)
+        oPara4.Range.InlineShapes.Item(1).ScaleWidth = chart_size       'Size
+        oPara4.Range.InsertParagraphAfter()
     End Sub
     'Air viscosity
 
@@ -2444,7 +2458,85 @@ Public Class Form1
     End Sub
     'Calculate cyclone weight
     Private Sub Button7_Click(sender As Object, e As EventArgs) Handles Button7.Click, TabPage7.Enter, NumericUpDown32.ValueChanged, NumericUpDown31.ValueChanged, NumericUpDown45.ValueChanged, NumericUpDown44.ValueChanged, NumericUpDown42.ValueChanged, NumericUpDown41.ValueChanged
-        Calc_cycl_weight()
+        If (ComboBox1.SelectedIndex > -1) And (ComboBox2.SelectedIndex > -1) Then 'Prevent exceptions
+            Calc_cycl_weight()
+            Calc_Tang_outlet()
+        End If
+    End Sub
+    Private Sub Calc_Tang_outlet()
+        Dim words() As String
+        Dim _db1, _db2 As Double                    '[mm] outlet cyclone = inlet tangential
+        Dim tan1(11) As Double                      '[mm] 
+        Dim tan2(11) As Double
+        Dim factor1(9) As Double                    '[-]
+        Dim factor2(9) As Double                    '[-]
+
+        Double.TryParse(TextBox7.Text, _db1)        '[m] Oulet dia cyclone stage 1
+        Double.TryParse(TextBox90.Text, _db2)       '[m] Oulet dia cyclone stage 2
+        _db1 *= 1000                                '[mm] Oulet dia cyclone stage 1
+        _db2 *= 1000                                '[mm] Oulet dia cyclone stage 2
+
+        '-------- dimension cyclone stage #1
+        words = Tangent_out_dimensions(ComboBox1.SelectedIndex).Split(CType(";", Char()))
+        For hh = 1 To factor1.Length - 2
+            factor1(hh) = CDbl(words(hh))          'Tangent outlet dimensions
+        Next
+
+        '-------- dimension cyclone stage #2
+        words = Tangent_out_dimensions(ComboBox2.SelectedIndex).Split(CType(";", Char()))
+        For hh = 1 To factor2.Length - 2
+            factor2(hh) = CDbl(words(hh))          'Tangent outlet dimensions
+        Next
+
+        '--------- 1st stage cyclone -----
+        tan1(1) = _db1 * factor1(1)         'Diameter
+        tan1(2) = _db1 * factor1(2)         'uitlaat breedte
+        tan1(3) = _db1 * factor1(3)         'Uitlaat hoogte
+        tan1(4) = _db1 * factor1(4)         'uitlaat lengte
+        tan1(5) = _db1 * factor1(5)         'uitlaat hartmaat
+        tan1(6) = _db1 * factor1(6)         'Steekmaat radii
+        tan1(7) = _db1 * factor1(7)         'Radius 1
+        tan1(8) = _db1 * factor1(8)         'Radius gooze neck
+        tan1(9) = tan1(7) - 1 * tan1(6)     'Radius 2
+        tan1(10) = tan1(7) - 2 * tan1(6)    'Radius 3
+
+        '--------- 2nd stage cyclone -----
+        tan2(1) = _db2 * factor2(1)         'Diameter
+        tan2(2) = _db2 * factor2(2)         'uitlaat breedte
+        tan2(3) = _db2 * factor2(3)         'Uitlaat hoogte
+        tan2(4) = _db2 * factor2(4)         'uitlaat lengte
+        tan2(5) = _db2 * factor2(5)         'uitlaat hartmaat
+        tan2(6) = _db2 * factor2(6)         'Steekmaat radii
+        tan2(7) = _db2 * factor2(7)         'Radius 1
+        tan2(8) = _db2 * factor2(8)         'radius gooze neck
+        tan2(9) = tan2(7) - 1 * tan1(6)     'Radius 2
+        tan2(10) = tan2(7) - 2 * tan1(6)    'Radius 3
+
+        '--------- 1st stage cyclone -----
+        TextBox81.Text = CType(ComboBox1.SelectedItem, String)      'Cycloon type        
+        TextBox82.Text = tan1(1).ToString("F0")         'Diameter
+        TextBox154.Text = tan1(2).ToString("F0")        'uitlaat breedte
+        TextBox155.Text = tan1(3).ToString("F0")        'Uitlaat hoogte
+        TextBox156.Text = tan1(4).ToString("F0")        'uitlaat lengte
+        TextBox157.Text = tan1(5).ToString("F0")        'uitlaat hartmaat
+        TextBox158.Text = tan1(6).ToString("F0")        'Steekmaat radii
+        TextBox159.Text = tan1(7).ToString("F0")        'Radius 1
+        TextBox160.Text = tan1(8).ToString("F0")        'Radius gooze neck
+        TextBox172.Text = tan1(9).ToString("F0")        'Radius 2
+        TextBox173.Text = tan1(10).ToString("F0")       'Radius 3
+
+        '--------- 2nd stage cyclone -----
+        TextBox161.Text = CType(ComboBox2.SelectedItem, String)      'Cycloon type
+        TextBox162.Text = tan2(1).ToString("F0")        'Diameter
+        TextBox163.Text = tan2(2).ToString("F0")        'uitlaat breedte
+        TextBox164.Text = tan2(3).ToString("F0")        'Uitlaat hoogte
+        TextBox165.Text = tan2(4).ToString("F0")        'uitlaat lengte
+        TextBox166.Text = tan2(5).ToString("F0")        'uitlaat hartmaat
+        TextBox167.Text = tan2(6).ToString("F0")        'Steekmaat radii
+        TextBox168.Text = tan2(7).ToString("F0")        'Radius 1
+        TextBox169.Text = tan2(8).ToString("F0")        'Radius gooze neck
+        TextBox170.Text = tan2(9).ToString("F0")        'Radius 2
+        TextBox171.Text = tan2(10).ToString("F0")       'Tadius 3
     End Sub
     Private Sub Button8_Click(sender As Object, e As EventArgs) Handles Button8.Click
         Save_present_case_to_array()
@@ -2483,23 +2575,30 @@ Public Class Form1
 
             Chck_value(NumericUpDown30, zz)                         'Case number
             Chck_value(NumericUpDown20, CDec(_cees(zz).Noc1))       'Cyclone in parallel #1
-            Chck_value(NumericUpDown33, CDec(_cees(zz).Noc2))        'Cyclone in parallel #2
-            Chck_value(numericUpDown5, CDec(_cees(zz).db1))    '[m] Diameter cyclone body #1
-            Chck_value(NumericUpDown34, CDec(_cees(zz).db2))  '[m] Diameter cyclone body #2
+            Chck_value(NumericUpDown33, CDec(_cees(zz).Noc2))       'Cyclone in parallel #2
+            Chck_value(numericUpDown5, CDec(_cees(zz).db1))         '[m] Diameter cyclone body #1
+            Chck_value(NumericUpDown34, CDec(_cees(zz).db2))        '[m] Diameter cyclone body #2
 
-            Debug.WriteLine("zz= " & zz.ToString & ",  _cees(zz).Noc1= " & _cees(zz).Noc1.ToString)
-            Debug.WriteLine("zz= " & zz.ToString & ",  _cees(zz).Noc2= " & _cees(zz).Noc2.ToString)
-            Debug.WriteLine("zz= " & zz.ToString & ",  _cees(zz).db1= " & _cees(zz).db1.ToString)
-            Debug.WriteLine("zz= " & zz.ToString & ",  _cees(zz).db2= " & _cees(zz).db2.ToString)
+            Debug.WriteLine("Case zz= " & zz.ToString & ",  _cees(zz).Noc1= " & _cees(zz).Noc1.ToString)
+            Debug.WriteLine("Case zz= " & zz.ToString & ",  _cees(zz).Noc2= " & _cees(zz).Noc2.ToString)
+            Debug.WriteLine("Case zz= " & zz.ToString & ",  _cees(zz).db1= " & _cees(zz).db1.ToString)
+            Debug.WriteLine("Case zz= " & zz.ToString & ",  _cees(zz).db2= " & _cees(zz).db2.ToString)
 
-            Chck_value(numericUpDown3, CDec(_cees(zz).ro_gas))       'Density [kg/hr]
-            Chck_value(numericUpDown2, CDec(_cees(zz).ro_solid))     'Density [kg/hr]
-            Chck_value(numericUpDown14, CDec(_cees(zz).visco))       'Visco in Centi Poise
-            Chck_value(NumericUpDown18, CDec(_cees(zz).Temp))        'Temperature [c]
-            p1_rel = (_cees(zz).p1_abs - 101325) / 100
-            Chck_value(NumericUpDown19, CDec(p1_rel))                'Pressure [Pa abs]-->[mbar g]
+            Chck_value(numericUpDown3, CDec(_cees(zz).ro_gas))       '[kg/hr] Density 
+            Chck_value(numericUpDown2, CDec(_cees(zz).ro_solid))     '[kg/hr] Density 
+            Chck_value(numericUpDown14, CDec(_cees(zz).visco))       '[Cp] Visco in Centi Poise
+            Chck_value(NumericUpDown18, CDec(_cees(zz).Temp))        '[c] Temperature 
+            p1_rel = (_cees(zz).p1_abs - 101325) / 100               '[mbar]
+            Chck_value(NumericUpDown19, CDec(p1_rel))                '[Pa abs]-->[mbar g] Pressure
 
             Dump_log_to_box24()
+
+            '---- Clearing the datagriedview -----
+            For row = 0 To no_PDS_inputs - 1
+                DataGridView6.Rows(row).Cells(0).Value = " "
+                DataGridView6.Rows(row).Cells(1).Value = " "
+            Next
+            DataGridView6.Refresh()
 
             '[mu] Class upper particle diameter limit diameter
             '[%] Percentage van de inlaat stof belasting
@@ -2507,7 +2606,8 @@ Public Class Form1
                 DataGridView6.Rows(row).Cells(0).Value = _input(row).dia_big
                 DataGridView6.Rows(row).Cells(1).Value = _input(row).class_load * 100
             Next
-            Me.Refresh()
+            'Me.Refresh()
+            DataGridView6.Refresh()
         End If
     End Sub
     Private Sub Dump_log_to_box24()
