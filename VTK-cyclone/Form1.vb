@@ -1403,10 +1403,10 @@ Public Class Form1
     Private Sub Calc_sequence()
         Dim case_nr As Integer = CInt(NumericUpDown30.Value)
 
-
         If ComboBox1.SelectedIndex > -1 And ComboBox2.SelectedIndex > -1 And init = True Then
             ProgressBar1.Visible = True
             ProgressBar1.Value = 50
+            SuspendLayout()                 'Speedup the program
 
             '============== ALL calculation is done is Case(0) ========
             '============== other cases are for storage ===============
@@ -1421,31 +1421,31 @@ Public Class Form1
                 NumericUpDown34.Value = CDec(0.3)     '[m] Diameter
             End If
 
-            Fill_array_from_screen(0) 'Read input data from sceen
+            Fill_array_from_screen(0)   'Read input data from sceen
             Dust_load_correction(0)
 
-            Get_input_calc_1(0)       'This is the CASE number
+            Get_input_calc_1(0)         'This is the CASE number
             Calc_part_dia_loss(0)
 
-            Calc_stage1(0)            'Calc according stage #1
-            Calc_stage2(0)            'Calc according stage #2
+            Calc_stage1(0)              'Calc according stage #1
+            Calc_stage2(0)              'Calc according stage #2
 
-            Calc_stage1(0)            'Calc according stage #1
-            Calc_stage2(0)            'Calc according stage #2
+            Calc_stage1(0)              'Calc according stage #1
+            Calc_stage2(0)              'Calc according stage #2
 
-            Calc_stage1(0)            'Calc according stage #1
-            Calc_stage2(0)            'Calc according stage #2
+            Calc_stage1(0)              'Calc according stage #1
+            Calc_stage2(0)              'Calc according stage #2
 
-            Calc_stage1_2_comb(0)     'Calc stage #1 and stage #2 combined
+            Calc_stage1_2_comb(0)       'Calc stage #1 and stage #2 combined
 
-            Present_loss_grid1(0)     'Present the results stage #1
-            Present_loss_grid2(0)     'Present the results stage #2
-            Present_Datagridview1(0)  'Present the results stage #1
+            Present_loss_grid1(0)       'Present the results stage #1
+            Present_loss_grid2(0)       'Present the results stage #2
+            Present_Datagridview1(0)    'Present the results stage #1
 
-            ProgressBar1.Value = 80
-            Draw_chart1(Chart1, 0)    'Present the results 
-            Draw_chart2(Chart2, 0)    'Present the results loss curve
-            Screen_contrast()         'White text on ted background 
+            Draw_chart1(Chart1, 0)      'Present the results 
+            Draw_chart2(Chart2, 0)      'Present the results loss curve
+            Screen_contrast()           'White text on ted background 
+            ResumeLayout()              'Calcu is done update screen
             ProgressBar1.Visible = False
         End If
     End Sub
@@ -1978,14 +1978,18 @@ Public Class Form1
         Dim fac_m As Double
         Dim words() As String
         Dim density_ratio1, density_ratio2 As Double
+        Dim dc1, dc2 As Double
+        Dim dustload As Double
 
         If Double.IsNaN(_cees(ks).stage1(0).dia) Or Double.IsInfinity(_cees(ks).stage1(0).dia) Then Exit Sub
+        dustload = NumericUpDown4.Value     '[g/Am3] dust load
 
         '------ the idea is that the smallest diameter cyclone determines
         '------ the smallest particle diameter used in the calculation
         '------ for the stage #1 cyclone
-        ' If numericUpDown5.Value > _cees(ks).class_load(8) Then  '???? must be wrong
-        If numericUpDown5.Value > NumericUpDown34.Value Then
+        dc1 = numericUpDown5.Value      'Diameter cyclone stage 1
+        dc2 = NumericUpDown34.Value     'Diameter cyclone stage 2
+        If dc1 > dc2 Then
             _cees(ks).stage1(0).dia = Calc_dia_particle(1.0, _cees(ks).Kstokes2, 2) 'stage #2 cyclone
         Else
             _cees(ks).stage1(0).dia = Calc_dia_particle(1.0, _cees(ks).Kstokes1, 1) 'stage #1 cyclone
@@ -2078,7 +2082,7 @@ Public Class Form1
 
         _cees(ks).loss_total1 = _cees(ks).sum_loss_C1 + ((100 - _cees(ks).sum_psd_diff1) * perc_smallest_part1)
 
-        _cees(ks).emmis1_Am3 = NumericUpDown4.Value * (_cees(ks).loss_total1 / 100)  '[g/Am3]
+        _cees(ks).emmis1_Am3 = dustload * (_cees(ks).loss_total1 / 100)  '[g/Am3]
         _cees(ks).emmis1_Nm3 = _cees(ks).emmis1_Am3 * Calc_Normal_density(_cees(ks).Ro_gas1_Am3, _cees(ks).p1_abs, _cees(ks).Temp)
 
         '----------Dust load stage #2 in emission stage #1 -----------
@@ -2111,7 +2115,7 @@ Public Class Form1
             _cees(ks).emmis1_Nm3 = _cees(ks).emmis1_Am3 * density_ratio1
             TextBox58.Text = _cees(ks).loss_total1.ToString("F3")    '[%] Corrected 
         Else
-            _cees(ks).emmis1_Am3 = (NumericUpDown4.Value * _cees(ks).sum_loss1 / 100)
+            _cees(ks).emmis1_Am3 = (dustload * _cees(ks).sum_loss1 / 100)
             _cees(ks).emmis1_Nm3 = _cees(ks).emmis1_Am3 * density_ratio1
             TextBox58.Text = _cees(ks).sum_loss1.ToString("F3")      '[%] NOT Corrected  
         End If
