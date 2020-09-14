@@ -1404,6 +1404,8 @@ Public Class Form1
     Private Sub Calc_sequence()
         Dim case_nr As Integer = CInt(NumericUpDown30.Value)
 
+        Check_DGV6()
+
         If ComboBox1.SelectedIndex > -1 And ComboBox2.SelectedIndex > -1 And init = True Then
             ProgressBar1.Visible = True
             ProgressBar1.Value = 50
@@ -2324,30 +2326,35 @@ Public Class Form1
                 w(i) = _input(j).class_load - Abs(qsum(i))
             Next
 
-            '---------CHECK- diameters must increase-----------
-            DataGridView6.Rows(0).Cells(0).Style.BackColor = Color.LightGreen
-            For i = 1 To DataGridView6.Rows.Count - 1
-                If _input(i).dia_big <= _input(i - 1).dia_big And _input(i).dia_big <> 0 Then
-                    DataGridView6.Rows(i).Cells(0).Style.BackColor = Color.Red
-                Else
-                    DataGridView6.Rows(i).Cells(0).Style.BackColor = Color.LightGreen
-                End If
-            Next
-
-            '---------CHECK-cummulative weight must decrease-----------
-            DataGridView6.Rows(0).Cells(1).Style.BackColor = Color.LightGreen
-            For i = 1 To DataGridView6.Rows.Count - 1
-                If _input(i).class_load >= _input(i - 1).class_load And _input(i).class_load <> 0 Then
-                    DataGridView6.Rows(i).Cells(1).Style.BackColor = Color.Red
-                Else
-                    DataGridView6.Rows(i).Cells(1).Style.BackColor = Color.LightGreen
-                End If
-            Next
+            'Check_DGV6()
             Label1.Visible = False  'Error message
         Else
             'MessageBox.Show("Error in Calc_diam_classification")
             Label1.Visible = True   'Error message
         End If
+    End Sub
+    Private Sub Check_DGV6()
+        If DataGridView6.RowCount = 0 Then Exit Sub
+
+        '---------CHECK- diameters must increase-----------
+        DataGridView6.Rows(0).Cells(0).Style.BackColor = Color.LightGreen
+        For i = 1 To DataGridView6.Rows.Count - 1
+            If _input(i).dia_big <= _input(i - 1).dia_big And _input(i).dia_big <> 0 Then
+                DataGridView6.Rows(i).Cells(0).Style.BackColor = Color.Red
+            Else
+                DataGridView6.Rows(i).Cells(0).Style.BackColor = Color.LightGreen
+            End If
+        Next
+
+        '---------CHECK-cummulative weight must decrease-----------
+        DataGridView6.Rows(0).Cells(1).Style.BackColor = Color.LightGreen
+        For i = 1 To DataGridView6.Rows.Count - 1
+            If _input(i).class_load >= _input(i - 1).class_load And _input(i).class_load <> 0 Then
+                DataGridView6.Rows(i).Cells(1).Style.BackColor = Color.Red
+            Else
+                DataGridView6.Rows(i).Cells(1).Style.BackColor = Color.LightGreen
+            End If
+        Next
     End Sub
     Private Sub Calc_cycl_weight()
         Dim w1, w2, w3, w4, w5, w6 As Double
@@ -2572,8 +2579,6 @@ Public Class Form1
 
         If init Then
             SuspendLayout()
-            'TextBox24.Text &= "line 2276, Update_Screen_from_array nr" & zz.ToString & vbCrLf
-            '  MsgBox("Update_Screen_from_array zz= " & zz.ToString)
             '----------- General (not calculated) data------------------
             TextBox28.Text = _cees(1).Quote_no                 'Quote number (not case dependent)
             TextBox29.Text = _cees(1).Tag_no                   'The Tag number (not case dependent)
@@ -2618,7 +2623,6 @@ Public Class Form1
                 DataGridView6.Rows(row).Cells(1).Value = _input(row).class_load * 100
             Next
             ResumeLayout()
-            'DataGridView6.Refresh()
         End If
     End Sub
     Private Sub Dump_log_to_box24()
@@ -2853,29 +2857,6 @@ Public Class Form1
 
     Private Sub Button11_Click(sender As Object, e As EventArgs) Handles Button11.Click
         Form2.Show()    'Fopspeen
-    End Sub
-
-    Private Sub Button12_Click(sender As Object, e As EventArgs) Handles Button12.Click, TabPage13.Enter
-        Build_dgv5()
-    End Sub
-    Private Sub Build_dgv5()
-        'Dim words() As String
-        DataGridView5.ColumnCount = 4
-        DataGridView5.Rows.Clear()
-        DataGridView5.Rows.Add(DSM_psd_example.Length - 1)
-        DataGridView5.EnableHeadersVisualStyles = False           'For backcolor
-        DataGridView5.RowHeadersVisible = False
-
-        DataGridView5.Columns(0).HeaderText = "Dia [um]"
-        DataGridView5.Columns(1).HeaderText = "Cumm [%]"
-        DataGridView5.Columns(2).HeaderText = "--"
-
-        'For row = 0 To DataGridView5.Rows.Count - 1
-        '    words = DSM_psd_example(row).Split(CType(";", Char()))
-        '    DataGridView5.Rows(row).Cells(0).Value = CDbl(words(0))
-        '    DataGridView5.Rows(row).Cells(1).Value = CDbl(words(1))
-        '    DataGridView5.Rows(row).Cells(2).Value = (100 - CDbl(words(1)))
-        'Next
     End Sub
     Private Sub Build_dgv6()
         'This is the user input mechanism for entering the PSD data
@@ -3150,14 +3131,12 @@ Public Class Form1
         TabControl1.TabPages.Remove(TabPage5)       'Stress calculation
         TabControl1.TabPages.Remove(TabPage8)       'Logging
         TabControl1.TabPages.Remove(TabPage10)      'High Dust load
-        TabControl1.TabPages.Remove(TabPage13)      'PSC Conversion
         PictureBox4.Visible = False
 
         If (id = "gp" Or id = "gerritp" Or id = "user") Then
             TabControl1.TabPages.Add(TabPage5)       'Stress calculation
             TabControl1.TabPages.Add(TabPage8)       'Logging
             TabControl1.TabPages.Add(TabPage10)      'High Dust load
-            TabControl1.TabPages.Add(TabPage13)      'PSC Conversion
         End If
     End Sub
 
@@ -3178,28 +3157,13 @@ Public Class Form1
                 MessageBox.Show(ex.Message, My.Application.Info.Title, MessageBoxButtons.OK, MessageBoxIcon.Error)
             End Try
         End If
+        Calc_sequence()
     End Sub
 
-    Private Sub DataGridView5_KeyDown(sender As Object, e As KeyEventArgs) Handles DataGridView5.KeyDown
-        If e.Control AndAlso e.KeyCode = Keys.V Then
-            Dim row As Integer = 1
-            Try
-                For Each line As String In Clipboard.GetText.Split(CChar(vbNewLine))
-                    If Not line.Trim.ToString = "" Then
-                        Dim item() As String = line.Split(vbTab(0)).Select(Function(X) X.Trim).ToArray
 
-                        DataGridView5.Rows(row).Cells(0).Value = CDbl(item(0))
-                        DataGridView5.Rows(row).Cells(1).Value = CDbl(item(1))
-                        row += 1
-                    End If
-                Next
-            Catch ex As Exception
-                MessageBox.Show(ex.Message, My.Application.Info.Title, MessageBoxButtons.OK, MessageBoxIcon.Error)
-            End Try
-        End If
-    End Sub
 
     Private Sub Button19_Click(sender As Object, e As EventArgs) Handles Button19.Click
+        'Clear the all grid cells
         For row = 0 To no_PDS_inputs - 1
             DataGridView6.Rows(row).Cells(0).Value = ""
             DataGridView6.Rows(row).Cells(1).Value = ""
