@@ -2549,7 +2549,7 @@ Public Class Form1
 
         ks = CInt(NumericUpDown30.Value)       'Case number
         Fill_array_from_screen(ks)
-      
+
     End Sub
 
     Private Sub NumericUpDown30_ValueChanged(sender As Object, e As EventArgs) Handles NumericUpDown30.ValueChanged
@@ -2859,7 +2859,7 @@ Public Class Form1
         Build_dgv5()
     End Sub
     Private Sub Build_dgv5()
-        Dim words() As String
+        'Dim words() As String
         DataGridView5.ColumnCount = 4
         DataGridView5.Rows.Clear()
         DataGridView5.Rows.Add(DSM_psd_example.Length - 1)
@@ -2870,12 +2870,12 @@ Public Class Form1
         DataGridView5.Columns(1).HeaderText = "Cumm [%]"
         DataGridView5.Columns(2).HeaderText = "--"
 
-        For row = 0 To DataGridView5.Rows.Count - 1
-            words = DSM_psd_example(row).Split(CType(";", Char()))
-            DataGridView5.Rows(row).Cells(0).Value = CDbl(words(0))
-            DataGridView5.Rows(row).Cells(1).Value = CDbl(words(1))
-            DataGridView5.Rows(row).Cells(2).Value = (100 - CDbl(words(1)))
-        Next
+        'For row = 0 To DataGridView5.Rows.Count - 1
+        '    words = DSM_psd_example(row).Split(CType(";", Char()))
+        '    DataGridView5.Rows(row).Cells(0).Value = CDbl(words(0))
+        '    DataGridView5.Rows(row).Cells(1).Value = CDbl(words(1))
+        '    DataGridView5.Rows(row).Cells(2).Value = (100 - CDbl(words(1)))
+        'Next
     End Sub
     Private Sub Build_dgv6()
         'This is the user input mechanism for entering the PSD data
@@ -2913,7 +2913,7 @@ Public Class Form1
 
 
     Private Sub Button15_Click(sender As Object, e As EventArgs) Handles Button15.Click
-        PSD_whey()
+        PSD_Whey()
         Calc_sequence()
     End Sub
     Private Sub Button16_Click(sender As Object, e As EventArgs) Handles Button16.Click
@@ -3161,4 +3161,48 @@ Public Class Form1
         End If
     End Sub
 
+    Private Sub DataGridView6_KeyDown(sender As Object, e As KeyEventArgs) Handles DataGridView6.KeyDown
+        If e.Control AndAlso e.KeyCode = Keys.V Then
+            Dim row As Integer = 0
+            Try
+                For Each line As String In Clipboard.GetText.Split(CChar(vbNewLine))
+                    If Not line.Trim.ToString = "" Then
+                        Dim item() As String = line.Split(vbTab(0)).Select(Function(X) X.Trim).ToArray
+
+                        DataGridView6.Rows(row).Cells(0).Value = CDbl(item(0))
+                        DataGridView6.Rows(row).Cells(1).Value = CDbl(item(1))
+                        row += 1
+                    End If
+                Next
+            Catch ex As Exception
+                MessageBox.Show(ex.Message, My.Application.Info.Title, MessageBoxButtons.OK, MessageBoxIcon.Error)
+            End Try
+        End If
+    End Sub
+
+    Private Sub DataGridView5_KeyDown(sender As Object, e As KeyEventArgs) Handles DataGridView5.KeyDown
+        If e.Control AndAlso e.KeyCode = Keys.V Then
+            Dim row As Integer = 1
+            Try
+                For Each line As String In Clipboard.GetText.Split(CChar(vbNewLine))
+                    If Not line.Trim.ToString = "" Then
+                        Dim item() As String = line.Split(vbTab(0)).Select(Function(X) X.Trim).ToArray
+
+                        DataGridView5.Rows(row).Cells(0).Value = CDbl(item(0))
+                        DataGridView5.Rows(row).Cells(1).Value = CDbl(item(1))
+                        row += 1
+                    End If
+                Next
+            Catch ex As Exception
+                MessageBox.Show(ex.Message, My.Application.Info.Title, MessageBoxButtons.OK, MessageBoxIcon.Error)
+            End Try
+        End If
+    End Sub
+
+    Private Sub Button19_Click(sender As Object, e As EventArgs) Handles Button19.Click
+        For row = 0 To no_PDS_inputs - 1
+            DataGridView6.Rows(row).Cells(0).Value = ""
+            DataGridView6.Rows(row).Cells(1).Value = ""
+        Next
+    End Sub
 End Class
