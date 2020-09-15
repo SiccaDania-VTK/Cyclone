@@ -26,7 +26,7 @@
     <InstallUrl>\\DCF1\data2%24\Engineering\VBasic\Cyclone\</InstallUrl>
     <ProductName>VTK-Cyclone</ProductName>
     <PublisherName>Pathuis Heavy Industries</PublisherName>
-    <ApplicationRevision>55</ApplicationRevision>
+    <ApplicationRevision>56</ApplicationRevision>
     <ApplicationVersion>1.0.1.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -71,7 +71,7 @@
     <OptionInfer>On</OptionInfer>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestCertificateThumbprint>45CFA7506E65EE0930D626BD8583D73C031F96B9</ManifestCertificateThumbprint>
+    <ManifestCertificateThumbprint>51B75345D38E17AE30A42F86920C9EB2BB131966</ManifestCertificateThumbprint>
   </PropertyGroup>
   <PropertyGroup>
     <ManifestKeyFile>

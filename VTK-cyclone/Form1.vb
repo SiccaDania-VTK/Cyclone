@@ -423,7 +423,6 @@ Public Class Form1
 
         Rights_Control()        'Indicate the tab visible to the user
 
-
         Thread.CurrentThread.CurrentCulture = New CultureInfo("en-US")
         Thread.CurrentThread.CurrentUICulture = New CultureInfo("en-US")
 
@@ -540,6 +539,7 @@ Public Class Form1
         TextBox153.Text &= "Inlet speed cyclone is then limited to 16 m/s " & vbCrLf
         TextBox153.Text &= "Strong product inlet speed is 25 m/s" & vbCrLf
 
+        Me.Size = New System.Drawing.Size(1305, 906)
         Calc_sequence()
         Build_dgv6()                    'PSD input grid
         Save_present_case_to_array()
@@ -3159,9 +3159,6 @@ Public Class Form1
         End If
         Calc_sequence()
     End Sub
-
-
-
     Private Sub Button19_Click(sender As Object, e As EventArgs) Handles Button19.Click
         'Clear the all grid cells
         For row = 0 To no_PDS_inputs - 1
