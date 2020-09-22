@@ -864,11 +864,11 @@ Public Class Form1
             DataGridView1.Rows(h).Cells(4).Value = (i18 * j18 / 100).ToString("F3") 'Loss abs [%]
 
             '=========  (column 4) Loss abs [%] ===============
-            If h > 0 Then
-                l18 = CDbl(DataGridView1.Rows(h - 1).Cells(5).Value)
-            Else
-                l18 = 100
-            End If
+            'If h > 0 Then
+            '    l18 = CDbl(DataGridView1.Rows(h - 1).Cells(5).Value)
+            'Else
+            '    l18 = 100
+            'End If
             k19 = CDbl(DataGridView1.Rows(h).Cells(4).Value)   'Loss abs [%]
 
             '=========  (column 5) Loss psd cum ===============
