@@ -457,6 +457,11 @@ Public Class Form1
         TextBox20.Text = "All AA cyclones have a diameter of 300mm" & vbCrLf
         TextBox20.Text &= "Select AC850 and select diameter is 300 mm" & vbCrLf
         TextBox20.Text &= "AA cyclone are compact and high efficient" & vbCrLf
+        TextBox20.Text &= "AA300 efficiency ~ AC300, capacity 100, ξ= 8.26" & vbCrLf
+        TextBox20.Text &= "AA425 efficiency ~ AC435, capacity 70, ξ= 7.24" & vbCrLf
+        TextBox20.Text &= "AA600 efficiency ~ AC600, capacity 50, ξ= 8.0" & vbCrLf
+        TextBox20.Text &= "AA850 efficiency ~ AC850, capacity 35, ξ= 8.0" & vbCrLf
+        TextBox20.Text &= "Capacity step is 0.5*sqrt(2)= 0.71" & vbCrLf & vbCrLf
         TextBox20.Text &= "Load above 5 gr/m3 is considered a high load" & vbCrLf
         TextBox20.Text &= "Cyclones can not choke" & vbCrLf
 
@@ -525,6 +530,7 @@ Public Class Form1
         TextBox145.Text &= "Fat accumulation on the cyclone inlet wall (called Caramelization, Per Simonsen)"
         TextBox145.Text &= "Dairy specialists Per Simonsen, Suresh Sundararaj"
 
+
         TextBox147.Text = "Cyclone is a excellent Spark arrestor" & vbCrLf
         TextBox147.Text &= "Use in front of filter or silo" & vbCrLf
         TextBox147.Text &= "Also used in suction of gas-turbines to catch flies" & vbCrLf
@@ -538,6 +544,12 @@ Public Class Form1
         TextBox153.Text = "Spray dried product are fragile and may breakup See project P10.1070" & vbCrLf
         TextBox153.Text &= "Inlet speed cyclone is then limited to 16 m/s " & vbCrLf
         TextBox153.Text &= "Strong product inlet speed is 25 m/s" & vbCrLf
+        TextBox153.Text &= "Maltodextrine  " & vbCrLf
+
+        TextBox174.Text = "AVEBE" & vbCrLf
+        TextBox174.Text &= "Many type of Potato starch" & vbCrLf
+        TextBox174.Text &= "Blockage 1st stage AA850 (speed too low)" & vbCrLf
+        TextBox174.Text &= "Part replacement by AA425 ?" & vbCrLf
 
         Me.Size = New System.Drawing.Size(1305, 906)
         Calc_sequence()
@@ -3137,11 +3149,16 @@ Public Class Form1
         TabControl1.TabPages.Remove(TabPage8)       'Logging
         TabControl1.TabPages.Remove(TabPage10)      'High Dust load
         PictureBox4.Visible = False
+        TextBox20.Visible = False
+        TextBox174.Visible = False
 
         If (id = "gp" Or id = "gerritp" Or id = "user") Then
             TabControl1.TabPages.Add(TabPage5)       'Stress calculation
             TabControl1.TabPages.Add(TabPage8)       'Logging
             TabControl1.TabPages.Add(TabPage10)      'High Dust load
+            PictureBox4.Visible = True
+            TextBox20.Visible = True
+            TextBox174.Visible = True
         End If
     End Sub
 
