@@ -1293,17 +1293,17 @@ Public Class Form1
         End If
 
     End Sub
-    Public Sub Log_now(ks As Integer, line As Integer, r As String)
-        'Dim verschil As Double
+    'Public Sub Log_now(ks As Integer, line As Integer, r As String)
+    'Dim verschil As Double
 
-        'verschil = _cees(ks).stage1(line).psd_cum_pro - _cees(ks).stage2(line).psd_cum_pro
-        'TextBox24.Text &= "Log line" & line.ToString & " " & r
-        'TextBox24.Text &= " c.stage1(line).psd_dif=" & _cees(ks).stage1(line).psd_dif.ToString
-        'TextBox24.Text &= "  c.stage2(line).psd_dif=" & _cees(ks).stage2(line).psd_dif.ToString
-        'TextBox24.Text &= "  c.stage1(line).psd_cum_pro=" & _cees(ks).stage1(line).psd_cum_pro.ToString
-        'TextBox24.Text &= "  c.stage2(line).psd_cum_pro=" & _cees(ks).stage2(line).psd_cum_pro.ToString
-        'TextBox24.Text &= "  verschil=" & verschil.ToString & vbCrLf
-    End Sub
+    'verschil = _cees(ks).stage1(line).psd_cum_pro - _cees(ks).stage2(line).psd_cum_pro
+    'TextBox24.Text &= "Log line" & line.ToString & " " & r
+    'TextBox24.Text &= " c.stage1(line).psd_dif=" & _cees(ks).stage1(line).psd_dif.ToString
+    'TextBox24.Text &= "  c.stage2(line).psd_dif=" & _cees(ks).stage2(line).psd_dif.ToString
+    'TextBox24.Text &= "  c.stage1(line).psd_cum_pro=" & _cees(ks).stage1(line).psd_cum_pro.ToString
+    'TextBox24.Text &= "  c.stage2(line).psd_cum_pro=" & _cees(ks).stage2(line).psd_cum_pro.ToString
+    'TextBox24.Text &= "  verschil=" & verschil.ToString & vbCrLf
+    'End Sub
 
     Private Sub Draw_chart2(ch As Chart, ks As Integer)
         'Small chart on the first tab
@@ -2355,6 +2355,12 @@ Public Class Form1
                 DataGridView6.Rows(i).Cells(1).Style.BackColor = Color.LightGreen
             End If
         Next
+
+        '--- Value 100 gives errors -----
+        Dim qq As Double = CDbl(DataGridView6.Rows(0).Cells(1).Value)
+        If qq >= 100 Then
+            DataGridView6.Rows(0).Cells(1).Value = "99.9999"
+        End If
     End Sub
     Private Sub Calc_cycl_weight()
         Dim w1, w2, w3, w4, w5, w6 As Double
