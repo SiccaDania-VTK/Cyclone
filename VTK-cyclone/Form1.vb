@@ -980,7 +980,7 @@ Public Class Form1
     '-------- Bereken het verlies getal NIET gecorrigeerd -----------
     '----- de input is de GEMIDDELDE korrel grootte-----------
 
-    Private Function Calc_verlies(korrel_g As Double, present As Boolean, stokes As Double, stage As Integer) As Double
+    Private Function Calc_verlies(korrel_g As Double, stokes As Double, stage As Integer) As Double
         Dim words() As String
         Dim dia_Kcrit, fac_m, fac_a, fac_k As Double
         Dim verlies As Double = 1
@@ -1051,7 +1051,7 @@ Public Class Form1
     'Calculate the diameter at which qq% is lost
     'Separation depends on Stokes
     Private Function Calc_dia_particle(qq As Double, stokes As Double, stage As Integer) As Double
-        Dim dia_result As Double = 0
+        Dim dia_result As Double
         Dim words() As String
         Dim dia_Kcrit As Double
         Dim d1, d2 As Double
@@ -1344,8 +1344,8 @@ Public Class Form1
 
         For h = 1 To 30                                          'Particle diameter [mu]
             s_points(h, 0) = h                                   'Particle diameter [mu]
-            s_points(h, 1) = Calc_verlies(h, False, _cees(ks).Kstokes1, 1) * 100  'stage #1 Loss [%]
-            s_points(h, 2) = Calc_verlies(h, False, _cees(ks).Kstokes2, 2) * 100  'stage #2 Loss [%]
+            s_points(h, 1) = Calc_verlies(h, _cees(ks).Kstokes1, 1) * 100  'stage #1 Loss [%]
+            s_points(h, 2) = Calc_verlies(h, _cees(ks).Kstokes2, 2) * 100  'stage #2 Loss [%]
         Next
 
         '------ now present-------------
@@ -1588,7 +1588,7 @@ Public Class Form1
 
         Dim chart_size As Integer = 65  '% of original picture size
         Dim file_name As String
-        Dim row As Integer = 0
+        Dim row As Integer
 
         oWord = CType(CreateObject("Word.Application"), Word.Application)
         oWord.Visible = True
@@ -1823,9 +1823,9 @@ Public Class Form1
 
     Private Sub Present_loss_grid1(ks As Integer)
         Dim j As Integer
-        Dim total_abs_loss_C As Double = 0
-        Dim total_abs_loss As Double = 0
-        Dim total_psd_diff As Double = 0
+        'Dim total_abs_loss_C As Double
+        'Dim total_abs_loss As Double
+        'Dim total_psd_diff As Double
 
         DataGridView2.ColumnCount = 18
         DataGridView2.Rows.Clear()
@@ -1885,10 +1885,10 @@ Public Class Form1
 
     Private Sub Present_loss_grid2(ks As Integer)
         Dim j As Integer
-        Dim total_abs_loss_C As Double = 0
-        Dim total_abs_loss As Double = 0
-        Dim total_psd_diff1 As Double = 0
-        Dim total_psd_diff2 As Double = 0
+        'Dim total_abs_loss_C As Double
+        'Dim total_abs_loss As Double
+        'Dim total_psd_diff1 As Double
+        'Dim total_psd_diff2 As Double
 
         DataGridView3.ColumnCount = 19
         DataGridView3.Rows.Clear()
@@ -1997,11 +1997,11 @@ Public Class Form1
 
         _cees(ks).stage1(0).d_ave = _cees(ks).stage1(0).dia / 2                       'Average diameter
         _cees(ks).stage1(0).d_ave_K = _cees(ks).stage1(0).d_ave / _cees(ks).Kstokes1  'dia/k_stokes
-        _cees(ks).stage1(0).loss_overall = Calc_verlies(_cees(ks).stage1(0).d_ave_K, False, _cees(ks).Kstokes1, 1)     '[-] loss overall
+        _cees(ks).stage1(0).loss_overall = Calc_verlies(_cees(ks).stage1(0).d_ave_K, _cees(ks).Kstokes1, 1)     '[-] loss overall
         Calc_verlies_corrected(_cees(ks).stage1(0), 1)                                '[-] loss overall corrected
         _cees(ks).stage1(0).catch_chart = (1 - _cees(ks).stage1(i).loss_overall_C) * 100     '[%]
 
-        Calc_diam_classification(_cees(ks).stage1(0), ks)        'Classify this part size
+        Calc_diam_classification(_cees(ks).stage1(0))        'Classify this part size
         Calc_k_and_m(_cees(ks).stage1(0))                        'Calculate i_m and i_k
 
         _cees(ks).stage1(0).psd_cum = Math.E ^ (-((_cees(ks).stage1(i).dia / _cees(ks).stage1(i).i_m) ^ _cees(ks).stage1(i).i_k))
@@ -2047,7 +2047,7 @@ Public Class Form1
             _cees(ks).stage1(i).dia = _cees(ks).stage1(i - 1).dia * _istep
             _cees(ks).stage1(i).d_ave = ((_cees(ks).stage1(i - 1).dia + _cees(ks).stage1(i).dia)) / 2   'Average diameter
             _cees(ks).stage1(i).d_ave_K = _cees(ks).stage1(i).d_ave / _cees(ks).Kstokes1                'dia/k_stokes
-            _cees(ks).stage1(i).loss_overall = Calc_verlies(_cees(ks).stage1(i).d_ave, False, _cees(ks).Kstokes1, 1)   '[-] loss overall
+            _cees(ks).stage1(i).loss_overall = Calc_verlies(_cees(ks).stage1(i).d_ave, _cees(ks).Kstokes1, 1)   '[-] loss overall
             Calc_verlies_corrected(_cees(ks).stage1(i), 1)                                              '[-] loss overall corrected
 
             If CheckBox2.Checked Then
@@ -2056,7 +2056,7 @@ Public Class Form1
                 _cees(ks).stage1(i).catch_chart = (1 - _cees(ks).stage1(i).loss_overall) * 100    '[%] NOT corrected
             End If
 
-            Calc_diam_classification(_cees(ks).stage1(i), ks)         'Classify this part size (result is  .i_grp)
+            Calc_diam_classification(_cees(ks).stage1(i))         'Classify this part size (result is  .i_grp)
 
             '====to prevent silly results====
             If _cees(ks).stage1(i).i_grp < no_PDS_inputs Then  'OK in this one counts
@@ -2150,10 +2150,10 @@ Public Class Form1
         _cees(ks).stage2(0).dia = _cees(ks).stage1(0).dia                                   'Copy stage #1
         _cees(ks).stage2(0).d_ave = _cees(ks).stage2(0).dia / 2                             'Average diameter
         _cees(ks).stage2(0).d_ave_K = _cees(ks).stage2(0).d_ave / _cees(ks).Kstokes2        'dia/k_stokes
-        _cees(ks).stage2(0).loss_overall = Calc_verlies(_cees(ks).stage2(0).d_ave_K, False, _cees(ks).Kstokes2, 2)     '[-] loss overall
+        _cees(ks).stage2(0).loss_overall = Calc_verlies(_cees(ks).stage2(0).d_ave_K, _cees(ks).Kstokes2, 2)     '[-] loss overall
         Calc_verlies_corrected(_cees(ks).stage2(0), 2)                                      '[-] loss overall corrected
         _cees(ks).stage2(0).catch_chart = (1 - _cees(ks).stage2(0).loss_overall_C) * 100    '[%]
-        Calc_diam_classification(_cees(ks).stage2(0), ks)                                  'groepnummer
+        Calc_diam_classification(_cees(ks).stage2(0))                                  'groepnummer
 
         If _cees(ks).stage2(i).i_grp < no_PDS_inputs Then
             Calc_k_and_m(_cees(ks).stage2(0))
@@ -2201,7 +2201,7 @@ Public Class Form1
             _cees(ks).stage2(i).dia = _cees(ks).stage1(i).dia                               'Diameter Copy stage #1
             _cees(ks).stage2(i).d_ave = _cees(ks).stage1(i).d_ave                           'Average diameter
             _cees(ks).stage2(i).d_ave_K = _cees(ks).stage2(i).d_ave / _cees(ks).Kstokes2    'dia/k_stokes
-            _cees(ks).stage2(i).loss_overall = Calc_verlies(_cees(ks).stage2(i).d_ave, False, _cees(ks).Kstokes2, 2)   '[-] loss overall
+            _cees(ks).stage2(i).loss_overall = Calc_verlies(_cees(ks).stage2(i).d_ave, _cees(ks).Kstokes2, 2)   '[-] loss overall
             Calc_verlies_corrected(_cees(ks).stage2(i), 2)                                  '[-] loss overall corrected
 
             '------------- Load correction stage #2 -------------------
@@ -2211,7 +2211,7 @@ Public Class Form1
                 _cees(ks).stage2(i).catch_chart = (1 - _cees(ks).stage2(i).loss_overall) * 100    '[%] NOT corrected
             End If
 
-            Calc_diam_classification(_cees(ks).stage2(i), ks)                                     'Calc
+            Calc_diam_classification(_cees(ks).stage2(i))                                     'Calc
             _cees(ks).stage2(i).i_grp = _cees(ks).stage1(i).i_grp
 
             If _cees(ks).stage2(i).i_grp < no_PDS_inputs Then
@@ -2271,7 +2271,7 @@ Public Class Form1
         TextBox143.Text = _cees(ks).dust2_Nm3.ToString("F3")        'Dust load [gram/Nm3]
     End Sub
 
-    Public Sub Calc_diam_classification(ByRef g As GvG_Calc_struct, ks As Integer)
+    Public Sub Calc_diam_classification(ByRef g As GvG_Calc_struct)
         'Determine the particle diameter class 
         Dim grp_count As Integer = 0
 
@@ -2798,7 +2798,7 @@ Public Class Form1
     Private Sub Calc_Round_plate()
         'Round plate simply supported
         Dim dia, r, t As Double
-        Dim Elas, p, σm, yt, v As Double
+        Dim Elas, p, σm, yt As Double
         Dim _fs, sf, _σ_02 As Double
         Dim temper As Double
 
@@ -2816,7 +2816,6 @@ Public Class Form1
         Elas = (201.66 - 8.48 * temper / 10 ^ 2) '* 10 ^ 9   '[GPa] for 304
         Elas *= 10 ^ 9                                       '[Pa] for 304
 
-        v = 0.3 'For steel
         σm = 1.238 * p * r ^ 2 / t ^ 2
         σm /= 10 ^ 6                                        '[N/mm2]
 
