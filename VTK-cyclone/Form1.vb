@@ -552,9 +552,16 @@ Public Class Form1
         TextBox174.Text &= "Part replacement by AA425 ?" & vbCrLf
 
         Me.Size = New System.Drawing.Size(1305, 906)
+
         Calc_sequence()
         Build_dgv6()                    'PSD input grid
+        For row = 0 To no_PDS_inputs - 1
+            DataGridView6.Rows(row).Cells(0).Value = 0
+            DataGridView6.Rows(row).Cells(1).Value = 0
+        Next
+        PSD_Whey()
         Save_present_case_to_array()
+
         init = True                     'init is now done
     End Sub
 
@@ -2894,7 +2901,7 @@ Public Class Form1
         DataGridView6.Columns(2).Width = 60
 
         '======== Fill the DVG with example data =======
-        PSD_Whey()
+        ' PSD_Whey()
     End Sub
 
     Private Sub DataGridView6_CellEndEdit(sender As Object, e As DataGridViewCellEventArgs) Handles DataGridView6.CellEndEdit
