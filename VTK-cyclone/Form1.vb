@@ -389,7 +389,7 @@ Public Class Form1
         hard_disk_list.Add("134309552747")          'VTK PC, Peter de Wild
 
         nu = Now()
-        nu2 = CDate("2020-12-01 00:00:00")
+        nu2 = CDate("2021-12-01 00:00:00")
         life_time = CInt((nu2 - nu).TotalDays)
         Label101.Text = "Expire " & life_time.ToString
 
@@ -1555,7 +1555,6 @@ Public Class Form1
         Retrieve_from_disk()        'Read from disk to array
         Update_Screen_from_array(CInt(NumericUpDown30.Value))   'Refresh screen data case 0
         Calc_sequence()
-
     End Sub
 
     Public Function HardDisc_Id() As String
@@ -2338,7 +2337,6 @@ Public Class Form1
                 w(i) = _input(j).class_load - Abs(qsum(i))
             Next
 
-            'Check_DGV6()
             Label1.Visible = False  'Error message
         Else
             'MessageBox.Show("Error in Calc_diam_classification")
@@ -2351,7 +2349,7 @@ Public Class Form1
         '---------CHECK- diameters must increase-----------
         DataGridView6.Rows(0).Cells(0).Style.BackColor = Color.LightGreen
         For i = 1 To DataGridView6.Rows.Count - 1
-            If _input(i).dia_big <= _input(i - 1).dia_big And _input(i).dia_big <> 0 Then
+            If _input(i).dia_big < _input(i - 1).dia_big And _input(i).dia_big <> 0 Then
                 DataGridView6.Rows(i).Cells(0).Style.BackColor = Color.Red
             Else
                 DataGridView6.Rows(i).Cells(0).Style.BackColor = Color.LightGreen
@@ -2361,8 +2359,8 @@ Public Class Form1
         '---------CHECK-cummulative weight must decrease-----------
         DataGridView6.Rows(0).Cells(1).Style.BackColor = Color.LightGreen
         For i = 1 To DataGridView6.Rows.Count - 1
-            If _input(i).class_load >= _input(i - 1).class_load And _input(i).class_load <> 0 Then
-                DataGridView6.Rows(i).Cells(1).Style.BackColor = Color.Red
+            If _input(i).class_load > _input(i - 1).class_load And _input(i).class_load <> 0 Then
+                DataGridView6.Rows(i).Cells(1).Style.BackColor = Color.Orange
             Else
                 DataGridView6.Rows(i).Cells(1).Style.BackColor = Color.LightGreen
             End If
