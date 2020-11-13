@@ -119,14 +119,14 @@ End Structure
 End Structure
 
 Public Class Form1
-    Public Const no_PDS_inputs As Integer = 100     'Data from the customer
-    Public _cyl1_dim(20) As Double                  'Cyclone stage #1 dimensions
-    Public _cyl2_dim(20) As Double                  'Cyclone stage #2 dimensions
-    Public _istep As Double                         '[mu] Particle size calculation step
-    Public _cees(20) As Input_struct                '20 Case's data     (case 0 is for calculations ONLY)
-    Public _input(no_PDS_inputs) As Psd_input_struct   '20 Case's data     (case 0 is for calculations ONLY)
-    Dim k41 As Double                               'sum loss abs (for DataGridView1)
-    Dim init As Boolean = False                     'Initialize done
+    Public Const no_PDS_inputs As Integer = 100         'Data from the customer
+    Public _cyl1_dim(20) As Double                      'Cyclone stage #1 dimensions
+    Public _cyl2_dim(20) As Double                      'Cyclone stage #2 dimensions
+    Public _istep As Double                             '[mu] Particle size calculation step
+    Public _cees(20) As Input_struct                    '20 Case's data     (case 0 is for calculations ONLY)
+    Public _input(no_PDS_inputs) As Psd_input_struct    '20 Case's data     (case 0 is for calculations ONLY)
+    Dim k41 As Double                                   'sum loss abs (for DataGridView1)
+    Dim init As Boolean = False                         'Initialize done
 
     'Type AC;Inlaatbreedte;Inlaathoogte;Inlaatlengte;Inlaat hartmaat;Inlaat afschuining;
     'Uitlaat keeldia inw.;Uitlaat flensdiameter inw.;Lengte insteekpijp inw.;
@@ -352,10 +352,10 @@ Public Class Form1
             ReDim _cees(i).stage2(150)                        'Initialize
         Next
 
-        For i = 1 To DataGridView6.Rows.Count - 1              'Initialize
-            DataGridView6.Rows(i).Cells(0).Value = 0
-            DataGridView6.Rows(i).Cells(1).Value = 0
-        Next
+        'For i = 1 To DataGridView6.Rows.Count - 1              'Initialize
+        '    DataGridView6.Rows(i).Cells(0).Value = 0
+        '    DataGridView6.Rows(i).Cells(1).Value = 0
+        'Next
 
         '------ allowed users with hard disc id's -----
         user_list.Add("user")
@@ -563,13 +563,9 @@ Public Class Form1
 
         Build_dgv6()                    'PSD input grid
         Calc_sequence()
-
-        For row = 0 To no_PDS_inputs - 1
-            DataGridView6.Rows(row).Cells(0).Value = 0
-            DataGridView6.Rows(row).Cells(1).Value = 0
-        Next
+        Clear_dgv6()
         ' PSD_Whey()
-        Save_present_case_to_array()
+        ' Save_present_case_to_array()
 
         init = True                     'init is now done
     End Sub
@@ -660,7 +656,7 @@ Public Class Form1
             If _cees(ks).inv1 < 1 Then _cees(ks).inv1 = 1               '[m/s] Prevent silly results
             If _cees(ks).inv1 > 60 Then _cees(ks).inv1 = 60             '[m/s] Prevent silly results
 
-            If ComboBox1.SelectedIndex > -1 Then
+            If ComboBox1.SelectedIndex > -1 Then    'Cyclone selection
                 words = rekenlijnen(ComboBox1.SelectedIndex).Split(CType(";", Char()))
                 wc_air1 = CDbl(words(8))        'Resistance Coefficient air
                 wc_dust1 = CDbl(words(9))       'Resistance Coefficient dust
@@ -1255,9 +1251,9 @@ Public Class Form1
 
         '----------------------------- Plot Input stars-----------------------
         If CheckBox15.Checked Then
-            For i = 0 To (no_PDS_inputs - 1)       'Number of input data points
-                a = _input(i).dia_big                    '[mu] Class upper particle diameter limit diameter
-                b = _input(i).class_load * 100           'Percentale van de inlaat stof belasting
+            For i = 0 To (no_PDS_inputs - 1)            'Number of input data points
+                a = _input(i).dia_big                   '[mu] Class upper particle diameter limit diameter
+                b = _input(i).class_load * 100          'Percentale van de inlaat stof belasting
                 ch.Series(0).Points.AddXY(a, b)
                 ch.Series(0).Points(i).MarkerStyle = MarkerStyle.Star10
                 ch.Series(0).Points(i).MarkerSize = 15
@@ -1458,14 +1454,10 @@ Public Class Form1
             Get_input_calc_1(0)         'This is the CASE number
             Calc_part_dia_loss(0)
 
-            Calc_stage1(0)              'Calc according stage #1
-            Calc_stage2(0)              'Calc according stage #2
-
-            Calc_stage1(0)              'Calc according stage #1
-            Calc_stage2(0)              'Calc according stage #2
-
-            Calc_stage1(0)              'Calc according stage #1
-            Calc_stage2(0)              'Calc according stage #2
+            For i = 0 To 3
+                Calc_stage1(0)          'Calc according stage #1
+                Calc_stage2(0)          'Calc according stage #2
+            Next
 
             Calc_stage1_2_comb(0)       'Calc stage #1 and stage #2 combined
 
@@ -1479,6 +1471,7 @@ Public Class Form1
             ResumeLayout()              'Calcu is done update screen
             ProgressBar1.Visible = False
         End If
+        Debug.WriteLine("Calc_sequence()")
     End Sub
 
     Private Sub Button3_Click(sender As Object, e As EventArgs) Handles Button3.Click
@@ -1533,7 +1526,7 @@ Public Class Form1
         Catch ex As Exception
             MessageBox.Show("Line 6298, " & ex.Message)  ' Show the exception's message.
         End Try
-        ' Debug.WriteLine("Save_to_disk() ")
+        Debug.WriteLine("Save_to_disk() ")
     End Sub
     Private Sub Retrieve_from_disk()
         Dim bf As New System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
@@ -1570,8 +1563,11 @@ Public Class Form1
 
         Retrieve_from_disk()        'Read from disk to array
         Debug.WriteLine("retrieve done")
+
         Update_Screen_from_array(1)   'Refresh screen data case 1
-        Debug.WriteLine("Update screen done")
+
+
+        Debug.WriteLine("Update_Screen_from_array(1)")
         Calc_sequence()
     End Sub
 
@@ -2645,21 +2641,26 @@ Public Class Form1
             p1_rel = (_cees(zz).p1_abs - 101325) / 100               '[mbar]
             Chck_value(NumericUpDown19, CDec(p1_rel))                '[Pa abs]-->[mbar g] Pressure
 
-            'Dump_log_to_box24()
 
             'Clear_dgv6()
+            Fill_DGV6_from_input_array()
+            Dump_log_to_box24()
 
-            '[mu] Class upper particle diameter limit diameter
-            '[%] Percentage van de inlaat stof belasting
-            For row = 0 To no_PDS_inputs - 1
-                DataGridView6.Rows(row).Cells(0).Value = _input(row).dia_big
-                DataGridView6.Rows(row).Cells(1).Value = _input(row).class_load * 100
-            Next
-            DataGridView6.Refresh()
             ResumeLayout()
-            Debug.WriteLine("Line 2660")
         End If
     End Sub
+    Private Sub Fill_DGV6_from_input_array()
+        '[mu] Class upper particle diameter limit diameter
+        '[%] Percentage van de inlaat stof belasting
+
+        For row = 0 To no_PDS_inputs - 1
+            DataGridView6.Rows(row).Cells(0).Value = _input(row).dia_big
+            DataGridView6.Rows(row).Cells(1).Value = _input(row).class_load * 100
+        Next
+        DataGridView6.Refresh()
+        Debug.WriteLine("Fill_DGV6_from_input_array done")
+    End Sub
+
     Private Sub Dump_log_to_box24()
 
         TextBox24.Text = "----------------------------------------" & vbCrLf
@@ -2669,6 +2670,11 @@ Public Class Form1
             TextBox24.Text &= "zz= " & zz.ToString & ",  _cees(zz).db1= " & _cees(zz).db1.ToString & vbCrLf
             TextBox24.Text &= "zz= " & zz.ToString & ",  _cees(zz).db2= " & _cees(zz).db2.ToString & vbCrLf & vbCrLf
         Next
+
+        For zz = 0 To 4
+            TextBox24.Text &= "_input(" & zz.ToString & ").dia_big = " & _input(zz).dia_big.ToString & vbCrLf
+        Next
+
     End Sub
 
     Private Sub Chck_value(num As NumericUpDown, value As Decimal)
@@ -2916,6 +2922,7 @@ Public Class Form1
 
         '======== Fill the DVG with example data =======
         ' PSD_Whey()
+        Debug.WriteLine("Build_dgv6()")
     End Sub
 
     Private Sub DataGridView6_CellEndEdit(sender As Object, e As DataGridViewCellEventArgs) Handles DataGridView6.CellEndEdit
@@ -2965,16 +2972,19 @@ Public Class Form1
 
         '======== Fill the DVG with PSD example data =======
         Dim words() As String
-        For row = 0 To DataGridView6.Rows.Count - 1
-            If row < AA_excel.Length Then
-                words = AA_excel(row).Split(CType(";", Char()))
-                DataGridView6.Rows(row).Cells(0).Value = CDbl(words(0))
-                DataGridView6.Rows(row).Cells(1).Value = CDbl(words(1))
-            Else
-                DataGridView6.Rows(row).Cells(0).Value = ""
-                DataGridView6.Rows(row).Cells(1).Value = ""
-            End If
-        Next
+        With DataGridView6
+            For row = 0 To .Rows.Count - 1
+                If row < AA_excel.Length Then
+                    words = AA_excel(row).Split(CType(";", Char()))
+                    .Rows(row).Cells(0).Value = CDbl(words(0))
+                    .Rows(row).Cells(1).Value = CDbl(words(1))
+                Else
+                    .Rows(row).Cells(0).Value = ""
+                    .Rows(row).Cells(1).Value = ""
+                End If
+            Next
+        End With
+        Debug.WriteLine("AA850_psd()")
     End Sub
 
     Private Sub PSD_maltodesxtrine()
@@ -3000,16 +3010,19 @@ Public Class Form1
 
         '======== Fill the DVG with PSD example data =======
         Dim words() As String
-        For row = 0 To DataGridView6.Rows.Count - 1
-            If row < maltodextrine_psd.Length Then
-                words = maltodextrine_psd(row).Split(CType(";", Char()))
-                DataGridView6.Rows(row).Cells(0).Value = CDbl(words(0))
-                DataGridView6.Rows(row).Cells(1).Value = CDbl(words(1))
-            Else
-                DataGridView6.Rows(row).Cells(0).Value = ""
-                DataGridView6.Rows(row).Cells(1).Value = ""
-            End If
-        Next
+        With DataGridView6
+            For row = 0 To .Rows.Count - 1
+                If row < maltodextrine_psd.Length Then
+                    words = maltodextrine_psd(row).Split(CType(";", Char()))
+                    .Rows(row).Cells(0).Value = CDbl(words(0))
+                    .Rows(row).Cells(1).Value = CDbl(words(1))
+                Else
+                    .Rows(row).Cells(0).Value = ""
+                    .Rows(row).Cells(1).Value = ""
+                End If
+            Next
+        End With
+        Debug.WriteLine("PSD_maltodesxtrine()")
     End Sub
 
     Private Sub PSD_Whey()
@@ -3035,31 +3048,37 @@ Public Class Form1
 
         '======== Fill the DVG with PSD example data =======
         Dim words() As String
-        For row = 0 To DataGridView6.Rows.Count - 1
-            If row < psd_whey_A6605.Length Then
-                words = psd_whey_A6605(row).Split(CType(";", Char()))
-                DataGridView6.Rows(row).Cells(0).Value = CDbl(words(0))
-                DataGridView6.Rows(row).Cells(1).Value = CDbl(words(1))
-            Else
-                DataGridView6.Rows(row).Cells(0).Value = ""
-                DataGridView6.Rows(row).Cells(1).Value = ""
-            End If
-        Next
+        With DataGridView6
+            For row = 0 To .Rows.Count - 1
+                If row < psd_whey_A6605.Length Then
+                    words = psd_whey_A6605(row).Split(CType(";", Char()))
+                    .Rows(row).Cells(0).Value = CDbl(words(0))
+                    .Rows(row).Cells(1).Value = CDbl(words(1))
+                Else
+                    .Rows(row).Cells(0).Value = ""
+                    .Rows(row).Cells(1).Value = ""
+                End If
+            Next
+        End With
+        Debug.WriteLine("PSD_Whey()")
     End Sub
 
     Private Sub DSM_psd()
         '======== Fill the DVG with DSM polymere example data =======
         Dim words() As String
-        For row = 0 To DataGridView6.Rows.Count - 1
-            If row < DSM_psd_example.Length Then
-                words = DSM_psd_example(row).Split(CType(";", Char()))
-                DataGridView6.Rows(row).Cells(0).Value = CDbl(words(0))
-                DataGridView6.Rows(row).Cells(1).Value = CDbl(words(1))
-            Else
-                DataGridView6.Rows(row).Cells(0).Value = ""
-                DataGridView6.Rows(row).Cells(1).Value = ""
-            End If
-        Next
+        With DataGridView6
+            For row = 0 To .Rows.Count - 1
+                If row < DSM_psd_example.Length Then
+                    words = DSM_psd_example(row).Split(CType(";", Char()))
+                    .Rows(row).Cells(0).Value = CDbl(words(0))
+                    .Rows(row).Cells(1).Value = CDbl(words(1))
+                Else
+                    .Rows(row).Cells(0).Value = ""
+                    .Rows(row).Cells(1).Value = ""
+                End If
+            Next
+        End With
+        Debug.WriteLine("DSM_psd()")
     End Sub
     Private Sub Button14_Click(sender As Object, e As EventArgs) Handles Button14.Click
         PSD_GvG_excel()
@@ -3090,16 +3109,19 @@ Public Class Form1
 
         '======== Fill the DVG with DSM polymere example data =======
         Dim words() As String
-        For row = 0 To DataGridView6.Rows.Count - 1
-            If row < GvG_excel.Length Then
-                words = GvG_excel(row).Split(CType(";", Char()))
-                DataGridView6.Rows(row).Cells(0).Value = CDbl(words(0))
-                DataGridView6.Rows(row).Cells(1).Value = CDbl(words(1))
-            Else
-                DataGridView6.Rows(row).Cells(0).Value = ""
-                DataGridView6.Rows(row).Cells(1).Value = ""
-            End If
-        Next
+        With DataGridView6
+            For row = 0 To .Rows.Count - 1
+                If row < GvG_excel.Length Then
+                    words = GvG_excel(row).Split(CType(";", Char()))
+                    .Rows(row).Cells(0).Value = CDbl(words(0))
+                    .Rows(row).Cells(1).Value = CDbl(words(1))
+                Else
+                    .Rows(row).Cells(0).Value = ""
+                    .Rows(row).Cells(1).Value = ""
+                End If
+            Next
+        End With
+        Debug.WriteLine("PSD_GvG_excel()")
     End Sub
 
     Private Sub Screen_contrast()
@@ -3200,6 +3222,7 @@ Public Class Form1
             End Try
         End If
         Calc_sequence()
+        Debug.WriteLine("DataGridView6_KeyDown done")
     End Sub
     Private Sub Button19_Click(sender As Object, e As EventArgs) Handles Button19.Click
         'Clear the all grid cells
@@ -3211,8 +3234,10 @@ Public Class Form1
             DataGridView6.Rows(row).Cells(0).Value = 0
             DataGridView6.Rows(row).Cells(1).Value = 0
         Next
+        Debug.WriteLine("Clear_dgv6()")
     End Sub
     Private Sub Button12_Click(sender As Object, e As EventArgs) Handles Button12.Click
-        Update_Screen_from_array(1)
+
+        Fill_DGV6_from_input_array()
     End Sub
 End Class
