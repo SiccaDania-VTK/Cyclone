@@ -980,14 +980,17 @@ Public Class Form1
         ' Dump_log_to_box24()
 
         If init = False Then Exit Sub       'Prevent out of range error
+        'MsgBox("Read the input data from the datagridview6")
+        'Calc_Class_load()
 
-        '==== read dgv and do not trip on "-" ====
+    End Sub
+    Private Sub Calc_Class_load()
+
+        '==== read dgv6 and do not trip on "-" ====
         '[mu] Class upper particle diameter limit diameter
         'Percentale van de inlaat stof belasting [%]
+
         Dim a, b As Double
-
-        'MsgBox("Read the input data from the datagridview6")
-
         For row = 0 To no_PDS_inputs - 1
             Double.TryParse(DataGridView6.Rows(row).Cells(0).Value.ToString, a)
             Double.TryParse(DataGridView6.Rows(row).Cells(1).Value.ToString, b)
@@ -1001,6 +1004,9 @@ Public Class Form1
             End If
         Next
     End Sub
+
+
+
     '-------- Bereken het verlies getal NIET gecorrigeerd -----------
     '----- de input is de GEMIDDELDE korrel grootte-----------
 
@@ -2331,7 +2337,7 @@ Public Class Form1
             If (g.dia >= _input(no_PDS_inputs).dia_big And _input(no_PDS_inputs).dia_big > 0) Then
                 g.i_d1 = _input(no_PDS_inputs).dia_big        'Diameter small [mu]
                 g.i_d2 = 2000                                       'Diameter big [mu]
-                g.i_p1 = _input(no_PDS_inputs).class_load     'User lower input percentage
+                g.i_p1 = _input(no_PDS_inputs).class_load           'User lower input percentage
                 g.i_p2 = 0                                          'User upper input percentage
                 g.i_grp = grp_count                                 'Last PSD input star
             End If
@@ -3022,6 +3028,7 @@ Public Class Form1
 
         '======== Fill the DVG with PSD example data =======
         Fill_dgv6_example(psd_whey_A6605)
+
     End Sub
 
     Private Sub PSD_DSM_polymere()
@@ -3042,6 +3049,7 @@ Public Class Form1
                 End If
             Next
         End With
+        Calc_Class_load()
         Debug.WriteLine("Fill_dgv6_example")
     End Sub
 
@@ -3186,8 +3194,5 @@ Public Class Form1
         Next
         Debug.WriteLine("Clear_dgv6()")
     End Sub
-    Private Sub Button12_Click(sender As Object, e As EventArgs) Handles Button12.Click
 
-        Fill_DGV6_from_input_array()
-    End Sub
 End Class
