@@ -124,7 +124,7 @@ Public Class Form1
     Public _cyl2_dim(20) As Double                      'Cyclone stage #2 dimensions
     Public _istep As Double                             '[mu] Particle size calculation step
     Public _cees(20) As Input_struct                    '20 Case's data     (case 0 is for calculations ONLY)
-    Public _input(no_PDS_inputs) As Psd_input_struct    '20 Case's data     (case 0 is for calculations ONLY)
+    Public _input(no_PDS_inputs) As Psd_input_struct    'Particle Size Distribution
     Dim k41 As Double                                   'sum loss abs (for DataGridView1)
     Dim init As Boolean = False                         'Initialize done
 
@@ -2921,7 +2921,7 @@ Public Class Form1
         End With
 
         '======== Fill the DVG with example data =======
-        ' PSD_Whey()
+        'PSD_Whey()
         Debug.WriteLine("Build_dgv6()")
     End Sub
 
@@ -2941,7 +2941,7 @@ Public Class Form1
         Calc_sequence()
     End Sub
     Private Sub Button16_Click(sender As Object, e As EventArgs) Handles Button16.Click
-        DSM_psd()
+        PSD_DSM_polymere()
         Calc_sequence()
     End Sub
 
@@ -2971,20 +2971,7 @@ Public Class Form1
         NumericUpDown34.Value = CDec(0.3)       '[m] diameter cycloon
 
         '======== Fill the DVG with PSD example data =======
-        Dim words() As String
-        With DataGridView6
-            For row = 0 To .Rows.Count - 1
-                If row < AA_excel.Length Then
-                    words = AA_excel(row).Split(CType(";", Char()))
-                    .Rows(row).Cells(0).Value = CDbl(words(0))
-                    .Rows(row).Cells(1).Value = CDbl(words(1))
-                Else
-                    .Rows(row).Cells(0).Value = ""
-                    .Rows(row).Cells(1).Value = ""
-                End If
-            Next
-        End With
-        Debug.WriteLine("AA850_psd()")
+        Fill_dgv6_example(AA_excel)
     End Sub
 
     Private Sub PSD_maltodesxtrine()
@@ -3009,20 +2996,7 @@ Public Class Form1
         NumericUpDown34.Value = CDec(0.3)   '[m] diameter cycloon
 
         '======== Fill the DVG with PSD example data =======
-        Dim words() As String
-        With DataGridView6
-            For row = 0 To .Rows.Count - 1
-                If row < maltodextrine_psd.Length Then
-                    words = maltodextrine_psd(row).Split(CType(";", Char()))
-                    .Rows(row).Cells(0).Value = CDbl(words(0))
-                    .Rows(row).Cells(1).Value = CDbl(words(1))
-                Else
-                    .Rows(row).Cells(0).Value = ""
-                    .Rows(row).Cells(1).Value = ""
-                End If
-            Next
-        End With
-        Debug.WriteLine("PSD_maltodesxtrine()")
+        Fill_dgv6_example(maltodextrine_psd)
     End Sub
 
     Private Sub PSD_Whey()
@@ -3047,29 +3021,19 @@ Public Class Form1
         NumericUpDown34.Value = CDec(2.2)   '[m] diameter cycloon
 
         '======== Fill the DVG with PSD example data =======
-        Dim words() As String
-        With DataGridView6
-            For row = 0 To .Rows.Count - 1
-                If row < psd_whey_A6605.Length Then
-                    words = psd_whey_A6605(row).Split(CType(";", Char()))
-                    .Rows(row).Cells(0).Value = CDbl(words(0))
-                    .Rows(row).Cells(1).Value = CDbl(words(1))
-                Else
-                    .Rows(row).Cells(0).Value = ""
-                    .Rows(row).Cells(1).Value = ""
-                End If
-            Next
-        End With
-        Debug.WriteLine("PSD_Whey()")
+        Fill_dgv6_example(psd_whey_A6605)
     End Sub
 
-    Private Sub DSM_psd()
+    Private Sub PSD_DSM_polymere()
         '======== Fill the DVG with DSM polymere example data =======
+        Fill_dgv6_example(DSM_psd_example)
+    End Sub
+    Private Sub Fill_dgv6_example(ww As String())
         Dim words() As String
         With DataGridView6
             For row = 0 To .Rows.Count - 1
-                If row < DSM_psd_example.Length Then
-                    words = DSM_psd_example(row).Split(CType(";", Char()))
+                If row < ww.Length Then
+                    words = ww(row).Split(CType(";", Char()))
                     .Rows(row).Cells(0).Value = CDbl(words(0))
                     .Rows(row).Cells(1).Value = CDbl(words(1))
                 Else
@@ -3078,8 +3042,9 @@ Public Class Form1
                 End If
             Next
         End With
-        Debug.WriteLine("DSM_psd()")
+        Debug.WriteLine("Fill_dgv6_example")
     End Sub
+
     Private Sub Button14_Click(sender As Object, e As EventArgs) Handles Button14.Click
         PSD_GvG_excel()
         Calc_sequence()
@@ -3097,30 +3062,15 @@ Public Class Form1
         numericUpDown14.Value = CDec(0.02)  '[mPas=cP]
         NumericUpDown4.Value = 77           '[g/Am3]
         NumericUpDown30.Value = 1           '[-] Case number
-
         NumericUpDown20.Value = 3           '[-] parallel cycloon
         ComboBox1.SelectedIndex = 2         'AC435 stage #1
         numericUpDown5.Value = CDec(1.25)   '[m] diameter cycloon
-
         NumericUpDown33.Value = 6           '[-] parallel cycloon
         ComboBox2.SelectedIndex = 5         'AC850 stage #2
         NumericUpDown34.Value = CDec(1.25)  '[mm] diameter cycloon
 
-
-        '======== Fill the DVG with DSM polymere example data =======
-        Dim words() As String
-        With DataGridView6
-            For row = 0 To .Rows.Count - 1
-                If row < GvG_excel.Length Then
-                    words = GvG_excel(row).Split(CType(";", Char()))
-                    .Rows(row).Cells(0).Value = CDbl(words(0))
-                    .Rows(row).Cells(1).Value = CDbl(words(1))
-                Else
-                    .Rows(row).Cells(0).Value = ""
-                    .Rows(row).Cells(1).Value = ""
-                End If
-            Next
-        End With
+        '======== Fill the DVG6 with DSM polymere example data =======
+        Fill_dgv6_example(GvG_excel)
         Debug.WriteLine("PSD_GvG_excel()")
     End Sub
 
