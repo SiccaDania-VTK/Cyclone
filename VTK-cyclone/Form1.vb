@@ -352,6 +352,11 @@ Public Class Form1
             ReDim _cees(i).stage2(150)                        'Initialize
         Next
 
+        For i = 1 To DataGridView6.Rows.Count - 1              'Initialize
+            DataGridView6.Rows(i).Cells(0).Value = 0
+            DataGridView6.Rows(i).Cells(1).Value = 0
+        Next
+
         '------ allowed users with hard disc id's -----
         user_list.Add("user")
         hard_disk_list.Add("058F63646471")          'Privee PC, graslaan25
@@ -387,6 +392,9 @@ Public Class Form1
 
         user_list.Add("Peterdw")
         hard_disk_list.Add("134309552747")          'VTK PC, Peter de Wild
+
+        user_list.Add("bertk")
+        hard_disk_list.Add("WD-WXB1A14C9942")      'VTK desktop. Bert Korbeeck
 
         nu = Now()
         nu2 = CDate("2021-12-01 00:00:00")
@@ -553,13 +561,14 @@ Public Class Form1
 
         Me.Size = New System.Drawing.Size(1305, 906)
 
-        Calc_sequence()
         Build_dgv6()                    'PSD input grid
+        Calc_sequence()
+
         For row = 0 To no_PDS_inputs - 1
             DataGridView6.Rows(row).Cells(0).Value = 0
             DataGridView6.Rows(row).Cells(1).Value = 0
         Next
-        PSD_Whey()
+        ' PSD_Whey()
         Save_present_case_to_array()
 
         init = True                     'init is now done
@@ -1560,7 +1569,9 @@ Public Class Form1
         'Retrieve project from disk and goto case nr 0
 
         Retrieve_from_disk()        'Read from disk to array
-        Update_Screen_from_array(CInt(NumericUpDown30.Value))   'Refresh screen data case 0
+        Debug.WriteLine("retrieve done")
+        Update_Screen_from_array(1)   'Refresh screen data case 1
+        Debug.WriteLine("Update screen done")
         Calc_sequence()
     End Sub
 
@@ -1576,7 +1587,7 @@ Public Class Form1
         Dim oPropert As PropertyData
         For Each oIte In oResult.Get()
             For Each oPropert In oIte.Properties
-                If Not oPropert.Value Is Nothing AndAlso oPropert.Name = "SerialNumber" Then
+                If oPropert.Value IsNot Nothing AndAlso oPropert.Name = "SerialNumber" Then
                     tmpStr2 = oPropert.Value.ToString
                     Exit For
                 End If
@@ -1873,7 +1884,6 @@ Public Class Form1
         DataGridView2.Columns(1).HeaderCell.Style.BackColor = Color.Yellow  'Chart
         DataGridView2.Columns(5).HeaderCell.Style.BackColor = Color.Yellow  'Chart
 
-        DataGridView2.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill
         'DataGridView2.AutoSize = False
         For row = 1 To 110  'Fill the DataGrid
             j = row - 1
@@ -1896,9 +1906,10 @@ Public Class Form1
             DataGridView2.Rows(j).Cells(16).Value = _cees(ks).stage1(j).loss_abs.ToString("F5")    '[%] loss abs
             DataGridView2.Rows(j).Cells(17).Value = _cees(ks).stage1(j).loss_abs_C.ToString("F5")  '[%] loss corr abs 
         Next
-        DataGridView2.Rows(111).Cells(15).Value = _cees(ks).sum_psd_diff1.ToString("F5")  'total_psd_diff.
-        DataGridView2.Rows(111).Cells(16).Value = _cees(ks).sum_loss1.ToString("F5") 'total_abs_loss.ToString("F5")
-        DataGridView2.Rows(111).Cells(17).Value = _cees(ks).sum_loss_C1.ToString("F5") 'total_abs_loss_C.ToString("F5")
+        DataGridView2.Rows(111).Cells(15).Value = _cees(ks).sum_psd_diff1.ToString("F5")    'total_psd_diff.
+        DataGridView2.Rows(111).Cells(16).Value = _cees(ks).sum_loss1.ToString("F5")        'total_abs_loss.ToString("F5")
+        DataGridView2.Rows(111).Cells(17).Value = _cees(ks).sum_loss_C1.ToString("F5")      'total_abs_loss_C.ToString("F5")
+        DataGridView2.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill
     End Sub
 
     Private Sub Present_loss_grid2(ks As Integer)
@@ -2351,33 +2362,36 @@ Public Class Form1
         End If
     End Sub
     Private Sub Check_DGV6()
-        If DataGridView6.RowCount = 0 Then Exit Sub
 
-        '---------CHECK- diameters must increase-----------
-        DataGridView6.Rows(0).Cells(0).Style.BackColor = Color.LightGreen
-        For i = 1 To DataGridView6.Rows.Count - 1
-            If _input(i).dia_big < _input(i - 1).dia_big And _input(i).dia_big <> 0 Then
-                DataGridView6.Rows(i).Cells(0).Style.BackColor = Color.Red
-            Else
-                DataGridView6.Rows(i).Cells(0).Style.BackColor = Color.LightGreen
+        With DataGridView6
+            If .RowCount = 0 Then Exit Sub
+
+            '---------CHECK- diameters must increase-----------
+            .Rows(0).Cells(0).Style.BackColor = Color.LightGreen
+            For i = 1 To .Rows.Count - 1
+                If _input(i).dia_big < _input(i - 1).dia_big And _input(i).dia_big <> 0 Then
+                    .Rows(i).Cells(0).Style.BackColor = Color.Red
+                Else
+                    .Rows(i).Cells(0).Style.BackColor = Color.LightGreen
+                End If
+            Next
+
+            '---------CHECK-cummulative weight must decrease-----------
+            .Rows(0).Cells(1).Style.BackColor = Color.LightGreen
+            For i = 1 To .Rows.Count - 1
+                If _input(i).class_load > _input(i - 1).class_load And _input(i).class_load <> 0 Then
+                    .Rows(i).Cells(1).Style.BackColor = Color.Orange
+                Else
+                    .Rows(i).Cells(1).Style.BackColor = Color.LightGreen
+                End If
+            Next
+
+            '--- Value 100 gives errors -----
+            Dim qq As Double = CDbl(.Rows(0).Cells(1).Value)
+            If qq >= 100 Then
+                .Rows(0).Cells(1).Value = "99.9999"
             End If
-        Next
-
-        '---------CHECK-cummulative weight must decrease-----------
-        DataGridView6.Rows(0).Cells(1).Style.BackColor = Color.LightGreen
-        For i = 1 To DataGridView6.Rows.Count - 1
-            If _input(i).class_load > _input(i - 1).class_load And _input(i).class_load <> 0 Then
-                DataGridView6.Rows(i).Cells(1).Style.BackColor = Color.Orange
-            Else
-                DataGridView6.Rows(i).Cells(1).Style.BackColor = Color.LightGreen
-            End If
-        Next
-
-        '--- Value 100 gives errors -----
-        Dim qq As Double = CDbl(DataGridView6.Rows(0).Cells(1).Value)
-        If qq >= 100 Then
-            DataGridView6.Rows(0).Cells(1).Value = "99.9999"
-        End If
+        End With
     End Sub
     Private Sub Calc_cycl_weight()
         Dim w1, w2, w3, w4, w5, w6 As Double
@@ -2633,11 +2647,7 @@ Public Class Form1
 
             'Dump_log_to_box24()
 
-            '---- Clearing the datagriedview -----
-            For row = 0 To no_PDS_inputs - 1
-                DataGridView6.Rows(row).Cells(0).Value = " "
-                DataGridView6.Rows(row).Cells(1).Value = " "
-            Next
+            'Clear_dgv6()
 
             '[mu] Class upper particle diameter limit diameter
             '[%] Percentage van de inlaat stof belasting
@@ -2645,7 +2655,9 @@ Public Class Form1
                 DataGridView6.Rows(row).Cells(0).Value = _input(row).dia_big
                 DataGridView6.Rows(row).Cells(1).Value = _input(row).class_load * 100
             Next
+            DataGridView6.Refresh()
             ResumeLayout()
+            Debug.WriteLine("Line 2660")
         End If
     End Sub
     Private Sub Dump_log_to_box24()
@@ -2882,23 +2894,25 @@ Public Class Form1
     End Sub
     Private Sub Build_dgv6()
         'This is the user input mechanism for entering the PSD data
-        DataGridView6.ColumnCount = 3
-        DataGridView6.Rows.Clear()
-        DataGridView6.Rows.Add(no_PDS_inputs)
-        DataGridView6.EnableHeadersVisualStyles = False           'For backcolor
-        DataGridView6.RowHeadersVisible = False
+        With DataGridView6
+            .ColumnCount = 3
+            .Rows.Clear()
+            .Rows.Add(no_PDS_inputs)
+            .EnableHeadersVisualStyles = False           'For backcolor
+            .RowHeadersVisible = False
 
-        DataGridView6.Columns(0).DefaultCellStyle.Format = "N2"
-        DataGridView6.Columns(1).DefaultCellStyle.Format = "N2"
-        DataGridView6.Columns(2).DefaultCellStyle.Format = "N2"
+            .Columns(0).DefaultCellStyle.Format = "N2"
+            .Columns(1).DefaultCellStyle.Format = "N2"
+            .Columns(2).DefaultCellStyle.Format = "N2"
 
-        DataGridView6.Columns(0).HeaderText = "Upper Dia [um]"
-        DataGridView6.Columns(1).HeaderText = "Cumm [%] tot wght"
-        DataGridView6.Columns(2).HeaderText = "Increm. per class"
+            .Columns(0).HeaderText = "Upper Dia [um]"
+            .Columns(1).HeaderText = "Cumm [%] tot wght"
+            .Columns(2).HeaderText = "Increm. per class"
 
-        DataGridView6.Columns(0).Width = 60
-        DataGridView6.Columns(1).Width = 60
-        DataGridView6.Columns(2).Width = 60
+            .Columns(0).Width = 60
+            .Columns(1).Width = 60
+            .Columns(2).Width = 60
+        End With
 
         '======== Fill the DVG with example data =======
         ' PSD_Whey()
@@ -3168,6 +3182,7 @@ Public Class Form1
     End Sub
 
     Private Sub DataGridView6_KeyDown(sender As Object, e As KeyEventArgs) Handles DataGridView6.KeyDown
+        '=========== Paste action for DGV6 ================
         If e.Control AndAlso e.KeyCode = Keys.V Then
             Dim row As Integer = 0
             Try
@@ -3188,9 +3203,16 @@ Public Class Form1
     End Sub
     Private Sub Button19_Click(sender As Object, e As EventArgs) Handles Button19.Click
         'Clear the all grid cells
+        Clear_dgv6()
+    End Sub
+    Private Sub Clear_dgv6()
+        'Clear the all grid cells
         For row = 0 To no_PDS_inputs - 1
-            DataGridView6.Rows(row).Cells(0).Value = ""
-            DataGridView6.Rows(row).Cells(1).Value = ""
+            DataGridView6.Rows(row).Cells(0).Value = 0
+            DataGridView6.Rows(row).Cells(1).Value = 0
         Next
+    End Sub
+    Private Sub Button12_Click(sender As Object, e As EventArgs) Handles Button12.Click
+        Update_Screen_from_array(1)
     End Sub
 End Class
