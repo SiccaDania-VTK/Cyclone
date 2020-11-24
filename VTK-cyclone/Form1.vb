@@ -394,7 +394,9 @@ Public Class Form1
         hard_disk_list.Add("134309552747")          'VTK PC, Peter de Wild
 
         user_list.Add("bertk")
-        hard_disk_list.Add("WD-WXB1A14C9942")      'VTK desktop. Bert Korbeeck
+        'hard_disk_list.Add("WD-WXB1A14C9942")      'VTK oude desktop. BKo
+        hard_disk_list.Add("0025_3886_01E9_11D6.")  'VTK new desktop. BKo (24/11/2020)
+
 
         nu = Now()
         nu2 = CDate("2021-12-01 00:00:00")
@@ -1477,7 +1479,7 @@ Public Class Form1
             ResumeLayout()              'Calcu is done update screen
             ProgressBar1.Visible = False
         End If
-        Debug.WriteLine("Calc_sequence()")
+        'Debug.WriteLine("Calc_sequence()")
     End Sub
 
     Private Sub Button3_Click(sender As Object, e As EventArgs) Handles Button3.Click
@@ -1532,7 +1534,7 @@ Public Class Form1
         Catch ex As Exception
             MessageBox.Show("Line 6298, " & ex.Message)  ' Show the exception's message.
         End Try
-        Debug.WriteLine("Save_to_disk() ")
+        ' Debug.WriteLine("Save_to_disk() ")
     End Sub
     Private Sub Retrieve_from_disk()
         Dim bf As New System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
@@ -1568,12 +1570,12 @@ Public Class Form1
         'Retrieve project from disk and goto case nr 0
 
         Retrieve_from_disk()        'Read from disk to array
-        Debug.WriteLine("retrieve done")
+        ' Debug.WriteLine("retrieve done")
 
         Update_Screen_from_array(1)   'Refresh screen data case 1
 
 
-        Debug.WriteLine("Update_Screen_from_array(1)")
+        'Debug.WriteLine("Update_Screen_from_array(1)")
         Calc_sequence()
     End Sub
 
@@ -2664,7 +2666,7 @@ Public Class Form1
             DataGridView6.Rows(row).Cells(1).Value = _input(row).class_load * 100
         Next
         DataGridView6.Refresh()
-        Debug.WriteLine("Fill_DGV6_from_input_array done")
+        'Debug.WriteLine("Fill_DGV6_from_input_array done")
     End Sub
 
     Private Sub Dump_log_to_box24()
@@ -2928,7 +2930,7 @@ Public Class Form1
 
         '======== Fill the DVG with example data =======
         'PSD_Whey()
-        Debug.WriteLine("Build_dgv6()")
+        ' Debug.WriteLine("Build_dgv6()")
     End Sub
 
     Private Sub DataGridView6_CellEndEdit(sender As Object, e As DataGridViewCellEventArgs) Handles DataGridView6.CellEndEdit
@@ -3050,7 +3052,7 @@ Public Class Form1
             Next
         End With
         Calc_Class_load()
-        Debug.WriteLine("Fill_dgv6_example")
+        ' Debug.WriteLine("Fill_dgv6_example")
     End Sub
 
     Private Sub Button14_Click(sender As Object, e As EventArgs) Handles Button14.Click
@@ -3079,7 +3081,7 @@ Public Class Form1
 
         '======== Fill the DVG6 with DSM polymere example data =======
         Fill_dgv6_example(GvG_excel)
-        Debug.WriteLine("PSD_GvG_excel()")
+        'Debug.WriteLine("PSD_GvG_excel()")
     End Sub
 
     Private Sub Screen_contrast()
@@ -3180,7 +3182,7 @@ Public Class Form1
             End Try
         End If
         Calc_sequence()
-        Debug.WriteLine("DataGridView6_KeyDown done")
+        ' Debug.WriteLine("DataGridView6_KeyDown done")
     End Sub
     Private Sub Button19_Click(sender As Object, e As EventArgs) Handles Button19.Click
         'Clear the all grid cells
@@ -3192,7 +3194,7 @@ Public Class Form1
             DataGridView6.Rows(row).Cells(0).Value = 0
             DataGridView6.Rows(row).Cells(1).Value = 0
         Next
-        Debug.WriteLine("Clear_dgv6()")
+        'Debug.WriteLine("Clear_dgv6()")
     End Sub
 
 End Class
