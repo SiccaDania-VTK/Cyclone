@@ -3170,8 +3170,10 @@ Public Class Form1
             Try
                 For Each line As String In Clipboard.GetText.Split(CChar(vbNewLine))
                     If Not line.Trim.ToString = "" Then
-                        Dim item() As String = line.Split(vbTab(0)).Select(Function(X) X.Trim).ToArray
 
+                        Dim item() As String = line.Split(vbTab(0)).Select(Function(X) X.Trim).ToArray
+                        item(0) = item(0).Replace(",", ".")
+                        item(1) = item(1).Replace(",", ".")
                         DataGridView6.Rows(row).Cells(0).Value = CDbl(item(0))
                         DataGridView6.Rows(row).Cells(1).Value = CDbl(item(1))
                         row += 1

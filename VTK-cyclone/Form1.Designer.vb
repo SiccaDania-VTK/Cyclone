@@ -6676,7 +6676,7 @@ Partial Class Form1
         Me.Controls.Add(Me.TabControl1)
         Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
         Me.Name = "Form1"
-        Me.Text = "Cyclone sizing. 13-11-2020 (Beta VERSION)"
+        Me.Text = "Cyclone sizing. 05-02-2021 (Beta VERSION)"
         Me.TabPage10.ResumeLayout(False)
         Me.GroupBox18.ResumeLayout(False)
         CType(Me.Chart3, System.ComponentModel.ISupportInitialize).EndInit()
