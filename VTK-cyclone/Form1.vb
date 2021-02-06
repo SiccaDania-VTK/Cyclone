@@ -561,9 +561,6 @@ Public Class Form1
         Build_dgv6()                    'PSD input grid
         Calc_sequence()
         Clear_dgv6()
-        ' PSD_Whey()
-        ' Save_present_case_to_array()
-
         init = True                     'init is now done
     End Sub
 
@@ -978,26 +975,33 @@ Public Class Form1
 
         If init = False Then Exit Sub       'Prevent out of range error
         'MsgBox("Read the input data from the datagridview6")
-        'Calc_Class_load()
+        'Read_dgv6_Calc_Class_load()
 
     End Sub
-    Private Sub Calc_Class_load()
+    Private Sub Read_dgv6_Calc_Class_load()
 
         '==== read dgv6 and do not trip on "-" ====
         '[mu] Class upper particle diameter limit diameter
         'Percentale van de inlaat stof belasting [%]
 
         Dim a, b As Double
-        For row = 0 To DataGridView6.Rows.Count - 1
-            Double.TryParse(DataGridView6.Rows(row).Cells(0).Value.ToString, a)
-            Double.TryParse(DataGridView6.Rows(row).Cells(1).Value.ToString, b)
+        Dim st1, st2 As String
 
-            If a > 0 And b > 0 Then
-                _input(row).dia_big = a
-                _input(row).class_load = b / 100
-            Else
-                _input(row).dia_big = 0
-                _input(row).class_load = 0
+        For row = 0 To DataGridView6.Rows.Count - 1
+            If Not IsNothing(DataGridView6.Rows(row).Cells(0).Value) And Not IsNothing(DataGridView6.Rows(row).Cells(1).Value) Then
+                st1 = DataGridView6.Rows(row).Cells(0).Value.ToString
+                st2 = DataGridView6.Rows(row).Cells(1).Value.ToString
+
+                Double.TryParse(st1, a)
+                Double.TryParse(st2, b)
+
+                If a > 0 And b > 0 Then
+                    _input(row).dia_big = a
+                    _input(row).class_load = b / 100
+                Else
+                    _input(row).dia_big = 0
+                    _input(row).class_load = 0
+                End If
             End If
         Next
     End Sub
@@ -1429,6 +1433,7 @@ Public Class Form1
         Dim case_nr As Integer = CInt(NumericUpDown30.Value)
 
         Check_DGV6()
+        Read_dgv6_Calc_Class_load()
 
         If ComboBox1.SelectedIndex > -1 And ComboBox2.SelectedIndex > -1 And init = True Then
             ProgressBar1.Visible = True
@@ -2652,12 +2657,12 @@ Public Class Form1
         '[mu] Class upper particle diameter limit diameter
         '[%] Percentage van de inlaat stof belasting
 
-        For row = 0 To no_PDS_inputs - 1
+        For row = 0 To DataGridView6.Rows.Count - 1
             DataGridView6.Rows(row).Cells(0).Value = _input(row).dia_big
             DataGridView6.Rows(row).Cells(1).Value = _input(row).class_load * 100
         Next
         DataGridView6.Refresh()
-        'Debug.WriteLine("Fill_DGV6_from_input_array done")
+        Debug.WriteLine("Fill_DGV6_from_input_array done")
     End Sub
 
     Private Sub Dump_log_to_box24()
@@ -2918,10 +2923,6 @@ Public Class Form1
             .Columns(1).Width = 60
             .Columns(2).Width = 60
         End With
-
-        '======== Fill the DVG with example data =======
-        'PSD_Whey()
-        ' Debug.WriteLine("Build_dgv6()")
     End Sub
 
     Private Sub DataGridView6_CellEndEdit(sender As Object, e As DataGridViewCellEventArgs) Handles DataGridView6.CellEndEdit
@@ -3037,13 +3038,12 @@ Public Class Form1
                     .Rows(row).Cells(0).Value = CDbl(words(0))
                     .Rows(row).Cells(1).Value = CDbl(words(1))
                 Else
-                    .Rows(row).Cells(0).Value = ""
-                    .Rows(row).Cells(1).Value = ""
+                    .Rows(row).Cells(0).Value = 0
+                    .Rows(row).Cells(1).Value = 0
                 End If
             Next
         End With
-        Calc_Class_load()
-        ' Debug.WriteLine("Fill_dgv6_example")
+        Read_dgv6_Calc_Class_load()
     End Sub
 
     Private Sub Button14_Click(sender As Object, e As EventArgs) Handles Button14.Click
@@ -3159,37 +3159,47 @@ Public Class Form1
         If e.Control AndAlso e.KeyCode = Keys.V Then
             Dim row As Integer = 0
             For Each line As String In Clipboard.GetText.Split(CChar(vbNewLine))
-                    If Not line.Trim.ToString = "" Then
+                If Not line.Trim.ToString = "" Then
 
-                        Dim item() As String = line.Split(vbTab(0)).Select(Function(X) X.Trim).ToArray
-                        item(0) = item(0).Replace(",", ".")
-                        item(1) = item(1).Replace(",", ".")
-                        DataGridView6.Rows(row).Cells(0).Value = CDbl(item(0))
-                        DataGridView6.Rows(row).Cells(1).Value = CDbl(item(1))
-                        row += 1
-                    End If
-                Next
+                    Dim item() As String = line.Split(vbTab(0)).Select(Function(X) X.Trim).ToArray
+                    item(0) = item(0).Replace(",", ".")
+                    item(1) = item(1).Replace(",", ".")
+                    DataGridView6.Rows(row).Cells(0).Value = CDbl(item(0))
+                    DataGridView6.Rows(row).Cells(1).Value = CDbl(item(1))
+                    row += 1
+                End If
+            Next
 
         End If
         Calc_sequence()
         ' Debug.WriteLine("DataGridView6_KeyDown done")
     End Sub
     Private Sub Button19_Click(sender As Object, e As EventArgs) Handles Button19.Click
-        Clear_dgv6() 'Input Clear the all grid cells
-        Clear_dgv1() 'Results Clear the all grid cells
+        Clear_dgv6()                    'Input Clear the all grid cells
+        Read_dgv6_Calc_Class_load()
+        Update_Screen_from_array(1)     'Refresh screen data case 1
+        Calc_sequence()
     End Sub
     Private Sub Clear_dgv6()
         'Clear the all grid cells
         Dim cnt As Integer = DataGridView1.Rows.Count
         DataGridView6.Rows.Clear()
         DataGridView6.Rows.Add(cnt)
-    End Sub
 
-    Private Sub Clear_dgv1()
-        'Clear the all grid cells
-        Dim cnt As Integer = DataGridView1.Rows.Count
-        DataGridView1.Rows.Clear()
-        DataGridView1.Rows.Add(cnt)
+        For Each row As DataGridViewRow In DataGridView6.Rows
+            row.Cells(0).Value = 0
+            row.Cells(1).Value = 0
+        Next
+
+        DataGridView6.Rows(0).Cells(0).Value = 3
+        DataGridView6.Rows(0).Cells(1).Value = 99.8
+
+        DataGridView6.Rows(1).Cells(0).Value = 5
+        DataGridView6.Rows(1).Cells(1).Value = 50
+
+        DataGridView6.Rows(2).Cells(0).Value = 7
+        DataGridView6.Rows(2).Cells(1).Value = 0.0
+
     End Sub
 
 End Class
