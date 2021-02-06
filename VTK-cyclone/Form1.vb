@@ -972,11 +972,6 @@ Public Class Form1
         'Debug.WriteLine("fill array _cees(c_nr).db2= " & _cees(c_nr).db2.ToString)
 
         ' Dump_log_to_box24()
-
-        If init = False Then Exit Sub       'Prevent out of range error
-        'MsgBox("Read the input data from the datagridview6")
-        'Read_dgv6_Calc_Class_load()
-
     End Sub
     Private Sub Read_dgv6_Calc_Class_load()
 
@@ -3043,7 +3038,6 @@ Public Class Form1
                 End If
             Next
         End With
-        Read_dgv6_Calc_Class_load()
     End Sub
 
     Private Sub Button14_Click(sender As Object, e As EventArgs) Handles Button14.Click
@@ -3176,8 +3170,6 @@ Public Class Form1
     End Sub
     Private Sub Button19_Click(sender As Object, e As EventArgs) Handles Button19.Click
         Clear_dgv6()                    'Input Clear the all grid cells
-        Read_dgv6_Calc_Class_load()
-        Update_Screen_from_array(1)     'Refresh screen data case 1
         Calc_sequence()
     End Sub
     Private Sub Clear_dgv6()
@@ -3192,14 +3184,13 @@ Public Class Form1
         Next
 
         DataGridView6.Rows(0).Cells(0).Value = 3
-        DataGridView6.Rows(0).Cells(1).Value = 99.8
+        DataGridView6.Rows(0).Cells(1).Value = 99.9
 
         DataGridView6.Rows(1).Cells(0).Value = 5
-        DataGridView6.Rows(1).Cells(1).Value = 50
+        DataGridView6.Rows(1).Cells(1).Value = 0
 
         DataGridView6.Rows(2).Cells(0).Value = 7
-        DataGridView6.Rows(2).Cells(1).Value = 0.0
-
+        DataGridView6.Rows(2).Cells(1).Value = 0
     End Sub
 
 End Class
