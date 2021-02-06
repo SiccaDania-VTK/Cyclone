@@ -352,11 +352,6 @@ Public Class Form1
             ReDim _cees(i).stage2(150)                        'Initialize
         Next
 
-        'For i = 1 To DataGridView6.Rows.Count - 1              'Initialize
-        '    DataGridView6.Rows(i).Cells(0).Value = 0
-        '    DataGridView6.Rows(i).Cells(1).Value = 0
-        'Next
-
         '------ allowed users with hard disc id's -----
         user_list.Add("user")
         hard_disk_list.Add("058F63646471")          'Privee PC, graslaan25
@@ -993,7 +988,7 @@ Public Class Form1
         'Percentale van de inlaat stof belasting [%]
 
         Dim a, b As Double
-        For row = 0 To no_PDS_inputs - 1
+        For row = 0 To DataGridView6.Rows.Count - 1
             Double.TryParse(DataGridView6.Rows(row).Cells(0).Value.ToString, a)
             Double.TryParse(DataGridView6.Rows(row).Cells(1).Value.ToString, b)
 
@@ -1007,11 +1002,8 @@ Public Class Form1
         Next
     End Sub
 
-
-
     '-------- Bereken het verlies getal NIET gecorrigeerd -----------
     '----- de input is de GEMIDDELDE korrel grootte-----------
-
     Private Function Calc_verlies(korrel_g As Double, stokes As Double, stage As Integer) As Double
         Dim words() As String
         Dim dia_Kcrit, fac_m, fac_a, fac_k As Double
@@ -1534,7 +1526,6 @@ Public Class Form1
         Catch ex As Exception
             MessageBox.Show("Line 6298, " & ex.Message)  ' Show the exception's message.
         End Try
-        ' Debug.WriteLine("Save_to_disk() ")
     End Sub
     Private Sub Retrieve_from_disk()
         Dim bf As New System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
@@ -3167,8 +3158,7 @@ Public Class Form1
         '=========== Paste action for DGV6 ================
         If e.Control AndAlso e.KeyCode = Keys.V Then
             Dim row As Integer = 0
-            Try
-                For Each line As String In Clipboard.GetText.Split(CChar(vbNewLine))
+            For Each line As String In Clipboard.GetText.Split(CChar(vbNewLine))
                     If Not line.Trim.ToString = "" Then
 
                         Dim item() As String = line.Split(vbTab(0)).Select(Function(X) X.Trim).ToArray
@@ -3179,24 +3169,27 @@ Public Class Form1
                         row += 1
                     End If
                 Next
-            Catch ex As Exception
-                MessageBox.Show(ex.Message, My.Application.Info.Title, MessageBoxButtons.OK, MessageBoxIcon.Error)
-            End Try
+
         End If
         Calc_sequence()
         ' Debug.WriteLine("DataGridView6_KeyDown done")
     End Sub
     Private Sub Button19_Click(sender As Object, e As EventArgs) Handles Button19.Click
-        'Clear the all grid cells
-        Clear_dgv6()
+        Clear_dgv6() 'Input Clear the all grid cells
+        Clear_dgv1() 'Results Clear the all grid cells
     End Sub
     Private Sub Clear_dgv6()
         'Clear the all grid cells
-        For row = 0 To no_PDS_inputs - 1
-            DataGridView6.Rows(row).Cells(0).Value = 0
-            DataGridView6.Rows(row).Cells(1).Value = 0
-        Next
-        'Debug.WriteLine("Clear_dgv6()")
+        Dim cnt As Integer = DataGridView1.Rows.Count
+        DataGridView6.Rows.Clear()
+        DataGridView6.Rows.Add(cnt)
+    End Sub
+
+    Private Sub Clear_dgv1()
+        'Clear the all grid cells
+        Dim cnt As Integer = DataGridView1.Rows.Count
+        DataGridView1.Rows.Clear()
+        DataGridView1.Rows.Add(cnt)
     End Sub
 
 End Class
