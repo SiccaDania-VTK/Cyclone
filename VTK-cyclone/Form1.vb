@@ -124,7 +124,7 @@ Public Class Form1
     Public _cyl2_dim(20) As Double                      'Cyclone stage #2 dimensions
     Public _istep As Double                             '[mu] Particle size calculation step
     Public _cees(20) As Input_struct                    '20 Case's data     (case 0 is for calculations ONLY)
-    Public _input(no_PDS_inputs) As Psd_input_struct    'Particle Size Distribution
+    Public _input(no_PDS_inputs + 1) As Psd_input_struct    'Particle Size Distribution
     Dim k41 As Double                                   'sum loss abs (for DataGridView1)
     Dim init As Boolean = False                         'Initialize done
 
@@ -786,32 +786,16 @@ Public Class Form1
             TextBox19.Text = _cees(ks).Ro_gas2_Am3.ToString("F3")       '[kg/Am3]
 
             '---------- Check inlet speed [m/s] stage #1---------------
-            If _cees(ks).inv1 < 10 Or _cees(ks).inv1 > 30 Then
-                TextBox16.BackColor = Color.Red
-            Else
-                TextBox16.BackColor = Color.LightGreen
-            End If
+            TextBox16.BackColor = If(_cees(ks).inv1 < 10 Or _cees(ks).inv1 > 30, Color.Red, Color.LightGreen)
 
             '---------- Check inlet speed stage #2---------------
-            If _cees(ks).inv2 < 10 Or _cees(ks).inv2 > 30 Then
-                TextBox80.BackColor = Color.Red
-            Else
-                TextBox80.BackColor = Color.LightGreen
-            End If
+            TextBox80.BackColor = If(_cees(ks).inv2 < 10 Or _cees(ks).inv2 > 30, Color.Red, Color.LightGreen)
 
             '---------- Check dp [pa] stage #1---------------
-            If _cees(ks).dpgas1 > 3000 Then
-                TextBox17.BackColor = Color.Red
-            Else
-                TextBox17.BackColor = Color.LightGreen
-            End If
+            TextBox17.BackColor = If(_cees(ks).dpgas1 > 3000, Color.Red, Color.LightGreen)
 
             '---------- Check dp stage #2---------------
-            If _cees(ks).dpgas2 > 3000 Then
-                TextBox79.BackColor = Color.Red
-            Else
-                TextBox79.BackColor = Color.LightGreen
-            End If
+            TextBox79.BackColor = If(_cees(ks).dpgas2 > 3000, Color.Red, Color.LightGreen)
 
             '--------- Get Inlet korrel-groep data ----------
             'Save data of screen into the _cees array
@@ -1427,8 +1411,8 @@ Public Class Form1
     Private Sub Calc_sequence()
         Dim case_nr As Integer = CInt(NumericUpDown30.Value)
 
-        Check_DGV6()
         Read_dgv6_Calc_Class_load()
+        Check_DGV6()
 
         If ComboBox1.SelectedIndex > -1 And ComboBox2.SelectedIndex > -1 And init = True Then
             ProgressBar1.Visible = True
@@ -2360,25 +2344,25 @@ Public Class Form1
 
         With DataGridView6
             If .RowCount = 0 Then Exit Sub
+            Dim dia, dia_previous As Double
+            Dim c_load, c_load_previous As Double
 
             '---------CHECK- diameters must increase-----------
             .Rows(0).Cells(0).Style.BackColor = Color.LightGreen
             For i = 1 To .Rows.Count - 1
-                If _input(i).dia_big < _input(i - 1).dia_big And _input(i).dia_big <> 0 Then
-                    .Rows(i).Cells(0).Style.BackColor = Color.Red
-                Else
-                    .Rows(i).Cells(0).Style.BackColor = Color.LightGreen
-                End If
+                dia = _input(i).dia_big
+                dia_previous = _input(i - 1).dia_big
+
+                .Rows(i).Cells(0).Style.BackColor = If(dia < dia_previous And dia <> 0, Color.Red, Color.LightGreen)
             Next
 
             '---------CHECK-cummulative weight must decrease-----------
             .Rows(0).Cells(1).Style.BackColor = Color.LightGreen
             For i = 1 To .Rows.Count - 1
-                If _input(i).class_load > _input(i - 1).class_load And _input(i).class_load <> 0 Then
-                    .Rows(i).Cells(1).Style.BackColor = Color.Orange
-                Else
-                    .Rows(i).Cells(1).Style.BackColor = Color.LightGreen
-                End If
+                c_load = _input(i).class_load
+                c_load_previous = _input(i - 1).class_load
+
+                .Rows(i).Cells(1).Style.BackColor = If(c_load > c_load_previous And c_load <> 0, Color.Orange, Color.LightGreen)
             Next
 
             '--- Value 100 gives errors -----
@@ -2900,24 +2884,26 @@ Public Class Form1
     Private Sub Build_dgv6()
         'This is the user input mechanism for entering the PSD data
         With DataGridView6
-            .ColumnCount = 3
+            .ColumnCount = 2
             .Rows.Clear()
-            .Rows.Add(no_PDS_inputs)
-            .EnableHeadersVisualStyles = False           'For backcolor
+            .Rows.Add(no_PDS_inputs - 1)
+            .EnableHeadersVisualStyles = False   'For backcolor
             .RowHeadersVisible = False
 
             .Columns(0).DefaultCellStyle.Format = "N2"
             .Columns(1).DefaultCellStyle.Format = "N2"
-            .Columns(2).DefaultCellStyle.Format = "N2"
 
             .Columns(0).HeaderText = "Upper Dia [um]"
             .Columns(1).HeaderText = "Cumm [%] tot wght"
-            .Columns(2).HeaderText = "Increm. per class"
 
-            .Columns(0).Width = 60
-            .Columns(1).Width = 60
-            .Columns(2).Width = 60
+            .Columns(0).Width = 95
+            .Columns(1).Width = 95
         End With
+
+        'For Each row As DataGridViewRow In .Rows
+        '    row.Cells(0).Value = 0
+        '    row.Cells(1).Value = 0
+        'Next
     End Sub
 
     Private Sub DataGridView6_CellEndEdit(sender As Object, e As DataGridViewCellEventArgs) Handles DataGridView6.CellEndEdit
@@ -3166,7 +3152,7 @@ Public Class Form1
 
         End If
         Calc_sequence()
-        ' Debug.WriteLine("DataGridView6_KeyDown done")
+        Debug.WriteLine("DataGridView6_KeyDown done")
     End Sub
     Private Sub Button19_Click(sender As Object, e As EventArgs) Handles Button19.Click
         Clear_dgv6()                    'Input Clear the all grid cells
@@ -3174,23 +3160,18 @@ Public Class Form1
     End Sub
     Private Sub Clear_dgv6()
         'Clear the all grid cells
-        Dim cnt As Integer = DataGridView1.Rows.Count
-        DataGridView6.Rows.Clear()
-        DataGridView6.Rows.Add(cnt)
 
-        For Each row As DataGridViewRow In DataGridView6.Rows
-            row.Cells(0).Value = 0
-            row.Cells(1).Value = 0
-        Next
+        Build_dgv6()
+        With DataGridView6
+            .Rows(0).Cells(0).Value = 3
+            .Rows(0).Cells(1).Value = 100
 
-        DataGridView6.Rows(0).Cells(0).Value = 3
-        DataGridView6.Rows(0).Cells(1).Value = 99.9
+            .Rows(1).Cells(0).Value = 5
+            .Rows(1).Cells(1).Value = 50
 
-        DataGridView6.Rows(1).Cells(0).Value = 5
-        DataGridView6.Rows(1).Cells(1).Value = 0
-
-        DataGridView6.Rows(2).Cells(0).Value = 7
-        DataGridView6.Rows(2).Cells(1).Value = 0
+            .Rows(2).Cells(0).Value = 7
+            .Rows(2).Cells(1).Value = 0.1
+        End With
     End Sub
 
 End Class
