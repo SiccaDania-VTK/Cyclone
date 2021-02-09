@@ -70,8 +70,8 @@ Imports Word = Microsoft.Office.Interop.Word
     Public loss_total2 As Double
     Public sum_psd_diff2 As Double
     Public Efficiency2 As Double    'Efficiency Stage #1 [%}
-    Public p2_abs As Double         '[Pa abs] pressure inlet abs
-    Public dpgas2 As Double         '[Pa] pressure loss gas
+    Public p2_abs As Double         '[Pa abs] pressure inlet abs (inlet 2nd stage)
+    Public dpgas2 As Double         '[Pa] pressure loss gas (inlet 2nd stage)
     Public dpdust2 As Double        '[Pa] pressure loss dust
     Public Ro_gas2_Am3 As Double    '[kg/Am3] density gas
     Public Ro_gas2_Nm3 As Double    '[kg/Nm3] density gas
@@ -84,6 +84,11 @@ Imports Word = Microsoft.Office.Interop.Word
     Public inv2 As Double           '[m/s] Inlet velocity cyclone
     Public outv2 As Double          '[m/s] Outlet velocity cyclone
     Public Kstokes2 As Double       'Stokes of the particle
+
+    '===== stage #3 parameters (Outlet stage2) ======
+    Public p3_abs As Double         '[Pa abs] pressure outlet abs (outlet 2nd stage)
+    Public Ro_gas3_Am3 As Double    '[kg/Am3] density gas
+    Public Ro_gas3_Nm3 As Double    '[kg/Nm3] density gas
 
     Public m2 As Double             'm factor loss curve d< dia critical
     Public stage2() As GvG_Calc_struct   'tbv calculatie stage #2
@@ -672,6 +677,12 @@ Public Class Form1
             _cees(ks).dpgas2 = 0.5 * _cees(ks).Ro_gas2_Am3 * _cees(ks).inv2 ^ 2 * wc_air2
             _cees(ks).dpdust2 = 0.5 * _cees(ks).Ro_gas2_Am3 * _cees(ks).inv2 ^ 2 * wc_dust2
 
+            '----------- Cyclone stage #2 Outlet conditions ----------------------
+            _cees(ks).p3_abs = _cees(ks).p2_abs - _cees(ks).dpgas2
+            _cees(ks).Ro_gas3_Am3 = _cees(ks).Ro_gas1_Am3 * _cees(ks).p3_abs / _cees(ks).p1_abs  '[kg/Am3]
+            _cees(ks).Ro_gas3_Nm3 = Calc_Normal_density(_cees(ks).Ro_gas3_Am3, _cees(ks).p3_abs, _cees(ks).Temp)
+
+
             '----------- 1/2 cone apex #1-----------
             kortezijde = (db1 - _cyl1_dim(12) * db1) * 0.5          '[m]
             langezijde = _cyl1_dim(11) * db1                        '[m]
@@ -687,7 +698,7 @@ Public Class Form1
             '----------- stof belasting ------------
             kgs = _cees(ks).Flow1 * _cees(ks).dust1_Am3 / 1000      '[kg/s/cycloon]
             kgh = kgs * 3600                                        '[kg/h/cycloon]
-            tot_kgh = kgh * _cees(ks).Noc1                          '[g/Am3] Dust inlet 
+            tot_kgh = kgh * _cees(ks).Noc1                          '[kg/h] dust inlet
 
             '----------- K_stokes-----------------------------------
             _cees(ks).Kstokes1 = Sqrt(db1 * 2000 * visco * 16 / (ro_solid * 0.0181 * _cees(ks).inv1))
@@ -695,7 +706,10 @@ Public Class Form1
 
             '----------- presenteren ----------------------------------
             TextBox128.Text = _cees(ks).Ro_gas2_Nm3.ToString("F3")      '[kg/Nm3] density
-            TextBox36.Text = (_cees(ks).FlowT / 3600).ToString("F4")    '[m3/s] flow
+            TextBox183.Text = _cees(ks).Ro_gas3_Nm3.ToString("F3")      '[kg/Nm3] density
+
+            TextBox36.Text = (_cees(ks).FlowT / 3600).ToString("F1")    '[m3/s] flow
+            TextBox177.Text = tot_kgh.ToString("F0")                    '[kg/h] dust
 
             If (ComboBox1.SelectedIndex = 9) Then
                 groupBox3.Visible = False
@@ -769,12 +783,14 @@ Public Class Form1
             TextBox73.Text = CType(ComboBox2.SelectedItem, String)      'Cycloon type
 
             '---------- Pressure abs --------------
-            TextBox131.Text = _cees(ks).p1_abs.ToString("F0")           '[Pa abs]
-            TextBox130.Text = _cees(ks).p2_abs.ToString("F0")           '[Pa abs]
+            TextBox131.Text = _cees(ks).p1_abs.ToString("F0")           '[Pa abs], inlet stage 1
+            TextBox130.Text = _cees(ks).p2_abs.ToString("F0")           '[Pa abs], inlet stage 2
+            TextBox181.Text = _cees(ks).p3_abs.ToString("F0")           '[Pa abs], outlet stage 2
 
             '---------- Density --------------
             TextBox75.Text = _cees(ks).Ro_gas1_Am3.ToString("F3")       '[kg/Am3]
             TextBox19.Text = _cees(ks).Ro_gas2_Am3.ToString("F3")       '[kg/Am3]
+            TextBox182.Text = _cees(ks).Ro_gas3_Am3.ToString("F3")      '[kg/Am3]
 
             '---------- Check inlet speed [m/s] stage #1---------------
             TextBox16.BackColor = If(_cees(ks).inv1 < 10 Or _cees(ks).inv1 > 30, Color.Red, Color.LightGreen)
@@ -2109,6 +2125,7 @@ Public Class Form1
 
         '---------Density ratio stage#1  kg/Nm3 and kg/Am3 ---------
         density_ratio1 = _cees(ks).Ro_gas1_Nm3 / _cees(ks).Ro_gas1_Am3  '[-]
+        _cees(ks).emmis1_Nm3 = _cees(ks).emmis1_Am3 * density_ratio1    '[g/Am3]
 
         '----------- Dust load correction stage #1 ------------------
         If CheckBox2.Checked Then 'High load
@@ -2117,14 +2134,17 @@ Public Class Form1
             TextBox58.Text = TextBox54.Text                             '[%] NOT Corrected
         End If
 
-        _cees(ks).emmis1_Nm3 = _cees(ks).emmis1_Am3 * density_ratio1    '[g/Am3]
 
         '---------- present ------------------
         TextBox59.Text = _cees(ks).Efficiency1.ToString("F3")   '[%]
         TextBox21.Text = _cees(ks).Efficiency1.ToString("F3")   '[%]
         TextBox60.Text = _cees(ks).emmis1_Am3.ToString("F3")    '[g/Am3]
+
+        '==== 1st stage ====
         TextBox18.Text = _cees(ks).emmis1_Am3.ToString("F3")    '[g/Am3]
         TextBox133.Text = _cees(ks).emmis1_Nm3.ToString("F3")   '[g/Nm3]
+        TextBox180.Text = _cees(ks).emmis1_Nm3.ToString("F3")    '[g/Nm3]
+
     End Sub
 
     Private Sub Calc_stage2(ks As Integer)
@@ -2238,6 +2258,11 @@ Public Class Form1
         _cees(ks).emmis2_Am3 = _cees(ks).emmis1_Am3 * _cees(ks).loss_total2 / 100
         _cees(ks).Efficiency2 = 100 - _cees(ks).loss_total2      '[%] Efficiency
 
+        '---------Density ratio stage#2  kg/Nm3 and kg/Am3 ---------
+        Dim density_ratio2 As Double
+        density_ratio2 = _cees(ks).Ro_gas2_Nm3 / _cees(ks).Ro_gas2_Am3  '[-]
+        _cees(ks).emmis2_Nm3 = _cees(ks).emmis2_Am3 * density_ratio2    '[g/Am3]
+
         '------ combined efficiency -----
         Eff_comb = _cees(ks).Efficiency1 + (1 - _cees(ks).Efficiency1 / 100) * _cees(ks).Efficiency2
 
@@ -2263,10 +2288,14 @@ Public Class Form1
 
         TextBox66.Text = _cees(ks).Efficiency2.ToString("F3")       '[%] stage #2
         TextBox109.Text = _cees(ks).Efficiency2.ToString("F3")      '[%]
-        TextBox62.Text = _cees(ks).emmis2_Am3.ToString("F4")        '[gram/Am3] emmissie stage #2
-        TextBox108.Text = _cees(ks).emmis2_Am3.ToString("F4")       '[gram/Am3] emmissie stage #2
-        TextBox134.Text = _cees(ks).emmis2_Am3.ToString("F4")       '[gram/Am3] emmissie stage #2
-        TextBox142.Text = _cees(ks).emmis2_Nm3.ToString("F4")       '[gram/Nm3] emmissie stage #2
+        TextBox62.Text = _cees(ks).emmis2_Am3.ToString("F3")        '[gram/Am3] emmissie stage #2
+        TextBox108.Text = _cees(ks).emmis2_Am3.ToString("F3")       '[gram/Am3] emmissie stage #2
+        TextBox134.Text = _cees(ks).emmis2_Am3.ToString("F3")       '[gram/Am3] emmissie stage #2
+
+        TextBox142.Text = _cees(ks).emmis2_Nm3.ToString("F3")       '[gram/Nm3] emmissie stage #2
+        TextBox179.Text = _cees(ks).emmis2_Nm3.ToString("F3")       '[gram/Nm3] emmissie stage #2
+        TextBox178.Text = _cees(ks).emmis2_Nm3.ToString("F3")       '[gram/Nm3] emmissie stage #2
+
         TextBox143.Text = _cees(ks).dust2_Nm3.ToString("F3")        'Dust load [gram/Nm3]
     End Sub
 
@@ -3166,18 +3195,21 @@ Public Class Form1
     End Sub
 
     Private Sub PictureBox8_Click(sender As Object, e As EventArgs) Handles PictureBox8.Click
+        Form3.Text = "PSD Starch"
         Form3.PictureBox1.Image = My.Resources.PSD_Starch
         Form3.Show()
         Form3.TopMost = True
     End Sub
 
     Private Sub PictureBox9_Click(sender As Object, e As EventArgs) Handles PictureBox9.Click
+        Form3.Text = "PSD Starch"
         Form3.PictureBox1.Image = My.Resources.PSD_various
         Form3.Show()
         Form3.TopMost = True
     End Sub
 
     Private Sub PictureBox10_Click(sender As Object, e As EventArgs) Handles PictureBox10.Click
+        Form3.Text = "Micrographs Starch"
         Form3.PictureBox1.Image = My.Resources.Micrographs
         Form3.Show()
         Form3.TopMost = True
