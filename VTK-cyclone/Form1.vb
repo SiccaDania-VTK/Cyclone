@@ -198,15 +198,7 @@ Public Class Form1
     "125;97.86",
     "150;98.92",
     "180;99.58",
-    "215;99.95",
-    "255;100",
-    "305;100",
-    "365;100",
-    "435;100",
-    "515;100",
-    "615;100",
-    "735;100",
-    "875;100"}
+    "215;99.95"}
 
     ''Cargill China (cumulatief[%], particle diameter[mu])
     'ReadOnly maltodextrine_psd() As String = {
@@ -276,8 +268,7 @@ Public Class Form1
     "89.750;41.350	",
     "99.875;35.840	",
     "111.150;30.290	",
-    "158.550;0.001	"
-     }
+    "158.550;0.001	"}
 
 
     'GvG Excelsheet, Cumulatief[%], particle diameter[mu])
@@ -3174,4 +3165,37 @@ Public Class Form1
         End With
     End Sub
 
+    Private Sub PictureBox8_Click(sender As Object, e As EventArgs) Handles PictureBox8.Click
+        Form3.PictureBox1.Image = My.Resources.PSD_Starch
+        Form3.Show()
+        Form3.TopMost = True
+    End Sub
+
+    Private Sub PictureBox9_Click(sender As Object, e As EventArgs) Handles PictureBox9.Click
+        Form3.PictureBox1.Image = My.Resources.PSD_various
+        Form3.Show()
+        Form3.TopMost = True
+    End Sub
+
+    Private Sub PictureBox10_Click(sender As Object, e As EventArgs) Handles PictureBox10.Click
+        Form3.PictureBox1.Image = My.Resources.Micrographs
+        Form3.Show()
+        Form3.TopMost = True
+    End Sub
+
+    Private Sub Button12_Click(sender As Object, e As EventArgs) Handles Button12.Click
+        '======= Invert the Cumm weight colums =====
+        For Each row As DataGridViewRow In DataGridView6.Rows
+            If Not IsNothing(row.Cells(0).Value) And Not IsNothing(row.Cells(1).Value) Then
+                If Not IsNothing(row.Cells(1).Value) Then row.Cells(1).Value = 100.0 - CDbl(row.Cells(1).Value)
+
+                '===== diameter NULL than also weight is NUL ======
+                If CDbl(row.Cells(0).Value) < 0.001 Then
+                    row.Cells(0).Value = 0
+                    row.Cells(1).Value = 0
+                End If
+            End If
+        Next
+        Calc_sequence()
+    End Sub
 End Class
