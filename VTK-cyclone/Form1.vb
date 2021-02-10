@@ -2139,8 +2139,8 @@ Public Class Form1
         End If
 
         '---------- present ------------------
-        TextBox59.Text = _cees(ks).Efficiency1.ToString("F3")   '[%]
-        TextBox21.Text = _cees(ks).Efficiency1.ToString("F3")   '[%]
+        TextBox59.Text = _cees(ks).Efficiency1.ToString("F2")   '[%]
+        TextBox21.Text = _cees(ks).Efficiency1.ToString("F2")   '[%]
         TextBox60.Text = _cees(ks).emmis1_Am3.ToString("F3")    '[g/Am3]
 
         '==== 1st stage ====
@@ -2162,11 +2162,11 @@ Public Class Form1
         If Double.IsNaN(_cees(ks).stage2(0).dia) Or Double.IsInfinity(_cees(ks).stage2(0).dia) Then Exit Sub
 
         '----------- stof belasting ------------
-        tot_kgh = _cees(ks).Flow2 * _cees(ks).dust2_Am3 / 1000 * 3600 * _cees(ks).Noc2     '[kg/hr] Dust inlet 
-        kgh = tot_kgh / _cees(ks).Noc2                          '[kg/hr/Cy] Dust inlet 
+        tot_kgh = _cees(ks).emis1_kgh                       '[kg/hr] Dust inlet 
+        kgh = tot_kgh / _cees(ks).Noc2                      '[kg/hr/Cy] Dust inlet 
 
         TextBox100.Text = kgh.ToString("F0")
-        TextBox101.Text = tot_kgh.ToString("F0")
+        TextBox101.Text = tot_kgh.ToString("F1")
 
         '--------- now the particles (====Grid line 0======)------------
         _cees(ks).stage2(0).dia = _cees(ks).stage1(0).dia                                   'Copy stage #1
@@ -2175,7 +2175,7 @@ Public Class Form1
         _cees(ks).stage2(0).loss_overall = Calc_verlies(_cees(ks).stage2(0).d_ave_K, _cees(ks).Kstokes2, 2)     '[-] loss overall
         Calc_verlies_corrected(_cees(ks).stage2(0), 2)                                      '[-] loss overall corrected
         _cees(ks).stage2(0).catch_chart = (1 - _cees(ks).stage2(0).loss_overall_C) * 100    '[%]
-        Calc_diam_classification(_cees(ks).stage2(0))                                  'groepnummer
+        Calc_diam_classification(_cees(ks).stage2(0))                                       'groepnummer
 
         If _cees(ks).stage2(i).i_grp < no_PDS_inputs Then
             Calc_k_and_m(_cees(ks).stage2(0))
@@ -2275,13 +2275,13 @@ Public Class Form1
         TextBox64.Text = CheckBox3.Checked.ToString         'Hi load correction stage #2
         TextBox110.Text = _cees(ks).Dmax2.ToString("F2")    'diameter [mu] 100% catch
         TextBox111.Text = _cees(ks).Dmin2.ToString("F2")    'diameter [mu] 100% loss
-        TextBox116.Text = _istep.ToString("F5")             'Calculation step stage #2
-        TextBox43.Text = _cees(ks).Dmin1.ToString("F5")    'Smallest part caught by the second stage cyclone
+        TextBox116.Text = _istep.ToString("F3")             'Calculation step stage #2
+        TextBox43.Text = _cees(ks).Dmin1.ToString("F2")     'Smallest part caught by the second stage cyclone
 
         TextBox117.Text = _cees(ks).sum_psd_diff2.ToString("F3")
         TextBox68.Text = _cees(ks).sum_loss2.ToString("F3")
         TextBox69.Text = _cees(ks).sum_loss_C2.ToString("F3")
-        TextBox120.Text = Eff_comb.ToString("F3")
+        TextBox120.Text = Eff_comb.ToString("F2")
 
         If CheckBox3.Checked Then   'Dust load correction stage #2
             TextBox65.Text = _cees(ks).loss_total2.ToString("F3")    '[%] Corrected
@@ -2289,20 +2289,20 @@ Public Class Form1
             TextBox65.Text = _cees(ks).sum_loss2.ToString("F3")      '[%] NOT Corrected
         End If
 
-        TextBox66.Text = _cees(ks).Efficiency2.ToString("F3")       '[%] stage #2
-        TextBox109.Text = _cees(ks).Efficiency2.ToString("F3")      '[%]
-        TextBox62.Text = _cees(ks).emmis2_Am3.ToString("F3")        '[gram/Am3] emmissie stage #2
-        TextBox108.Text = _cees(ks).emmis2_Am3.ToString("F3")       '[gram/Am3] emmissie stage #2
-        TextBox134.Text = _cees(ks).emmis2_Am3.ToString("F3")       '[gram/Am3] emmissie stage #2
+        TextBox66.Text = _cees(ks).Efficiency2.ToString("F2")       '[%] stage #2
+        TextBox109.Text = _cees(ks).Efficiency2.ToString("F2")      '[%]
+        TextBox62.Text = _cees(ks).emmis2_Am3.ToString("F2")        '[gram/Am3] emmissie stage #2
+        TextBox108.Text = _cees(ks).emmis2_Am3.ToString("F2")       '[gram/Am3] emmissie stage #2
+        TextBox134.Text = _cees(ks).emmis2_Am3.ToString("F2")       '[gram/Am3] emmissie stage #2
 
-        TextBox142.Text = _cees(ks).emmis2_Nm3.ToString("F3")       '[gram/Nm3] emmissie stage #2
-        TextBox179.Text = _cees(ks).emmis2_Nm3.ToString("F3")       '[gram/Nm3] emmissie stage #2
-        TextBox178.Text = _cees(ks).emmis2_Nm3.ToString("F3")       '[gram/Nm3] emmissie stage #2
+        TextBox142.Text = _cees(ks).emmis2_Nm3.ToString("F2")       '[gram/Nm3] emmissie stage #2
+        TextBox179.Text = _cees(ks).emmis2_Nm3.ToString("F2")       '[gram/Nm3] emmissie stage #2
+        TextBox178.Text = _cees(ks).emmis2_Nm3.ToString("F2")       '[gram/Nm3] emmissie stage #2
 
-        TextBox185.Text = _cees(ks).emis2_kgh.ToString("F1")       '[kg/h] emmissie stage #2
-        TextBox184.Text = _cees(ks).emis2_kgh.ToString("F1")       '[kg/h] emmissie stage #2
+        TextBox185.Text = _cees(ks).emis2_kgh.ToString("F2")       '[kg/h] emmissie stage #2
+        TextBox184.Text = _cees(ks).emis2_kgh.ToString("F2")       '[kg/h] emmissie stage #2
 
-        TextBox143.Text = _cees(ks).dust2_Nm3.ToString("F3")        'Dust load [gram/Nm3]
+        TextBox143.Text = _cees(ks).dust2_Nm3.ToString("F2")        'Dust load [gram/Nm3]
     End Sub
 
     Public Sub Calc_diam_classification(ByRef g As GvG_Calc_struct)
@@ -3201,6 +3201,8 @@ Public Class Form1
     End Sub
 
     Private Sub PictureBox8_Click(sender As Object, e As EventArgs) Handles PictureBox8.Click
+        Form3.Size = New Size(920, 600)     '(Breed, Hoog)
+
         Form3.Text = "PSD Starch"
         Form3.PictureBox1.Image = My.Resources.PSD_Starch
         Form3.Show()
@@ -3208,6 +3210,7 @@ Public Class Form1
     End Sub
 
     Private Sub PictureBox9_Click(sender As Object, e As EventArgs) Handles PictureBox9.Click
+        Form3.Size = New Size(920, 620)     '(Breed, Hoog)
         Form3.Text = "PSD Starch"
         Form3.PictureBox1.Image = My.Resources.PSD_various
         Form3.Show()
@@ -3215,6 +3218,7 @@ Public Class Form1
     End Sub
 
     Private Sub PictureBox10_Click(sender As Object, e As EventArgs) Handles PictureBox10.Click
+        Form3.Size = New Size(650, 800)     '(Breed, Hoog)
         Form3.Text = "Micrographs Starch"
         Form3.PictureBox1.Image = My.Resources.Micrographs
         Form3.Show()

@@ -22,16 +22,16 @@ Partial Class Form1
     'Do not modify it using the code editor.
     <System.Diagnostics.DebuggerStepThrough()>
     Private Sub InitializeComponent()
-        Dim ChartArea16 As System.Windows.Forms.DataVisualization.Charting.ChartArea = New System.Windows.Forms.DataVisualization.Charting.ChartArea()
-        Dim Legend16 As System.Windows.Forms.DataVisualization.Charting.Legend = New System.Windows.Forms.DataVisualization.Charting.Legend()
-        Dim Series16 As System.Windows.Forms.DataVisualization.Charting.Series = New System.Windows.Forms.DataVisualization.Charting.Series()
+        Dim ChartArea1 As System.Windows.Forms.DataVisualization.Charting.ChartArea = New System.Windows.Forms.DataVisualization.Charting.ChartArea()
+        Dim Legend1 As System.Windows.Forms.DataVisualization.Charting.Legend = New System.Windows.Forms.DataVisualization.Charting.Legend()
+        Dim Series1 As System.Windows.Forms.DataVisualization.Charting.Series = New System.Windows.Forms.DataVisualization.Charting.Series()
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(Form1))
-        Dim ChartArea17 As System.Windows.Forms.DataVisualization.Charting.ChartArea = New System.Windows.Forms.DataVisualization.Charting.ChartArea()
-        Dim Legend17 As System.Windows.Forms.DataVisualization.Charting.Legend = New System.Windows.Forms.DataVisualization.Charting.Legend()
-        Dim Series17 As System.Windows.Forms.DataVisualization.Charting.Series = New System.Windows.Forms.DataVisualization.Charting.Series()
-        Dim ChartArea18 As System.Windows.Forms.DataVisualization.Charting.ChartArea = New System.Windows.Forms.DataVisualization.Charting.ChartArea()
-        Dim Legend18 As System.Windows.Forms.DataVisualization.Charting.Legend = New System.Windows.Forms.DataVisualization.Charting.Legend()
-        Dim Series18 As System.Windows.Forms.DataVisualization.Charting.Series = New System.Windows.Forms.DataVisualization.Charting.Series()
+        Dim ChartArea2 As System.Windows.Forms.DataVisualization.Charting.ChartArea = New System.Windows.Forms.DataVisualization.Charting.ChartArea()
+        Dim Legend2 As System.Windows.Forms.DataVisualization.Charting.Legend = New System.Windows.Forms.DataVisualization.Charting.Legend()
+        Dim Series2 As System.Windows.Forms.DataVisualization.Charting.Series = New System.Windows.Forms.DataVisualization.Charting.Series()
+        Dim ChartArea3 As System.Windows.Forms.DataVisualization.Charting.ChartArea = New System.Windows.Forms.DataVisualization.Charting.ChartArea()
+        Dim Legend3 As System.Windows.Forms.DataVisualization.Charting.Legend = New System.Windows.Forms.DataVisualization.Charting.Legend()
+        Dim Series3 As System.Windows.Forms.DataVisualization.Charting.Series = New System.Windows.Forms.DataVisualization.Charting.Series()
         Me.OpenFileDialog1 = New System.Windows.Forms.OpenFileDialog()
         Me.TabPage10 = New System.Windows.Forms.TabPage()
         Me.Button10 = New System.Windows.Forms.Button()
@@ -353,6 +353,10 @@ Partial Class Form1
         Me.Button11 = New System.Windows.Forms.Button()
         Me.Button3 = New System.Windows.Forms.Button()
         Me.GroupBox13 = New System.Windows.Forms.GroupBox()
+        Me.TextBox184 = New System.Windows.Forms.TextBox()
+        Me.TextBox185 = New System.Windows.Forms.TextBox()
+        Me.TextBox186 = New System.Windows.Forms.TextBox()
+        Me.Label190 = New System.Windows.Forms.Label()
         Me.TextBox178 = New System.Windows.Forms.TextBox()
         Me.TextBox179 = New System.Windows.Forms.TextBox()
         Me.TextBox180 = New System.Windows.Forms.TextBox()
@@ -592,102 +596,98 @@ Partial Class Form1
         Me.TextBox175 = New System.Windows.Forms.TextBox()
         Me.PictureBox9 = New System.Windows.Forms.PictureBox()
         Me.PictureBox8 = New System.Windows.Forms.PictureBox()
-        Me.TextBox184 = New System.Windows.Forms.TextBox()
-        Me.TextBox185 = New System.Windows.Forms.TextBox()
-        Me.TextBox186 = New System.Windows.Forms.TextBox()
-        Me.Label190 = New System.Windows.Forms.Label()
         Me.TabPage10.SuspendLayout
         Me.GroupBox18.SuspendLayout
-        CType(Me.Chart3, System.ComponentModel.ISupportInitialize).BeginInit
-        Me.TabPage8.SuspendLayout
-        Me.TabPage7.SuspendLayout
-        Me.GroupBox24.SuspendLayout
-        Me.groupBox3.SuspendLayout
-        CType(Me.NumericUpDown44, System.ComponentModel.ISupportInitialize).BeginInit
-        CType(Me.NumericUpDown45, System.ComponentModel.ISupportInitialize).BeginInit
-        CType(Me.NumericUpDown41, System.ComponentModel.ISupportInitialize).BeginInit
-        CType(Me.NumericUpDown42, System.ComponentModel.ISupportInitialize).BeginInit
-        CType(Me.NumericUpDown32, System.ComponentModel.ISupportInitialize).BeginInit
-        CType(Me.NumericUpDown31, System.ComponentModel.ISupportInitialize).BeginInit
-        CType(Me.PictureBox7, System.ComponentModel.ISupportInitialize).BeginInit
-        CType(Me.PictureBox1, System.ComponentModel.ISupportInitialize).BeginInit
-        Me.TabPage6.SuspendLayout
-        Me.GroupBox11.SuspendLayout
-        CType(Me.NumericUpDown21, System.ComponentModel.ISupportInitialize).BeginInit
-        Me.GroupBox6.SuspendLayout
-        Me.TabPage5.SuspendLayout
-        Me.GroupBox17.SuspendLayout
-        CType(Me.NumericUpDown50, System.ComponentModel.ISupportInitialize).BeginInit
-        Me.GroupBox16.SuspendLayout
-        CType(Me.NumericUpDown46, System.ComponentModel.ISupportInitialize).BeginInit
-        Me.GroupBox15.SuspendLayout
-        CType(Me.NumericUpDown49, System.ComponentModel.ISupportInitialize).BeginInit
-        CType(Me.NumericUpDown17, System.ComponentModel.ISupportInitialize).BeginInit
-        CType(Me.NumericUpDown47, System.ComponentModel.ISupportInitialize).BeginInit
-        CType(Me.NumericUpDown16, System.ComponentModel.ISupportInitialize).BeginInit
-        Me.TabPage4.SuspendLayout
-        Me.GroupBox8.SuspendLayout
-        CType(Me.PictureBox6, System.ComponentModel.ISupportInitialize).BeginInit
-        CType(Me.pictureBox3, System.ComponentModel.ISupportInitialize).BeginInit
-        CType(Me.pictureBox2, System.ComponentModel.ISupportInitialize).BeginInit
-        Me.TabPage3.SuspendLayout
-        Me.TableLayoutPanel2.SuspendLayout
-        CType(Me.PictureBox5, System.ComponentModel.ISupportInitialize).BeginInit
-        Me.TabPage2.SuspendLayout
-        Me.TableLayoutPanel3.SuspendLayout
-        Me.GroupBox14.SuspendLayout
-        CType(Me.DataGridView3, System.ComponentModel.ISupportInitialize).BeginInit
-        Me.TabPage9.SuspendLayout
-        Me.TableLayoutPanel1.SuspendLayout
-        Me.GroupBox5.SuspendLayout
-        CType(Me.DataGridView2, System.ComponentModel.ISupportInitialize).BeginInit
-        Me.TabPage1.SuspendLayout
-        Me.GroupBox13.SuspendLayout
-        CType(Me.Chart2, System.ComponentModel.ISupportInitialize).BeginInit
-        Me.GroupBox10.SuspendLayout
-        Me.GroupBox9.SuspendLayout
-        CType(Me.NumericUpDown30, System.ComponentModel.ISupportInitialize).BeginInit
-        Me.GroupBox4.SuspendLayout
-        Me.GroupBox7.SuspendLayout
-        CType(Me.NumericUpDown43, System.ComponentModel.ISupportInitialize).BeginInit
-        CType(Me.NumericUpDown22, System.ComponentModel.ISupportInitialize).BeginInit
-        CType(Me.NumericUpDown33, System.ComponentModel.ISupportInitialize).BeginInit
-        CType(Me.NumericUpDown20, System.ComponentModel.ISupportInitialize).BeginInit
-        CType(Me.numericUpDown5, System.ComponentModel.ISupportInitialize).BeginInit
-        CType(Me.NumericUpDown34, System.ComponentModel.ISupportInitialize).BeginInit
-        Me.groupBox2.SuspendLayout
-        CType(Me.NumericUpDown1, System.ComponentModel.ISupportInitialize).BeginInit
-        CType(Me.NumericUpDown18, System.ComponentModel.ISupportInitialize).BeginInit
-        CType(Me.NumericUpDown4, System.ComponentModel.ISupportInitialize).BeginInit
-        CType(Me.numericUpDown14, System.ComponentModel.ISupportInitialize).BeginInit
-        CType(Me.NumericUpDown19, System.ComponentModel.ISupportInitialize).BeginInit
-        CType(Me.numericUpDown2, System.ComponentModel.ISupportInitialize).BeginInit
-        CType(Me.numericUpDown3, System.ComponentModel.ISupportInitialize).BeginInit
-        Me.groupBox1.SuspendLayout
-        CType(Me.DataGridView6, System.ComponentModel.ISupportInitialize).BeginInit
-        CType(Me.DataGridView1, System.ComponentModel.ISupportInitialize).BeginInit
-        Me.TabControl1.SuspendLayout
-        Me.TabPage12.SuspendLayout
-        CType(Me.DataGridView4, System.ComponentModel.ISupportInitialize).BeginInit
-        Me.TabPage11.SuspendLayout
-        CType(Me.SplitContainer1, System.ComponentModel.ISupportInitialize).BeginInit
-        Me.SplitContainer1.Panel1.SuspendLayout
-        Me.SplitContainer1.Panel2.SuspendLayout
-        Me.SplitContainer1.SuspendLayout
-        CType(Me.Chart1, System.ComponentModel.ISupportInitialize).BeginInit
-        Me.GroupBox23.SuspendLayout
-        Me.GroupBox22.SuspendLayout
-        Me.GroupBox21.SuspendLayout
-        Me.GroupBox20.SuspendLayout
-        Me.GroupBox19.SuspendLayout
-        Me.GroupBox12.SuspendLayout
-        Me.TabPage14.SuspendLayout
-        CType(Me.PictureBox4, System.ComponentModel.ISupportInitialize).BeginInit
-        Me.TabPage13.SuspendLayout
-        CType(Me.PictureBox10, System.ComponentModel.ISupportInitialize).BeginInit
-        CType(Me.PictureBox9, System.ComponentModel.ISupportInitialize).BeginInit
-        CType(Me.PictureBox8, System.ComponentModel.ISupportInitialize).BeginInit
-        Me.SuspendLayout
+        CType(Me.Chart3, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.TabPage8.SuspendLayout()
+        Me.TabPage7.SuspendLayout()
+        Me.GroupBox24.SuspendLayout()
+        Me.groupBox3.SuspendLayout()
+        CType(Me.NumericUpDown44, System.ComponentModel.ISupportInitialize).BeginInit()
+        CType(Me.NumericUpDown45, System.ComponentModel.ISupportInitialize).BeginInit()
+        CType(Me.NumericUpDown41, System.ComponentModel.ISupportInitialize).BeginInit()
+        CType(Me.NumericUpDown42, System.ComponentModel.ISupportInitialize).BeginInit()
+        CType(Me.NumericUpDown32, System.ComponentModel.ISupportInitialize).BeginInit()
+        CType(Me.NumericUpDown31, System.ComponentModel.ISupportInitialize).BeginInit()
+        CType(Me.PictureBox7, System.ComponentModel.ISupportInitialize).BeginInit()
+        CType(Me.PictureBox1, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.TabPage6.SuspendLayout()
+        Me.GroupBox11.SuspendLayout()
+        CType(Me.NumericUpDown21, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.GroupBox6.SuspendLayout()
+        Me.TabPage5.SuspendLayout()
+        Me.GroupBox17.SuspendLayout()
+        CType(Me.NumericUpDown50, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.GroupBox16.SuspendLayout()
+        CType(Me.NumericUpDown46, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.GroupBox15.SuspendLayout()
+        CType(Me.NumericUpDown49, System.ComponentModel.ISupportInitialize).BeginInit()
+        CType(Me.NumericUpDown17, System.ComponentModel.ISupportInitialize).BeginInit()
+        CType(Me.NumericUpDown47, System.ComponentModel.ISupportInitialize).BeginInit()
+        CType(Me.NumericUpDown16, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.TabPage4.SuspendLayout()
+        Me.GroupBox8.SuspendLayout()
+        CType(Me.PictureBox6, System.ComponentModel.ISupportInitialize).BeginInit()
+        CType(Me.pictureBox3, System.ComponentModel.ISupportInitialize).BeginInit()
+        CType(Me.pictureBox2, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.TabPage3.SuspendLayout()
+        Me.TableLayoutPanel2.SuspendLayout()
+        CType(Me.PictureBox5, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.TabPage2.SuspendLayout()
+        Me.TableLayoutPanel3.SuspendLayout()
+        Me.GroupBox14.SuspendLayout()
+        CType(Me.DataGridView3, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.TabPage9.SuspendLayout()
+        Me.TableLayoutPanel1.SuspendLayout()
+        Me.GroupBox5.SuspendLayout()
+        CType(Me.DataGridView2, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.TabPage1.SuspendLayout()
+        Me.GroupBox13.SuspendLayout()
+        CType(Me.Chart2, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.GroupBox10.SuspendLayout()
+        Me.GroupBox9.SuspendLayout()
+        CType(Me.NumericUpDown30, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.GroupBox4.SuspendLayout()
+        Me.GroupBox7.SuspendLayout()
+        CType(Me.NumericUpDown43, System.ComponentModel.ISupportInitialize).BeginInit()
+        CType(Me.NumericUpDown22, System.ComponentModel.ISupportInitialize).BeginInit()
+        CType(Me.NumericUpDown33, System.ComponentModel.ISupportInitialize).BeginInit()
+        CType(Me.NumericUpDown20, System.ComponentModel.ISupportInitialize).BeginInit()
+        CType(Me.numericUpDown5, System.ComponentModel.ISupportInitialize).BeginInit()
+        CType(Me.NumericUpDown34, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.groupBox2.SuspendLayout()
+        CType(Me.NumericUpDown1, System.ComponentModel.ISupportInitialize).BeginInit()
+        CType(Me.NumericUpDown18, System.ComponentModel.ISupportInitialize).BeginInit()
+        CType(Me.NumericUpDown4, System.ComponentModel.ISupportInitialize).BeginInit()
+        CType(Me.numericUpDown14, System.ComponentModel.ISupportInitialize).BeginInit()
+        CType(Me.NumericUpDown19, System.ComponentModel.ISupportInitialize).BeginInit()
+        CType(Me.numericUpDown2, System.ComponentModel.ISupportInitialize).BeginInit()
+        CType(Me.numericUpDown3, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.groupBox1.SuspendLayout()
+        CType(Me.DataGridView6, System.ComponentModel.ISupportInitialize).BeginInit()
+        CType(Me.DataGridView1, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.TabControl1.SuspendLayout()
+        Me.TabPage12.SuspendLayout()
+        CType(Me.DataGridView4, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.TabPage11.SuspendLayout()
+        CType(Me.SplitContainer1, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.SplitContainer1.Panel1.SuspendLayout()
+        Me.SplitContainer1.Panel2.SuspendLayout()
+        Me.SplitContainer1.SuspendLayout()
+        CType(Me.Chart1, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.GroupBox23.SuspendLayout()
+        Me.GroupBox22.SuspendLayout()
+        Me.GroupBox21.SuspendLayout()
+        Me.GroupBox20.SuspendLayout()
+        Me.GroupBox19.SuspendLayout()
+        Me.GroupBox12.SuspendLayout()
+        Me.TabPage14.SuspendLayout()
+        CType(Me.PictureBox4, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.TabPage13.SuspendLayout()
+        CType(Me.PictureBox10, System.ComponentModel.ISupportInitialize).BeginInit()
+        CType(Me.PictureBox9, System.ComponentModel.ISupportInitialize).BeginInit()
+        CType(Me.PictureBox8, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.SuspendLayout()
         '
         'OpenFileDialog1
         '
@@ -727,17 +727,17 @@ Partial Class Form1
         '
         'Chart3
         '
-        ChartArea16.Name = "ChartArea1"
-        Me.Chart3.ChartAreas.Add(ChartArea16)
+        ChartArea1.Name = "ChartArea1"
+        Me.Chart3.ChartAreas.Add(ChartArea1)
         Me.Chart3.Dock = System.Windows.Forms.DockStyle.Fill
-        Legend16.Name = "Legend1"
-        Me.Chart3.Legends.Add(Legend16)
+        Legend1.Name = "Legend1"
+        Me.Chart3.Legends.Add(Legend1)
         Me.Chart3.Location = New System.Drawing.Point(3, 16)
         Me.Chart3.Name = "Chart3"
-        Series16.ChartArea = "ChartArea1"
-        Series16.Legend = "Legend1"
-        Series16.Name = "Series1"
-        Me.Chart3.Series.Add(Series16)
+        Series1.ChartArea = "ChartArea1"
+        Series1.Legend = "Legend1"
+        Series1.Name = "Series1"
+        Me.Chart3.Series.Add(Series1)
         Me.Chart3.Size = New System.Drawing.Size(551, 374)
         Me.Chart3.TabIndex = 81
         Me.Chart3.Text = "Chart3"
@@ -4228,6 +4228,49 @@ Partial Class Form1
         Me.GroupBox13.TabStop = False
         Me.GroupBox13.Text = "Results"
         '
+        'TextBox184
+        '
+        Me.TextBox184.BackColor = System.Drawing.Color.LightBlue
+        Me.TextBox184.Enabled = False
+        Me.TextBox184.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.TextBox184.Location = New System.Drawing.Point(285, 335)
+        Me.TextBox184.Name = "TextBox184"
+        Me.TextBox184.Size = New System.Drawing.Size(57, 21)
+        Me.TextBox184.TabIndex = 168
+        Me.TextBox184.TextAlign = System.Windows.Forms.HorizontalAlignment.Center
+        '
+        'TextBox185
+        '
+        Me.TextBox185.BackColor = System.Drawing.Color.LightBlue
+        Me.TextBox185.Enabled = False
+        Me.TextBox185.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.TextBox185.Location = New System.Drawing.Point(214, 333)
+        Me.TextBox185.Name = "TextBox185"
+        Me.TextBox185.Size = New System.Drawing.Size(57, 21)
+        Me.TextBox185.TabIndex = 167
+        Me.TextBox185.TextAlign = System.Windows.Forms.HorizontalAlignment.Center
+        '
+        'TextBox186
+        '
+        Me.TextBox186.BackColor = System.Drawing.Color.LightBlue
+        Me.TextBox186.Enabled = False
+        Me.TextBox186.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.TextBox186.Location = New System.Drawing.Point(140, 332)
+        Me.TextBox186.Name = "TextBox186"
+        Me.TextBox186.Size = New System.Drawing.Size(57, 21)
+        Me.TextBox186.TabIndex = 166
+        Me.TextBox186.TextAlign = System.Windows.Forms.HorizontalAlignment.Center
+        '
+        'Label190
+        '
+        Me.Label190.AutoSize = True
+        Me.Label190.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Label190.Location = New System.Drawing.Point(355, 334)
+        Me.Label190.Name = "Label190"
+        Me.Label190.Size = New System.Drawing.Size(36, 15)
+        Me.Label190.TabIndex = 165
+        Me.Label190.Text = "[kg/h]"
+        '
         'TextBox178
         '
         Me.TextBox178.BackColor = System.Drawing.Color.LightBlue
@@ -4265,7 +4308,7 @@ Partial Class Form1
         '
         Me.Label188.AutoSize = True
         Me.Label188.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label188.Location = New System.Drawing.Point(355, 318)
+        Me.Label188.Location = New System.Drawing.Point(355, 311)
         Me.Label188.Name = "Label188"
         Me.Label188.Size = New System.Drawing.Size(50, 15)
         Me.Label188.TabIndex = 161
@@ -4275,7 +4318,7 @@ Partial Class Form1
         '
         Me.Label3.AutoSize = True
         Me.Label3.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label3.Location = New System.Drawing.Point(355, 453)
+        Me.Label3.Location = New System.Drawing.Point(355, 449)
         Me.Label3.Name = "Label3"
         Me.Label3.Size = New System.Drawing.Size(31, 15)
         Me.Label3.TabIndex = 160
@@ -4446,7 +4489,7 @@ Partial Class Form1
         '
         Me.Label185.AutoSize = True
         Me.Label185.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label185.Location = New System.Drawing.Point(355, 432)
+        Me.Label185.Location = New System.Drawing.Point(355, 426)
         Me.Label185.Name = "Label185"
         Me.Label185.Size = New System.Drawing.Size(31, 15)
         Me.Label185.TabIndex = 143
@@ -4739,7 +4782,7 @@ Partial Class Form1
         '
         Me.Label124.AutoSize = True
         Me.Label124.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label124.Location = New System.Drawing.Point(355, 409)
+        Me.Label124.Location = New System.Drawing.Point(355, 403)
         Me.Label124.Name = "Label124"
         Me.Label124.Size = New System.Drawing.Size(31, 15)
         Me.Label124.TabIndex = 118
@@ -4780,7 +4823,7 @@ Partial Class Form1
         '
         Me.Label89.AutoSize = True
         Me.Label89.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label89.Location = New System.Drawing.Point(355, 126)
+        Me.Label89.Location = New System.Drawing.Point(355, 127)
         Me.Label89.Name = "Label89"
         Me.Label89.Size = New System.Drawing.Size(69, 15)
         Me.Label89.TabIndex = 65
@@ -4790,7 +4833,7 @@ Partial Class Form1
         '
         Me.Label119.AutoSize = True
         Me.Label119.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label119.Location = New System.Drawing.Point(355, 388)
+        Me.Label119.Location = New System.Drawing.Point(355, 380)
         Me.Label119.Name = "Label119"
         Me.Label119.Size = New System.Drawing.Size(31, 15)
         Me.Label119.TabIndex = 115
@@ -4853,7 +4896,7 @@ Partial Class Form1
         '
         Me.Label61.AutoSize = True
         Me.Label61.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label61.Location = New System.Drawing.Point(355, 366)
+        Me.Label61.Location = New System.Drawing.Point(355, 357)
         Me.Label61.Name = "Label61"
         Me.Label61.Size = New System.Drawing.Size(24, 15)
         Me.Label61.TabIndex = 112
@@ -4863,7 +4906,7 @@ Partial Class Form1
         '
         Me.Label96.AutoSize = True
         Me.Label96.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label96.Location = New System.Drawing.Point(355, 222)
+        Me.Label96.Location = New System.Drawing.Point(355, 219)
         Me.Label96.Name = "Label96"
         Me.Label96.Size = New System.Drawing.Size(31, 15)
         Me.Label96.TabIndex = 74
@@ -4916,7 +4959,7 @@ Partial Class Form1
         '
         Me.Label57.AutoSize = True
         Me.Label57.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label57.Location = New System.Drawing.Point(355, 294)
+        Me.Label57.Location = New System.Drawing.Point(355, 288)
         Me.Label57.Name = "Label57"
         Me.Label57.Size = New System.Drawing.Size(48, 15)
         Me.Label57.TabIndex = 109
@@ -4926,7 +4969,7 @@ Partial Class Form1
         '
         Me.Label109.AutoSize = True
         Me.Label109.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label109.Location = New System.Drawing.Point(355, 198)
+        Me.Label109.Location = New System.Drawing.Point(355, 196)
         Me.Label109.Name = "Label109"
         Me.Label109.Size = New System.Drawing.Size(31, 15)
         Me.Label109.TabIndex = 77
@@ -5012,7 +5055,7 @@ Partial Class Form1
         '
         Me.Label111.AutoSize = True
         Me.Label111.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label111.Location = New System.Drawing.Point(355, 174)
+        Me.Label111.Location = New System.Drawing.Point(355, 173)
         Me.Label111.Name = "Label111"
         Me.Label111.Size = New System.Drawing.Size(31, 15)
         Me.Label111.TabIndex = 80
@@ -5022,7 +5065,7 @@ Partial Class Form1
         '
         Me.Label113.AutoSize = True
         Me.Label113.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label113.Location = New System.Drawing.Point(355, 246)
+        Me.Label113.Location = New System.Drawing.Point(355, 242)
         Me.Label113.Name = "Label113"
         Me.Label113.Size = New System.Drawing.Size(31, 15)
         Me.Label113.TabIndex = 86
@@ -5076,7 +5119,7 @@ Partial Class Form1
         '
         Me.Label115.AutoSize = True
         Me.Label115.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label115.Location = New System.Drawing.Point(355, 270)
+        Me.Label115.Location = New System.Drawing.Point(355, 265)
         Me.Label115.Name = "Label115"
         Me.Label115.Size = New System.Drawing.Size(31, 15)
         Me.Label115.TabIndex = 83
@@ -5084,16 +5127,16 @@ Partial Class Form1
         '
         'Chart2
         '
-        ChartArea17.Name = "ChartArea1"
-        Me.Chart2.ChartAreas.Add(ChartArea17)
-        Legend17.Name = "Legend1"
-        Me.Chart2.Legends.Add(Legend17)
+        ChartArea2.Name = "ChartArea1"
+        Me.Chart2.ChartAreas.Add(ChartArea2)
+        Legend2.Name = "Legend1"
+        Me.Chart2.Legends.Add(Legend2)
         Me.Chart2.Location = New System.Drawing.Point(882, 360)
         Me.Chart2.Name = "Chart2"
-        Series17.ChartArea = "ChartArea1"
-        Series17.Legend = "Legend1"
-        Series17.Name = "Series1"
-        Me.Chart2.Series.Add(Series17)
+        Series2.ChartArea = "ChartArea1"
+        Series2.Legend = "Legend1"
+        Series2.Name = "Series1"
+        Me.Chart2.Series.Add(Series2)
         Me.Chart2.Size = New System.Drawing.Size(382, 224)
         Me.Chart2.TabIndex = 80
         Me.Chart2.Text = "Chart2"
@@ -6453,18 +6496,18 @@ Partial Class Form1
         'Chart1
         '
         Me.Chart1.AllowDrop = True
-        ChartArea18.Name = "ChartArea1"
-        Me.Chart1.ChartAreas.Add(ChartArea18)
+        ChartArea3.Name = "ChartArea1"
+        Me.Chart1.ChartAreas.Add(ChartArea3)
         Me.Chart1.Dock = System.Windows.Forms.DockStyle.Fill
         Me.Chart1.Enabled = False
-        Legend18.Name = "Legend1"
-        Me.Chart1.Legends.Add(Legend18)
+        Legend3.Name = "Legend1"
+        Me.Chart1.Legends.Add(Legend3)
         Me.Chart1.Location = New System.Drawing.Point(0, 0)
         Me.Chart1.Name = "Chart1"
-        Series18.ChartArea = "ChartArea1"
-        Series18.Legend = "Legend1"
-        Series18.Name = "Series1"
-        Me.Chart1.Series.Add(Series18)
+        Series3.ChartArea = "ChartArea1"
+        Series3.Legend = "Legend1"
+        Series3.Name = "Series1"
+        Me.Chart1.Series.Add(Series3)
         Me.Chart1.Size = New System.Drawing.Size(1070, 809)
         Me.Chart1.TabIndex = 68
         Me.Chart1.Text = "Chart1"
@@ -6866,49 +6909,6 @@ Partial Class Form1
         Me.PictureBox8.TabIndex = 31
         Me.PictureBox8.TabStop = False
         '
-        'TextBox184
-        '
-        Me.TextBox184.BackColor = System.Drawing.Color.LightBlue
-        Me.TextBox184.Enabled = False
-        Me.TextBox184.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.TextBox184.Location = New System.Drawing.Point(285, 335)
-        Me.TextBox184.Name = "TextBox184"
-        Me.TextBox184.Size = New System.Drawing.Size(57, 21)
-        Me.TextBox184.TabIndex = 168
-        Me.TextBox184.TextAlign = System.Windows.Forms.HorizontalAlignment.Center
-        '
-        'TextBox185
-        '
-        Me.TextBox185.BackColor = System.Drawing.Color.LightBlue
-        Me.TextBox185.Enabled = False
-        Me.TextBox185.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.TextBox185.Location = New System.Drawing.Point(214, 333)
-        Me.TextBox185.Name = "TextBox185"
-        Me.TextBox185.Size = New System.Drawing.Size(57, 21)
-        Me.TextBox185.TabIndex = 167
-        Me.TextBox185.TextAlign = System.Windows.Forms.HorizontalAlignment.Center
-        '
-        'TextBox186
-        '
-        Me.TextBox186.BackColor = System.Drawing.Color.LightBlue
-        Me.TextBox186.Enabled = False
-        Me.TextBox186.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.TextBox186.Location = New System.Drawing.Point(140, 332)
-        Me.TextBox186.Name = "TextBox186"
-        Me.TextBox186.Size = New System.Drawing.Size(57, 21)
-        Me.TextBox186.TabIndex = 166
-        Me.TextBox186.TextAlign = System.Windows.Forms.HorizontalAlignment.Center
-        '
-        'Label190
-        '
-        Me.Label190.AutoSize = True
-        Me.Label190.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label190.Location = New System.Drawing.Point(355, 342)
-        Me.Label190.Name = "Label190"
-        Me.Label190.Size = New System.Drawing.Size(36, 15)
-        Me.Label190.TabIndex = 165
-        Me.Label190.Text = "[kg/h]"
-        '
         'Form1
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -6920,123 +6920,123 @@ Partial Class Form1
         Me.Text = "Cyclone sizing. 05-02-2021 (Beta VERSION)"
         Me.TabPage10.ResumeLayout(False)
         Me.GroupBox18.ResumeLayout(False)
-        CType(Me.Chart3, System.ComponentModel.ISupportInitialize).EndInit
+        CType(Me.Chart3, System.ComponentModel.ISupportInitialize).EndInit()
         Me.TabPage8.ResumeLayout(False)
-        Me.TabPage8.PerformLayout
+        Me.TabPage8.PerformLayout()
         Me.TabPage7.ResumeLayout(False)
         Me.GroupBox24.ResumeLayout(False)
-        Me.GroupBox24.PerformLayout
+        Me.GroupBox24.PerformLayout()
         Me.groupBox3.ResumeLayout(False)
-        Me.groupBox3.PerformLayout
-        CType(Me.NumericUpDown44, System.ComponentModel.ISupportInitialize).EndInit
-        CType(Me.NumericUpDown45, System.ComponentModel.ISupportInitialize).EndInit
-        CType(Me.NumericUpDown41, System.ComponentModel.ISupportInitialize).EndInit
-        CType(Me.NumericUpDown42, System.ComponentModel.ISupportInitialize).EndInit
-        CType(Me.NumericUpDown32, System.ComponentModel.ISupportInitialize).EndInit
-        CType(Me.NumericUpDown31, System.ComponentModel.ISupportInitialize).EndInit
-        CType(Me.PictureBox7, System.ComponentModel.ISupportInitialize).EndInit
-        CType(Me.PictureBox1, System.ComponentModel.ISupportInitialize).EndInit
+        Me.groupBox3.PerformLayout()
+        CType(Me.NumericUpDown44, System.ComponentModel.ISupportInitialize).EndInit()
+        CType(Me.NumericUpDown45, System.ComponentModel.ISupportInitialize).EndInit()
+        CType(Me.NumericUpDown41, System.ComponentModel.ISupportInitialize).EndInit()
+        CType(Me.NumericUpDown42, System.ComponentModel.ISupportInitialize).EndInit()
+        CType(Me.NumericUpDown32, System.ComponentModel.ISupportInitialize).EndInit()
+        CType(Me.NumericUpDown31, System.ComponentModel.ISupportInitialize).EndInit()
+        CType(Me.PictureBox7, System.ComponentModel.ISupportInitialize).EndInit()
+        CType(Me.PictureBox1, System.ComponentModel.ISupportInitialize).EndInit()
         Me.TabPage6.ResumeLayout(False)
-        Me.TabPage6.PerformLayout
+        Me.TabPage6.PerformLayout()
         Me.GroupBox11.ResumeLayout(False)
-        Me.GroupBox11.PerformLayout
-        CType(Me.NumericUpDown21, System.ComponentModel.ISupportInitialize).EndInit
+        Me.GroupBox11.PerformLayout()
+        CType(Me.NumericUpDown21, System.ComponentModel.ISupportInitialize).EndInit()
         Me.GroupBox6.ResumeLayout(False)
-        Me.GroupBox6.PerformLayout
+        Me.GroupBox6.PerformLayout()
         Me.TabPage5.ResumeLayout(False)
-        Me.TabPage5.PerformLayout
+        Me.TabPage5.PerformLayout()
         Me.GroupBox17.ResumeLayout(False)
-        Me.GroupBox17.PerformLayout
-        CType(Me.NumericUpDown50, System.ComponentModel.ISupportInitialize).EndInit
+        Me.GroupBox17.PerformLayout()
+        CType(Me.NumericUpDown50, System.ComponentModel.ISupportInitialize).EndInit()
         Me.GroupBox16.ResumeLayout(False)
-        Me.GroupBox16.PerformLayout
-        CType(Me.NumericUpDown46, System.ComponentModel.ISupportInitialize).EndInit
+        Me.GroupBox16.PerformLayout()
+        CType(Me.NumericUpDown46, System.ComponentModel.ISupportInitialize).EndInit()
         Me.GroupBox15.ResumeLayout(False)
-        Me.GroupBox15.PerformLayout
-        CType(Me.NumericUpDown49, System.ComponentModel.ISupportInitialize).EndInit
-        CType(Me.NumericUpDown17, System.ComponentModel.ISupportInitialize).EndInit
-        CType(Me.NumericUpDown47, System.ComponentModel.ISupportInitialize).EndInit
-        CType(Me.NumericUpDown16, System.ComponentModel.ISupportInitialize).EndInit
+        Me.GroupBox15.PerformLayout()
+        CType(Me.NumericUpDown49, System.ComponentModel.ISupportInitialize).EndInit()
+        CType(Me.NumericUpDown17, System.ComponentModel.ISupportInitialize).EndInit()
+        CType(Me.NumericUpDown47, System.ComponentModel.ISupportInitialize).EndInit()
+        CType(Me.NumericUpDown16, System.ComponentModel.ISupportInitialize).EndInit()
         Me.TabPage4.ResumeLayout(False)
         Me.GroupBox8.ResumeLayout(False)
-        CType(Me.PictureBox6, System.ComponentModel.ISupportInitialize).EndInit
-        CType(Me.pictureBox3, System.ComponentModel.ISupportInitialize).EndInit
-        CType(Me.pictureBox2, System.ComponentModel.ISupportInitialize).EndInit
+        CType(Me.PictureBox6, System.ComponentModel.ISupportInitialize).EndInit()
+        CType(Me.pictureBox3, System.ComponentModel.ISupportInitialize).EndInit()
+        CType(Me.pictureBox2, System.ComponentModel.ISupportInitialize).EndInit()
         Me.TabPage3.ResumeLayout(False)
         Me.TableLayoutPanel2.ResumeLayout(False)
-        Me.TableLayoutPanel2.PerformLayout
-        CType(Me.PictureBox5, System.ComponentModel.ISupportInitialize).EndInit
+        Me.TableLayoutPanel2.PerformLayout()
+        CType(Me.PictureBox5, System.ComponentModel.ISupportInitialize).EndInit()
         Me.TabPage2.ResumeLayout(False)
         Me.TableLayoutPanel3.ResumeLayout(False)
         Me.GroupBox14.ResumeLayout(False)
-        Me.GroupBox14.PerformLayout
-        CType(Me.DataGridView3, System.ComponentModel.ISupportInitialize).EndInit
+        Me.GroupBox14.PerformLayout()
+        CType(Me.DataGridView3, System.ComponentModel.ISupportInitialize).EndInit()
         Me.TabPage9.ResumeLayout(False)
         Me.TableLayoutPanel1.ResumeLayout(False)
         Me.GroupBox5.ResumeLayout(False)
-        Me.GroupBox5.PerformLayout
-        CType(Me.DataGridView2, System.ComponentModel.ISupportInitialize).EndInit
+        Me.GroupBox5.PerformLayout()
+        CType(Me.DataGridView2, System.ComponentModel.ISupportInitialize).EndInit()
         Me.TabPage1.ResumeLayout(False)
-        Me.TabPage1.PerformLayout
+        Me.TabPage1.PerformLayout()
         Me.GroupBox13.ResumeLayout(False)
-        Me.GroupBox13.PerformLayout
-        CType(Me.Chart2, System.ComponentModel.ISupportInitialize).EndInit
+        Me.GroupBox13.PerformLayout()
+        CType(Me.Chart2, System.ComponentModel.ISupportInitialize).EndInit()
         Me.GroupBox10.ResumeLayout(False)
         Me.GroupBox9.ResumeLayout(False)
-        Me.GroupBox9.PerformLayout
-        CType(Me.NumericUpDown30, System.ComponentModel.ISupportInitialize).EndInit
+        Me.GroupBox9.PerformLayout()
+        CType(Me.NumericUpDown30, System.ComponentModel.ISupportInitialize).EndInit()
         Me.GroupBox4.ResumeLayout(False)
-        Me.GroupBox4.PerformLayout
+        Me.GroupBox4.PerformLayout()
         Me.GroupBox7.ResumeLayout(False)
-        Me.GroupBox7.PerformLayout
-        CType(Me.NumericUpDown43, System.ComponentModel.ISupportInitialize).EndInit
-        CType(Me.NumericUpDown22, System.ComponentModel.ISupportInitialize).EndInit
-        CType(Me.NumericUpDown33, System.ComponentModel.ISupportInitialize).EndInit
-        CType(Me.NumericUpDown20, System.ComponentModel.ISupportInitialize).EndInit
-        CType(Me.numericUpDown5, System.ComponentModel.ISupportInitialize).EndInit
-        CType(Me.NumericUpDown34, System.ComponentModel.ISupportInitialize).EndInit
+        Me.GroupBox7.PerformLayout()
+        CType(Me.NumericUpDown43, System.ComponentModel.ISupportInitialize).EndInit()
+        CType(Me.NumericUpDown22, System.ComponentModel.ISupportInitialize).EndInit()
+        CType(Me.NumericUpDown33, System.ComponentModel.ISupportInitialize).EndInit()
+        CType(Me.NumericUpDown20, System.ComponentModel.ISupportInitialize).EndInit()
+        CType(Me.numericUpDown5, System.ComponentModel.ISupportInitialize).EndInit()
+        CType(Me.NumericUpDown34, System.ComponentModel.ISupportInitialize).EndInit()
         Me.groupBox2.ResumeLayout(False)
-        Me.groupBox2.PerformLayout
-        CType(Me.NumericUpDown1, System.ComponentModel.ISupportInitialize).EndInit
-        CType(Me.NumericUpDown18, System.ComponentModel.ISupportInitialize).EndInit
-        CType(Me.NumericUpDown4, System.ComponentModel.ISupportInitialize).EndInit
-        CType(Me.numericUpDown14, System.ComponentModel.ISupportInitialize).EndInit
-        CType(Me.NumericUpDown19, System.ComponentModel.ISupportInitialize).EndInit
-        CType(Me.numericUpDown2, System.ComponentModel.ISupportInitialize).EndInit
-        CType(Me.numericUpDown3, System.ComponentModel.ISupportInitialize).EndInit
+        Me.groupBox2.PerformLayout()
+        CType(Me.NumericUpDown1, System.ComponentModel.ISupportInitialize).EndInit()
+        CType(Me.NumericUpDown18, System.ComponentModel.ISupportInitialize).EndInit()
+        CType(Me.NumericUpDown4, System.ComponentModel.ISupportInitialize).EndInit()
+        CType(Me.numericUpDown14, System.ComponentModel.ISupportInitialize).EndInit()
+        CType(Me.NumericUpDown19, System.ComponentModel.ISupportInitialize).EndInit()
+        CType(Me.numericUpDown2, System.ComponentModel.ISupportInitialize).EndInit()
+        CType(Me.numericUpDown3, System.ComponentModel.ISupportInitialize).EndInit()
         Me.groupBox1.ResumeLayout(False)
-        Me.groupBox1.PerformLayout
-        CType(Me.DataGridView6, System.ComponentModel.ISupportInitialize).EndInit
-        CType(Me.DataGridView1, System.ComponentModel.ISupportInitialize).EndInit
+        Me.groupBox1.PerformLayout()
+        CType(Me.DataGridView6, System.ComponentModel.ISupportInitialize).EndInit()
+        CType(Me.DataGridView1, System.ComponentModel.ISupportInitialize).EndInit()
         Me.TabControl1.ResumeLayout(False)
         Me.TabPage12.ResumeLayout(False)
-        CType(Me.DataGridView4, System.ComponentModel.ISupportInitialize).EndInit
+        CType(Me.DataGridView4, System.ComponentModel.ISupportInitialize).EndInit()
         Me.TabPage11.ResumeLayout(False)
         Me.SplitContainer1.Panel1.ResumeLayout(False)
         Me.SplitContainer1.Panel2.ResumeLayout(False)
-        CType(Me.SplitContainer1, System.ComponentModel.ISupportInitialize).EndInit
+        CType(Me.SplitContainer1, System.ComponentModel.ISupportInitialize).EndInit()
         Me.SplitContainer1.ResumeLayout(False)
-        CType(Me.Chart1, System.ComponentModel.ISupportInitialize).EndInit
+        CType(Me.Chart1, System.ComponentModel.ISupportInitialize).EndInit()
         Me.GroupBox23.ResumeLayout(False)
-        Me.GroupBox23.PerformLayout
+        Me.GroupBox23.PerformLayout()
         Me.GroupBox22.ResumeLayout(False)
-        Me.GroupBox22.PerformLayout
+        Me.GroupBox22.PerformLayout()
         Me.GroupBox21.ResumeLayout(False)
-        Me.GroupBox21.PerformLayout
+        Me.GroupBox21.PerformLayout()
         Me.GroupBox20.ResumeLayout(False)
-        Me.GroupBox20.PerformLayout
+        Me.GroupBox20.PerformLayout()
         Me.GroupBox19.ResumeLayout(False)
-        Me.GroupBox19.PerformLayout
+        Me.GroupBox19.PerformLayout()
         Me.GroupBox12.ResumeLayout(False)
-        Me.GroupBox12.PerformLayout
+        Me.GroupBox12.PerformLayout()
         Me.TabPage14.ResumeLayout(False)
-        Me.TabPage14.PerformLayout
-        CType(Me.PictureBox4, System.ComponentModel.ISupportInitialize).EndInit
+        Me.TabPage14.PerformLayout()
+        CType(Me.PictureBox4, System.ComponentModel.ISupportInitialize).EndInit()
         Me.TabPage13.ResumeLayout(False)
-        Me.TabPage13.PerformLayout
-        CType(Me.PictureBox10, System.ComponentModel.ISupportInitialize).EndInit
-        CType(Me.PictureBox9, System.ComponentModel.ISupportInitialize).EndInit
-        CType(Me.PictureBox8, System.ComponentModel.ISupportInitialize).EndInit
+        Me.TabPage13.PerformLayout()
+        CType(Me.PictureBox10, System.ComponentModel.ISupportInitialize).EndInit()
+        CType(Me.PictureBox9, System.ComponentModel.ISupportInitialize).EndInit()
+        CType(Me.PictureBox8, System.ComponentModel.ISupportInitialize).EndInit()
         Me.ResumeLayout(False)
 
     End Sub
