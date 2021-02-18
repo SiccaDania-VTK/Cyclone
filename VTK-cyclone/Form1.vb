@@ -321,6 +321,18 @@ Public Class Form1
     "600;	8",
     "1000;	2"}
 
+    'Potato from Flash drier (cumulatief[%], particle diameter[mu])
+    ReadOnly psd_potato_flash_drier() As String = {
+    "5;	    99.99",
+    "7;	    99.7",
+    "10;	99.0",
+    "15;	97.0",
+    "20;	91.0",
+    "30;	71",
+    "50;	32",
+    "70;	10",
+    "90;	2"}
+
     '----------- directory's-----------
     ReadOnly dirpath_Eng As String = "N:\Engineering\VBasic\Cyclone_sizing_input\"
     ReadOnly dirpath_Rap As String = "N:\Engineering\VBasic\Cyclone_rapport_copy\"
@@ -2942,7 +2954,6 @@ Public Class Form1
         Calc_sequence()
     End Sub
 
-
     Private Sub Button15_Click(sender As Object, e As EventArgs) Handles Button15.Click
         PSD_Whey()
         Calc_sequence()
@@ -3238,6 +3249,31 @@ Public Class Form1
                 End If
             End If
         Next
+        Calc_sequence()
+    End Sub
+    Private Sub Button18_Click(sender As Object, e As EventArgs) Handles Button18.Click
+        TextBox28.Text = "Q20.1140"
+        TextBox29.Text = "PSD Potato,Balaji "
+        TextBox53.Text = "Summer"
+        NumericUpDown1.Value = 3300         '[Am3/h] Flow
+        NumericUpDown18.Value = 51          '[c]
+        NumericUpDown19.Value = -46         '[mbar] 
+        numericUpDown2.Value = 1600         '[kg/m3] density
+        numericUpDown3.Value = CDec(1.013)  '[kg/m3] ro air
+        numericUpDown14.Value = CDec(0.019548) '[mPas=cP] visco air
+        NumericUpDown4.Value = CDec(109.8)  '[g/Am3]
+        NumericUpDown30.Value = 1           '[-] Case number
+
+        NumericUpDown20.Value = 1           '[-] parallel cycloon
+        ComboBox1.SelectedIndex = 2         'AC435 stage #1
+        numericUpDown5.Value = CDec(0.45)   '[m] diameter cycloon
+
+        NumericUpDown33.Value = 2           '[-] parallel cycloon
+        ComboBox2.SelectedIndex = 5         'AC850 stage #2
+        NumericUpDown34.Value = CDec(0.45)  '[m] diameter cycloon
+
+        '======== Fill the DVG with PSD example data =======
+        Fill_dgv6_example(psd_potato_flash_drier)
         Calc_sequence()
     End Sub
 End Class
