@@ -547,7 +547,6 @@ Public Class Form1
         TextBox145.Text &= "Fat accumulation on the cyclone inlet wall (called Caramelization, Per Simonsen)"
         TextBox145.Text &= "Dairy specialists Per Simonsen, Suresh Sundararaj"
 
-
         TextBox147.Text = "Cyclone is a excellent Spark arrestor" & vbCrLf
         TextBox147.Text &= "Use in front of filter or silo" & vbCrLf
         TextBox147.Text &= "Also used in suction of gas-turbines to catch flies" & vbCrLf
@@ -567,6 +566,14 @@ Public Class Form1
         TextBox174.Text &= "Many type of Potato starch" & vbCrLf
         TextBox174.Text &= "Blockage 1st stage AA850 (speed too low)" & vbCrLf
         TextBox174.Text &= "Part replacement by AA425 ?" & vbCrLf
+
+        TextBox187.Text = "Log" & vbCrLf
+        TextBox187.Text &= "25-02-2021, AKO rvs kg price 11.00 E/kg " & vbCrLf
+        TextBox187.Text &= "10-02-2021, Potato PSD added" & vbCrLf
+        TextBox187.Text &= "10-02-2021, Emmision on kg/h added " & vbCrLf
+        TextBox187.Text &= "09-02-2021, Emission in gr/Nm3 added" & vbCrLf
+        TextBox187.Text &= "09-02-2021, Invert input button added" & vbCrLf
+        TextBox187.Text &= "07-02-2021, Bug fix input" & vbCrLf
 
         Me.Size = New System.Drawing.Size(1305, 906)
 
