@@ -209,23 +209,29 @@ Public Class Form1
     "180;99.58",
     "215;99.95"}
 
-    ''Cargill China (cumulatief[%], particle diameter[mu])
-    'ReadOnly maltodextrine_psd() As String = {
-    '"1.0;   99.9",
-    '"2.0;   98.5",
-    '"4.0;   97",
-    '"5.0;   96",
-    '"7.0;   93",
-    '"9.0;   90",
-    '"11;    86",
-    '"20;    68",
-    '"40;    45",
-    '"60;    30",
-    '"80;    20",
-    '"150;   4",
-    '"200;   1"}
+    'SURESH, Cargill China (cumulatief[%], particle diameter[mu])
+    ReadOnly maltodextrine_psd_suresh() As String = {
+    "1.0	;	99.99",
+    "3.5	;	97.00",
+    "7.5	;	93.80",
+    "12.5	;	86.10",
+    "17.5	;	75.40",
+    "25.0	;	66.00",
+    "35.0	;	51.10",
+    "45.0	;	39.70",
+    "55.0	;	29.40",
+    "65.0	;	23.50",
+    "75.0	;	20.90",
+    "85.0	;	18.50",
+    "95.0	;	13.80",
+    "110.0	;	11.70",
+    "140.0	;	7.90",
+    "180.0	;	3.50",
+    "225.0	;	0.80",
+    "275.0	;	0.10",
+    "350.0	;	0.01"}
 
-    ''Cargill China (cumulatief[%], particle diameter[mu])
+    'Cargill China (cumulatief[%], particle diameter[mu])
     ReadOnly maltodextrine_psd() As String = {
     "0.359;99.999	",
     "0.652;99.990	",
@@ -2856,6 +2862,7 @@ Public Class Form1
 
     Private Function Calc_Normal_density(ro1 As Double, p1 As Double, t1 As Double) As Double
         Dim ro_normal As Double
+        If p1 < 100 Then p1 = 100             'Prevent devide by zero
         ro_normal = ro1 * (101325 / p1) * ((t1 + 273.15) / 273.15)
         Return (ro_normal)
     End Function
@@ -2966,10 +2973,13 @@ Public Class Form1
     End Sub
 
     Private Sub Button13_Click(sender As Object, e As EventArgs) Handles Button13.Click
-        PSD_maltodesxtrine()
+        PSD_maltodesxtrine() 'Chineese determined PSD
         Calc_sequence()
     End Sub
-
+    Private Sub Button20_Click(sender As Object, e As EventArgs) Handles Button20.Click
+        PSD_maltodextrine_2()
+        Calc_sequence()
+    End Sub
     Private Sub Button15_Click(sender As Object, e As EventArgs) Handles Button15.Click
         PSD_Whey()
         Calc_sequence()
@@ -3031,6 +3041,31 @@ Public Class Form1
 
         '======== Fill the DVG with PSD example data =======
         Fill_dgv6_example(maltodextrine_psd)
+    End Sub
+
+    Private Sub PSD_maltodextrine_2()
+        TextBox28.Text = "Cargill China"
+        TextBox29.Text = "Q20.1021"
+        TextBox53.Text = "--"
+        NumericUpDown1.Value = 75000        '[Am3/h] Flow
+        NumericUpDown18.Value = 120         '[c]
+        NumericUpDown19.Value = -30         '[mbar] 
+        numericUpDown2.Value = 1200         '[kg/m3] density
+        numericUpDown3.Value = CDec(0.8977) '[kg/m3] ro air
+        numericUpDown14.Value = CDec(0.0227)  '[mPas=cP] visco air
+        NumericUpDown4.Value = 20           '[g/Am3]
+        NumericUpDown30.Value = 1           '[-] Case number
+
+        NumericUpDown20.Value = 120         '[-] parallel cycloon
+        ComboBox1.SelectedIndex = 9         'AA850 stage #1
+        numericUpDown5.Value = CDec(0.3)    '[m] diameter cycloon
+
+        NumericUpDown33.Value = 120         '[-] parallel cycloon
+        ComboBox2.SelectedIndex = 9         'AA850 stage #2
+        NumericUpDown34.Value = CDec(0.3)   '[m] diameter cycloon
+
+        '======== Fill the DVG with PSD example data =======
+        Fill_dgv6_example(maltodextrine_psd_suresh)
     End Sub
 
     Private Sub PSD_Whey()
@@ -3302,4 +3337,6 @@ Public Class Form1
         Fill_dgv6_example(psd_potato_flash_drier)
         Calc_sequence()
     End Sub
+
+
 End Class

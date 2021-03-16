@@ -599,6 +599,7 @@ Partial Class Form1
         Me.TextBox175 = New System.Windows.Forms.TextBox()
         Me.PictureBox9 = New System.Windows.Forms.PictureBox()
         Me.PictureBox8 = New System.Windows.Forms.PictureBox()
+        Me.Button20 = New System.Windows.Forms.Button()
         Me.TabPage10.SuspendLayout
         Me.GroupBox18.SuspendLayout
         CType(Me.Chart3, System.ComponentModel.ISupportInitialize).BeginInit
@@ -4037,6 +4038,7 @@ Partial Class Form1
         '
         'TabPage1
         '
+        Me.TabPage1.Controls.Add(Me.Button20)
         Me.TabPage1.Controls.Add(Me.Button18)
         Me.TabPage1.Controls.Add(Me.Button17)
         Me.TabPage1.Controls.Add(Me.Button16)
@@ -4076,7 +4078,7 @@ Partial Class Form1
         '
         'Button17
         '
-        Me.Button17.Location = New System.Drawing.Point(889, 733)
+        Me.Button17.Location = New System.Drawing.Point(1035, 729)
         Me.Button17.Name = "Button17"
         Me.Button17.Size = New System.Drawing.Size(121, 23)
         Me.Button17.TabIndex = 88
@@ -4086,7 +4088,7 @@ Partial Class Form1
         '
         'Button16
         '
-        Me.Button16.Location = New System.Drawing.Point(889, 696)
+        Me.Button16.Location = New System.Drawing.Point(889, 731)
         Me.Button16.Name = "Button16"
         Me.Button16.Size = New System.Drawing.Size(121, 23)
         Me.Button16.TabIndex = 87
@@ -6944,6 +6946,15 @@ Partial Class Form1
         Me.PictureBox8.TabIndex = 31
         Me.PictureBox8.TabStop = False
         '
+        'Button20
+        '
+        Me.Button20.Location = New System.Drawing.Point(889, 697)
+        Me.Button20.Name = "Button20"
+        Me.Button20.Size = New System.Drawing.Size(121, 23)
+        Me.Button20.TabIndex = 90
+        Me.Button20.Text = "Maltodextrine Suresh"
+        Me.Button20.UseVisualStyleBackColor = True
+        '
         'Form1
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -7642,4 +7653,5 @@ Partial Class Form1
     Private WithEvents Label191 As Label
     Friend WithEvents Button18 As Button
     Friend WithEvents TextBox187 As TextBox
+    Friend WithEvents Button20 As Button
 End Class
