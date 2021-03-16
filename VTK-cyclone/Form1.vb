@@ -551,33 +551,34 @@ Public Class Form1
         TextBox147.Text &= "Use in front of filter or silo" & vbCrLf
         TextBox147.Text &= "Also used in suction of gas-turbines to catch flies" & vbCrLf
 
-        TextBox149.Text = "Gluten separation with a Cyclone" & vbCrLf
-        TextBox149.Text &= "Test have show that the particles are getting electrically charged and stick to the vessel wall" & vbCrLf
+        TextBox149.Text = "Gluten separation with a Cyclone" & vbCrLf &
+        "Test have show that the particles are getting electrically charged and stick to the vessel wall" & vbCrLf
 
-        TextBox152.Text = "Particle Density and Bulk (Volumetric) Density" & vbCrLf
-        TextBox152.Text &= "Rule of thumb for foodstuffs, Particle Density= 2 x Bulk density" & vbCrLf
+        TextBox152.Text = "Particle Density and Bulk (Volumetric) Density" & vbCrLf &
+        "Rule of thumb for foodstuffs, Particle Density= 2 x Bulk density" & vbCrLf
 
-        TextBox153.Text = "Spray dried product are fragile and may breakup See project P10.1070" & vbCrLf
-        TextBox153.Text &= "Inlet speed cyclone is then limited to 16 m/s " & vbCrLf
-        TextBox153.Text &= "Strong product inlet speed is 25 m/s" & vbCrLf
-        TextBox153.Text &= "Maltodextrine  " & vbCrLf
+        TextBox153.Text = "Spray dried product are fragile and may breakup See project P10.1070" & vbCrLf &
+        "Inlet speed cyclone is then limited to 16 m/s " & vbCrLf &
+        "Strong product inlet speed is 25 m/s" & vbCrLf &
+        "Maltodextrine  " & vbCrLf
 
-        TextBox174.Text = "AVEBE" & vbCrLf
-        TextBox174.Text &= "Many type of Potato starch" & vbCrLf
-        TextBox174.Text &= "Blockage 1st stage AA850 (speed too low)" & vbCrLf
-        TextBox174.Text &= "Part replacement by AA425 ?" & vbCrLf
+        TextBox174.Text = "AVEBE" & vbCrLf &
+        "Many type of Potato starch" & vbCrLf &
+        "Blockage 1st stage AA850 (speed too low)" & vbCrLf &
+        "Part replacement by AA425 ?" & vbCrLf
 
-        TextBox187.Text = "Log" & vbCrLf
-        TextBox187.Text &= "25-02-2021, AKO rvs kg price 11.00 E/kg " & vbCrLf
-        TextBox187.Text &= "10-02-2021, Potato PSD added" & vbCrLf
-        TextBox187.Text &= "10-02-2021, Emmision on kg/h added " & vbCrLf
-        TextBox187.Text &= "09-02-2021, Emission in gr/Nm3 added" & vbCrLf
-        TextBox187.Text &= "09-02-2021, Invert input button added" & vbCrLf
-        TextBox187.Text &= "07-02-2021, Bug fix input" & vbCrLf
+        TextBox187.Text = "Log" & vbCrLf &
+        "25-02-2021, AKO rvs kg price 11.00 E/kg " & vbCrLf &
+        "10-02-2021, Potato PSD added" & vbCrLf &
+        "10-02-2021, Emmision on kg/h added " & vbCrLf &
+        "09-02-2021, Emission in gr/Nm3 added" & vbCrLf &
+        "09-02-2021, Invert input button added" & vbCrLf &
+        "07-02-2021, Bug fix input" & vbCrLf &
+        "16-03-2021, Bug fix clear the grid" & vbCrLf
 
         Me.Size = New System.Drawing.Size(1305, 906)
 
-        Build_dgv6()                    'PSD input grid
+        Build_clear_dgv6()                    'PSD input grid
         Calc_sequence()
         Clear_dgv6()
         init = True                     'init is now done
@@ -830,7 +831,7 @@ Public Class Form1
             'Fill_array_from_screen(CInt(NumericUpDown30.Value))
 
             TextBox39.Text = kgh.ToString("F0")                 'Stof inlet [kg/(h.cyclone)]
-            TextBox40.Text = _cees(ks).Dust1_in_kgh.ToString("F0")             'Dust inlet [kg/h] 
+            TextBox40.Text = _cees(ks).dust1_in_kgh.ToString("F0")             'Dust inlet [kg/h] 
             TextBox71.Text = _cees(ks).dust1_Am3.ToString("F3") 'Dust inlet [g/Am3]
         End If
     End Sub
@@ -2407,7 +2408,13 @@ Public Class Form1
                 c_load = _input(i).class_load
                 c_load_previous = _input(i - 1).class_load
 
-                .Rows(i).Cells(1).Style.BackColor = If(c_load > c_load_previous And c_load <> 0, Color.Orange, Color.LightGreen)
+                ' .Rows(i).Cells(1).Style.BackColor = If(c_load > c_load_previous And c_load <> 0, Color.Orange, Color.LightGreen)
+                If (c_load > c_load_previous And c_load <> 0) Then
+                    .Rows(i).Cells(1).Style.BackColor = Color.Orange
+                    Debug.WriteLine("c_load= " & c_load.ToString)
+                Else
+                    .Rows(i).Cells(1).Style.BackColor = Color.LightGreen
+                End If
             Next
 
             '--- Value 100 gives errors -----
@@ -2926,7 +2933,7 @@ Public Class Form1
     Private Sub Button11_Click(sender As Object, e As EventArgs) Handles Button11.Click
         Form2.Show()    'Fopspeen
     End Sub
-    Private Sub Build_dgv6()
+    Private Sub Build_clear_dgv6()
         'This is the user input mechanism for entering the PSD data
         With DataGridView6
             .ColumnCount = 2
@@ -2943,12 +2950,14 @@ Public Class Form1
 
             .Columns(0).Width = 95
             .Columns(1).Width = 95
+
+
+            For Each row As DataGridViewRow In .Rows
+                row.Cells(0).Value = 0
+                row.Cells(1).Value = 0
+            Next
         End With
 
-        'For Each row As DataGridViewRow In .Rows
-        '    row.Cells(0).Value = 0
-        '    row.Cells(1).Value = 0
-        'Next
     End Sub
 
     Private Sub DataGridView6_CellEndEdit(sender As Object, e As DataGridViewCellEventArgs) Handles DataGridView6.CellEndEdit
@@ -3205,16 +3214,26 @@ Public Class Form1
     Private Sub Clear_dgv6()
         'Clear the all grid cells
 
-        Build_dgv6()
+        Build_clear_dgv6()
         With DataGridView6
-            .Rows(0).Cells(0).Value = 3
-            .Rows(0).Cells(1).Value = 100
+            .Rows(0).Cells(0).Value = 0.5
+            .Rows(0).Cells(1).Value = 99.99
 
-            .Rows(1).Cells(0).Value = 5
-            .Rows(1).Cells(1).Value = 50
+            .Rows(1).Cells(0).Value = 1
+            .Rows(1).Cells(1).Value = 95
 
-            .Rows(2).Cells(0).Value = 7
-            .Rows(2).Cells(1).Value = 0.1
+            .Rows(2).Cells(0).Value = 2
+            .Rows(2).Cells(1).Value = 60
+
+            .Rows(3).Cells(0).Value = 3
+            .Rows(3).Cells(1).Value = 40
+
+            .Rows(4).Cells(0).Value = 4
+            .Rows(4).Cells(1).Value = 20
+
+            .Rows(5).Cells(0).Value = 5
+            .Rows(5).Cells(1).Value = 0.1
+
         End With
     End Sub
 
