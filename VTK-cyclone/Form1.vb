@@ -584,9 +584,10 @@ Public Class Form1
 
         Me.Size = New System.Drawing.Size(1305, 906)
 
-        Build_clear_dgv6()                    'PSD input grid
+        Build_clear_dgv6()              'PSD input grid
         Calc_sequence()
-        Clear_dgv6()
+
+        Calc_sequence()
         init = True                     'init is now done
     End Sub
 
@@ -3243,33 +3244,8 @@ Public Class Form1
         Debug.WriteLine("DataGridView6_KeyDown done")
     End Sub
     Private Sub Button19_Click(sender As Object, e As EventArgs) Handles Button19.Click
-        Clear_dgv6()                    'Input Clear the all grid cells
+        Build_clear_dgv6()  'Input Clear the all grid cells
         Calc_sequence()
-    End Sub
-    Private Sub Clear_dgv6()
-        'Clear the all grid cells
-
-        Build_clear_dgv6()
-        With DataGridView6
-            .Rows(0).Cells(0).Value = 0.5
-            .Rows(0).Cells(1).Value = 99.99
-
-            .Rows(1).Cells(0).Value = 1
-            .Rows(1).Cells(1).Value = 95
-
-            .Rows(2).Cells(0).Value = 2
-            .Rows(2).Cells(1).Value = 60
-
-            .Rows(3).Cells(0).Value = 3
-            .Rows(3).Cells(1).Value = 40
-
-            .Rows(4).Cells(0).Value = 4
-            .Rows(4).Cells(1).Value = 20
-
-            .Rows(5).Cells(0).Value = 5
-            .Rows(5).Cells(1).Value = 0.1
-
-        End With
     End Sub
 
     Private Sub PictureBox8_Click(sender As Object, e As EventArgs) Handles PictureBox8.Click
