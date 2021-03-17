@@ -344,6 +344,7 @@ Partial Class Form1
         Me.TextBox59 = New System.Windows.Forms.TextBox()
         Me.DataGridView2 = New System.Windows.Forms.DataGridView()
         Me.TabPage1 = New System.Windows.Forms.TabPage()
+        Me.Button20 = New System.Windows.Forms.Button()
         Me.Button18 = New System.Windows.Forms.Button()
         Me.Button17 = New System.Windows.Forms.Button()
         Me.Button16 = New System.Windows.Forms.Button()
@@ -599,7 +600,6 @@ Partial Class Form1
         Me.TextBox175 = New System.Windows.Forms.TextBox()
         Me.PictureBox9 = New System.Windows.Forms.PictureBox()
         Me.PictureBox8 = New System.Windows.Forms.PictureBox()
-        Me.Button20 = New System.Windows.Forms.Button()
         Me.TabPage10.SuspendLayout
         Me.GroupBox18.SuspendLayout
         CType(Me.Chart3, System.ComponentModel.ISupportInitialize).BeginInit
@@ -4067,6 +4067,15 @@ Partial Class Form1
         Me.TabPage1.Text = "Data Input"
         Me.TabPage1.UseVisualStyleBackColor = True
         '
+        'Button20
+        '
+        Me.Button20.Location = New System.Drawing.Point(889, 697)
+        Me.Button20.Name = "Button20"
+        Me.Button20.Size = New System.Drawing.Size(121, 40)
+        Me.Button20.TabIndex = 90
+        Me.Button20.Text = "Maltodextrine Suresh Rapport"
+        Me.Button20.UseVisualStyleBackColor = True
+        '
         'Button18
         '
         Me.Button18.Location = New System.Drawing.Point(889, 585)
@@ -4078,7 +4087,7 @@ Partial Class Form1
         '
         'Button17
         '
-        Me.Button17.Location = New System.Drawing.Point(1035, 729)
+        Me.Button17.Location = New System.Drawing.Point(1035, 735)
         Me.Button17.Name = "Button17"
         Me.Button17.Size = New System.Drawing.Size(121, 23)
         Me.Button17.TabIndex = 88
@@ -4088,7 +4097,7 @@ Partial Class Form1
         '
         'Button16
         '
-        Me.Button16.Location = New System.Drawing.Point(889, 731)
+        Me.Button16.Location = New System.Drawing.Point(889, 739)
         Me.Button16.Name = "Button16"
         Me.Button16.Size = New System.Drawing.Size(121, 23)
         Me.Button16.TabIndex = 87
@@ -6946,15 +6955,6 @@ Partial Class Form1
         Me.PictureBox8.TabIndex = 31
         Me.PictureBox8.TabStop = False
         '
-        'Button20
-        '
-        Me.Button20.Location = New System.Drawing.Point(889, 697)
-        Me.Button20.Name = "Button20"
-        Me.Button20.Size = New System.Drawing.Size(121, 23)
-        Me.Button20.TabIndex = 90
-        Me.Button20.Text = "Maltodextrine Suresh"
-        Me.Button20.UseVisualStyleBackColor = True
-        '
         'Form1
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -6963,7 +6963,7 @@ Partial Class Form1
         Me.Controls.Add(Me.TabControl1)
         Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
         Me.Name = "Form1"
-        Me.Text = "Cyclone sizing. 16-03-2021 (Beta VERSION)"
+        Me.Text = "Cyclone sizing. 17-03-2021 (Beta VERSION)"
         Me.TabPage10.ResumeLayout(False)
         Me.GroupBox18.ResumeLayout(False)
         CType(Me.Chart3, System.ComponentModel.ISupportInitialize).EndInit

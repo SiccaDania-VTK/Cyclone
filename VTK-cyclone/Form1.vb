@@ -3048,20 +3048,20 @@ Public Class Form1
         TextBox28.Text = "Cargill China"
         TextBox29.Text = "Q20.1021"
         TextBox53.Text = "--"
-        NumericUpDown1.Value = 75000        '[Am3/h] Flow
-        NumericUpDown18.Value = 120         '[c]
-        NumericUpDown19.Value = -30         '[mbar] 
-        numericUpDown2.Value = 1200         '[kg/m3] density
-        numericUpDown3.Value = CDec(0.8977) '[kg/m3] ro air
-        numericUpDown14.Value = CDec(0.0227)  '[mPas=cP] visco air
-        NumericUpDown4.Value = 20           '[g/Am3]
+        NumericUpDown1.Value = 96600        '[Am3/h] Flow
+        NumericUpDown18.Value = 118         '[c]
+        NumericUpDown19.Value = -3          '[mbar] 
+        numericUpDown2.Value = 800          '[kg/m3] density
+        numericUpDown3.Value = CDec(0.859) '[kg/m3] ro air
+        numericUpDown14.Value = CDec(0.01716)  '[mPas=cP] visco air
+        NumericUpDown4.Value = CDec(9.35)   '[g/Am3]
         NumericUpDown30.Value = 1           '[-] Case number
 
-        NumericUpDown20.Value = 120         '[-] parallel cycloon
-        ComboBox1.SelectedIndex = 9         'AA850 stage #1
-        numericUpDown5.Value = CDec(0.3)    '[m] diameter cycloon
+        NumericUpDown20.Value = 2           '[-] parallel cycloon
+        ComboBox1.SelectedIndex = 5         'AC850 stage #1
+        numericUpDown5.Value = CDec(2.8)    '[m] diameter cycloon
 
-        NumericUpDown33.Value = 120         '[-] parallel cycloon
+        NumericUpDown33.Value = 144         '[-] parallel cycloon
         ComboBox2.SelectedIndex = 9         'AA850 stage #2
         NumericUpDown34.Value = CDec(0.3)   '[m] diameter cycloon
 
