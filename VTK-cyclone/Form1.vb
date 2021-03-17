@@ -211,7 +211,7 @@ Public Class Form1
 
     'SURESH, Cargill China (cumulatief[%], particle diameter[mu])
     ReadOnly maltodextrine_psd_suresh() As String = {
-    "1.0	;	99.99",
+    "1.0	;	99.9999",
     "3.5	;	97.00",
     "7.5	;	93.80",
     "12.5	;	86.10",
@@ -2950,8 +2950,8 @@ Public Class Form1
             .EnableHeadersVisualStyles = False   'For backcolor
             .RowHeadersVisible = False
 
-            .Columns(0).DefaultCellStyle.Format = "N2"
-            .Columns(1).DefaultCellStyle.Format = "N2"
+            .Columns(0).DefaultCellStyle.Format = "N3"
+            .Columns(1).DefaultCellStyle.Format = "N3"
 
             .Columns(0).HeaderText = "Upper Dia [um]"
             .Columns(1).HeaderText = "Cumm [%] tot wght"
@@ -3280,7 +3280,7 @@ Public Class Form1
                 If Not IsNothing(row.Cells(1).Value) Then row.Cells(1).Value = 100.0 - CDbl(row.Cells(1).Value)
 
                 '===== diameter NULL than also weight is NUL ======
-                If CDbl(row.Cells(0).Value) < 0.001 Then
+                If CDbl(row.Cells(0).Value) < 0.0001 Then
                     row.Cells(0).Value = 0
                     row.Cells(1).Value = 0
                 End If
