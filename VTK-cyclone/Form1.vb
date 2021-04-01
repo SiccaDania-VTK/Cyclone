@@ -209,6 +209,16 @@ Public Class Form1
     "180;99.58",
     "215;99.95"}
 
+    'Typical Corn (cumulatief[%], particle diameter[mu])
+    ReadOnly psd_corn() As String = {
+    "2	;99.9",
+    "4	;99.8",
+    "8	;83.9",
+    "12	;52.2",
+    "16	;22.6",
+    "20	;2.5"}
+
+
     'SURESH, Cargill China (cumulatief[%], particle diameter[mu])
     ReadOnly maltodextrine_psd_suresh() As String = {
     "1.0	;	99.9999",
@@ -570,17 +580,18 @@ Public Class Form1
 
         TextBox174.Text = "AVEBE" & vbCrLf &
         "Many type of Potato starch" & vbCrLf &
-        "Blockage 1st stage AA850 (speed too low)" & vbCrLf &
-        "Part replacement by AA425 ?" & vbCrLf
+        "Use cyclone as 1 stage before AA850 to prevent blocking"
+
 
         TextBox187.Text = "Log" & vbCrLf &
-        "25-02-2021, AKO rvs kg price 11.00 E/kg " & vbCrLf &
-        "10-02-2021, Potato PSD added" & vbCrLf &
-        "10-02-2021, Emmision on kg/h added " & vbCrLf &
-        "09-02-2021, Emission in gr/Nm3 added" & vbCrLf &
-        "09-02-2021, Invert input button added" & vbCrLf &
+        "01-04-2021, PSD Corm added, as difficult product" & vbCrLf &
+        "16-03-2021, Bug fix clear the grid" & vbCrLf &
         "07-02-2021, Bug fix input" & vbCrLf &
-        "16-03-2021, Bug fix clear the grid" & vbCrLf
+        "09-02-2021, Invert input button added" & vbCrLf &
+        "09-02-2021, Emission in gr/Nm3 added" & vbCrLf &
+        "10-02-2021, Emmision on kg/h added " & vbCrLf &
+        "10-02-2021, Potato PSD added" & vbCrLf &
+        "25-02-2021, AKO rvs kg price 11.00 E/kg "
 
         Me.Size = New System.Drawing.Size(1305, 906)
 
@@ -3094,7 +3105,10 @@ Public Class Form1
         Fill_dgv6_example(psd_whey_A6605)
 
     End Sub
-
+    Private Sub PSD_typical_Corn()
+        '======== Fill the DVG with Corn example data (difficult stuff) =======
+        Fill_dgv6_example(psd_corn)
+    End Sub
     Private Sub PSD_DSM_polymere()
         '======== Fill the DVG with DSM polymere example data =======
         Fill_dgv6_example(DSM_psd_example)
@@ -3314,5 +3328,8 @@ Public Class Form1
         Calc_sequence()
     End Sub
 
-
+    Private Sub Button21_Click(sender As Object, e As EventArgs) Handles Button21.Click
+        PSD_typical_Corn()
+        Calc_sequence()
+    End Sub
 End Class
