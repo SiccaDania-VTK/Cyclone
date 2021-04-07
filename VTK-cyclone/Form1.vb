@@ -582,8 +582,8 @@ Public Class Form1
         "Many type of Potato starch" & vbCrLf &
         "Use cyclone as 1 stage before AA850 to prevent blocking"
 
-
         TextBox187.Text = "Log" & vbCrLf &
+        "07-04-2021, Commercial data elaborated" & vbCrLf &
         "01-04-2021, PSD Corm added, as difficult product" & vbCrLf &
         "16-03-2021, Bug fix clear the grid" & vbCrLf &
         "07-02-2021, Bug fix input" & vbCrLf &
@@ -1667,7 +1667,7 @@ Public Class Form1
 
         '---------------Inlet data-------------------------------
         'Insert a table, fill it with data and change the column widths.
-        oTable = oDoc.Tables.Add(oDoc.Bookmarks.Item("\endofdoc").Range, 13, 3)
+        oTable = oDoc.Tables.Add(oDoc.Bookmarks.Item("\endofdoc").Range, 15, 3)
         oTable.Range.ParagraphFormat.SpaceAfter = 1
         oTable.Range.Font.Size = 11
         oTable.Range.Font.Bold = CInt(False)
@@ -1706,13 +1706,21 @@ Public Class Form1
         oTable.Cell(row, 2).Range.Text = numericUpDown14.Value.ToString("F3")
         oTable.Cell(row, 3).Range.Text = "[centi Poise]"
         row += 1
-        oTable.Cell(row, 1).Range.Text = "Dust load"
+        oTable.Cell(row, 1).Range.Text = "Dust load total"
         oTable.Cell(row, 2).Range.Text = NumericUpDown4.Value.ToString("F2")
         oTable.Cell(row, 3).Range.Text = "[gr/Am3]"
         row += 1
-        oTable.Cell(row, 1).Range.Text = "Dust load (1 cyclone)"
+        oTable.Cell(row, 1).Range.Text = "Dust load total"
+        oTable.Cell(row, 2).Range.Text = TextBox177.Text
+        oTable.Cell(row, 3).Range.Text = "[kg/h]"
+        row += 1
+        oTable.Cell(row, 1).Range.Text = "Dust load stage 1"
         oTable.Cell(row, 2).Range.Text = TextBox39.Text
-        oTable.Cell(row, 3).Range.Text = "[kg/hr]"
+        oTable.Cell(row, 3).Range.Text = "[kg/h/Cycl]"
+        row += 1
+        oTable.Cell(row, 1).Range.Text = "Dust load stage 2)"
+        oTable.Cell(row, 2).Range.Text = TextBox100.Text
+        oTable.Cell(row, 3).Range.Text = "[kg/h/Cycl]"
 
         oTable.Columns(1).Width = oWord.InchesToPoints(2.0)   'Change width of columns 
         oTable.Columns(2).Width = oWord.InchesToPoints(1)
@@ -1765,7 +1773,7 @@ Public Class Form1
 
         '---------------Process data-------------------------------
         'Insert a table, fill it with data and change the column widths.
-        oTable = oDoc.Tables.Add(oDoc.Bookmarks.Item("\endofdoc").Range, 18, 3)
+        oTable = oDoc.Tables.Add(oDoc.Bookmarks.Item("\endofdoc").Range, 22, 3)
         oTable.Range.ParagraphFormat.SpaceAfter = 1
         oTable.Range.Font.Size = 10
         oTable.Range.Font.Bold = CInt(False)
@@ -1774,64 +1782,76 @@ Public Class Form1
         oTable.Cell(row, 1).Range.Text = "Process data"
         row += 1
         '----------- stage #1 ---------------
-        oTable.Cell(row, 1).Range.Text = "Inlet speed #1 "
+        oTable.Cell(row, 1).Range.Text = "Inlet speed stage1 "
         oTable.Cell(row, 2).Range.Text = TextBox16.Text
         oTable.Cell(row, 3).Range.Text = "[m/s]"
         row += 1
-        oTable.Cell(row, 1).Range.Text = "Outlet speed #1"
+        oTable.Cell(row, 1).Range.Text = "Outlet speed stage1"
         oTable.Cell(row, 2).Range.Text = TextBox22.Text
         oTable.Cell(row, 3).Range.Text = "[m/s]"
         row += 1
-        oTable.Cell(row, 1).Range.Text = "Pressure loss #1"
+        oTable.Cell(row, 1).Range.Text = "Pressure loss stage1"
         oTable.Cell(row, 2).Range.Text = TextBox17.Text
         oTable.Cell(row, 3).Range.Text = "[Pa]"
         row += 1
-        oTable.Cell(row, 1).Range.Text = "Efficiency #1"
+        oTable.Cell(row, 1).Range.Text = "Efficiency stage1"
         oTable.Cell(row, 2).Range.Text = TextBox21.Text
         oTable.Cell(row, 3).Range.Text = "[%]"
         row += 1
-        oTable.Cell(row, 1).Range.Text = "Emission #1"
+        oTable.Cell(row, 1).Range.Text = "Emission stage1"
         oTable.Cell(row, 2).Range.Text = TextBox18.Text
         oTable.Cell(row, 3).Range.Text = "[gr/Am3]"
+        row += 1
+        oTable.Cell(row, 1).Range.Text = "Emission stage1"
+        oTable.Cell(row, 2).Range.Text = TextBox186.Text
+        oTable.Cell(row, 3).Range.Text = "[kg/h]"
         row += 2
         '----------- stage #2 ---------------
-        oTable.Cell(row, 1).Range.Text = "Inlet speed #2 "
+        oTable.Cell(row, 1).Range.Text = "Inlet speed stage2 "
         oTable.Cell(row, 2).Range.Text = TextBox80.Text
         oTable.Cell(row, 3).Range.Text = "[m/s]"
         row += 1
-        oTable.Cell(row, 1).Range.Text = "Outlet speed #2"
+        oTable.Cell(row, 1).Range.Text = "Outlet speed stage2"
         oTable.Cell(row, 2).Range.Text = TextBox77.Text
         oTable.Cell(row, 3).Range.Text = "[m/s]"
         row += 1
-        oTable.Cell(row, 1).Range.Text = "Pressure loss #2"
+        oTable.Cell(row, 1).Range.Text = "Pressure loss stage2"
         oTable.Cell(row, 2).Range.Text = TextBox79.Text
         oTable.Cell(row, 3).Range.Text = "[Pa]"
         row += 1
-        oTable.Cell(row, 1).Range.Text = "Efficiency #2"
+        oTable.Cell(row, 1).Range.Text = "Efficiency stage2"
         oTable.Cell(row, 2).Range.Text = TextBox109.Text
         oTable.Cell(row, 3).Range.Text = "[%]"
         row += 1
-        oTable.Cell(row, 1).Range.Text = "Emission #2"
+        oTable.Cell(row, 1).Range.Text = "Emission stage2"
         oTable.Cell(row, 2).Range.Text = TextBox108.Text
         oTable.Cell(row, 3).Range.Text = "[gr/Am3]"
+        row += 1
+        oTable.Cell(row, 1).Range.Text = "Emission stage2"
+        oTable.Cell(row, 2).Range.Text = TextBox184.Text
+        oTable.Cell(row, 3).Range.Text = "[kg/h]"
         row += 2
-        oTable.Cell(row, 1).Range.Text = "Efficiency #1+2"
+        oTable.Cell(row, 1).Range.Text = "Efficiency stage1+2"
         oTable.Cell(row, 2).Range.Text = TextBox120.Text
         oTable.Cell(row, 3).Range.Text = "[%]"
         row += 1
-        oTable.Cell(row, 1).Range.Text = "Emission #1+2"
+        oTable.Cell(row, 1).Range.Text = "Emission stage1+2"
         oTable.Cell(row, 2).Range.Text = TextBox134.Text
         oTable.Cell(row, 3).Range.Text = "[gr/Am3]"
         row += 1
-        oTable.Cell(row, 1).Range.Text = "dp(100)"
+        oTable.Cell(row, 1).Range.Text = "Emission stage1+2"
+        oTable.Cell(row, 2).Range.Text = TextBox184.Text
+        oTable.Cell(row, 3).Range.Text = "[kg/h]"
+        row += 1
+        oTable.Cell(row, 1).Range.Text = "dp(100) stage1+2"
         oTable.Cell(row, 2).Range.Text = TextBox119.Text
         oTable.Cell(row, 3).Range.Text = "[mu] (100% loss)"
         row += 1
-        oTable.Cell(row, 1).Range.Text = "dp(50)"
+        oTable.Cell(row, 1).Range.Text = "dp(50) stage1+2"
         oTable.Cell(row, 2).Range.Text = TextBox123.Text
         oTable.Cell(row, 3).Range.Text = "[mu]"
         row += 1
-        oTable.Cell(row, 1).Range.Text = "dp(5)"
+        oTable.Cell(row, 1).Range.Text = "dp(5) stage1+2"
         oTable.Cell(row, 2).Range.Text = TextBox125.Text
         oTable.Cell(row, 3).Range.Text = "[mu]"
 
