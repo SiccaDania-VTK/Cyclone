@@ -3307,6 +3307,15 @@ Public Class Form1
         Form3.TopMost = True
     End Sub
 
+    Private Sub PictureBox11_Click(sender As Object, e As EventArgs) Handles PictureBox11.Click
+        Form3.Size = New Size(650, 800)     '(Breed, Hoog)
+        Form3.Text = "Chickpea PSD"
+        Form3.PictureBox1.Image = My.Resources.Chickpea_psd
+        Form3.Show()
+        Form3.TopMost = True
+    End Sub
+
+
     Private Sub Button12_Click(sender As Object, e As EventArgs) Handles Button12.Click
         '======= Invert the Cumm weight colums =====
         For Each row As DataGridViewRow In DataGridView6.Rows
@@ -3352,4 +3361,6 @@ Public Class Form1
         PSD_typical_Corn()
         Calc_sequence()
     End Sub
+
+
 End Class

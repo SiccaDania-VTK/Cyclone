@@ -26,7 +26,7 @@
     <InstallUrl>\\DCF1\data2%24\Engineering\VBasic\Cyclone\</InstallUrl>
     <ProductName>VTK-Cyclone</ProductName>
     <PublisherName>Pathuis Heavy Industries</PublisherName>
-    <ApplicationRevision>72</ApplicationRevision>
+    <ApplicationRevision>73</ApplicationRevision>
     <ApplicationVersion>1.0.1.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -233,6 +233,7 @@
     <None Include="Resources\PSD_various.PNG" />
     <None Include="Resources\PSD_Starch.PNG" />
     <None Include="Resources\Micrographs.PNG" />
+    <None Include="Resources\Chickpea_psd.PNG" />
     <Content Include="tornado2.ico" />
     <Content Include="tornado3.ico" />
   </ItemGroup>
