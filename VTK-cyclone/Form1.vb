@@ -1632,7 +1632,10 @@ Public Class Form1
             _input = CType(bf.Deserialize(fStream), Psd_input_struct()) ' read from file
             fStream.Close()
 
-            TextBox24.Text &= "line 1522, Retrieved  project from disk" & vbCrLf
+            Fill_DGV6_from_input_array()
+
+        Else
+            TextBox24.Text &= "Retrieved project from disk failed" & vbCrLf
         End If
         ProgressBar1.Visible = False
     End Sub
@@ -1640,13 +1643,8 @@ Public Class Form1
     Private Sub Button4_Click(sender As Object, e As EventArgs) Handles Button4.Click
         'Retrieve project from disk and goto case nr 0
 
-        Retrieve_from_disk()        'Read from disk to array
-        ' Debug.WriteLine("retrieve done")
-
-        Update_Screen_from_array(1)   'Refresh screen data case 1
-
-
-        'Debug.WriteLine("Update_Screen_from_array(1)")
+        Retrieve_from_disk()            'Read from disk to array
+        Update_Screen_from_array(1)     'Refresh screen data case 1
         Calc_sequence()
     End Sub
 
@@ -2711,7 +2709,6 @@ Public Class Form1
 
         ks = CInt(NumericUpDown30.Value)       'Case number
         Fill_array_from_screen(ks)
-
     End Sub
 
     Private Sub NumericUpDown30_ValueChanged(sender As Object, e As EventArgs) Handles NumericUpDown30.ValueChanged
