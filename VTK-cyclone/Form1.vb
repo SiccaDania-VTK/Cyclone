@@ -853,6 +853,7 @@ Public Class Form1
 
             TextBox17.Text = _cees(ks).dpgas1.ToString("0")             '[Pa] Pressure loss inlet-gas
             TextBox79.Text = _cees(ks).dpgas2.ToString("0")             '[Pa] Pressure loss inlet-gas
+            TextBox189.Text = ((_cees(ks).dpgas1 + _cees(ks).dpgas1) / 100).ToString("F1") '[mbar]
 
             TextBox48.Text = _cees(ks).dpdust1.ToString("0")            '[Pa] Pressure loss inlet-dust
             TextBox76.Text = _cees(ks).dpdust2.ToString("0")            '[Pa] Pressure loss inlet-dust
