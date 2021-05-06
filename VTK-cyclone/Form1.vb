@@ -209,7 +209,7 @@ Public Class Form1
     "180;99.58",
     "215;99.95"}
 
-    'Typical Corn (cumulatief[%], particle diameter[mu])
+    'Typical Corn ( particle diameter[mu],cumulatief[%] )
     ReadOnly psd_corn() As String = {
     "2	;99.9",
     "4	;99.8",
@@ -218,8 +218,52 @@ Public Class Form1
     "16	;22.6",
     "20	;2.5"}
 
+    'Typical Chickpea Starch (particle diameter[mu], cumulatief[%])
+    ReadOnly psd_chickpea_starch() As String = {
+    "6.1590;	99.9998",
+    "6.7610;	99.995",
+    "7.4000;	99.96",
+    "8.2000;	99.83",
+    "9.0000;	99.5",
+    "9.8000;	98.86",
+    "10.8000;	97.77",
+    "11.8000;	96.06",
+    "13.0000;	93.54",
+    "14.2000;	89.99",
+    "15.7000;	85.25",
+    "17.2000;	79.21",
+    "18.9000;	71.91",
+    "20.7000;	63.54",
+    "22.7000;	54.51",
+    "24.9500;	45.42",
+    "27.4000;	36.93",
+    "30.1000;	29.63",
+    "33.0000;	23.85",
+    "36.2000;	19.59",
+    "39.8000;	16.57",
+    "43.7000;	14.37",
+    "47.9000;	12.58",
+    "52.6000;	10.92",
+    "57.8000;	9.26",
+    "63.2000;	7.61",
+    "69.6000;	6.07",
+    "76.4000;	4.75",
+    "83.9000;	3.70",
+    "92.1000;	2.90",
+    "101.0000;	2.29",
+    "11.0000;	1.78",
+    "121.8000;	1.33",
+    "133.7000;	0.92",
+    "146.8000;	0.56",
+    "161.2000;	0.29",
+    "176.9000;	0.12",
+    "194.2000;	0.046",
+    "213.2000;	0.026",
+    "234.0000;	0.0234",
+    "256.9000;	0.023316"}
 
-    'SURESH, Cargill China (cumulatief[%], particle diameter[mu])
+
+    'SURESH, Cargill China (particle diameter[mu],cumulatief[%] )
     ReadOnly maltodextrine_psd_suresh() As String = {
     "1.0	;	99.9999",
     "3.5	;	97.00",
@@ -241,7 +285,7 @@ Public Class Form1
     "275.0	;	0.10",
     "350.0	;	0.01"}
 
-    'Cargill China (cumulatief[%], particle diameter[mu])
+    'Cargill China (particle diameter[mu], cumulatief[%])
     ReadOnly maltodextrine_psd() As String = {
     "0.359;99.999	",
     "0.652;99.990	",
@@ -583,6 +627,7 @@ Public Class Form1
         "Use cyclone as 1 stage before AA850 to prevent blocking"
 
         TextBox187.Text = "Log" & vbCrLf &
+        "06-05-2021, Chickpea starch added Source Denmark" & vbCrLf &
         "07-04-2021, Commercial data elaborated" & vbCrLf &
         "01-04-2021, PSD Corm added, as difficult product" & vbCrLf &
         "16-03-2021, Bug fix clear the grid" & vbCrLf &
@@ -889,8 +934,8 @@ Public Class Form1
         Dim tt As Double
 
         For h = 0 To 22
-            DataGridView1.Rows(h).Cells(0).Value = _cees(ks).stage1(h * 5).d_ave.ToString("F3") 'diameter
-            DataGridView1.Rows(h).Cells(1).Value = _cees(ks).stage1(h * 5).psd_cum_pro.ToString("F3") 'feed psd cum
+            DataGridView1.Rows(h).Cells(0).Value = _cees(ks).stage1(h * 5).d_ave.ToString("F3")         'diameter
+            DataGridView1.Rows(h).Cells(1).Value = _cees(ks).stage1(h * 5).psd_cum_pro.ToString("F3")   'feed psd cum
 
             If h > 0 Then
                 h18 = CDbl(DataGridView1.Rows(h - 1).Cells(1).Value)
@@ -3129,6 +3174,12 @@ Public Class Form1
         '======== Fill the DVG with Corn example data (difficult stuff) =======
         Fill_dgv6_example(psd_corn)
     End Sub
+
+    Private Sub PSD_typical_Chickpea_starch()
+        '======== Fill the DVG with Chickpea_starch =======
+        Fill_dgv6_example(psd_chickpea_starch)
+    End Sub
+
     Private Sub PSD_DSM_polymere()
         '======== Fill the DVG with DSM polymere example data =======
         Fill_dgv6_example(DSM_psd_example)
@@ -3323,7 +3374,7 @@ Public Class Form1
                 If Not IsNothing(row.Cells(1).Value) Then row.Cells(1).Value = 100.0 - CDbl(row.Cells(1).Value)
 
                 '===== diameter NULL than also weight is NUL ======
-                If CDbl(row.Cells(0).Value) < 0.0001 Then
+                If CDbl(row.Cells(0).Value) < 0.00001 Then
                     row.Cells(0).Value = 0
                     row.Cells(1).Value = 0
                 End If
@@ -3362,5 +3413,8 @@ Public Class Form1
         Calc_sequence()
     End Sub
 
-
+    Private Sub Button22_Click(sender As Object, e As EventArgs) Handles Button22.Click
+        PSD_typical_Chickpea_starch()
+        Calc_sequence()
+    End Sub
 End Class
