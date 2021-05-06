@@ -647,7 +647,7 @@ Public Class Form1
         init = True                     'init is now done
     End Sub
 
-    Private Sub Button1_Click(sender As Object, e As EventArgs) Handles button1.Click, TabPage1.Enter, numericUpDown3.ValueChanged, numericUpDown2.ValueChanged, numericUpDown14.ValueChanged, NumericUpDown1.ValueChanged, numericUpDown5.ValueChanged, NumericUpDown20.ValueChanged, NumericUpDown19.ValueChanged, NumericUpDown18.ValueChanged, ComboBox1.SelectedIndexChanged, NumericUpDown4.ValueChanged, NumericUpDown34.ValueChanged, NumericUpDown33.ValueChanged, ComboBox2.SelectedIndexChanged, NumericUpDown43.ValueChanged, NumericUpDown22.ValueChanged, CheckBox3.CheckedChanged, CheckBox2.CheckedChanged
+    Private Sub Button1_Click(sender As Object, e As EventArgs) Handles button1.Click, TabPage1.Enter, numericUpDown3.ValueChanged, numericUpDown2.ValueChanged, NumericUpDown1.ValueChanged, numericUpDown5.ValueChanged, NumericUpDown20.ValueChanged, NumericUpDown19.ValueChanged, NumericUpDown18.ValueChanged, ComboBox1.SelectedIndexChanged, NumericUpDown4.ValueChanged, NumericUpDown34.ValueChanged, NumericUpDown33.ValueChanged, ComboBox2.SelectedIndexChanged, NumericUpDown43.ValueChanged, NumericUpDown22.ValueChanged, CheckBox3.CheckedChanged, CheckBox2.CheckedChanged
         Calc_sequence()
     End Sub
 
@@ -723,7 +723,9 @@ Public Class Form1
             _cees(ks).Flow1 = _cees(ks).FlowT / (3600 * _cees(ks).Noc1) '[Am3/s/cycloon]
 
             ro_solid = numericUpDown2.Value             '[kg/m3]
-            visco = numericUpDown14.Value               '[cPoise]
+
+            visco = Air_visco(CDbl(NumericUpDown18.Value))              '[cPoise]
+            TextBox188.Text = visco.ToString("F4")                      '[cPoise]
 
             '=========== Stage #1 ==============
             _cees(ks).inv1 = _cees(ks).Flow1 / (_cees(ks).inb1 * _cees(ks).inh1)    '[m/s]
@@ -1038,7 +1040,7 @@ Public Class Form1
         _cees(c_nr).db2 = NumericUpDown34.Value                 '[m] Diameter cyclone Stage #2
         _cees(c_nr).ro_gas = numericUpDown3.Value               'Density [kg/hr]
         _cees(c_nr).ro_solid = numericUpDown2.Value             'Density [kg/hr]
-        _cees(c_nr).visco = numericUpDown14.Value               'Visco in [Centi Poise]
+        ' _cees(c_nr).visco = numericUpDown14.Value               'Visco in [Centi Poise]
         _cees(c_nr).Temp = NumericUpDown18.Value                'Temperature [c]
         _cees(c_nr).p1_abs = 101325 + (NumericUpDown19.Value * 100)         'Pressure [Pa abs]
 
@@ -1507,6 +1509,7 @@ Public Class Form1
         Check_DGV6()
 
         If ComboBox1.SelectedIndex > -1 And ComboBox2.SelectedIndex > -1 And init = True Then
+
             ProgressBar1.Visible = True
             ProgressBar1.Value = 50
             SuspendLayout()                             'Speedup the program
@@ -1748,7 +1751,7 @@ Public Class Form1
         oTable.Cell(row, 3).Range.Text = "[kg/m3]"
         row += 1
         oTable.Cell(row, 1).Range.Text = "Air viscosity"
-        oTable.Cell(row, 2).Range.Text = numericUpDown14.Value.ToString("F3")
+        oTable.Cell(row, 2).Range.Text = TextBox188.Text
         oTable.Cell(row, 3).Range.Text = "[centi Poise]"
         row += 1
         oTable.Cell(row, 1).Range.Text = "Dust load total"
@@ -2754,7 +2757,7 @@ Public Class Form1
 
             Chck_value(numericUpDown3, CDec(_cees(zz).ro_gas))       '[kg/hr] Density 
             Chck_value(numericUpDown2, CDec(_cees(zz).ro_solid))     '[kg/hr] Density 
-            Chck_value(numericUpDown14, CDec(_cees(zz).visco))       '[Cp] Visco in Centi Poise
+            'Chck_value(numericUpDown14, CDec(_cees(zz).visco))       '[Cp] Visco in Centi Poise
             Chck_value(NumericUpDown18, CDec(_cees(zz).Temp))        '[c] Temperature 
             p1_rel = (_cees(zz).p1_abs - 101325) / 100               '[mbar]
             Chck_value(NumericUpDown19, CDec(p1_rel))                '[Pa abs]-->[mbar g] Pressure
@@ -3079,7 +3082,7 @@ Public Class Form1
         NumericUpDown19.Value = -80             '[mbar] 
         numericUpDown2.Value = 1500             '[kg/m3] density
         numericUpDown3.Value = CDec(0.903)      '[kg/m3] ro air
-        numericUpDown14.Value = CDec(0.0204)    '[mPas=cP] visco air
+        'numericUpDown14.Value = CDec(0.0204)    '[mPas=cP] visco air
         NumericUpDown4.Value = 139              '[g/Am3]
         NumericUpDown30.Value = 1               '[-] Case number
 
@@ -3104,7 +3107,7 @@ Public Class Form1
         NumericUpDown19.Value = -30         '[mbar] 
         numericUpDown2.Value = 1200         '[kg/m3] density
         numericUpDown3.Value = CDec(0.8977) '[kg/m3] ro air
-        numericUpDown14.Value = CDec(0.0227)  '[mPas=cP] visco air
+        'numericUpDown14.Value = CDec(0.0227)  '[mPas=cP] visco air
         NumericUpDown4.Value = 20           '[g/Am3]
         NumericUpDown30.Value = 1           '[-] Case number
 
@@ -3129,7 +3132,7 @@ Public Class Form1
         NumericUpDown19.Value = -3          '[mbar] 
         numericUpDown2.Value = 800          '[kg/m3] density
         numericUpDown3.Value = CDec(0.859) '[kg/m3] ro air
-        numericUpDown14.Value = CDec(0.01716)  '[mPas=cP] visco air
+        'numericUpDown14.Value = CDec(0.01716)  '[mPas=cP] visco air
         NumericUpDown4.Value = CDec(9.35)   '[g/Am3]
         NumericUpDown30.Value = 1           '[-] Case number
 
@@ -3154,7 +3157,7 @@ Public Class Form1
         NumericUpDown19.Value = -20         '[mbar] 
         numericUpDown2.Value = 1600         '[kg/m3] density
         numericUpDown3.Value = CDec(1.278)  '[kg/m3] ro air
-        numericUpDown14.Value = CDec(0.0208) '[mPas=cP] visco air
+        'numericUpDown14.Value = CDec(0.0208) '[mPas=cP] visco air
         NumericUpDown4.Value = 20           '[g/Am3]
         NumericUpDown30.Value = 1           '[-] Case number
 
@@ -3214,7 +3217,7 @@ Public Class Form1
         NumericUpDown19.Value = -30         '[mbar]
         numericUpDown2.Value = 1500         '[kg/m3]
         numericUpDown3.Value = CDec(1.073)  '[kg/m3]
-        numericUpDown14.Value = CDec(0.02)  '[mPas=cP]
+        ' numericUpDown14.Value = CDec(0.02)  '[mPas=cP]
         NumericUpDown4.Value = 77           '[g/Am3]
         NumericUpDown30.Value = 1           '[-] Case number
         NumericUpDown20.Value = 3           '[-] parallel cycloon
@@ -3391,7 +3394,7 @@ Public Class Form1
         NumericUpDown19.Value = -46         '[mbar] 
         numericUpDown2.Value = 1600         '[kg/m3] density
         numericUpDown3.Value = CDec(1.013)  '[kg/m3] ro air
-        numericUpDown14.Value = CDec(0.019548) '[mPas=cP] visco air
+        'numericUpDown14.Value = CDec(0.019548) '[mPas=cP] visco air
         NumericUpDown4.Value = CDec(109.8)  '[g/Am3]
         NumericUpDown30.Value = 1           '[-] Case number
 
