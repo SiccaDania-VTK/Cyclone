@@ -2359,7 +2359,7 @@ Public Class Form1
         Dim kgh, tot_kgh As Double
         Dim Eff_comb As Double      'Efficiency stage #1 and #2
 
-        If Double.IsNaN(_cees(ks).stage2(0).dia) Or Double.IsInfinity(_cees(ks).stage2(0).dia) Then Exit Sub
+        If Double.IsNaN(_cees(ks).stage1(0).dia) Or Double.IsInfinity(_cees(ks).stage1(0).dia) Then Exit Sub
 
         '----------- stof belasting ------------
         tot_kgh = _cees(ks).emis1_kgh                       '[kg/hr] Dust inlet 
