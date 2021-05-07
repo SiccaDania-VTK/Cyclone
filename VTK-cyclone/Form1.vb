@@ -627,6 +627,7 @@ Public Class Form1
         "Use cyclone as 1 stage before AA850 to prevent blocking"
 
         TextBox187.Text = "Log" & vbCrLf &
+        "07-05-2021, Bugfix retrieve project" & vbCrLf &
         "06-05-2021, Chickpea starch added Source Denmark" & vbCrLf &
         "07-04-2021, Commercial data elaborated" & vbCrLf &
         "01-04-2021, PSD Corm added, as difficult product" & vbCrLf &
@@ -2396,13 +2397,13 @@ Public Class Form1
 
         TextBox66.Text = _cees(ks).Efficiency2.ToString("F2")       '[%] stage #2
         TextBox109.Text = _cees(ks).Efficiency2.ToString("F2")      '[%]
-        TextBox62.Text = _cees(ks).emmis2_Am3.ToString("F2")        '[gram/Am3] emmissie stage #2
-        TextBox108.Text = _cees(ks).emmis2_Am3.ToString("F2")       '[gram/Am3] emmissie stage #2
-        TextBox134.Text = _cees(ks).emmis2_Am3.ToString("F2")       '[gram/Am3] emmissie stage #2
+        TextBox62.Text = _cees(ks).emmis2_Am3.ToString("F3")        '[gram/Am3] emmissie stage #2
+        TextBox108.Text = _cees(ks).emmis2_Am3.ToString("F3")       '[gram/Am3] emmissie stage #2
+        TextBox134.Text = _cees(ks).emmis2_Am3.ToString("F3")       '[gram/Am3] emmissie stage #2
 
-        TextBox142.Text = _cees(ks).emmis2_Nm3.ToString("F2")       '[gram/Nm3] emmissie stage #2
-        TextBox179.Text = _cees(ks).emmis2_Nm3.ToString("F2")       '[gram/Nm3] emmissie stage #2
-        TextBox178.Text = _cees(ks).emmis2_Nm3.ToString("F2")       '[gram/Nm3] emmissie stage #2
+        TextBox142.Text = _cees(ks).emmis2_Nm3.ToString("F3")       '[gram/Nm3] emmissie stage #2
+        TextBox179.Text = _cees(ks).emmis2_Nm3.ToString("F3")       '[gram/Nm3] emmissie stage #2
+        TextBox178.Text = _cees(ks).emmis2_Nm3.ToString("F3")       '[gram/Nm3] emmissie stage #2
 
         TextBox185.Text = _cees(ks).emis2_kgh.ToString("F2")       '[kg/h] emmissie stage #2
         TextBox184.Text = _cees(ks).emis2_kgh.ToString("F2")       '[kg/h] emmissie stage #2
