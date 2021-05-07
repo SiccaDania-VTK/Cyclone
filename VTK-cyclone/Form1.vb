@@ -397,7 +397,8 @@ Public Class Form1
     "200;	58",
     "400;	20",
     "600;	8",
-    "1000;	2"}
+    "1000;	2",
+    "1200;	0.1"}
 
     'Potato from Flash drier (cumulatief[%], particle diameter[mu])
     ReadOnly psd_potato_flash_drier() As String = {
@@ -409,7 +410,9 @@ Public Class Form1
     "30;	71",
     "50;	32",
     "70;	10",
-    "90;	2"}
+    "90;	2",
+    "100;	1",
+    "110;	0.1"}
 
     '----------- directory's-----------
     ReadOnly dirpath_Eng As String = "N:\Engineering\VBasic\Cyclone_sizing_input\"
@@ -711,9 +714,9 @@ Public Class Form1
         TextBox132.Text = _cees(ks).dust1_Nm3.ToString("F3")          'gram/Nm3
         TextBox129.Text = _cees(ks).Ro_gas1_Nm3.ToString("F3")        'kg/Nm3 inlet gas
 
-        If (ComboBox1.SelectedIndex > -1) And (ComboBox2.SelectedIndex > -1) Then 'Prevent exceptions
-            '-------- dimension cyclone stage #1
-            words = cyl_dimensions(ComboBox1.SelectedIndex).Split(CType(";", Char()))
+        'If (ComboBox1.SelectedIndex > -1) And (ComboBox2.SelectedIndex > -1) Then 'Prevent exceptions
+        '-------- dimension cyclone stage #1
+        words = cyl_dimensions(ComboBox1.SelectedIndex).Split(CType(";", Char()))
             For hh = 1 To 15
                 _cyl1_dim(hh) = CDbl(words(hh))          'Cyclone dimensions
             Next
@@ -751,18 +754,21 @@ Public Class Form1
 
             '=========== Stage #1 ==============
             _cees(ks).inv1 = _cees(ks).Flow1 / (_cees(ks).inb1 * _cees(ks).inh1)    '[m/s]
-            _cees(ks).outv1 = _cees(ks).Flow1 / ((PI / 4) * _cees(ks).dout1 ^ 2)    '[m/s]
-            If _cees(ks).inv1 < 1 Then _cees(ks).inv1 = 1               '[m/s] Prevent silly results
+        _cees(ks).outv1 = _cees(ks).Flow1 / ((PI / 4) * _cees(ks).dout1 ^ 2)    '[m/s]
+
+        '=============== Silly values =======
+        If _cees(ks).inv1 < 1 Then _cees(ks).inv1 = 1               '[m/s] Prevent silly results
             If _cees(ks).inv1 > 60 Then _cees(ks).inv1 = 60             '[m/s] Prevent silly results
 
-            If ComboBox1.SelectedIndex > -1 Then    'Cyclone selection
-                words = rekenlijnen(ComboBox1.SelectedIndex).Split(CType(";", Char()))
-                wc_air1 = CDbl(words(8))        'Resistance Coefficient air
-                wc_dust1 = CDbl(words(9))       'Resistance Coefficient dust
-            Else
-                Exit Sub
-                MessageBox.Show("Error 763")
-            End If
+        If ComboBox1.Items.Count > 0 Then    'Cyclone selection
+            words = rekenlijnen(ComboBox1.SelectedIndex).Split(CType(";", Char()))
+            wc_air1 = CDbl(words(8))        'Resistance Coefficient air
+            wc_dust1 = CDbl(words(9))       'Resistance Coefficient dust
+        Else
+
+            MessageBox.Show("Error 763")
+            Exit Sub
+        End If
             _cees(ks).dpgas1 = 0.5 * _cees(ks).Ro_gas1_Am3 * _cees(ks).inv1 ^ 2 * wc_air1      '[Pa]
             _cees(ks).dpdust1 = 0.5 * _cees(ks).Ro_gas1_Am3 * _cees(ks).inv1 ^ 2 * wc_dust1    '[Pa]
             _cees(ks).p2_abs = _cees(ks).p1_abs - _cees(ks).dpgas1              '[P_abs (inlet stage #2)]
@@ -924,7 +930,7 @@ Public Class Form1
             TextBox39.Text = kgh.ToString("F0")                 'Stof inlet [kg/(h.cyclone)]
             TextBox40.Text = _cees(ks).dust1_in_kgh.ToString("F0")             'Dust inlet [kg/h] 
             TextBox71.Text = _cees(ks).dust1_Am3.ToString("F3") 'Dust inlet [g/Am3]
-        End If
+        'End If
     End Sub
     Private Sub Present_Datagridview1(ks As Integer)
 
@@ -1113,7 +1119,7 @@ Public Class Form1
         Dim verlies As Double = 1
         Dim dia_K As Double
 
-        If (ComboBox1.SelectedIndex > -1) Then
+        If (ComboBox1.Items.Count > 0 And ComboBox2.Items.Count > 0) Then
             '-------------- korrelgrootte factoren ------
             If (stage = 1) Then     'Stage #1 cyclone
                 words = rekenlijnen(ComboBox1.SelectedIndex).Split(CType(";", Char()))
@@ -1140,16 +1146,8 @@ Public Class Form1
             Else
                 verlies = 1.0        '100% loss (very small particle)
             End If
-
-            '=========== check cyclone type for not installed ===
-            If (stage = 1) And String.Equals(ComboBox1.SelectedItem.ToString, "Void") Then
-                verlies = 1.0
-                ' MsgBox("stage 1 not installed")
-            End If
-            If (stage = 2) And String.Equals(ComboBox2.SelectedItem.ToString, "Void") Then
-                verlies = 1.0
-                'MsgBox("stage 2 not installed")
-            End If
+        Else
+            verlies = 1.0        '100% loss (very small particle)
         End If
         Return (verlies)
     End Function
@@ -1162,7 +1160,7 @@ Public Class Form1
 
         If stage > 2 Or stage < 1 Then MessageBox.Show("Problem in Line 1034")  '----- check input ----
 
-        If (ComboBox1.SelectedIndex > -1) And ComboBox2.SelectedIndex > -1 Then
+        If (ComboBox1.Items.Count > 0) And ComboBox2.Items.Count > 0 Then
             If (stage = 1) Then                         'Stage #1 cyclone
                 cor1 = NumericUpDown22.Value            'Correctie insteek pijp stage #1
                 Double.TryParse(TextBox55.Text, cor2)   'Hoge stof belasting correctie acc VT-UK
@@ -1171,6 +1169,8 @@ Public Class Form1
                 Double.TryParse(TextBox67.Text, cor2)   'Hoge stof belasting correctie acc VT-UK
             End If
             grp.loss_overall_C = grp.loss_overall ^ (cor1 * cor2)
+        Else
+            MsgBox("Cyclone stage 1 ot 2 not selected")
         End If
     End Sub
 
@@ -1587,7 +1587,7 @@ Public Class Form1
         Read_dgv6_Calc_Class_load()
         Check_DGV6()
 
-        If ComboBox1.SelectedIndex > -1 And ComboBox2.SelectedIndex > -1 And init = True Then
+        If ComboBox1.Items.Count > 0 And ComboBox2.Items.Count > 0 And init = True Then
 
             ProgressBar1.Visible = True
             ProgressBar1.Value = 50
@@ -2198,156 +2198,165 @@ Public Class Form1
         Dim dc2 As Double                   '[m] diameter cyclone stage #2
         Dim dustload As Double              '[g/Am3] dust load
 
-        If Double.IsNaN(_cees(ks).stage1(0).dia) Or Double.IsInfinity(_cees(ks).stage1(0).dia) Then Exit Sub
-        dustload = NumericUpDown4.Value     '[g/Am3] dust load
-
-        '------ the idea is that the smallest diameter cyclone determines
-        '------ the smallest particle diameter used in the calculation
-        '------ for the stage #1 cyclone
-        dc1 = numericUpDown5.Value          '[m] Diameter cyclone stage 1
-        dc2 = NumericUpDown34.Value         '[m] Diameter cyclone stage 2
-        If dc1 > dc2 Then
-            _cees(ks).stage1(0).dia = Calc_dia_particle(1.0, _cees(ks).Kstokes2, 2) 'stage #2 cyclone
-        Else
-            _cees(ks).stage1(0).dia = Calc_dia_particle(1.0, _cees(ks).Kstokes1, 1) 'stage #1 cyclone
+        If Double.IsNaN(_cees(ks).stage1(0).dia) Or Double.IsInfinity(_cees(ks).stage1(0).dia) Then
+            MessageBox.Show("stage1 diameter1 = indifinity")
+            Exit Sub
         End If
 
-        _cees(ks).stage1(0).d_ave = _cees(ks).stage1(0).dia / 2                       'Average diameter
-        _cees(ks).stage1(0).d_ave_K = _cees(ks).stage1(0).d_ave / _cees(ks).Kstokes1  'dia/k_stokes
-        _cees(ks).stage1(0).loss_overall = Calc_verlies(_cees(ks).stage1(0).d_ave_K, _cees(ks).Kstokes1, 1)     '[-] loss overall
-        Calc_verlies_corrected(_cees(ks).stage1(0), 1)                                '[-] loss overall corrected
-        _cees(ks).stage1(0).catch_chart = (1 - _cees(ks).stage1(i).loss_overall_C) * 100     '[%]
+        If ComboBox1.Items.Count > 0 And ComboBox2.Items.Count > 0 And init Then
 
-        Calc_diam_classification(_cees(ks).stage1(0))        'Classify this part size
-        Calc_k_and_m(_cees(ks).stage1(0))                        'Calculate i_m and i_k
+            dustload = NumericUpDown4.Value     '[g/Am3] dust load
 
-        _cees(ks).stage1(0).psd_cum = Math.E ^ (-((_cees(ks).stage1(i).dia / _cees(ks).stage1(i).i_m) ^ _cees(ks).stage1(i).i_k))
-        _cees(ks).stage1(0).psd_cum_pro = _cees(ks).stage1(i).psd_cum * 100
-
-        _cees(ks).stage1(0).psd_dif = 100 * (1 - _cees(ks).stage1(i).psd_cum)
-        _cees(ks).stage1(0).loss_abs = _cees(ks).stage1(i).loss_overall * _cees(ks).stage1(i).psd_dif
-        _cees(ks).stage1(0).loss_abs_C = _cees(ks).stage1(i).loss_overall_C * _cees(ks).stage1(i).psd_dif
-
-        '----- initial values --------
-        _cees(ks).sum_psd_diff1 = _cees(ks).stage1(0).psd_dif
-        _cees(ks).sum_loss1 = _cees(ks).stage1(0).loss_abs
-        _cees(ks).sum_loss_C1 = _cees(ks).stage1(0).loss_abs_C
-
-        '------ increment step --------
-        'stapgrootte bij 110-staps logaritmische verdeling van het
-        'deeltjesdiameter-bereik van loss=100% tot 0,00000001%
-        'Deze wordt gebruikt voor het opstellen van de gefractioneerde
-        'verliescurve.
-
-        '-------------- korrelgrootte factoren ------
-        If ComboBox1.SelectedIndex > -1 Then    'Prevent start up problems
-            words = rekenlijnen(ComboBox1.SelectedIndex).Split(CType(";", Char()))
-            '---- diameter kleiner dan dia kritisch
-            fac_m = CDbl(words(2))
-        End If
-
-        perc_smallest_part1 = 0.0000001                      'smallest particle [%]
-        _cees(ks).Dmax1 = Calc_dia_particle(perc_smallest_part1, _cees(ks).Kstokes1, 1)     '=100% loss (biggest particle)
-        _cees(ks).Dmin1 = _cees(ks).Kstokes1 * fac_m        'diameter smallest particle caught by this type cyclone
-
-        ' TextBox24.Text &= "_cees(ks).Kstokes1= " & _cees(ks).Kstokes1.ToString & ",  fac_m= " & fac_m.ToString & ",  _cees(ks).Dmin1= " & _cees(ks).Dmin1.ToString & vbCrLf
-
-        '------------ Particle diameter calculation step -----
-        _istep = (_cees(ks).Dmax1 / _cees(ks).Dmin2) ^ (1 / 110) 'Calculation step
-
-        '============ With start iteration the Dmin2 is unknown =======
-        If Double.IsInfinity(_istep) Then _istep = 1.0527       'Safety _istep= 1.0527 mu
-
-        'TextBox24.Text &= "_istep= " & _istep.ToString & ",  _cees(ks).Dmax1= " & _cees(ks).Dmax1.ToString & vbCrLf
-
-        For i = 1 To 110
-            _cees(ks).stage1(i).dia = _cees(ks).stage1(i - 1).dia * _istep
-            _cees(ks).stage1(i).d_ave = ((_cees(ks).stage1(i - 1).dia + _cees(ks).stage1(i).dia)) / 2   'Average diameter
-            _cees(ks).stage1(i).d_ave_K = _cees(ks).stage1(i).d_ave / _cees(ks).Kstokes1                'dia/k_stokes
-            _cees(ks).stage1(i).loss_overall = Calc_verlies(_cees(ks).stage1(i).d_ave, _cees(ks).Kstokes1, 1)   '[-] loss overall
-            Calc_verlies_corrected(_cees(ks).stage1(i), 1)                                              '[-] loss overall corrected
-
-            If CheckBox2.Checked Then
-                _cees(ks).stage1(i).catch_chart = (1 - _cees(ks).stage1(i).loss_overall_C) * 100  '[%] Corrected
+            '------ the idea is that the smallest diameter cyclone determines
+            '------ the smallest particle diameter used in the calculation
+            '------ for the stage #1 cyclone
+            dc1 = numericUpDown5.Value          '[m] Diameter cyclone stage 1
+            dc2 = NumericUpDown34.Value         '[m] Diameter cyclone stage 2
+            If dc1 > dc2 Then
+                _cees(ks).stage1(0).dia = Calc_dia_particle(1.0, _cees(ks).Kstokes2, 2) 'stage #2 cyclone
             Else
-                _cees(ks).stage1(i).catch_chart = (1 - _cees(ks).stage1(i).loss_overall) * 100    '[%] NOT corrected
+                _cees(ks).stage1(0).dia = Calc_dia_particle(1.0, _cees(ks).Kstokes1, 1) 'stage #1 cyclone
             End If
 
-            Calc_diam_classification(_cees(ks).stage1(i))         'Classify this part size (result is  .i_grp)
+            _cees(ks).stage1(0).d_ave = _cees(ks).stage1(0).dia / 2                       'Average diameter
+            _cees(ks).stage1(0).d_ave_K = _cees(ks).stage1(0).d_ave / _cees(ks).Kstokes1  'dia/k_stokes
+            _cees(ks).stage1(0).loss_overall = Calc_verlies(_cees(ks).stage1(0).d_ave_K, _cees(ks).Kstokes1, 1)     '[-] loss overall
+            Calc_verlies_corrected(_cees(ks).stage1(0), 1)                                '[-] loss overall corrected
+            _cees(ks).stage1(0).catch_chart = (1 - _cees(ks).stage1(i).loss_overall_C) * 100     '[%]
 
-            '====to prevent silly results====
-            If _cees(ks).stage1(i).i_grp < no_PDS_inputs Then  'OK in this one counts
-                Calc_k_and_m(_cees(ks).stage1(i))       'Calculate i_m and i_k (based on particle dia. and percentages)
-                _cees(ks).stage1(i).psd_cum = Math.E ^ (-((_cees(ks).stage1(i).dia / _cees(ks).stage1(i).i_m) ^ _cees(ks).stage1(i).i_k))
-                _cees(ks).stage1(i).psd_cum_pro = _cees(ks).stage1(i).psd_cum * 100
-                _cees(ks).stage1(i).psd_dif = 100 * (_cees(ks).stage1(i - 1).psd_cum - _cees(ks).stage1(i).psd_cum)
-            Else
-                _cees(ks).stage1(i).i_k = 0
-                _cees(ks).stage1(i).i_m = 0
-                _cees(ks).stage1(i).psd_cum = 0
-                _cees(ks).stage1(i).psd_cum_pro = 0
-                _cees(ks).stage1(i).psd_dif = 0
-                _cees(ks).stage1(i).i_grp = 0
+            Calc_diam_classification(_cees(ks).stage1(0))        'Classify this part size
+            Calc_k_and_m(_cees(ks).stage1(0))                        'Calculate i_m and i_k
+
+            _cees(ks).stage1(0).psd_cum = Math.E ^ (-((_cees(ks).stage1(i).dia / _cees(ks).stage1(i).i_m) ^ _cees(ks).stage1(i).i_k))
+            _cees(ks).stage1(0).psd_cum_pro = _cees(ks).stage1(i).psd_cum * 100
+
+            _cees(ks).stage1(0).psd_dif = 100 * (1 - _cees(ks).stage1(i).psd_cum)
+            _cees(ks).stage1(0).loss_abs = _cees(ks).stage1(i).loss_overall * _cees(ks).stage1(i).psd_dif
+            _cees(ks).stage1(0).loss_abs_C = _cees(ks).stage1(i).loss_overall_C * _cees(ks).stage1(i).psd_dif
+
+            '----- initial values --------
+            _cees(ks).sum_psd_diff1 = _cees(ks).stage1(0).psd_dif
+            _cees(ks).sum_loss1 = _cees(ks).stage1(0).loss_abs
+            _cees(ks).sum_loss_C1 = _cees(ks).stage1(0).loss_abs_C
+
+            '------ increment step --------
+            'stapgrootte bij 110-staps logaritmische verdeling van het
+            'deeltjesdiameter-bereik van loss=100% tot 0,00000001%
+            'Deze wordt gebruikt voor het opstellen van de gefractioneerde
+            'verliescurve.
+
+            '-------------- korrelgrootte factoren ------
+            If ComboBox1.Items.Count > 0 Then    'Prevent start up problems
+                words = rekenlijnen(ComboBox1.SelectedIndex).Split(CType(";", Char()))
+                '---- diameter kleiner dan dia kritisch
+                fac_m = CDbl(words(2))
             End If
 
-            _cees(ks).stage1(i).loss_abs = _cees(ks).stage1(i).loss_overall * _cees(ks).stage1(i).psd_dif
-            _cees(ks).stage1(i).loss_abs_C = _cees(ks).stage1(i).loss_overall_C * _cees(ks).stage1(i).psd_dif
+            perc_smallest_part1 = 0.0000001                      'smallest particle [%]
+            _cees(ks).Dmax1 = Calc_dia_particle(perc_smallest_part1, _cees(ks).Kstokes1, 1)     '=100% loss (biggest particle)
+            _cees(ks).Dmin1 = _cees(ks).Kstokes1 * fac_m        'diameter smallest particle caught by this type cyclone
 
-            '----- sum value incremental values -----
-            _cees(ks).sum_psd_diff1 += _cees(ks).stage1(i).psd_dif
-            _cees(ks).sum_loss1 += _cees(ks).stage1(i).loss_abs         '[%] Summ loss
-            _cees(ks).sum_loss_C1 += _cees(ks).stage1(i).loss_abs_C     '[%] Summ loss corrected
-        Next
+            ' TextBox24.Text &= "_cees(ks).Kstokes1= " & _cees(ks).Kstokes1.ToString & ",  fac_m= " & fac_m.ToString & ",  _cees(ks).Dmin1= " & _cees(ks).Dmin1.ToString & vbCrLf
 
-        _cees(ks).loss_total1 = _cees(ks).sum_loss_C1 + ((100 - _cees(ks).sum_psd_diff1) * perc_smallest_part1)
+            '------------ Particle diameter calculation step -----
+            '====== _cees(ks).Dmin2 === is the result fram calculation stage 2 ===
+            '====== and maybe unknown ============================================
+            '============ With start iteration the Dmin2 is unknown =========
 
-        _cees(ks).emmis1_Am3 = dustload * (_cees(ks).loss_total1 / 100)  '[g/Am3]
-        _cees(ks).emmis1_Nm3 = _cees(ks).emmis1_Am3 * Calc_Normal_density(_cees(ks).Ro_gas1_Am3, _cees(ks).p1_abs, _cees(ks).Temp)
+            If _cees(ks).Dmin2 < 0.05 Then _cees(ks).Dmin2 = 0.05
+            _istep = (_cees(ks).Dmax1 / _cees(ks).Dmin2) ^ (1 / 110) 'Calculation step
 
-        '----------Dust load stage #2 is emission stage #1 -----------
-        _cees(ks).dust2_Am3 = _cees(ks).emmis1_Am3
+            'TextBox24.Text &= "_istep= " & _istep.ToString & ",  _cees(ks).Dmax1= " & _cees(ks).Dmax1.ToString & vbCrLf
 
-        '--------- Density ratio stage #2 kg/Nm3 and kg/Am3 ---------
-        density_ratio2 = _cees(ks).Ro_gas2_Nm3 / _cees(ks).Ro_gas2_Am3  '[-]
-        _cees(ks).dust2_Nm3 = _cees(ks).dust2_Am3 * density_ratio2      'Dust load [gram/Nm3]
+            For i = 1 To 110
+                _cees(ks).stage1(i).dia = _cees(ks).stage1(i - 1).dia * _istep
+                _cees(ks).stage1(i).d_ave = ((_cees(ks).stage1(i - 1).dia + _cees(ks).stage1(i).dia)) / 2   'Average diameter
+                _cees(ks).stage1(i).d_ave_K = _cees(ks).stage1(i).d_ave / _cees(ks).Kstokes1                'dia/k_stokes
+                _cees(ks).stage1(i).loss_overall = Calc_verlies(_cees(ks).stage1(i).d_ave, _cees(ks).Kstokes1, 1)   '[-] loss overall
+                Calc_verlies_corrected(_cees(ks).stage1(i), 1)                                              '[-] loss overall corrected
 
-        CheckBox3.Checked = CBool(IIf(_cees(ks).dust2_Am3 > 20, True, False))
-        _cees(ks).Efficiency1 = 100 - _cees(ks).loss_total1        '[%] Efficiency
+                If CheckBox2.Checked Then
+                    _cees(ks).stage1(i).catch_chart = (1 - _cees(ks).stage1(i).loss_overall_C) * 100  '[%] Corrected
+                Else
+                    _cees(ks).stage1(i).catch_chart = (1 - _cees(ks).stage1(i).loss_overall) * 100    '[%] NOT corrected
+                End If
 
-        '----------- present stage #1-----------
-        TextBox51.Text = _cees(ks).Dmax1.ToString("F2")     'diameter [mu] 100% catch
-        TextBox52.Text = _cees(ks).Dmin1.ToString("F2")     'diameter [mu] 100% loss
-        TextBox56.Text = ComboBox1.Text                     'Cyclone type
-        TextBox57.Text = CheckBox2.Checked.ToString         'Correction stage #1
-        TextBox70.Text = _cees(ks).dust2_Am3.ToString("F3") 'Dust load [gram/Am3]
+                Calc_diam_classification(_cees(ks).stage1(i))         'Classify this part size (result is  .i_grp)
 
-        TextBox118.Text = _cees(ks).sum_psd_diff1.ToString("F3")
-        TextBox54.Text = _cees(ks).sum_loss1.ToString("F3")     '[%] Summ loss
-        TextBox34.Text = _cees(ks).sum_loss_C1.ToString("F3")   '[%] Summ loss Corrected
+                '====to prevent silly results====
+                If _cees(ks).stage1(i).i_grp < no_PDS_inputs Then  'OK in this one counts
+                    Calc_k_and_m(_cees(ks).stage1(i))       'Calculate i_m and i_k (based on particle dia. and percentages)
+                    _cees(ks).stage1(i).psd_cum = Math.E ^ (-((_cees(ks).stage1(i).dia / _cees(ks).stage1(i).i_m) ^ _cees(ks).stage1(i).i_k))
+                    _cees(ks).stage1(i).psd_cum_pro = _cees(ks).stage1(i).psd_cum * 100
+                    _cees(ks).stage1(i).psd_dif = 100 * (_cees(ks).stage1(i - 1).psd_cum - _cees(ks).stage1(i).psd_cum)
+                Else
+                    _cees(ks).stage1(i).i_k = 0
+                    _cees(ks).stage1(i).i_m = 0
+                    _cees(ks).stage1(i).psd_cum = 0
+                    _cees(ks).stage1(i).psd_cum_pro = 0
+                    _cees(ks).stage1(i).psd_dif = 0
+                    _cees(ks).stage1(i).i_grp = 0
+                End If
 
-        '---------Density ratio stage#1  kg/Nm3 and kg/Am3 ---------
-        density_ratio1 = _cees(ks).Ro_gas1_Nm3 / _cees(ks).Ro_gas1_Am3  '[-]
-        _cees(ks).emmis1_Nm3 = _cees(ks).emmis1_Am3 * density_ratio1    '[g/Am3]
-        _cees(ks).emis1_kgh = _cees(ks).dust1_in_kgh * (100 - _cees(ks).Efficiency1) / 100
+                _cees(ks).stage1(i).loss_abs = _cees(ks).stage1(i).loss_overall * _cees(ks).stage1(i).psd_dif
+                _cees(ks).stage1(i).loss_abs_C = _cees(ks).stage1(i).loss_overall_C * _cees(ks).stage1(i).psd_dif
+
+                '----- sum value incremental values -----
+                _cees(ks).sum_psd_diff1 += _cees(ks).stage1(i).psd_dif
+                _cees(ks).sum_loss1 += _cees(ks).stage1(i).loss_abs         '[%] Summ loss
+                _cees(ks).sum_loss_C1 += _cees(ks).stage1(i).loss_abs_C     '[%] Summ loss corrected
+            Next
+
+            _cees(ks).loss_total1 = _cees(ks).sum_loss_C1 + ((100 - _cees(ks).sum_psd_diff1) * perc_smallest_part1)
+
+            _cees(ks).emmis1_Am3 = dustload * (_cees(ks).loss_total1 / 100)  '[g/Am3]
+            _cees(ks).emmis1_Nm3 = _cees(ks).emmis1_Am3 * Calc_Normal_density(_cees(ks).Ro_gas1_Am3, _cees(ks).p1_abs, _cees(ks).Temp)
+
+            '----------Dust load stage #2 is emission stage #1 -----------
+            _cees(ks).dust2_Am3 = _cees(ks).emmis1_Am3
+
+            '--------- Density ratio stage #2 kg/Nm3 and kg/Am3 ---------
+            density_ratio2 = _cees(ks).Ro_gas2_Nm3 / _cees(ks).Ro_gas2_Am3  '[-]
+            _cees(ks).dust2_Nm3 = _cees(ks).dust2_Am3 * density_ratio2      'Dust load [gram/Nm3]
+
+            CheckBox3.Checked = CBool(IIf(_cees(ks).dust2_Am3 > 20, True, False))
+            _cees(ks).Efficiency1 = 100 - _cees(ks).loss_total1        '[%] Efficiency
+
+            '----------- present stage #1-----------
+            TextBox51.Text = _cees(ks).Dmax1.ToString("F2")     'diameter [mu] 100% catch
+            TextBox52.Text = _cees(ks).Dmin1.ToString("F2")     'diameter [mu] 100% loss
+            TextBox56.Text = ComboBox1.Text                     'Cyclone type
+            TextBox57.Text = CheckBox2.Checked.ToString         'Correction stage #1
+            TextBox70.Text = _cees(ks).dust2_Am3.ToString("F3") 'Dust load [gram/Am3]
+
+            TextBox118.Text = _cees(ks).sum_psd_diff1.ToString("F3")
+            TextBox54.Text = _cees(ks).sum_loss1.ToString("F3")     '[%] Summ loss
+            TextBox34.Text = _cees(ks).sum_loss_C1.ToString("F3")   '[%] Summ loss Corrected
+
+            '---------Density ratio stage#1  kg/Nm3 and kg/Am3 ---------
+            density_ratio1 = _cees(ks).Ro_gas1_Nm3 / _cees(ks).Ro_gas1_Am3  '[-]
+            _cees(ks).emmis1_Nm3 = _cees(ks).emmis1_Am3 * density_ratio1    '[g/Am3]
+            _cees(ks).emis1_kgh = _cees(ks).dust1_in_kgh * (100 - _cees(ks).Efficiency1) / 100
 
 
-        '----------- Dust load correction stage #1 ------------------
-        If CheckBox2.Checked Then 'High load
-            TextBox58.Text = TextBox34.Text                             '[%] Corrected 
-        Else
-            TextBox58.Text = TextBox54.Text                             '[%] NOT Corrected
+            '----------- Dust load correction stage #1 ------------------
+            If CheckBox2.Checked Then 'High load
+                TextBox58.Text = TextBox34.Text                             '[%] Corrected 
+            Else
+                TextBox58.Text = TextBox54.Text                             '[%] NOT Corrected
+            End If
+
+            '---------- present ------------------
+            TextBox59.Text = _cees(ks).Efficiency1.ToString("F2")   '[%]
+            TextBox21.Text = _cees(ks).Efficiency1.ToString("F2")   '[%]
+            TextBox60.Text = _cees(ks).emmis1_Am3.ToString("F3")    '[g/Am3]
+
+            '==== 1st stage ====
+            TextBox18.Text = _cees(ks).emmis1_Am3.ToString("F3")    '[g/Am3]
+            TextBox133.Text = _cees(ks).emmis1_Nm3.ToString("F3")   '[g/Nm3]
+            TextBox180.Text = _cees(ks).emmis1_Nm3.ToString("F3")   '[g/Nm3]
+            TextBox186.Text = _cees(ks).emis1_kgh.ToString("F1")    '[kg/h]
         End If
-
-        '---------- present ------------------
-        TextBox59.Text = _cees(ks).Efficiency1.ToString("F2")   '[%]
-        TextBox21.Text = _cees(ks).Efficiency1.ToString("F2")   '[%]
-        TextBox60.Text = _cees(ks).emmis1_Am3.ToString("F3")    '[g/Am3]
-
-        '==== 1st stage ====
-        TextBox18.Text = _cees(ks).emmis1_Am3.ToString("F3")    '[g/Am3]
-        TextBox133.Text = _cees(ks).emmis1_Nm3.ToString("F3")   '[g/Nm3]
-        TextBox180.Text = _cees(ks).emmis1_Nm3.ToString("F3")   '[g/Nm3]
-        TextBox186.Text = _cees(ks).emis1_kgh.ToString("F1")    '[kg/h]
     End Sub
 
     Private Sub Calc_stage2(ks As Integer)
@@ -2359,150 +2368,156 @@ Public Class Form1
         Dim kgh, tot_kgh As Double
         Dim Eff_comb As Double      'Efficiency stage #1 and #2
 
-        If Double.IsNaN(_cees(ks).stage1(0).dia) Or Double.IsInfinity(_cees(ks).stage1(0).dia) Then Exit Sub
-
-        '----------- stof belasting ------------
-        tot_kgh = _cees(ks).emis1_kgh                       '[kg/hr] Dust inlet 
-        kgh = tot_kgh / _cees(ks).Noc2                      '[kg/hr/Cy] Dust inlet 
-
-        TextBox100.Text = kgh.ToString("F0")
-        TextBox101.Text = tot_kgh.ToString("F1")
-
-        '--------- now the particles (====Grid line 0======)------------
-        _cees(ks).stage2(0).dia = _cees(ks).stage1(0).dia                                   'Copy stage #1
-        _cees(ks).stage2(0).d_ave = _cees(ks).stage2(0).dia / 2                             'Average diameter
-        _cees(ks).stage2(0).d_ave_K = _cees(ks).stage2(0).d_ave / _cees(ks).Kstokes2        'dia/k_stokes
-        _cees(ks).stage2(0).loss_overall = Calc_verlies(_cees(ks).stage2(0).d_ave_K, _cees(ks).Kstokes2, 2)     '[-] loss overall
-        Calc_verlies_corrected(_cees(ks).stage2(0), 2)                                      '[-] loss overall corrected
-        _cees(ks).stage2(0).catch_chart = (1 - _cees(ks).stage2(0).loss_overall_C) * 100    '[%]
-        Calc_diam_classification(_cees(ks).stage2(0))                                       'groepnummer
-
-        If _cees(ks).stage2(i).i_grp < no_PDS_inputs Then
-            Calc_k_and_m(_cees(ks).stage2(0))
-            _cees(ks).stage2(0).psd_cum = Math.E ^ (-((_cees(ks).stage2(0).dia / _cees(ks).stage2(0).i_m) ^ _cees(ks).stage2(0).i_k))
-            _cees(ks).stage2(0).psd_cum_pro = _cees(ks).stage2(0).psd_cum * 100 '[%]
-            _cees(ks).stage2(0).psd_dif = 100 * _cees(ks).stage1(0).loss_abs / (100 - _cees(ks).Efficiency1)              'LOSS STAGE #1
-        Else
-            _cees(ks).stage2(0).i_k = 0
-            _cees(ks).stage2(0).i_m = 0
-            _cees(ks).stage2(0).psd_cum = 0
-            _cees(ks).stage2(0).psd_cum_pro = 0
-            _cees(ks).stage2(0).psd_dif = 0
+        If Double.IsNaN(_cees(ks).stage1(0).dia) Or Double.IsInfinity(_cees(ks).stage1(0).dia) Then
+            MessageBox.Show("stage2 diameter = indifinity")
+            Exit Sub
         End If
 
-        _cees(ks).stage2(0).loss_abs = _cees(ks).stage2(0).loss_overall * _cees(ks).stage2(0).psd_dif
-        _cees(ks).stage2(0).loss_abs_C = _cees(ks).stage2(0).loss_overall_C * _cees(ks).stage2(0).psd_dif
+        If ComboBox1.Items.Count > 0 And ComboBox2.Items.Count > 0 And init Then
 
-        '----- initial values -------
-        _cees(ks).sum_psd_diff2 = 0 '_cees(ks).stage2(0).psd_dif
-        _cees(ks).sum_loss2 = 0 ' _cees(ks).stage2(0).loss_abs
-        _cees(ks).sum_loss_C2 = 0 ' _cees(ks).stage2(0).loss_abs_C
+            '----------- stof belasting ------------
+            tot_kgh = _cees(ks).emis1_kgh                       '[kg/hr] Dust inlet 
+            kgh = tot_kgh / _cees(ks).Noc2                      '[kg/hr/Cy] Dust inlet 
 
-        '------ increment step --------
-        'stapgrootte bij 110-staps logaritmische verdeling van het
-        'deeltjesdiameter-bereik van loss=100% tot 0,00000001%
-        'Deze wordt gebruikt voor het opstellen van de gefractioneerde
-        'verliescurve.
+            TextBox100.Text = kgh.ToString("F0")
+            TextBox101.Text = tot_kgh.ToString("F1")
 
-        '-------------- korrelgrootte factoren ------
-        If ComboBox2.SelectedIndex > -1 Then
-            words = rekenlijnen(ComboBox2.SelectedIndex).Split(CType(";", Char()))
-            '---- diameter kleiner dan dia kritisch
-            fac_m = CDbl(words(2))
-        End If
-
-        '------------ Find the biggest and smallest particle -----
-        perc_smallest_part2 = 0.0000001                    'smallest particle [%]
-        _cees(ks).Dmax2 = Calc_dia_particle(perc_smallest_part2, _cees(ks).Kstokes2, 2)     '=100% loss (biggest particle)
-        _cees(ks).Dmin2 = _cees(ks).Kstokes2 * fac_m                'diameter smallest particle caught
-
-
-        For i = 1 To 110    '=========Stage #2, Grid lines 1...============ 
-            If Double.IsNaN(_cees(ks).stage1(ks).dia) Or Double.IsInfinity(_cees(ks).stage1(ks).dia) Then Exit Sub
-
-            _cees(ks).stage2(i).dia = _cees(ks).stage1(i).dia                               'Diameter Copy stage #1
-            _cees(ks).stage2(i).d_ave = _cees(ks).stage1(i).d_ave                           'Average diameter
-            _cees(ks).stage2(i).d_ave_K = _cees(ks).stage2(i).d_ave / _cees(ks).Kstokes2    'dia/k_stokes
-            _cees(ks).stage2(i).loss_overall = Calc_verlies(_cees(ks).stage2(i).d_ave, _cees(ks).Kstokes2, 2)   '[-] loss overall
-            Calc_verlies_corrected(_cees(ks).stage2(i), 2)                                  '[-] loss overall corrected
-
-            '------------- Load correction stage #2 -------------------
-            If CheckBox3.Checked Then
-                _cees(ks).stage2(i).catch_chart = (1 - _cees(ks).stage2(i).loss_overall_C) * 100  '[%] Corrected
-            Else
-                _cees(ks).stage2(i).catch_chart = (1 - _cees(ks).stage2(i).loss_overall) * 100    '[%] NOT corrected
-            End If
-
-            Calc_diam_classification(_cees(ks).stage2(i))                                     'Calc
-            _cees(ks).stage2(i).i_grp = _cees(ks).stage1(i).i_grp
+            '--------- now the particles (====Grid line 0======)------------
+            _cees(ks).stage2(0).dia = _cees(ks).stage1(0).dia                                   'Copy stage #1
+            _cees(ks).stage2(0).d_ave = _cees(ks).stage2(0).dia / 2                             'Average diameter
+            _cees(ks).stage2(0).d_ave_K = _cees(ks).stage2(0).d_ave / _cees(ks).Kstokes2        'dia/k_stokes
+            _cees(ks).stage2(0).loss_overall = Calc_verlies(_cees(ks).stage2(0).d_ave_K, _cees(ks).Kstokes2, 2)     '[-] loss overall
+            Calc_verlies_corrected(_cees(ks).stage2(0), 2)                                      '[-] loss overall corrected
+            _cees(ks).stage2(0).catch_chart = (1 - _cees(ks).stage2(0).loss_overall_C) * 100    '[%]
+            Calc_diam_classification(_cees(ks).stage2(0))                                       'groepnummer
 
             If _cees(ks).stage2(i).i_grp < no_PDS_inputs Then
-                Calc_k_and_m(_cees(ks).stage2(i))
-                _cees(ks).stage2(i).psd_cum = Math.E ^ (-(_cees(ks).stage2(i).dia / _cees(ks).stage2(i).i_m) ^ _cees(ks).stage2(i).i_k)
-                _cees(ks).stage2(i).psd_cum_pro = _cees(ks).stage2(i).psd_cum * 100 '[%]
-                _cees(ks).stage2(i).psd_dif = 100 * _cees(ks).stage1(i).loss_abs_C / _cees(ks).sum_loss_C1
+                Calc_k_and_m(_cees(ks).stage2(0))
+                _cees(ks).stage2(0).psd_cum = Math.E ^ (-((_cees(ks).stage2(0).dia / _cees(ks).stage2(0).i_m) ^ _cees(ks).stage2(0).i_k))
+                _cees(ks).stage2(0).psd_cum_pro = _cees(ks).stage2(0).psd_cum * 100 '[%]
+                _cees(ks).stage2(0).psd_dif = 100 * _cees(ks).stage1(0).loss_abs / (100 - _cees(ks).Efficiency1)              'LOSS STAGE #1
             Else
-                _cees(ks).stage2(i).i_k = 0
-                _cees(ks).stage2(i).i_m = 0
-                _cees(ks).stage2(i).psd_cum = 0
-                _cees(ks).stage2(i).psd_cum_pro = 0
-                _cees(ks).stage2(i).psd_dif = 0
+                _cees(ks).stage2(0).i_k = 0
+                _cees(ks).stage2(0).i_m = 0
+                _cees(ks).stage2(0).psd_cum = 0
+                _cees(ks).stage2(0).psd_cum_pro = 0
+                _cees(ks).stage2(0).psd_dif = 0
             End If
 
-            _cees(ks).stage2(i).loss_abs = _cees(ks).stage2(i).loss_overall * _cees(ks).stage2(i).psd_dif
-            _cees(ks).stage2(i).loss_abs_C = _cees(ks).stage2(i).loss_overall_C * _cees(ks).stage2(i).psd_dif
+            _cees(ks).stage2(0).loss_abs = _cees(ks).stage2(0).loss_overall * _cees(ks).stage2(0).psd_dif
+            _cees(ks).stage2(0).loss_abs_C = _cees(ks).stage2(0).loss_overall_C * _cees(ks).stage2(0).psd_dif
 
-            '----- sum value incremental values -----
-            _cees(ks).sum_psd_diff2 += _cees(ks).stage2(i).psd_dif
-            _cees(ks).sum_loss2 += _cees(ks).stage2(i).loss_abs
-            _cees(ks).sum_loss_C2 += _cees(ks).stage2(i).loss_abs_C
-        Next i
-        _cees(ks).loss_total2 = _cees(ks).sum_loss_C2 + ((100 - _cees(ks).sum_psd_diff2) * perc_smallest_part2)
-        _cees(ks).emmis2_Am3 = _cees(ks).emmis1_Am3 * _cees(ks).loss_total2 / 100
-        _cees(ks).Efficiency2 = 100 - _cees(ks).loss_total2      '[%] Efficiency
+            '----- initial values -------
+            _cees(ks).sum_psd_diff2 = 0 '_cees(ks).stage2(0).psd_dif
+            _cees(ks).sum_loss2 = 0 ' _cees(ks).stage2(0).loss_abs
+            _cees(ks).sum_loss_C2 = 0 ' _cees(ks).stage2(0).loss_abs_C
 
-        '---------Density ratio stage#2  kg/Nm3 and kg/Am3 ---------
-        Dim density_ratio2 As Double
-        density_ratio2 = _cees(ks).Ro_gas2_Nm3 / _cees(ks).Ro_gas2_Am3  '[-]
-        _cees(ks).emmis2_Nm3 = _cees(ks).emmis2_Am3 * density_ratio2    '[g/Am3]
+            '------ increment step --------
+            'stapgrootte bij 110-staps logaritmische verdeling van het
+            'deeltjesdiameter-bereik van loss=100% tot 0,00000001%
+            'Deze wordt gebruikt voor het opstellen van de gefractioneerde
+            'verliescurve.
 
-        '------ combined efficiency -----
-        Eff_comb = _cees(ks).Efficiency1 + (1 - _cees(ks).Efficiency1 / 100) * _cees(ks).Efficiency2
-        _cees(ks).emis2_kgh = _cees(ks).dust1_in_kgh * (100 - Eff_comb) / 100
+            '-------------- korrelgrootte factoren ------
+            If ComboBox2.SelectedIndex > -1 Then
+                words = rekenlijnen(ComboBox2.SelectedIndex).Split(CType(";", Char()))
+                '---- diameter kleiner dan dia kritisch
+                fac_m = CDbl(words(2))
+            End If
 
-        '----------- present stage #2 -----------
-        TextBox63.Text = ComboBox2.Text                     'Cyclone type
-        TextBox64.Text = CheckBox3.Checked.ToString         'Hi load correction stage #2
-        TextBox110.Text = _cees(ks).Dmax2.ToString("F2")    'diameter [mu] 100% catch
-        TextBox111.Text = _cees(ks).Dmin2.ToString("F2")    'diameter [mu] 100% loss
-        TextBox116.Text = _istep.ToString("F3")             'Calculation step stage #2
-        TextBox43.Text = _cees(ks).Dmin1.ToString("F2")     'Smallest part caught by the second stage cyclone
+            '------------ Find the biggest and smallest particle -----
+            perc_smallest_part2 = 0.0000001                    'smallest particle [%]
+            _cees(ks).Dmax2 = Calc_dia_particle(perc_smallest_part2, _cees(ks).Kstokes2, 2)     '=100% loss (biggest particle)
+            _cees(ks).Dmin2 = _cees(ks).Kstokes2 * fac_m                'diameter smallest particle caught
 
-        TextBox117.Text = _cees(ks).sum_psd_diff2.ToString("F3")
-        TextBox68.Text = _cees(ks).sum_loss2.ToString("F3")
-        TextBox69.Text = _cees(ks).sum_loss_C2.ToString("F3")
-        TextBox120.Text = Eff_comb.ToString("F2")
 
-        If CheckBox3.Checked Then   'Dust load correction stage #2
-            TextBox65.Text = _cees(ks).loss_total2.ToString("F3")    '[%] Corrected
-        Else
-            TextBox65.Text = _cees(ks).sum_loss2.ToString("F3")      '[%] NOT Corrected
+            For i = 1 To 110    '=========Stage #2, Grid lines 1...============ 
+                If Double.IsNaN(_cees(ks).stage1(ks).dia) Or Double.IsInfinity(_cees(ks).stage1(ks).dia) Then Exit Sub
+
+                _cees(ks).stage2(i).dia = _cees(ks).stage1(i).dia                               'Diameter Copy stage #1
+                _cees(ks).stage2(i).d_ave = _cees(ks).stage1(i).d_ave                           'Average diameter
+                _cees(ks).stage2(i).d_ave_K = _cees(ks).stage2(i).d_ave / _cees(ks).Kstokes2    'dia/k_stokes
+                _cees(ks).stage2(i).loss_overall = Calc_verlies(_cees(ks).stage2(i).d_ave, _cees(ks).Kstokes2, 2)   '[-] loss overall
+                Calc_verlies_corrected(_cees(ks).stage2(i), 2)                                  '[-] loss overall corrected
+
+                '------------- Load correction stage #2 -------------------
+                If CheckBox3.Checked Then
+                    _cees(ks).stage2(i).catch_chart = (1 - _cees(ks).stage2(i).loss_overall_C) * 100  '[%] Corrected
+                Else
+                    _cees(ks).stage2(i).catch_chart = (1 - _cees(ks).stage2(i).loss_overall) * 100    '[%] NOT corrected
+                End If
+
+                Calc_diam_classification(_cees(ks).stage2(i))                                     'Calc
+                _cees(ks).stage2(i).i_grp = _cees(ks).stage1(i).i_grp
+
+                If _cees(ks).stage2(i).i_grp < no_PDS_inputs Then
+                    Calc_k_and_m(_cees(ks).stage2(i))
+                    _cees(ks).stage2(i).psd_cum = Math.E ^ (-(_cees(ks).stage2(i).dia / _cees(ks).stage2(i).i_m) ^ _cees(ks).stage2(i).i_k)
+                    _cees(ks).stage2(i).psd_cum_pro = _cees(ks).stage2(i).psd_cum * 100 '[%]
+                    _cees(ks).stage2(i).psd_dif = 100 * _cees(ks).stage1(i).loss_abs_C / _cees(ks).sum_loss_C1
+                Else
+                    _cees(ks).stage2(i).i_k = 0
+                    _cees(ks).stage2(i).i_m = 0
+                    _cees(ks).stage2(i).psd_cum = 0
+                    _cees(ks).stage2(i).psd_cum_pro = 0
+                    _cees(ks).stage2(i).psd_dif = 0
+                End If
+
+                _cees(ks).stage2(i).loss_abs = _cees(ks).stage2(i).loss_overall * _cees(ks).stage2(i).psd_dif
+                _cees(ks).stage2(i).loss_abs_C = _cees(ks).stage2(i).loss_overall_C * _cees(ks).stage2(i).psd_dif
+
+                '----- sum value incremental values -----
+                _cees(ks).sum_psd_diff2 += _cees(ks).stage2(i).psd_dif
+                _cees(ks).sum_loss2 += _cees(ks).stage2(i).loss_abs
+                _cees(ks).sum_loss_C2 += _cees(ks).stage2(i).loss_abs_C
+            Next i
+            _cees(ks).loss_total2 = _cees(ks).sum_loss_C2 + ((100 - _cees(ks).sum_psd_diff2) * perc_smallest_part2)
+            _cees(ks).emmis2_Am3 = _cees(ks).emmis1_Am3 * _cees(ks).loss_total2 / 100
+            _cees(ks).Efficiency2 = 100 - _cees(ks).loss_total2      '[%] Efficiency
+
+            '---------Density ratio stage#2  kg/Nm3 and kg/Am3 ---------
+            Dim density_ratio2 As Double
+            density_ratio2 = _cees(ks).Ro_gas2_Nm3 / _cees(ks).Ro_gas2_Am3  '[-]
+            _cees(ks).emmis2_Nm3 = _cees(ks).emmis2_Am3 * density_ratio2    '[g/Am3]
+
+            '------ combined efficiency -----
+            Eff_comb = _cees(ks).Efficiency1 + (1 - _cees(ks).Efficiency1 / 100) * _cees(ks).Efficiency2
+            _cees(ks).emis2_kgh = _cees(ks).dust1_in_kgh * (100 - Eff_comb) / 100
+
+            '----------- present stage #2 -----------
+            TextBox63.Text = ComboBox2.Text                     'Cyclone type
+            TextBox64.Text = CheckBox3.Checked.ToString         'Hi load correction stage #2
+            TextBox110.Text = _cees(ks).Dmax2.ToString("F2")    'diameter [mu] 100% catch
+            TextBox111.Text = _cees(ks).Dmin2.ToString("F2")    'diameter [mu] 100% loss
+            TextBox116.Text = _istep.ToString("F3")             'Calculation step stage #2
+            TextBox43.Text = _cees(ks).Dmin1.ToString("F2")     'Smallest part caught by the second stage cyclone
+
+            TextBox117.Text = _cees(ks).sum_psd_diff2.ToString("F3")
+            TextBox68.Text = _cees(ks).sum_loss2.ToString("F3")
+            TextBox69.Text = _cees(ks).sum_loss_C2.ToString("F3")
+            TextBox120.Text = Eff_comb.ToString("F2")
+
+            If CheckBox3.Checked Then   'Dust load correction stage #2
+                TextBox65.Text = _cees(ks).loss_total2.ToString("F3")    '[%] Corrected
+            Else
+                TextBox65.Text = _cees(ks).sum_loss2.ToString("F3")      '[%] NOT Corrected
+            End If
+
+            TextBox66.Text = _cees(ks).Efficiency2.ToString("F2")       '[%] stage #2
+            TextBox109.Text = _cees(ks).Efficiency2.ToString("F2")      '[%]
+            TextBox62.Text = _cees(ks).emmis2_Am3.ToString("F3")        '[gram/Am3] emmissie stage #2
+            TextBox108.Text = _cees(ks).emmis2_Am3.ToString("F3")       '[gram/Am3] emmissie stage #2
+            TextBox134.Text = _cees(ks).emmis2_Am3.ToString("F3")       '[gram/Am3] emmissie stage #2
+
+            TextBox142.Text = _cees(ks).emmis2_Nm3.ToString("F3")       '[gram/Nm3] emmissie stage #2
+            TextBox179.Text = _cees(ks).emmis2_Nm3.ToString("F3")       '[gram/Nm3] emmissie stage #2
+            TextBox178.Text = _cees(ks).emmis2_Nm3.ToString("F3")       '[gram/Nm3] emmissie stage #2
+
+            TextBox185.Text = _cees(ks).emis2_kgh.ToString("F2")       '[kg/h] emmissie stage #2
+            TextBox184.Text = _cees(ks).emis2_kgh.ToString("F2")       '[kg/h] emmissie stage #2
+
+            TextBox143.Text = _cees(ks).dust2_Nm3.ToString("F2")        'Dust load [gram/Nm3]
         End If
-
-        TextBox66.Text = _cees(ks).Efficiency2.ToString("F2")       '[%] stage #2
-        TextBox109.Text = _cees(ks).Efficiency2.ToString("F2")      '[%]
-        TextBox62.Text = _cees(ks).emmis2_Am3.ToString("F3")        '[gram/Am3] emmissie stage #2
-        TextBox108.Text = _cees(ks).emmis2_Am3.ToString("F3")       '[gram/Am3] emmissie stage #2
-        TextBox134.Text = _cees(ks).emmis2_Am3.ToString("F3")       '[gram/Am3] emmissie stage #2
-
-        TextBox142.Text = _cees(ks).emmis2_Nm3.ToString("F3")       '[gram/Nm3] emmissie stage #2
-        TextBox179.Text = _cees(ks).emmis2_Nm3.ToString("F3")       '[gram/Nm3] emmissie stage #2
-        TextBox178.Text = _cees(ks).emmis2_Nm3.ToString("F3")       '[gram/Nm3] emmissie stage #2
-
-        TextBox185.Text = _cees(ks).emis2_kgh.ToString("F2")       '[kg/h] emmissie stage #2
-        TextBox184.Text = _cees(ks).emis2_kgh.ToString("F2")       '[kg/h] emmissie stage #2
-
-        TextBox143.Text = _cees(ks).dust2_Nm3.ToString("F2")        'Dust load [gram/Nm3]
     End Sub
 
     Public Sub Calc_diam_classification(ByRef g As GvG_Calc_struct)
@@ -2562,7 +2577,7 @@ Public Class Form1
 
             Label1.Visible = False  'Error message
         Else
-            'MessageBox.Show("Error in Calc_diam_classification")
+            MessageBox.Show("Error in Calc_diam_classification")
             Label1.Visible = True   'Error message
         End If
     End Sub
@@ -2716,7 +2731,7 @@ Public Class Form1
     End Sub
     'Calculate cyclone weight
     Private Sub Button7_Click(sender As Object, e As EventArgs) Handles Button7.Click, TabPage7.Enter, NumericUpDown32.ValueChanged, NumericUpDown31.ValueChanged, NumericUpDown45.ValueChanged, NumericUpDown44.ValueChanged, NumericUpDown42.ValueChanged, NumericUpDown41.ValueChanged
-        If (ComboBox1.SelectedIndex > -1) And (ComboBox2.SelectedIndex > -1) Then 'Prevent exceptions
+        If (ComboBox1.Items.Count > 0) And (ComboBox2.Items.Count > 0) Then 'Prevent exceptions
             Calc_cycl_weight()
             Calc_Tang_outlet()
         End If
@@ -2849,6 +2864,9 @@ Public Class Form1
 
             ComboBox1.SelectedIndex = _cees(zz).Ct1                 'Cyclone type stage #1
             ComboBox2.SelectedIndex = _cees(zz).Ct2                 'Cyclone type stage #2
+
+            'If ComboBox1.Items.Count > 0 Then ComboBox1.SelectedIndex = 0
+            'If ComboBox2.Items.Count > 0 Then ComboBox2.SelectedIndex = 0
 
             Chck_value(NumericUpDown30, zz)                         'Case number
             Chck_value(NumericUpDown20, CDec(_cees(zz).Noc1))       'Cyclone in parallel #1
