@@ -211,12 +211,24 @@ Public Class Form1
 
     'Typical Corn ( particle diameter[mu],cumulatief[%] )
     ReadOnly psd_corn() As String = {
-    "2	;99.9",
-    "4	;99.8",
-    "8	;83.9",
-    "12	;52.2",
-    "16	;22.6",
-    "20	;2.5"}
+    "1;	99.99",
+    "2;	99.9",
+    "4;	99.8",
+    "6;	95",
+    "8;	84",
+    "10;70",
+    "12;52.2",
+    "14;35",
+    "16;22.6",
+    "18;15",
+    "20;10",
+    "24;6.5",
+    "28;3",
+    "32;1",
+    "36;0.5",
+    "40;0.1",
+    "44;0.01",
+    "48;0.001"}
 
     'Typical Chickpea Starch (particle diameter[mu], cumulatief[%])
     ReadOnly psd_chickpea_starch() As String = {
@@ -251,7 +263,7 @@ Public Class Form1
     "83.9000;	3.70",
     "92.1000;	2.90",
     "101.0000;	2.29",
-    "11.0000;	1.78",
+    "111.0000;	1.78",
     "121.8000;	1.33",
     "133.7000;	0.92",
     "146.8000;	0.56",
@@ -336,9 +348,14 @@ Public Class Form1
     "79.140;46.720	",
     "89.750;41.350	",
     "99.875;35.840	",
-    "111.150;30.290	",
-    "158.550;0.001	"}
-
+    "111.150;30.0 ",
+    "140.0	;   20",
+    "180.0	;	10",
+    "225.0	;	4",
+    "275.0	;	1",
+    "350.0	;	0.1",
+    "400.0	;	0.01",
+    "450.0	;	0.001"}
 
     'GvG Excelsheet, Cumulatief[%], particle diameter[mu])
     ReadOnly GvG_excel() As String = {
@@ -627,6 +644,8 @@ Public Class Form1
         "Use cyclone as 1 stage before AA850 to prevent blocking"
 
         TextBox187.Text = "Log" & vbCrLf &
+        "07-05-2021, PSD Corn starch cleaned up" & vbCrLf &
+        "07-05-2021, Chart added Volume percentage vs Diameter" & vbCrLf &
         "07-05-2021, Emission in [gr/Nm3] added to report" & vbCrLf &
         "07-05-2021, Bugfix retrieve project" & vbCrLf &
         "06-05-2021, Chickpea starch added Source Denmark" & vbCrLf &
@@ -1501,6 +1520,58 @@ Public Class Form1
 
         ch.Series(0).Points(6).Label = "Load correction"
     End Sub
+
+    Private Sub Draw_chart4(ch As Chart)
+        'Lust Load correction formula
+        Dim r_points(no_PDS_inputs, 2) As Double
+        Dim h As Integer
+
+        ch.Series.Clear()
+        ch.ChartAreas.Clear()
+        ch.Titles.Clear()
+        ch.ChartAreas.Add("ChartArea0")
+
+        ch.Series.Add("Series1")
+        ch.Series(0).ChartArea = "ChartArea0"
+        ch.Series(0).ChartType = DataVisualization.Charting.SeriesChartType.Line
+        ch.Series(0).BorderWidth = 2
+        ch.Series(0).IsVisibleInLegend = False
+
+        ch.Titles.Add("PSD selected product")
+        ch.ChartAreas("ChartArea0").AxisX.Title = "Particle diameter [mu]"
+        ch.ChartAreas("ChartArea0").AxisY.Title = "Volume fraction [%]"
+        'ch.ChartAreas("ChartArea0").AxisY.Minimum = 0               '
+        ''ch.ChartAreas("ChartArea0").AxisY.Maximum = 2              '
+        ch.ChartAreas("ChartArea0").AxisX.Minimum = 0                '
+        ''ch.ChartAreas("ChartArea0").AxisX.Maximum = 150            '
+
+        ' ch.ChartAreas("ChartArea0").AxisX.IsLogarithmic = True
+
+        '----- Calc the gauss shape -----------------------
+        r_points(0, 0) = _input(h).dia_big                                  '[mu] 
+        r_points(0, 1) = 1 - _input(h).class_load    '[%]  
+
+
+        For h = 1 To no_PDS_inputs - 1                                          '
+            r_points(h, 0) = _input(h).dia_big                                  '[mu] 
+            r_points(h, 1) = _input(h - 1).class_load - _input(h).class_load    '[%]
+
+            '===== Diameter is nul then percentage is also nul
+            If r_points(h, 0) = 0 Then r_points(h, 1) = 0.0
+        Next
+
+        TextBox24.Text = "Present selected PSD" & vbCrLf
+
+        '------ now present-------------
+        For h = 0 To no_PDS_inputs - 1    'Fill line chart
+            'If r_points(h, 0) < 0.1 Then r_points(h, 0) = 0.1               'diameter
+            'If r_points(h, 1) < 0.000001 Then r_points(h, 1) = 0.000001     'percentage
+            TextBox24.Text &= "dia= " & r_points(h, 0).ToString("F2") & ", perc= " & r_points(h, 1).ToString("F5") & vbCrLf
+            ch.Series(0).Points.AddXY(r_points(h, 0), r_points(h, 1))   '
+        Next h
+
+    End Sub
+
 
     Private Sub Button2_Click(sender As Object, e As EventArgs) Handles TabPage9.Enter, CheckBox6.CheckedChanged, CheckBox7.CheckedChanged, CheckBox4.CheckedChanged, CheckBox9.CheckedChanged, CheckBox8.CheckedChanged, CheckBox10.CheckedChanged, CheckBox5.CheckedChanged, CheckBox12.CheckedChanged, CheckBox11.CheckedChanged, CheckBox1.CheckedChanged, CheckBox13.CheckedChanged, CheckBox14.CheckedChanged, CheckBox15.CheckedChanged, CheckBox16.CheckedChanged, CheckBox17.CheckedChanged, CheckBox18.CheckedChanged, CheckBox19.CheckedChanged, RadioButton2.CheckedChanged, RadioButton1.CheckedChanged
         Calc_sequence()
@@ -3431,5 +3502,9 @@ Public Class Form1
     Private Sub Button22_Click(sender As Object, e As EventArgs) Handles Button22.Click
         PSD_typical_Chickpea_starch()
         Calc_sequence()
+    End Sub
+
+    Private Sub Button23_Click(sender As Object, e As EventArgs) Handles Button23.Click, TabPage13.Enter
+        Draw_chart4(Chart4)             'PSD selected product
     End Sub
 End Class
