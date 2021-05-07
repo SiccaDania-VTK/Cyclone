@@ -627,6 +627,7 @@ Public Class Form1
         "Use cyclone as 1 stage before AA850 to prevent blocking"
 
         TextBox187.Text = "Log" & vbCrLf &
+        "07-05-2021, Emission in [gr/Nm3] added to report" & vbCrLf &
         "07-05-2021, Bugfix retrieve project" & vbCrLf &
         "06-05-2021, Chickpea starch added Source Denmark" & vbCrLf &
         "07-04-2021, Commercial data elaborated" & vbCrLf &
@@ -1821,7 +1822,7 @@ Public Class Form1
 
         '---------------Process data-------------------------------
         'Insert a table, fill it with data and change the column widths.
-        oTable = oDoc.Tables.Add(oDoc.Bookmarks.Item("\endofdoc").Range, 22, 3)
+        oTable = oDoc.Tables.Add(oDoc.Bookmarks.Item("\endofdoc").Range, 25, 3)
         oTable.Range.ParagraphFormat.SpaceAfter = 1
         oTable.Range.Font.Size = 10
         oTable.Range.Font.Bold = CInt(False)
@@ -1851,6 +1852,10 @@ Public Class Form1
         oTable.Cell(row, 3).Range.Text = "[gr/Am3]"
         row += 1
         oTable.Cell(row, 1).Range.Text = "Emission stage1"
+        oTable.Cell(row, 2).Range.Text = TextBox180.Text
+        oTable.Cell(row, 3).Range.Text = "[gr/Nm3]"
+        row += 1
+        oTable.Cell(row, 1).Range.Text = "Emission stage1"
         oTable.Cell(row, 2).Range.Text = TextBox186.Text
         oTable.Cell(row, 3).Range.Text = "[kg/h]"
         row += 2
@@ -1876,6 +1881,10 @@ Public Class Form1
         oTable.Cell(row, 3).Range.Text = "[gr/Am3]"
         row += 1
         oTable.Cell(row, 1).Range.Text = "Emission stage2"
+        oTable.Cell(row, 2).Range.Text = TextBox179.Text
+        oTable.Cell(row, 3).Range.Text = "[gr/Nm3]"
+        row += 1
+        oTable.Cell(row, 1).Range.Text = "Emission stage2"
         oTable.Cell(row, 2).Range.Text = TextBox184.Text
         oTable.Cell(row, 3).Range.Text = "[kg/h]"
         row += 2
@@ -1886,6 +1895,10 @@ Public Class Form1
         oTable.Cell(row, 1).Range.Text = "Emission stage1+2"
         oTable.Cell(row, 2).Range.Text = TextBox134.Text
         oTable.Cell(row, 3).Range.Text = "[gr/Am3]"
+        row += 1
+        oTable.Cell(row, 1).Range.Text = "Emission stage1+2"
+        oTable.Cell(row, 2).Range.Text = TextBox178.Text
+        oTable.Cell(row, 3).Range.Text = "[gr/Nm3]"
         row += 1
         oTable.Cell(row, 1).Range.Text = "Emission stage1+2"
         oTable.Cell(row, 2).Range.Text = TextBox184.Text
