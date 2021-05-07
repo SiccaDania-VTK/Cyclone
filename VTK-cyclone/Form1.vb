@@ -136,6 +136,7 @@ Public Class Form1
     Public _input(no_PDS_inputs + 1) As Psd_input_struct    'Particle Size Distribution
     Dim k41 As Double                                   'sum loss abs (for DataGridView1)
     Dim init As Boolean = False                         'Initialize done
+    Dim Update_screen_fram_array_done As Boolean = True 'Program chokes during retrieve
 
     'Type AC;Inlaatbreedte;Inlaathoogte;Inlaatlengte;Inlaat hartmaat;Inlaat afschuining;
     'Uitlaat keeldia inw.;Uitlaat flensdiameter inw.;Lengte insteekpijp inw.;
@@ -758,6 +759,9 @@ Public Class Form1
                 words = rekenlijnen(ComboBox1.SelectedIndex).Split(CType(";", Char()))
                 wc_air1 = CDbl(words(8))        'Resistance Coefficient air
                 wc_dust1 = CDbl(words(9))       'Resistance Coefficient dust
+            Else
+                Exit Sub
+                MessageBox.Show("Error 763")
             End If
             _cees(ks).dpgas1 = 0.5 * _cees(ks).Ro_gas1_Am3 * _cees(ks).inv1 ^ 2 * wc_air1      '[Pa]
             _cees(ks).dpdust1 = 0.5 * _cees(ks).Ro_gas1_Am3 * _cees(ks).inv1 ^ 2 * wc_dust1    '[Pa]
@@ -874,7 +878,7 @@ Public Class Form1
 
             TextBox17.Text = _cees(ks).dpgas1.ToString("0")             '[Pa] Pressure loss inlet-gas
             TextBox79.Text = _cees(ks).dpgas2.ToString("0")             '[Pa] Pressure loss inlet-gas
-            TextBox189.Text = ((_cees(ks).dpgas1 + _cees(ks).dpgas1) / 100).ToString("F1") '[mbar]
+            TextBox189.Text = ((_cees(ks).dpgas1 + _cees(ks).dpgas2) / 100).ToString("F1") '[mbar]
 
             TextBox48.Text = _cees(ks).dpdust1.ToString("0")            '[Pa] Pressure loss inlet-dust
             TextBox76.Text = _cees(ks).dpdust2.ToString("0")            '[Pa] Pressure loss inlet-dust
@@ -1571,13 +1575,14 @@ Public Class Form1
         Next h
 
     End Sub
-
-
     Private Sub Button2_Click(sender As Object, e As EventArgs) Handles TabPage9.Enter, CheckBox6.CheckedChanged, CheckBox7.CheckedChanged, CheckBox4.CheckedChanged, CheckBox9.CheckedChanged, CheckBox8.CheckedChanged, CheckBox10.CheckedChanged, CheckBox5.CheckedChanged, CheckBox12.CheckedChanged, CheckBox11.CheckedChanged, CheckBox1.CheckedChanged, CheckBox13.CheckedChanged, CheckBox14.CheckedChanged, CheckBox15.CheckedChanged, CheckBox16.CheckedChanged, CheckBox17.CheckedChanged, CheckBox18.CheckedChanged, CheckBox19.CheckedChanged, RadioButton2.CheckedChanged, RadioButton1.CheckedChanged
-        Calc_sequence()
+        Draw_chart2(Chart2, 0)      'Present the results loss curve
+        ' Calc_sequence()
     End Sub
     Private Sub Calc_sequence()
         Dim case_nr As Integer = CInt(NumericUpDown30.Value)
+
+        If Update_screen_fram_array_done = False Then Exit Sub
 
         Read_dgv6_Calc_Class_load()
         Check_DGV6()
@@ -1717,7 +1722,12 @@ Public Class Form1
         'Retrieve project from disk and goto case nr 0
 
         Retrieve_from_disk()            'Read from disk to array
+
+        '======= program chokes on this section ===========
+        Update_screen_fram_array_done = False
         Update_Screen_from_array(1)     'Refresh screen data case 1
+        Update_screen_fram_array_done = True
+        '======= done ===========
         Calc_sequence()
     End Sub
 
@@ -2723,16 +2733,29 @@ Public Class Form1
         _db2 = NumericUpDown34.Value * 1000         '[mm] dia cyclone stage 2
 
         '-------- dimension cyclone stage #1
-        words = Tangent_out_dimensions(ComboBox1.SelectedIndex).Split(CType(";", Char()))
-        For hh = 1 To factor1.Length - 2
-            factor1(hh) = CDbl(words(hh))          'Tangent outlet dimensions
-        Next
+        If ComboBox1.SelectedIndex < Tangent_out_dimensions.Length - 1 Then
+            words = Tangent_out_dimensions(ComboBox1.SelectedIndex).Split(CType(";", Char()))
+            For hh = 1 To factor1.Length - 2
+                factor1(hh) = CDbl(words(hh))          'Tangent outlet dimensions
+            Next
+        Else
+            For hh = 1 To factor1.Length - 2
+                factor1(hh) = 0          'Tangent outlet dimensions
+            Next
+        End If
+
 
         '-------- dimension cyclone stage #2
-        words = Tangent_out_dimensions(ComboBox2.SelectedIndex).Split(CType(";", Char()))
-        For hh = 1 To factor2.Length - 2
-            factor2(hh) = CDbl(words(hh))          'Tangent outlet dimensions
-        Next
+        If ComboBox2.SelectedIndex < Tangent_out_dimensions.Length - 1 Then
+            words = Tangent_out_dimensions(ComboBox2.SelectedIndex).Split(CType(";", Char()))
+            For hh = 1 To factor2.Length - 2
+                factor2(hh) = CDbl(words(hh))          'Tangent outlet dimensions
+            Next
+        Else
+            For hh = 1 To factor2.Length - 2
+                factor2(hh) = 0          'Tangent outlet dimensions
+            Next
+        End If
 
         '--------- 1st stage cyclone -----
         tan1(1) = _db1 * factor1(1)         'Diameter
@@ -2840,7 +2863,6 @@ Public Class Form1
 
             Chck_value(numericUpDown3, CDec(_cees(zz).ro_gas))       '[kg/hr] Density 
             Chck_value(numericUpDown2, CDec(_cees(zz).ro_solid))     '[kg/hr] Density 
-            'Chck_value(numericUpDown14, CDec(_cees(zz).visco))       '[Cp] Visco in Centi Poise
             Chck_value(NumericUpDown18, CDec(_cees(zz).Temp))        '[c] Temperature 
             p1_rel = (_cees(zz).p1_abs - 101325) / 100               '[mbar]
             Chck_value(NumericUpDown19, CDec(p1_rel))                '[Pa abs]-->[mbar g] Pressure
@@ -2862,7 +2884,7 @@ Public Class Form1
             DataGridView6.Rows(row).Cells(1).Value = _input(row).class_load * 100
         Next
         DataGridView6.Refresh()
-        Debug.WriteLine("Fill_DGV6_from_input_array done")
+        ' Debug.WriteLine("Fill_DGV6_from_input_array done")
     End Sub
 
     Private Sub Dump_log_to_box24()
