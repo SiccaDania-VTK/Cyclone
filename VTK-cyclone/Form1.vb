@@ -2348,7 +2348,7 @@ Public Class Form1
 
             '---------- present ------------------
             TextBox59.Text = _cees(ks).Efficiency1.ToString("F2")   '[%]
-            TextBox21.Text = _cees(ks).Efficiency1.ToString("F2")   '[%]
+            TextBox21.Text = _cees(ks).Efficiency1.ToString("F3")   '[%]
             TextBox60.Text = _cees(ks).emmis1_Am3.ToString("F3")    '[g/Am3]
 
             '==== 1st stage ====
@@ -2495,7 +2495,7 @@ Public Class Form1
             TextBox117.Text = _cees(ks).sum_psd_diff2.ToString("F3")
             TextBox68.Text = _cees(ks).sum_loss2.ToString("F3")
             TextBox69.Text = _cees(ks).sum_loss_C2.ToString("F3")
-            TextBox120.Text = Eff_comb.ToString("F2")
+            TextBox120.Text = Eff_comb.ToString("F4")
 
             If CheckBox3.Checked Then   'Dust load correction stage #2
                 TextBox65.Text = _cees(ks).loss_total2.ToString("F3")    '[%] Corrected
@@ -2504,7 +2504,7 @@ Public Class Form1
             End If
 
             TextBox66.Text = _cees(ks).Efficiency2.ToString("F2")       '[%] stage #2
-            TextBox109.Text = _cees(ks).Efficiency2.ToString("F2")      '[%]
+            TextBox109.Text = _cees(ks).Efficiency2.ToString("F3")      '[%]
             TextBox62.Text = _cees(ks).emmis2_Am3.ToString("F3")        '[gram/Am3] emmissie stage #2
             TextBox108.Text = _cees(ks).emmis2_Am3.ToString("F3")       '[gram/Am3] emmissie stage #2
             TextBox134.Text = _cees(ks).emmis2_Am3.ToString("F3")       '[gram/Am3] emmissie stage #2
