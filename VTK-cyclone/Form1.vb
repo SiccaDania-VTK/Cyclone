@@ -433,17 +433,17 @@ Public Class Form1
         Dim pass_name As Boolean = False
         Dim pass_disc As Boolean = False
 
-        DataGridView1.ColumnCount = 10
+        DataGridView1.ColumnCount = 9
         DataGridView1.Rows.Clear()
         DataGridView1.Rows.Add(23)
         DataGridView1.RowHeadersVisible = False
-        DataGridView1.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.DisplayedCells
+        DataGridView1.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill
 
         'Initialize the arrays in the struct
         For i = 0 To _cees.Length - 1
             _cees(i).case_name = ""
-            ReDim _cees(i).stage1(150)                        'Initialize
-            ReDim _cees(i).stage2(150)                        'Initialize
+            ReDim _cees(i).stage1(111)                        'Initialize
+            ReDim _cees(i).stage2(111)                        'Initialize
         Next
 
         '------ allowed users with hard disc id's -----
@@ -668,8 +668,6 @@ Public Class Form1
 
         Build_clear_dgv6()              'PSD input grid
         Calc_sequence()
-
-        '  Calc_sequence()
         init = True                     'init is now done
     End Sub
 
@@ -702,7 +700,7 @@ Public Class Form1
         '====  Inlet Conditions stage #1 ====
         _cees(ks).Ro_gas1_Am3 = CDbl(numericUpDown3.Value)                   '[kg/Am3]
         _cees(ks).Temp = CDbl(NumericUpDown18.Value)                          'Temperature [c] 
-        _cees(ks).p1_abs = CDbl(NumericUpDown19.Value * 100 + 101325)         'Pressure [mbar]
+        _cees(ks).p1_abs = CDbl(NumericUpDown19.Value * 100.0 + 101325)         'Pressure [mbar]
         '------ dust load NORMAL conditions ----
         _cees(ks).Ro_gas1_Nm3 = Calc_Normal_density(_cees(ks).Ro_gas1_Am3, _cees(ks).p1_abs, _cees(ks).Temp)
 
@@ -1010,8 +1008,8 @@ Public Class Form1
                 Else
                     l18 = 100.0
                 End If
-                tt = (l18 - 100 * k19 / k41)
-                If tt < 0 Then tt = 0           'Prevent negative numbers
+                tt = (l18 - 100.0 * k19 / k41)
+                If tt < 0 Then tt = 0.0           'Prevent negative numbers
                 .Rows(h).Cells(5).Value = CType(tt.ToString("F3"), Object)
 
                 '============= (column 6) Loss abs [%] ===================
@@ -1023,7 +1021,7 @@ Public Class Form1
                 Double.TryParse(TextBox59.Text, tot_catch_abs)      'tot_catch_abs[%]
                 If h > 0 Then
                     n17_oud = CDbl(.Rows(h - 1).Cells(7).Value)
-                    n18 = n17_oud - m18 / (tot_catch_abs / 100)
+                    n18 = n17_oud - m18 / (tot_catch_abs / 100.0)
                 Else
                     n18 = 100.0
                 End If
@@ -1031,7 +1029,7 @@ Public Class Form1
                 .Rows(h).Cells(7).Value = CType(n18.ToString("F3"), Object) 'Catch psd cum
 
                 '=========  (column 8) Efficiency ===============
-                o18 = 100 - j18
+                o18 = 100.0 - j18
                 .Rows(h).Cells(8).Value = CType(o18.ToString("F3"), Object) 'Grade eff.
             Next h
         End With
@@ -1359,7 +1357,7 @@ Public Class Form1
         If CheckBox15.Checked Then
             For i = 0 To (no_PDS_inputs - 1)            'Number of input data points
                 a = _input(i).dia_big                   '[mu] Class upper particle diameter limit diameter
-                b = _input(i).class_load * 100          'Percentale van de inlaat stof belasting
+                b = _input(i).class_load * 100.0        'Percentale van de inlaat stof belasting
                 ch.Series(0).Points.AddXY(a, b)
                 ch.Series(0).Points(i).MarkerStyle = MarkerStyle.Star10
                 ch.Series(0).Points(i).MarkerSize = 15
@@ -1451,7 +1449,7 @@ Public Class Form1
         ch.ChartAreas("ChartArea0").AxisX.Title = "Particle diameter [mu]"
         ch.ChartAreas("ChartArea0").AxisY.Title = "Cyclone loss [%]"
         ch.ChartAreas("ChartArea0").AxisY.Minimum = 0     'Loss
-        ch.ChartAreas("ChartArea0").AxisY.Maximum = 100   'Loss
+        ch.ChartAreas("ChartArea0").AxisY.Maximum = 100.0   'Loss
         ch.ChartAreas("ChartArea0").AxisX.Minimum = 0     'Particle size
         ch.ChartAreas("ChartArea0").AxisX.Maximum = 30    'Particle size
 
@@ -1463,8 +1461,8 @@ Public Class Form1
 
         For h = 1 To 30                                          'Particle diameter [mu]
             s_points(h, 0) = h                                   'Particle diameter [mu]
-            s_points(h, 1) = Calc_verlies(h, _cees(ks).Kstokes1, 1) * 100  'stage #1 Loss [%]
-            s_points(h, 2) = Calc_verlies(h, _cees(ks).Kstokes2, 2) * 100  'stage #2 Loss [%]
+            s_points(h, 1) = Calc_verlies(h, _cees(ks).Kstokes1, 1) * 100.0  'stage #1 Loss [%]
+            s_points(h, 2) = Calc_verlies(h, _cees(ks).Kstokes2, 2) * 100.0  'stage #2 Loss [%]
         Next
 
         '------ now present-------------
@@ -2267,7 +2265,7 @@ Public Class Form1
                     Calc_k_and_m(_cees(ks).stage1(i))       'Calculate i_m and i_k (based on particle dia. and percentages)
                     _cees(ks).stage1(i).psd_cum = Math.E ^ (-((_cees(ks).stage1(i).dia / _cees(ks).stage1(i).i_m) ^ _cees(ks).stage1(i).i_k))
                     _cees(ks).stage1(i).psd_cum_pro = _cees(ks).stage1(i).psd_cum * 100
-                    _cees(ks).stage1(i).psd_dif = 100 * (_cees(ks).stage1(i - 1).psd_cum - _cees(ks).stage1(i).psd_cum)
+                    _cees(ks).stage1(i).psd_dif = 100.0 * (_cees(ks).stage1(i - 1).psd_cum - _cees(ks).stage1(i).psd_cum)
                 Else
                     _cees(ks).stage1(i).i_k = 0.0
                     _cees(ks).stage1(i).i_m = 0.0
@@ -2299,7 +2297,7 @@ Public Class Form1
             _cees(ks).dust2_Nm3 = _cees(ks).dust2_Am3 * density_ratio2      'Dust load [gram/Nm3]
 
             CheckBox3.Checked = CBool(IIf(_cees(ks).dust2_Am3 > 20.0, True, False))
-            _cees(ks).Efficiency1 = 100 - _cees(ks).loss_total1        '[%] Efficiency
+            _cees(ks).Efficiency1 = 100.0 - _cees(ks).loss_total1        '[%] Efficiency
 
             '----------- present stage #1-----------
             TextBox51.Text = _cees(ks).Dmax1.ToString("F2")     'diameter [mu] 100% catch
@@ -2315,7 +2313,7 @@ Public Class Form1
             '---------Density ratio stage#1  kg/Nm3 and kg/Am3 ---------
             density_ratio1 = _cees(ks).Ro_gas1_Nm3 / _cees(ks).Ro_gas1_Am3  '[-]
             _cees(ks).emmis1_Nm3 = _cees(ks).emmis1_Am3 * density_ratio1    '[g/Am3]
-            _cees(ks).emis1_kgh = _cees(ks).dust1_in_kgh * (100 - _cees(ks).Efficiency1) / 100
+            _cees(ks).emis1_kgh = _cees(ks).dust1_in_kgh * (100.0 - _cees(ks).Efficiency1) / 100.0
 
 
             '----------- Dust load correction stage #1 ------------------
@@ -2358,38 +2356,38 @@ Public Class Form1
             tot_kgh = _cees(ks).emis1_kgh                       '[kg/hr] Dust inlet 
             kgh = tot_kgh / _cees(ks).Noc2                      '[kg/hr/Cy] Dust inlet 
 
-            TextBox100.Text = kgh.ToString("F0")
-            TextBox101.Text = tot_kgh.ToString("F1")
+            TextBox100.Text = kgh.ToString("F2")                '[kg/hr] Dust inlet 
+            TextBox101.Text = tot_kgh.ToString("F2")            '[kg/hr/Cy] Dust inlet 
 
             '--------- now the particles (====Grid line 0======)------------
             _cees(ks).stage2(0).dia = _cees(ks).stage1(0).dia                                   'Copy stage #1
-            _cees(ks).stage2(0).d_ave = _cees(ks).stage2(0).dia / 2                             'Average diameter
+            _cees(ks).stage2(0).d_ave = _cees(ks).stage2(0).dia / 2.0                           'Average diameter
             _cees(ks).stage2(0).d_ave_K = _cees(ks).stage2(0).d_ave / _cees(ks).Kstokes2        'dia/k_stokes
             _cees(ks).stage2(0).loss_overall = Calc_verlies(_cees(ks).stage2(0).d_ave_K, _cees(ks).Kstokes2, 2)     '[-] loss overall
             Calc_verlies_corrected(_cees(ks).stage2(0), 2)                                      '[-] loss overall corrected
-            _cees(ks).stage2(0).catch_chart = (1 - _cees(ks).stage2(0).loss_overall_C) * 100    '[%]
+            _cees(ks).stage2(0).catch_chart = (1.0 - _cees(ks).stage2(0).loss_overall_C) * 100.0  '[%]
             Calc_diam_classification(_cees(ks).stage2(0))                                       'groepnummer
 
             If _cees(ks).stage2(i).i_grp < no_PDS_inputs Then
                 Calc_k_and_m(_cees(ks).stage2(0))
                 _cees(ks).stage2(0).psd_cum = Math.E ^ (-((_cees(ks).stage2(0).dia / _cees(ks).stage2(0).i_m) ^ _cees(ks).stage2(0).i_k))
-                _cees(ks).stage2(0).psd_cum_pro = _cees(ks).stage2(0).psd_cum * 100 '[%]
-                _cees(ks).stage2(0).psd_dif = 100 * _cees(ks).stage1(0).loss_abs / (100 - _cees(ks).Efficiency1)              'LOSS STAGE #1
+                _cees(ks).stage2(0).psd_cum_pro = _cees(ks).stage2(0).psd_cum * 100.0 '[%]
+                _cees(ks).stage2(0).psd_dif = 100.0 * _cees(ks).stage1(0).loss_abs / (100.0 - _cees(ks).Efficiency1)              'LOSS STAGE #1
             Else
-                _cees(ks).stage2(0).i_k = 0
-                _cees(ks).stage2(0).i_m = 0
-                _cees(ks).stage2(0).psd_cum = 0
-                _cees(ks).stage2(0).psd_cum_pro = 0
-                _cees(ks).stage2(0).psd_dif = 0
+                _cees(ks).stage2(0).i_k = 0.0
+                _cees(ks).stage2(0).i_m = 0.0
+                _cees(ks).stage2(0).psd_cum = 0.0
+                _cees(ks).stage2(0).psd_cum_pro = 0.0
+                _cees(ks).stage2(0).psd_dif = 0.0
             End If
 
             _cees(ks).stage2(0).loss_abs = _cees(ks).stage2(0).loss_overall * _cees(ks).stage2(0).psd_dif
             _cees(ks).stage2(0).loss_abs_C = _cees(ks).stage2(0).loss_overall_C * _cees(ks).stage2(0).psd_dif
 
             '----- initial values -------
-            _cees(ks).sum_psd_diff2 = 0 '_cees(ks).stage2(0).psd_dif
-            _cees(ks).sum_loss2 = 0 ' _cees(ks).stage2(0).loss_abs
-            _cees(ks).sum_loss_C2 = 0 ' _cees(ks).stage2(0).loss_abs_C
+            _cees(ks).sum_psd_diff2 = 0.0       '_cees(ks).stage2(0).psd_dif
+            _cees(ks).sum_loss2 = 0.0           '_cees(ks).stage2(0).loss_abs
+            _cees(ks).sum_loss_C2 = 0.0         '_cees(ks).stage2(0).loss_abs_C
 
             '------ increment step --------
             'stapgrootte bij 110-staps logaritmische verdeling van het
@@ -2421,9 +2419,9 @@ Public Class Form1
 
                 '------------- Load correction stage #2 -------------------
                 If CheckBox3.Checked Then
-                    _cees(ks).stage2(i).catch_chart = (1 - _cees(ks).stage2(i).loss_overall_C) * 100  '[%] Corrected
+                    _cees(ks).stage2(i).catch_chart = (1 - _cees(ks).stage2(i).loss_overall_C) * 100.0  '[%] Corrected
                 Else
-                    _cees(ks).stage2(i).catch_chart = (1 - _cees(ks).stage2(i).loss_overall) * 100    '[%] NOT corrected
+                    _cees(ks).stage2(i).catch_chart = (1 - _cees(ks).stage2(i).loss_overall) * 100.0    '[%] NOT corrected
                 End If
 
                 Calc_diam_classification(_cees(ks).stage2(i))                                     'Calc
@@ -2432,14 +2430,14 @@ Public Class Form1
                 If _cees(ks).stage2(i).i_grp < no_PDS_inputs Then
                     Calc_k_and_m(_cees(ks).stage2(i))
                     _cees(ks).stage2(i).psd_cum = Math.E ^ (-(_cees(ks).stage2(i).dia / _cees(ks).stage2(i).i_m) ^ _cees(ks).stage2(i).i_k)
-                    _cees(ks).stage2(i).psd_cum_pro = _cees(ks).stage2(i).psd_cum * 100 '[%]
-                    _cees(ks).stage2(i).psd_dif = 100 * _cees(ks).stage1(i).loss_abs_C / _cees(ks).sum_loss_C1
+                    _cees(ks).stage2(i).psd_cum_pro = _cees(ks).stage2(i).psd_cum * 100.0 '[%]
+                    _cees(ks).stage2(i).psd_dif = 100.0 * _cees(ks).stage1(i).loss_abs_C / _cees(ks).sum_loss_C1
                 Else
-                    _cees(ks).stage2(i).i_k = 0
-                    _cees(ks).stage2(i).i_m = 0
-                    _cees(ks).stage2(i).psd_cum = 0
-                    _cees(ks).stage2(i).psd_cum_pro = 0
-                    _cees(ks).stage2(i).psd_dif = 0
+                    _cees(ks).stage2(i).i_k = 0.0
+                    _cees(ks).stage2(i).i_m = 0.0
+                    _cees(ks).stage2(i).psd_cum = 0.0
+                    _cees(ks).stage2(i).psd_cum_pro = 0.0
+                    _cees(ks).stage2(i).psd_dif = 0.0
                 End If
 
                 _cees(ks).stage2(i).loss_abs = _cees(ks).stage2(i).loss_overall * _cees(ks).stage2(i).psd_dif
@@ -2450,9 +2448,9 @@ Public Class Form1
                 _cees(ks).sum_loss2 += _cees(ks).stage2(i).loss_abs
                 _cees(ks).sum_loss_C2 += _cees(ks).stage2(i).loss_abs_C
             Next i
-            _cees(ks).loss_total2 = _cees(ks).sum_loss_C2 + ((100 - _cees(ks).sum_psd_diff2) * perc_smallest_part2)
-            _cees(ks).emmis2_Am3 = _cees(ks).emmis1_Am3 * _cees(ks).loss_total2 / 100
-            _cees(ks).Efficiency2 = 100 - _cees(ks).loss_total2      '[%] Efficiency
+            _cees(ks).loss_total2 = _cees(ks).sum_loss_C2 + ((100.0 - _cees(ks).sum_psd_diff2) * perc_smallest_part2)
+            _cees(ks).emmis2_Am3 = _cees(ks).emmis1_Am3 * _cees(ks).loss_total2 / 100.0
+            _cees(ks).Efficiency2 = 100.0 - _cees(ks).loss_total2      '[%] Efficiency
 
             '---------Density ratio stage#2  kg/Nm3 and kg/Am3 ---------
             Dim density_ratio2 As Double
@@ -2460,8 +2458,8 @@ Public Class Form1
             _cees(ks).emmis2_Nm3 = _cees(ks).emmis2_Am3 * density_ratio2    '[g/Am3]
 
             '------ combined efficiency -----
-            Eff_comb = _cees(ks).Efficiency1 + (1 - _cees(ks).Efficiency1 / 100) * _cees(ks).Efficiency2
-            _cees(ks).emis2_kgh = _cees(ks).dust1_in_kgh * (100 - Eff_comb) / 100
+            Eff_comb = _cees(ks).Efficiency1 + (1 - _cees(ks).Efficiency1 / 100.0) * _cees(ks).Efficiency2
+            _cees(ks).emis2_kgh = _cees(ks).dust1_in_kgh * (100.0 - Eff_comb) / 100.0
 
             '----------- present stage #2 -----------
             TextBox63.Text = ComboBox2.Text                     'Cyclone type
@@ -2585,7 +2583,6 @@ Public Class Form1
                 ' .Rows(i).Cells(1).Style.BackColor = If(c_load > c_load_previous And c_load <> 0, Color.Orange, Color.LightGreen)
                 If (c_load > c_load_previous And c_load <> 0) Then
                     .Rows(i).Cells(1).Style.BackColor = Color.Orange
-                    Debug.WriteLine("c_load= " & c_load.ToString)
                 Else
                     .Rows(i).Cells(1).Style.BackColor = Color.LightGreen
                 End If
@@ -2593,7 +2590,7 @@ Public Class Form1
 
             '--- Value 100 gives errors -----
             Dim qq As Double = CDbl(.Rows(0).Cells(1).Value)
-            If qq >= 100 Then
+            If qq >= 100.0 Then
                 .Rows(0).Cells(1).Value = CType("99.9999", Object)
             End If
         End With
@@ -2605,7 +2602,7 @@ Public Class Form1
         Dim total_instal As Double          '[kg] installation weight
         Dim plt_body1, plt_top1 As Double
         Dim plt_body2, plt_top2 As Double
-        Dim ro_steel As Double = 7850       'Density steel
+        Dim ro_steel As Double = 7850.0     'Density steel
         Dim hh, hj, hk As Double            'Dimensions
         Dim _db As Double
         Dim sheet_metal_wht As Double
@@ -2861,7 +2858,7 @@ Public Class Form1
             Chck_value(numericUpDown3, CDec(_cees(zz).ro_gas))       '[kg/hr] Density 
             Chck_value(numericUpDown2, CDec(_cees(zz).ro_solid))     '[kg/hr] Density 
             Chck_value(NumericUpDown18, CDec(_cees(zz).Temp))        '[c] Temperature 
-            p1_rel = (_cees(zz).p1_abs - 101325) / 100               '[mbar]
+            p1_rel = (_cees(zz).p1_abs - 101325) / 100.0             '[mbar]
             Chck_value(NumericUpDown19, CDec(p1_rel))                '[Pa abs]-->[mbar g] Pressure
 
 
@@ -2965,14 +2962,14 @@ Public Class Form1
             row = 0
             li(0) = _cees(ks).stage1(row).d_ave                 'Dia aver [mu]"
             li(1) = _cees(ks).stage1(row).psd_dif * 10 * w19    'In abs [g/Nm3]" T76 * W19
-            li(2) = 100 * li(1) / _cees(ks).dust1_Nm3             'In psd diff [%]
-            li(3) = 100 - li(2)                                 'In psd diff cumm[%]" S76 
+            li(2) = 100.0 * li(1) / _cees(ks).dust1_Nm3             'In psd diff [%]
+            li(3) = 100.0 - li(2)                                 'In psd diff cumm[%]" S76 
             li(4) = _cees(ks).stage2(row).psd_dif               'In psd cum [%]
-            li(5) = 100 - _cees(ks).stage2(row).psd_dif         'Loss1 pdscum [%]
+            li(5) = 100.0 - _cees(ks).stage2(row).psd_dif         'Loss1 pdscum [%]
             li(6) = _cees(ks).stage2(row).loss_abs_C * 10 * w20 'Loss abs [g/Nm3]
-            li(7) = 1000 * li(6) / _cees(ks).sum_loss_C2        'Loss2 pds dif [%]
-            li(8) = 100 - li(7)                                 'Loss2 pds.cum [%]
-            li(9) = 100 * (li(1) - li(6)) / li(1)               'Eff stage1&2 [%]
+            li(7) = 1000.0 * li(6) / _cees(ks).sum_loss_C2        'Loss2 pds dif [%]
+            li(8) = 100.0 - li(7)                                 'Loss2 pds.cum [%]
+            li(9) = 100.0 * (li(1) - li(6)) / li(1)               'Eff stage1&2 [%]
 
             For col = 0 To 9  'Fill the DataGrid
                 If Double.IsNaN(li(col)) Then li(col) = 0           'prevent silly results
@@ -2984,21 +2981,21 @@ Public Class Form1
             Dim qq As Double
             For row = 1 To DataGridView4.Rows.Count - 1                 'Fill the DataGrid
                 li(0) = _cees(ks).stage1(row).d_ave                     'Dia aver [mu]
-                li(1) = _cees(ks).stage1(row).psd_dif * 10 * w19        'In abs [g/Am3]" T76 * W19
-                li(2) = 100 * li(1) / _cees(ks).dust1_Nm3               'In psd diff [%]
+                li(1) = _cees(ks).stage1(row).psd_dif * 10.0 * w19        'In abs [g/Am3]" T76 * W19
+                li(2) = 100.0 * li(1) / _cees(ks).dust1_Nm3               'In psd diff [%]
                 li(3) = _cees(ks).stage1(row - 1).psd_cum_pro - li(2)   'In psd diff cumm[%]
                 li(4) = _cees(ks).stage2(row).psd_dif                   'In psd cum [%]
 
                 qq = CDbl(DataGridView4.Rows(row - 1).Cells(5).Value)
                 li(5) = qq - _cees(ks).stage2(row).psd_dif              'Loss1 pdscum [%] 
                 li(6) = _cees(ks).stage2(row).loss_abs_C * 10 * w20     'Loss abs [g/Am3]
-                li(7) = 1000 * li(6) / _cees(ks).sum_loss_C2            'Loss2 pds dif [%]
+                li(7) = 1000.0 * li(6) / _cees(ks).sum_loss_C2            'Loss2 pds dif [%]
 
                 qq = CDbl(DataGridView4.Rows(row - 1).Cells(8).Value)
                 li(8) = qq - li(7)                                      'Loss2 pds.cum [%] 
-                li(9) = 100 * ((li(1) - li(6)) / li(1))                 'Eff stage1&2 [%]
+                li(9) = 100.0 * ((li(1) - li(6)) / li(1))                 'Eff stage1&2 [%]
 
-                If li(8) = 0 Then li(9) = 100       'Loss is zero eff must be 100%
+                If li(8) = 0 Then li(9) = 100.0       'Loss is zero eff must be 100%
 
                 '========== prevent silly results ======
                 For col = 0 To 9  'Fill the DataGridview
@@ -3019,9 +3016,9 @@ Public Class Form1
     End Sub
     Private Function Vlookup_db(loss As Double) As Double
         'If the loss percenatege is found return the particle diameter
-        If loss > 100 Or loss < 0 Then MsgBox("Problem in line Vlookup_db")
+        If loss > 100.0 Or loss < 0.0 Then MsgBox("Problem in line Vlookup_db")
 
-        loss = 100 - loss
+        loss = 100.0 - loss
         For row = 1 To DataGridView4.Rows.Count - 1
             If loss <= CDbl(DataGridView4.Rows(row).Cells(9).Value) Then
                 Return CDbl((DataGridView4.Rows(row).Cells(0).Value))
@@ -3044,7 +3041,7 @@ Public Class Form1
 
     Private Function Calc_Normal_density(ro1 As Double, p1 As Double, t1 As Double) As Double
         Dim ro_normal As Double
-        If p1 < 100 Then p1 = 100             'Prevent devide by zero
+        If p1 < 100.0 Then p1 = 100.0             'Prevent devide by zero
         ro_normal = ro1 * (101325 / p1) * ((t1 + 273.15) / 273.15)
         Return (ro_normal)
     End Function
@@ -3065,21 +3062,21 @@ Public Class Form1
         sf = CDbl(NumericUpDown49.Value)             '[-] safety factor
         _fs = _σ_02 / sf
 
-        p = CDbl(NumericUpDown16.Value) * 100         '[mbar->[N/m2]]
+        p = CDbl(NumericUpDown16.Value) * 100.0         '[mbar->[N/m2]]
 
-        dia = CDbl(NumericUpDown47.Value) / 1000      '[m]
+        dia = CDbl(NumericUpDown47.Value) / 1000.0      '[m]
         r = dia / 2                             '[m]
-        t = CDbl(NumericUpDown46.Value) / 1000        '[m]
+        t = CDbl(NumericUpDown46.Value) / 1000.0        '[m]
         temper = CDbl(NumericUpDown18.Value)          '[celsius]
 
-        Elas = (201.66 - 8.48 * temper / 10 ^ 2) '* 10 ^ 9   '[GPa] for 304
-        Elas *= 10 ^ 9                                       '[Pa] for 304
+        Elas = (201.66 - 8.48 * temper / 10.0 ^ 2) '* 10 ^ 9   '[GPa] for 304
+        Elas *= 10 ^ 9.0                                       '[Pa] for 304
 
-        σm = 1.238 * p * r ^ 2 / t ^ 2
-        σm /= 10 ^ 6                                        '[N/mm2]
+        σm = 1.238 * p * r ^ 2.0 / t ^ 2
+        σm /= 10 ^ 6.0                                        '[N/mm2]
 
-        yt = (0.696 * p * r ^ 4) / (Elas * t ^ 3)           '[m]
-        yt *= 1000                                          '[m]--->[mm]
+        yt = (0.696 * p * r ^ 4.0) / (Elas * t ^ 3)           '[m]
+        yt *= 1000.0                                          '[m]--->[mm]
 
         TextBox144.Text = temper.ToString("F0")             '[celsius]
         TextBox138.Text = (Elas / 10 ^ 9).ToString("F0")    '[GPa]
