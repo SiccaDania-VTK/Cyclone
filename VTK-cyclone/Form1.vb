@@ -649,6 +649,8 @@ Public Class Form1
         "Use cyclone as 1 stage before AA850 to prevent blocking"
 
         TextBox187.Text = "Log" & vbCrLf &
+        "11-05-2021, Bugfix Correction-factor dia. discharge pipe" & vbCrLf &
+        "11-05-2021, General code cleanup" & vbCrLf &
         "07-05-2021, PSD Corn starch cleaned up" & vbCrLf &
         "07-05-2021, Chart added Volume percentage vs Diameter" & vbCrLf &
         "07-05-2021, Emission in [gr/Nm3] added to report" & vbCrLf &
@@ -1158,10 +1160,10 @@ Public Class Form1
 
         If (ComboBox1.Items.Count > 0) And ComboBox2.Items.Count > 0 Then
             If (stage = 1) Then                         'Stage #1 cyclone
-                cor1 = CDbl(NumericUpDown22.Value)      'Correctie insteek pijp stage #1
+                cor1 = 1 / CDbl(NumericUpDown22.Value)      'Correctie insteek pijp stage #1
                 Double.TryParse(TextBox55.Text, cor2)   'Hoge stof belasting correctie acc VT-UK
             Else                                        'Stage #2 cyclone
-                cor1 = CDbl(NumericUpDown43.Value)      'Correctie insteek pijp stage #2
+                cor1 = 1 / CDbl(NumericUpDown43.Value)      'Correctie insteek pijp stage #2
                 Double.TryParse(TextBox67.Text, cor2)   'Hoge stof belasting correctie acc VT-UK
             End If
             grp.loss_overall_C = grp.loss_overall ^ (cor1 * cor2)
@@ -1178,7 +1180,7 @@ Public Class Form1
         Dim words() As String
         Dim dia_Kcrit As Double
         Dim d1, d2 As Double
-        Dim cor1, cor2 As Double 'Insteek pijp
+        Dim cor1, cor2 As Double        'Insteek pijp diameter
         Dim fac_m1, fac_k1, fac_a1 As Double
         Dim fac_m2, fac_k2, fac_a2 As Double
 
@@ -1188,11 +1190,11 @@ Public Class Form1
 
         '----- Insteek pijp corectie correctie -------
         If (stage = 1) Then                         'Cyclone 1# stage
-            cor1 = CDbl(NumericUpDown22.Value)      'Correctie insteek pijp stage #1
+            cor1 = 1 / CDbl(NumericUpDown22.Value)  'Correctie insteek pijp stage #1
             Double.TryParse(TextBox55.Text, cor2)   'Hoge stof belasting correctie acc VT-UK
             words = rekenlijnen(ComboBox1.SelectedIndex).Split(CType(";", Char()))
         Else                                        'Cyclone 2# stage
-            cor1 = CDbl(NumericUpDown43.Value)      'Correctie insteek pijp stage #2
+            cor1 = 1 / CDbl(NumericUpDown43.Value)  'Correctie insteek pijp stage #2
             Double.TryParse(TextBox67.Text, cor2)   'Hoge stof belasting correctie acc VT-UK
             words = rekenlijnen(ComboBox2.SelectedIndex).Split(CType(";", Char()))
         End If
