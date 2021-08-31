@@ -461,7 +461,8 @@ Public Class Form1
 
         user_list.Add("FredKo")
         'hard_disk_list.Add("JR10006P02Y6EE")       'VTK laptop, FKo
-        hard_disk_list.Add("0025_3851_91B1_072E.")  'VTK new laptop, FKo
+        'hard_disk_list.Add("0025_3851_91B1_072E.")  'VTK new laptop, FKo
+        hard_disk_list.Add("UGXVK01J1BBS7O")  'VTK new laptop, FKo
 
         user_list.Add("JanK")
         hard_disk_list.Add("0025_38B4_71B4_88FC.")  'VTK laptop, Jank
