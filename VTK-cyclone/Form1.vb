@@ -489,7 +489,7 @@ Public Class Form1
 
 
         nu = Now()
-        nu2 = CDate("2021-12-01 00:00:00")
+        nu2 = CDate("2022-06-01 00:00:00")
         life_time = CInt((nu2 - nu).TotalDays)
         Label101.Text = "Expire " & life_time.ToString
 
@@ -913,10 +913,10 @@ Public Class Form1
             TextBox182.Text = _cees(ks).Ro_gas3_Am3.ToString("F3")      '[kg/Am3]
 
             '---------- Check inlet speed [m/s] stage #1---------------
-            TextBox16.BackColor = If(_cees(ks).inv1 < 10 Or _cees(ks).inv1 > 30, Color.Red, Color.LightGreen)
+            TextBox16.BackColor = If(_cees(ks).inv1 < 12 Or _cees(ks).inv1 > 32, Color.Red, Color.LightGreen)
 
             '---------- Check inlet speed stage #2---------------
-            TextBox80.BackColor = If(_cees(ks).inv2 < 10 Or _cees(ks).inv2 > 30, Color.Red, Color.LightGreen)
+            TextBox80.BackColor = If(_cees(ks).inv2 < 12 Or _cees(ks).inv2 > 32, Color.Red, Color.LightGreen)
 
             '---------- Check dp [pa] stage #1---------------
             TextBox17.BackColor = If(_cees(ks).dpgas1 > 3000.0, Color.Red, Color.LightGreen)
