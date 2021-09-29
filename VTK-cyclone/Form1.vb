@@ -137,6 +137,7 @@ Public Class Form1
     Dim k41 As Double                                   'sum loss abs (for DataGridView1)
     Dim init As Boolean = False                         'Initialize done
     Dim Update_screen_fram_array_done As Boolean = True 'Program chokes during retrieve
+    ReadOnly _Gasconstant As Double = 8.31445984848     'ideal gas constant 
 
     'Type AC;Inlaatbreedte;Inlaathoogte;Inlaatlengte;Inlaat hartmaat;Inlaat afschuining;
     'Uitlaat keeldia inw.;Uitlaat flensdiameter inw.;Lengte insteekpijp inw.;
@@ -650,6 +651,7 @@ Public Class Form1
         "Use cyclone as 1 stage before AA850 to prevent blocking"
 
         TextBox187.Text = "Log" & vbCrLf &
+        "29-09-2021, Mol weight -> density gas added" & vbCrLf &
         "11-05-2021, Bugfix Correction-factor dia. discharge pipe" & vbCrLf &
         "11-05-2021, General code cleanup" & vbCrLf &
         "07-05-2021, PSD Corn starch cleaned up" & vbCrLf &
@@ -674,7 +676,7 @@ Public Class Form1
         init = True                     'init is now done
     End Sub
 
-    Private Sub Button1_Click(sender As Object, e As EventArgs) Handles button1.Click, TabPage1.Enter, numericUpDown3.ValueChanged, numericUpDown2.ValueChanged, NumericUpDown1.ValueChanged, numericUpDown5.ValueChanged, NumericUpDown20.ValueChanged, NumericUpDown19.ValueChanged, NumericUpDown18.ValueChanged, ComboBox1.SelectedIndexChanged, NumericUpDown4.ValueChanged, NumericUpDown34.ValueChanged, NumericUpDown33.ValueChanged, ComboBox2.SelectedIndexChanged, NumericUpDown43.ValueChanged, NumericUpDown22.ValueChanged, CheckBox3.CheckedChanged, CheckBox2.CheckedChanged
+    Private Sub Button1_Click(sender As Object, e As EventArgs) Handles button1.Click, TabPage1.Enter, numericUpDown2.ValueChanged, NumericUpDown1.ValueChanged, numericUpDown5.ValueChanged, NumericUpDown20.ValueChanged, NumericUpDown19.ValueChanged, NumericUpDown18.ValueChanged, ComboBox1.SelectedIndexChanged, NumericUpDown4.ValueChanged, NumericUpDown34.ValueChanged, NumericUpDown33.ValueChanged, ComboBox2.SelectedIndexChanged, NumericUpDown43.ValueChanged, NumericUpDown22.ValueChanged, CheckBox3.CheckedChanged, CheckBox2.CheckedChanged
         Calc_sequence()
     End Sub
 
@@ -701,20 +703,26 @@ Public Class Form1
         Dim lmp1, lmp2 As Double        'Total length
 
         '====  Inlet Conditions stage #1 ====
-        _cees(ks).Ro_gas1_Am3 = CDbl(numericUpDown3.Value)                   '[kg/Am3]
-        _cees(ks).Temp = CDbl(NumericUpDown18.Value)                          'Temperature [c] 
-        _cees(ks).p1_abs = CDbl(NumericUpDown19.Value * 100.0 + 101325)         'Pressure [mbar]
+        _cees(ks).Temp = CDbl(NumericUpDown18.Value)                         'Temperature [c] 
+        _cees(ks).p1_abs = CDbl(NumericUpDown19.Value * 100.0 + 101325)      'Pressure [Pa]
+
+
+        Dim R_gas As Double = 1000 * _Gasconstant / NumericUpDown3.Value             '[J.kg.K]  
+        _cees(ks).Ro_gas1_Am3 = _cees(ks).p1_abs / (R_gas * (_cees(ks).Temp + 273.15))  '[kg/Am3]
+
+
+        TextBox190.Text = _cees(ks).Ro_gas1_Am3.ToString("F3")                     '[kg/Am3]
         '------ dust load NORMAL conditions ----
         _cees(ks).Ro_gas1_Nm3 = Calc_Normal_density(_cees(ks).Ro_gas1_Am3, _cees(ks).p1_abs, _cees(ks).Temp)
 
         '--------- ratio  Nm2 and Am3 ---------
         ratio = _cees(ks).Ro_gas1_Nm3 / _cees(ks).Ro_gas1_Am3
         _cees(ks).dust1_Am3 = CDbl(NumericUpDown4.Value)                    'gram/Am3
-        _cees(ks).dust1_Nm3 = _cees(ks).dust1_Am3 * ratio             'gram/Nm3
+        _cees(ks).dust1_Nm3 = _cees(ks).dust1_Am3 * ratio                   'gram/Nm3
 
         '--------- present -------------
-        TextBox132.Text = _cees(ks).dust1_Nm3.ToString("F3")          'gram/Nm3
-        TextBox129.Text = _cees(ks).Ro_gas1_Nm3.ToString("F3")        'kg/Nm3 inlet gas
+        TextBox132.Text = _cees(ks).dust1_Nm3.ToString("F3")                'gram/Nm3
+        TextBox129.Text = _cees(ks).Ro_gas1_Nm3.ToString("F3")              'kg/Nm3 inlet gas
 
         If (ComboBox1.SelectedIndex > -1) And (ComboBox2.SelectedIndex > -1) Then 'Prevent exceptions
             '-------- dimension cyclone stage #1
@@ -827,7 +835,7 @@ Public Class Form1
             TextBox128.Text = _cees(ks).Ro_gas2_Nm3.ToString("F3")      '[kg/Nm3] density
             TextBox183.Text = _cees(ks).Ro_gas3_Nm3.ToString("F3")      '[kg/Nm3] density
 
-            TextBox36.Text = (_cees(ks).FlowT / 3600).ToString("F1")    '[m3/s] flow
+            TextBox36.Text = (_cees(ks).FlowT / 3600).ToString("F2")    '[m3/s] flow
             TextBox177.Text = _cees(ks).dust1_in_kgh.ToString("F0")     '[kg/h] dust
 
             If (ComboBox1.SelectedIndex = 9) Then
@@ -1061,10 +1069,6 @@ Public Class Form1
 
     Private Sub Fill_array_from_screen(c_nr As Integer)
 
-        'MsgBox("Line 877, Now filling array nr= " & c_nr.ToString)
-
-        ' TextBox24.Text &= "line 660, Fill array from screen, nr " & c_nr.ToString & vbCrLf
-
         _cees(c_nr).Quote_no = TextBox28.Text                   'Quote number
         _cees(c_nr).Tag_no = TextBox29.Text                     'The Tag number
         _cees(c_nr).case_name = TextBox53.Text                  'The case name
@@ -1077,8 +1081,11 @@ Public Class Form1
         _cees(c_nr).Noc2 = CInt(NumericUpDown33.Value)          'Cyclone no in parallel #2
         _cees(c_nr).db1 = CDbl(numericUpDown5.Value)            '[m] Diameter cyclone Stage #1
         _cees(c_nr).db2 = CDbl(NumericUpDown34.Value)           '[m] Diameter cyclone Stage #2
-        _cees(c_nr).ro_gas = CDbl(numericUpDown3.Value)         'Density [kg/hr]
-        _cees(c_nr).ro_solid = CDbl(numericUpDown2.Value)       'Density [kg/hr]
+        If TextBox190.Text = "" Then
+            TextBox190.Text = "99"
+        End If
+        _cees(c_nr).ro_gas = CDbl(TextBox190.Text)             'Density [kg/m3]
+        _cees(c_nr).ro_solid = CDbl(numericUpDown2.Value)       'Density [kg/m3]
         _cees(c_nr).Temp = CDbl(NumericUpDown18.Value)          'Temperature [c]
         _cees(c_nr).p1_abs = CDbl(101325 + (NumericUpDown19.Value * 100))        'Pressure [Pa abs]
     End Sub
@@ -1115,7 +1122,7 @@ Public Class Form1
     Private Function Calc_verlies(korrel_g As Double, stokes As Double, stage As Integer) As Double
         Dim words() As String
         Dim dia_Kcrit, fac_m, fac_a, fac_k As Double
-        Dim verlies As Double = 1
+        Dim verlies As Double
         Dim dia_K As Double
 
         If (ComboBox1.Items.Count > 0 And ComboBox2.Items.Count > 0) Then
@@ -1816,7 +1823,7 @@ Public Class Form1
         oTable.Cell(row, 3).Range.Text = "[kg/m3]"
         row += 1
         oTable.Cell(row, 1).Range.Text = "Gas density "
-        oTable.Cell(row, 2).Range.Text = numericUpDown3.Value.ToString("F3")
+        oTable.Cell(row, 2).Range.Text = TextBox190.Text
         oTable.Cell(row, 3).Range.Text = "[kg/m3]"
         row += 1
         oTable.Cell(row, 1).Range.Text = "Air viscosity"
@@ -2858,8 +2865,8 @@ Public Class Form1
             'Debug.WriteLine("Case zz= " & zz.ToString & ",  _cees(zz).db1= " & _cees(zz).db1.ToString)
             'Debug.WriteLine("Case zz= " & zz.ToString & ",  _cees(zz).db2= " & _cees(zz).db2.ToString)
 
-            Chck_value(numericUpDown3, CDec(_cees(zz).ro_gas))       '[kg/hr] Density 
-            Chck_value(numericUpDown2, CDec(_cees(zz).ro_solid))     '[kg/hr] Density 
+            TextBox190.Text = _cees(zz).ro_gas.ToString             '[kg/m3] Density 
+            Chck_value(numericUpDown2, CDec(_cees(zz).ro_solid))     '[kg/m3] Density 
             Chck_value(NumericUpDown18, CDec(_cees(zz).Temp))        '[c] Temperature 
             p1_rel = (_cees(zz).p1_abs - 101325) / 100.0             '[mbar]
             Chck_value(NumericUpDown19, CDec(p1_rel))                '[Pa abs]-->[mbar g] Pressure
@@ -3183,7 +3190,7 @@ Public Class Form1
         NumericUpDown18.Value = CDec(60)        '[c]
         NumericUpDown19.Value = CDec(-80)       '[mbar] 
         numericUpDown2.Value = CDec(1500)       '[kg/m3] density
-        numericUpDown3.Value = CDec(0.903)      '[kg/m3] ro air
+        TextBox190.Text = "0.903"               '[kg/m3] ro air
         NumericUpDown4.Value = CDec(139)        '[g/Am3]
         NumericUpDown30.Value = CDec(1)         '[-] Case number
 
@@ -3207,7 +3214,7 @@ Public Class Form1
         NumericUpDown18.Value = CDec(120)         '[c]
         NumericUpDown19.Value = CDec(-30)         '[mbar] 
         numericUpDown2.Value = CDec(1200)         '[kg/m3] density
-        numericUpDown3.Value = CDec(0.8977) '[kg/m3] ro air
+        TextBox190.Text = "0.8977"                '[kg/m3] ro air
         NumericUpDown4.Value = CDec(20)          '[g/Am3]
         NumericUpDown30.Value = CDec(1)           '[-] Case number
 
@@ -3231,7 +3238,7 @@ Public Class Form1
         NumericUpDown18.Value = CDec(118)         '[c]
         NumericUpDown19.Value = CDec(-3)          '[mbar] 
         numericUpDown2.Value = CDec(800)          '[kg/m3] density
-        numericUpDown3.Value = CDec(0.859) '[kg/m3] ro air
+        TextBox190.Text = "0.859"               '[kg/m3] ro air
         NumericUpDown4.Value = CDec(9.35)   '[g/Am3]
         NumericUpDown30.Value = CDec(1)          '[-] Case number
 
@@ -3255,7 +3262,7 @@ Public Class Form1
         NumericUpDown18.Value = CDec(77)          '[c]
         NumericUpDown19.Value = CDec(-20)         '[mbar] 
         numericUpDown2.Value = CDec(1600)         '[kg/m3] density
-        numericUpDown3.Value = CDec(1.278)  '[kg/m3] ro air
+        TextBox190.Text = "1.278"               '[kg/m3] ro air
         NumericUpDown4.Value = CDec(20)           '[g/Am3]
         NumericUpDown30.Value = CDec(1)           '[-] Case number
 
@@ -3314,7 +3321,7 @@ Public Class Form1
         NumericUpDown18.Value = CDec(45)          '[c]
         NumericUpDown19.Value = CDec(-30)         '[mbar]
         numericUpDown2.Value = CDec(1500)         '[kg/m3]
-        numericUpDown3.Value = CDec(1.073)  '[kg/m3]
+        TextBox190.Text = "1.073"               '[kg/m3]
         NumericUpDown4.Value = CDec(77)           '[g/Am3]
         NumericUpDown30.Value = CDec(1)           '[-] Case number
         NumericUpDown20.Value = CDec(3)           '[-] parallel cycloon
@@ -3490,7 +3497,7 @@ Public Class Form1
         NumericUpDown18.Value = 51          '[c]
         NumericUpDown19.Value = -46         '[mbar] 
         numericUpDown2.Value = 1600         '[kg/m3] density
-        numericUpDown3.Value = CDec(1.013)  '[kg/m3] ro air
+        TextBox190.Text = "1.013"           '[kg/m3] ro air
         'numericUpDown14.Value = CDec(0.019548) '[mPas=cP] visco air
         NumericUpDown4.Value = CDec(109.8)  '[g/Am3]
         NumericUpDown30.Value = 1           '[-] Case number
