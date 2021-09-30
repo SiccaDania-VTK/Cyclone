@@ -651,6 +651,7 @@ Public Class Form1
         "Use cyclone as 1 stage before AA850 to prevent blocking"
 
         TextBox187.Text = "Log" & vbCrLf &
+        "30-09-2021, Emissions now in milli-gram instead of gram" & vbCrLf &
         "30-09-2021, Inlet flow in Nm3/h added" & vbCrLf &
         "29-09-2021, Mol weight -> density inlet gas added" & vbCrLf &
         "11-05-2021, Bugfix Correction-factor dia. discharge pipe" & vbCrLf &
@@ -2336,15 +2337,15 @@ Public Class Form1
             End If
 
             '---------- present ------------------
-            TextBox59.Text = _cees(ks).Efficiency1.ToString("F2")   '[%]
-            TextBox21.Text = _cees(ks).Efficiency1.ToString("F3")   '[%]
-            TextBox60.Text = _cees(ks).emmis1_Am3.ToString("F3")    '[g/Am3]
+            TextBox59.Text = _cees(ks).Efficiency1.ToString("F2")            '[%]
+            TextBox21.Text = _cees(ks).Efficiency1.ToString("F3")            '[%]
+            TextBox60.Text = (_cees(ks).emmis1_Am3 * 1000).ToString("F1")    '[mg/Am3]
 
             '==== 1st stage ====
-            TextBox18.Text = _cees(ks).emmis1_Am3.ToString("F3")    '[g/Am3]
-            TextBox133.Text = _cees(ks).emmis1_Nm3.ToString("F3")   '[g/Nm3]
-            TextBox180.Text = _cees(ks).emmis1_Nm3.ToString("F3")   '[g/Nm3]
-            TextBox186.Text = _cees(ks).emis1_kgh.ToString("F2")    '[kg/h]
+            TextBox18.Text = (_cees(ks).emmis1_Am3 * 1000).ToString("F1")    '[mg/Am3]
+            TextBox133.Text = (_cees(ks).emmis1_Nm3 * 1000).ToString("F1")   '[mg/Nm3]
+            TextBox180.Text = (_cees(ks).emmis1_Nm3 * 1000).ToString("F1")   '[mg/Nm3]
+            TextBox186.Text = _cees(ks).emis1_kgh.ToString("F2")             '[kg/h]
         End If
     End Sub
 
@@ -2494,18 +2495,18 @@ Public Class Form1
 
             TextBox66.Text = _cees(ks).Efficiency2.ToString("F2")       '[%] stage #2
             TextBox109.Text = _cees(ks).Efficiency2.ToString("F3")      '[%]
-            TextBox62.Text = _cees(ks).emmis2_Am3.ToString("F3")        '[gram/Am3] emmissie stage #2
-            TextBox108.Text = _cees(ks).emmis2_Am3.ToString("F3")       '[gram/Am3] emmissie stage #2
-            TextBox134.Text = _cees(ks).emmis2_Am3.ToString("F3")       '[gram/Am3] emmissie stage #2
+            TextBox62.Text = (_cees(ks).emmis2_Am3 * 1000).ToString("F1")       '[mgram/Am3] emmissie stage #2
+            TextBox108.Text = (_cees(ks).emmis2_Am3 * 1000).ToString("F1")      '[mgram/Am3] emmissie stage #2
+            TextBox134.Text = (_cees(ks).emmis2_Am3 * 1000).ToString("F1")      '[mgram/Am3] emmissie stage #2
 
-            TextBox142.Text = _cees(ks).emmis2_Nm3.ToString("F3")       '[gram/Nm3] emmissie stage #2
-            TextBox179.Text = _cees(ks).emmis2_Nm3.ToString("F3")       '[gram/Nm3] emmissie stage #2
-            TextBox178.Text = _cees(ks).emmis2_Nm3.ToString("F3")       '[gram/Nm3] emmissie stage #2
+            TextBox142.Text = (_cees(ks).emmis2_Nm3 * 1000).ToString("F1")      '[mgram/Nm3] emmissie stage #2
+            TextBox179.Text = (_cees(ks).emmis2_Nm3 * 1000).ToString("F1")      '[mgram/Nm3] emmissie stage #2
+            TextBox178.Text = (_cees(ks).emmis2_Nm3 * 1000).ToString("F1")      '[mgram/Nm3] emmissie stage #2
 
-            TextBox185.Text = _cees(ks).emis2_kgh.ToString("F2")       '[kg/h] emmissie stage #2
-            TextBox184.Text = _cees(ks).emis2_kgh.ToString("F2")       '[kg/h] emmissie stage #2
+            TextBox185.Text = _cees(ks).emis2_kgh.ToString("F2")                '[kg/h] emmissie stage #2
+            TextBox184.Text = _cees(ks).emis2_kgh.ToString("F2")                '[kg/h] emmissie stage #2
 
-            TextBox143.Text = _cees(ks).dust2_Nm3.ToString("F2")        'Dust load [gram/Nm3]
+            TextBox143.Text = (_cees(ks).dust2_Nm3 * 1000).ToString("F2")        'Dust load [mgram/Nm3]
         End If
     End Sub
 
