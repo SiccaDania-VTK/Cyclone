@@ -651,7 +651,8 @@ Public Class Form1
         "Use cyclone as 1 stage before AA850 to prevent blocking"
 
         TextBox187.Text = "Log" & vbCrLf &
-        "29-09-2021, Mol weight -> density gas added" & vbCrLf &
+        "30-09-2021, Inlet flow in Nm3/h added" & vbCrLf &
+        "29-09-2021, Mol weight -> density inlet gas added" & vbCrLf &
         "11-05-2021, Bugfix Correction-factor dia. discharge pipe" & vbCrLf &
         "11-05-2021, General code cleanup" & vbCrLf &
         "07-05-2021, PSD Corn starch cleaned up" & vbCrLf &
@@ -723,6 +724,7 @@ Public Class Form1
         '--------- present -------------
         TextBox132.Text = _cees(ks).dust1_Nm3.ToString("F3")                'gram/Nm3
         TextBox129.Text = _cees(ks).Ro_gas1_Nm3.ToString("F3")              'kg/Nm3 inlet gas
+        TextBox191.Text = (NumericUpDown1.Value / ratio).ToString("F0")     'Nm3/h inlet gas
 
         If (ComboBox1.SelectedIndex > -1) And (ComboBox2.SelectedIndex > -1) Then 'Prevent exceptions
             '-------- dimension cyclone stage #1
@@ -836,7 +838,7 @@ Public Class Form1
             TextBox183.Text = _cees(ks).Ro_gas3_Nm3.ToString("F3")      '[kg/Nm3] density
 
             TextBox36.Text = (_cees(ks).FlowT / 3600).ToString("F2")    '[m3/s] flow
-            TextBox177.Text = _cees(ks).dust1_in_kgh.ToString("F0")     '[kg/h] dust
+            TextBox177.Text = _cees(ks).dust1_in_kgh.ToString("F1")     '[kg/h] dust
 
             If (ComboBox1.SelectedIndex = 9) Then
                 groupBox3.Visible = False
@@ -2342,7 +2344,7 @@ Public Class Form1
             TextBox18.Text = _cees(ks).emmis1_Am3.ToString("F3")    '[g/Am3]
             TextBox133.Text = _cees(ks).emmis1_Nm3.ToString("F3")   '[g/Nm3]
             TextBox180.Text = _cees(ks).emmis1_Nm3.ToString("F3")   '[g/Nm3]
-            TextBox186.Text = _cees(ks).emis1_kgh.ToString("F1")    '[kg/h]
+            TextBox186.Text = _cees(ks).emis1_kgh.ToString("F2")    '[kg/h]
         End If
     End Sub
 
