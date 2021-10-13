@@ -2657,6 +2657,7 @@ Public Class Form1
         w6 = PI * (hj + hk) / 2 * hh * plt_body1 * ro_steel '[kg] weight 3P pipe
 
         c_weight1 = w1 + w2 + w3 + w4 + w5 + w6             'Total weight
+        c_weight1 *= 1.03                                   '3% weight flanges 
         c_weight1 *= 1.1                                    '10% safety
         c_area1 = c_weight1 / (plt_body1 / 1000 * ro_steel) 'Area [m2]
 
@@ -2701,8 +2702,8 @@ Public Class Form1
 
         c_area2 = C_weight2 / (plt_body2 / 1000 * ro_steel)  'Area [m2]
 
-        total_instal = c_weight1 * CDbl(NumericUpDown20.Value)
-        total_instal += C_weight2 * CDbl(NumericUpDown33.Value)
+        total_instal = c_weight1 * CDbl(NumericUpDown20.Value)  'parallel stage #1
+        total_instal += C_weight2 * CDbl(NumericUpDown33.Value) 'parallel stage #2
 
         sheet_metal_wht = total_instal * 1.45               'Gross Sheet metal weight
         p304 = sheet_metal_wht * CDbl(NumericUpDown45.Value)      'rvs 304
