@@ -651,6 +651,7 @@ Public Class Form1
         "Use cyclone as 1 stage before AA850 to prevent blocking"
 
         TextBox187.Text = "Log" & vbCrLf &
+        "29-10-2021, Bugfix cyclone outside area and weight" & vbCrLf &
         "30-09-2021, Emissions now in milli-gram instead of gram" & vbCrLf &
         "30-09-2021, Inlet flow in Nm3/h added" & vbCrLf &
         "29-09-2021, Mol weight -> density inlet gas added" & vbCrLf &
@@ -2608,124 +2609,166 @@ Public Class Form1
             End If
         End With
     End Sub
+
+    'Calculate cyclone weight
+    Private Sub Button7_Click(sender As Object, e As EventArgs) Handles Button7.Click, TabPage7.Enter, NumericUpDown32.ValueChanged, NumericUpDown31.ValueChanged, NumericUpDown45.ValueChanged, NumericUpDown44.ValueChanged, NumericUpDown42.ValueChanged, NumericUpDown41.ValueChanged
+        Calc_cycl_weight()
+        Calc_Tang_outlet()
+    End Sub
+
     Private Sub Calc_cycl_weight()
-        Dim w1, w2, w3, w4, w5, w6 As Double
+        Dim wc1(6) As Double                '[kg] cyclone1 parts weight       
+        Dim wc2(6) As Double                '[kg] cyclone2 parts weight
+        Dim area_c1(6) As Double            '[m2] cyclone1 parts weight       
+        Dim area_c2(6) As Double            '[m2] cyclone2 parts weight
+
         Dim c_weight1 As Double             '[kg] cyclone weight
-        Dim C_weight2 As Double             '[kg] cyclone weight
+        Dim c_weight2 As Double             '[kg] cyclone weight
         Dim total_instal As Double          '[kg] installation weight
-        Dim plt_body1, plt_top1 As Double
-        Dim plt_body2, plt_top2 As Double
-        Dim ro_steel As Double = 7850.0     'Density steel
+
+        Dim _db1 As Double = CDbl(numericUpDown5.Value)                 '[m] Body diameter
+        Dim plt_top1 As Double = CDbl(NumericUpDown32.Value) / 1000     '[m] top plate
+        Dim plt_top2 As Double = CDbl(NumericUpDown41.Value) / 1000     '[m] top plate
+
+        Dim _db2 As Double = CDbl(NumericUpDown34.Value)                '[m] Body diameter
+        Dim plt_body1 As Double = CDbl(NumericUpDown31.Value) / 1000    '[m] rest of the cyclone
+        Dim plt_body2 As Double = CDbl(NumericUpDown42.Value) / 1000    '[m] rest of the cyclone
+
+        Dim ro_steel As Double = 7850.0     '[kg/m3] Density steel
         Dim hh, hj, hk As Double            'Dimensions
-        Dim _db As Double
         Dim sheet_metal_wht As Double
         Dim p304, p316 As Double
         Dim c_area1, c_area2 As Double      'Outside area est.
 
-        '========== Stage cyclone #1 =====
-        plt_top1 = CDbl(NumericUpDown32.Value)       '[mm] top plate
-        plt_body1 = CDbl(NumericUpDown31.Value)      '[mm] rest of the cyclone
-        _db = CDbl(numericUpDown5.Value)            '[m] Body diameter
 
-        'weight top plate
-        w1 = PI / 4 * _db ^ 2 * plt_top1 / 1000 * ro_steel
+        If _db1 > 0.001 And _db2 > 0.001 Then
 
-        'weight cylindrical body
-        hh = _cyl1_dim(10) * _db / 1000                     '[m] Length romp
-        w2 = PI * _db * hh * plt_body1 * ro_steel           '[kg] weight romp
+            '========== Stage cyclone #1 =====
+            'weight top plate
+            area_c1(0) = PI / 4 * _db1 ^ 2 * 1.2            '[m2] (not accurate)
+            wc1(0) = area_c1(0) * plt_top1 * ro_steel       '[kg]
 
-        'weight cone
-        hh = _cyl1_dim(11) * _db / 1000                     '[m] Length cone
-        hj = _db                                            '[m] grote diameter cone 
-        hk = _cyl1_dim(12) * _db / 1000                     '[m] kleine diameter cone 
-        w3 = PI * (hj + hk) / 2 * hh * plt_body1 * ro_steel '[kg] weight cone
+            'weight cylindrical body
+            hh = _cyl1_dim(10) * _db1                      '[m] Length romp
+            area_c1(1) = PI * _db1 * hh                    '[m2] romp
+            wc1(1) = area_c1(1) * plt_body1 * ro_steel     '[kg] weight romp
 
-        'weight gas outlet pipe
-        hh = _cyl1_dim(8) * _db / 1000                      '[m] Length insteekpijp
-        hj = _cyl1_dim(7) * _db / 1000                      '[m] Uitlaat flensdiameter inw.
-        w4 = PI * hh * hj * plt_body1 * ro_steel            '[kg] weight insteekpijp
+            'weight cone
+            hh = _cyl1_dim(11) * _db1                       '[m] Length cone
+            hj = _db1                                       '[m] grote diameter cone 
+            hk = _cyl1_dim(12) * _db1                       '[m] kleine diameter cone 
+            area_c1(2) = PI * (hj + hk) / 2 * hh            '[m2] cone
+            wc1(2) = area_c1(2) * plt_body1 * ro_steel      '[kg] weight cone
 
-        'weight 3P pipe
-        hh = _cyl1_dim(13) * _db / 1000                     '[m] Length 3P pijp
-        hj = _cyl1_dim(12) * _db / 1000                     '[m] diameter 3P inw.
-        w5 = PI * hj * hh * plt_body1 * ro_steel            '[kg] weight 3P pipe
-
-        'weight 3P cone
-        hh = _cyl1_dim(14) * _db / 1000                     '[m] Length 3P cone
-        hj = _cyl1_dim(12) * _db / 1000                     '[m] grote diameter 3P pijp
-        hk = _cyl1_dim(15) * _db / 1000                     '[m] kleine diameter 3P pijp
-        w6 = PI * (hj + hk) / 2 * hh * plt_body1 * ro_steel '[kg] weight 3P pipe
-
-        c_weight1 = w1 + w2 + w3 + w4 + w5 + w6             'Total weight
-        c_weight1 *= 1.03                                   '3% weight flanges 
-        c_weight1 *= 1.1                                    '10% safety
-        c_area1 = c_weight1 / (plt_body1 / 1000 * ro_steel) 'Area [m2]
+            'weight gas outlet pipe
+            hh = _cyl1_dim(8) * _db1                        '[m] Length insteekpijp
+            hj = _cyl1_dim(7) * _db1                        '[m] Uitlaat flensdiameter inw.
+            area_c1(3) = PI * hh * hj
+            wc1(3) = area_c1(3) * plt_body1 * ro_steel    '[kg] weight insteekpijp
 
 
-        '========== Stage cyclone #2 ========
-        plt_top2 = CDbl(NumericUpDown41.Value)                    '[mm] top plate
-        plt_body2 = CDbl(NumericUpDown42.Value)                   '[mm] rest of the cyclone
-        _db = CDbl(NumericUpDown34.Value)                         '[m] Body diameter
+            'weight 3P pipe
+            hh = _cyl1_dim(13) * _db1                       '[m] Length 3P pijp
+            hj = _cyl1_dim(12) * _db1                       '[m] diameter 3P inw.
+            area_c1(4) = PI * hj * hh
+            wc1(4) = area_c1(4) * plt_body1 * ro_steel    '[kg] weight 3P pipe
 
-        'weight top plate
-        w1 = PI / 4 * _db ^ 2 * plt_top2 / 1000 * ro_steel
+            'weight 3P cone
+            hh = _cyl1_dim(14) * _db1                       '[m] Length 3P cone
+            hj = _cyl1_dim(12) * _db1                       '[m] grote diameter 3P pijp
+            hk = _cyl1_dim(15) * _db1                       '[m] kleine diameter 3P pijp
+            area_c1(5) = PI * (hj + hk) / 2 * hh
+            wc1(5) = area_c1(5) * plt_body1 * ro_steel '[kg] weight 3P pipe
 
-        'weight cylindrical body
-        hh = _cyl1_dim(10) * _db / 1000                     '[m] Length romp
-        w2 = PI * _db * hh * plt_body2 * ro_steel           '[kg] weight romp
+            For i = 0 To wc1.length - 1
+                c_weight1 += wc1(i)                          'Total weight
+                c_area1 += area_c1(i)
+            Next
 
-        'weight cone
-        hh = _cyl1_dim(11) * _db / 1000                     '[m] Length cone
-        hj = _db                                            '[m] grote diameter cone 
-        hk = _cyl1_dim(12) * _db / 1000                     '[m] kleine diameter cone 
-        w3 = PI * (hj + hk) / 2 * hh * plt_body2 * ro_steel '[kg] weight cone
+            c_weight1 *= 1.1                                '10% weight flanges +safety
 
-        'weight gas outlet pipe
-        hh = _cyl1_dim(8) * _db / 1000                      '[m] Length insteekpijp
-        hj = _cyl1_dim(7) * _db / 1000                      '[m] Uitlaat flensdiameter inw.
-        w4 = PI * hh * hj * plt_body2 * ro_steel            '[kg] weight insteekpijp
 
-        'weight 3P pipe
-        hh = _cyl1_dim(13) * _db / 1000                     '[m] Length 3P pijp
-        hj = _cyl1_dim(12) * _db / 1000                     '[m] diameter 3P inw.
-        w5 = PI * hj * hh * plt_body2 * ro_steel            '[kg] weight 3P pipe
+            '========== Stage cyclone #2 ========
+            'weight top plate
+            area_c2(0) = PI / 4 * _db1 ^ 2 * 1.2             '[m2] (not accurate)
+            wc2(0) = area_c2(0) * plt_top2 * ro_steel        '[kg]
 
-        'weight 3P cone
-        hh = _cyl1_dim(14) * _db / 1000                     '[m] Length 3P cone
-        hj = _cyl1_dim(12) * _db / 1000                     '[m] grote diameter 3P pijp
-        hk = _cyl1_dim(15) * _db / 1000                     '[m] kleine diameter 3P pijp
-        w6 = PI * (hj + hk) / 2 * hh * plt_body2 * ro_steel '[kg] weight 3P pipe
+            'weight cylindrical body
+            hh = _cyl1_dim(10) * _db2                       '[m] Length romp
+            area_c2(1) = PI * _db2 * hh                     '[m2] romp
+            wc2(1) = area_c2(1) * plt_body2 * ro_steel      '[kg] weight romp
 
-        C_weight2 = w1 + w2 + w3 + w4 + w5 + w6             'Total weight
-        C_weight2 *= 1.03                                   '3% weight flanges 
-        C_weight2 *= 1.1                                    '10% safety
+            'weight cone
+            hh = _cyl1_dim(11) * _db2                       '[m] Length cone
+            hj = _db2                                       '[m] grote diameter cone 
+            hk = _cyl1_dim(12) * _db2                       '[m] kleine diameter cone 
+            area_c2(2) = PI * (hj + hk) / 2 * hh            '[m2] cone
+            wc2(2) = area_c2(2) * plt_body2 * ro_steel      '[kg] weight cone
 
-        c_area2 = C_weight2 / (plt_body2 / 1000 * ro_steel)  'Area [m2]
+            'weight gas outlet pipe
+            hh = _cyl1_dim(8) * _db2                        '[m] Length insteekpijp
+            hj = _cyl1_dim(7) * _db2                        '[m] Uitlaat flensdiameter inw.
+            area_c2(3) = PI * hh * hj
+            wc2(3) = area_c2(3) * plt_body2 * ro_steel      '[kg] weight insteekpijp
 
-        total_instal = c_weight1 * CDbl(NumericUpDown20.Value)  'parallel stage #1
-        total_instal += C_weight2 * CDbl(NumericUpDown33.Value) 'parallel stage #2
+            'weight 3P pipe
+            hh = _cyl1_dim(13) * _db2                       '[m] Length 3P pijp
+            hj = _cyl1_dim(12) * _db2                       '[m] diameter 3P inw.
+            area_c2(4) = PI * hh * hj
+            wc2(4) = area_c2(4) * plt_body2 * ro_steel      '[kg] weight 3P pipe
 
-        sheet_metal_wht = total_instal * 1.45               'Gross Sheet metal weight
-        p304 = sheet_metal_wht * CDbl(NumericUpDown45.Value)      'rvs 304
-        p316 = sheet_metal_wht * CDbl(NumericUpDown44.Value)      'rvs 316
+            'weight 3P cone
+            hh = _cyl1_dim(14) * _db2                       '[m] Length 3P cone
+            hj = _cyl1_dim(12) * _db2                       '[m] grote diameter 3P pijp
+            hk = _cyl1_dim(15) * _db2                       '[m] kleine diameter 3P pijp
+            area_c2(5) = PI * (hj + hk) / 2 * hh
+            wc2(5) = area_c2(5) * plt_body2 * ro_steel      '[kg] weight 3P pipe
 
-        '-------- present -----------
-        TextBox72.Text = C_weight2.ToString("F0")
-        TextBox127.Text = c_area2.ToString("F2")            'Area [m2]
-        TextBox99.Text = total_instal.ToString("F0")
-        TextBox83.Text = sheet_metal_wht.ToString("F0")
-        TextBox114.Text = p304.ToString("F0")
-        TextBox115.Text = p316.ToString("F0")
-        TextBox61.Text = c_weight1.ToString("F0")           'Total weight
-        TextBox135.Text = c_area1.ToString("F2")            'Area [m2]
-    End Sub
-    'Calculate cyclone weight
-    Private Sub Button7_Click(sender As Object, e As EventArgs) Handles Button7.Click, TabPage7.Enter, NumericUpDown32.ValueChanged, NumericUpDown31.ValueChanged, NumericUpDown45.ValueChanged, NumericUpDown44.ValueChanged, NumericUpDown42.ValueChanged, NumericUpDown41.ValueChanged
-        If (ComboBox1.Items.Count > 0) And (ComboBox2.Items.Count > 0) Then 'Prevent exceptions
-            Calc_cycl_weight()
-            Calc_Tang_outlet()
+            For i = 0 To wc2.Length - 1
+                C_weight2 += wc2(i)                          'Total weight
+                c_area2 += area_c2(i)
+            Next
+
+            C_weight2 *= 1.1                                '10% weight flanges +safety
+
+            total_instal = c_weight1 * CDbl(NumericUpDown20.Value)  'parallel stage #1
+            total_instal += C_weight2 * CDbl(NumericUpDown33.Value) 'parallel stage #2
+
+            sheet_metal_wht = total_instal * 1.45                   'Gross Sheet metal weight
+            p304 = sheet_metal_wht * CDbl(NumericUpDown45.Value)    'rvs 304
+            p316 = sheet_metal_wht * CDbl(NumericUpDown44.Value)    'rvs 316
+
+            '-------- present -----------
+
+            TextBox99.Text = total_instal.ToString("F0")
+            TextBox83.Text = sheet_metal_wht.ToString("F0")
+            TextBox114.Text = p304.ToString("F0")
+            TextBox115.Text = p316.ToString("F0")
+            TextBox61.Text = c_weight1.ToString("F0")            'Total weight
+            TextBox72.Text = C_weight2.ToString("F0")
+
+            '------ area's cyclone 1----
+            TextBox195.Text = area_c1(0).ToString("F2")          'Top Area [m2]
+            TextBox196.Text = area_c1(1).ToString("F2")          'Body Area [m2]
+            TextBox197.Text = area_c1(2).ToString("F2")          'Cone Area [m2]
+            TextBox199.Text = area_c1(3).ToString("F2")          'Discharge pipe Area [m2]
+            TextBox201.Text = area_c1(4).ToString("F2")          '3P pipe Area [m2]
+            TextBox203.Text = area_c1(5).ToString("F2")          '3P cone Area [m2]
+            TextBox135.Text = c_area1.ToString("F2")             'Area [m2]
+
+            '------ area's cyclone 2----
+            TextBox194.Text = area_c2(0).ToString("F2")          'Top Area [m2]
+            TextBox193.Text = area_c2(1).ToString("F2")          'Body Area [m2]
+            TextBox192.Text = area_c2(2).ToString("F2")          'Cone Area [m2]
+            TextBox198.Text = area_c2(3).ToString("F2")          'Discharge pipe Area [m2]
+            TextBox200.Text = area_c2(4).ToString("F2")          '3P pipe Area [m2]
+            TextBox202.Text = area_c2(5).ToString("F2")          '3P cone Area [m2]
+            TextBox127.Text = c_area2.ToString("F2")             'Area [m2]
+
+
         End If
     End Sub
+
     Private Sub Calc_Tang_outlet()
         Dim words() As String
         Dim _db1, _db2 As Double                    '[mm] outlet cyclone = inlet tangential
@@ -2734,6 +2777,7 @@ Public Class Form1
         Dim factor1(9) As Double                    '[-]
         Dim factor2(9) As Double                    '[-]
 
+        If numericUpDown5.Value < 1 Or NumericUpDown3.Value < 1 Then Exit Sub
         _db1 = CDbl(numericUpDown5.Value) * 1000          '[mm] dia cyclone stage 1
         _db2 = CDbl(NumericUpDown34.Value) * 1000         '[mm] dia cyclone stage 2
 
