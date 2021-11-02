@@ -475,6 +475,9 @@ Public Class Form1
         hard_disk_list.Add("5CD2_E42A_81A1_0D0E.")  'Suresh.Sundararaj Denmark
         hard_disk_list.Add("4C530000100828121514")  'Suresh.Sundararaj Denmark
 
+        user_list.Add("beko")                       '02/11/2021
+        hard_disk_list.Add("0025_38AA_01B5_BD94.")  'VTK laptop, Benji Kort
+
         user_list.Add("JeroenA")
         hard_disk_list.Add("171095402070")          'VTK desktop, Jeroen
         hard_disk_list.Add("170228801578")          'VTK laptop, Jeroen disk 1
