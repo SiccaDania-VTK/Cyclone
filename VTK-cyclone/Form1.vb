@@ -138,6 +138,23 @@ Public Class Form1
     Dim init As Boolean = False                         'Initialize done
     Dim Update_screen_fram_array_done As Boolean = True 'Program chokes during retrieve
     ReadOnly _Gasconstant As Double = 8.31445984848     'ideal gas constant 
+    ReadOnly separators() As String = {";"}
+
+    Public _ν As Double = 0.3   'Poisson ratio for steel
+    Public _P As Double         'Calculation pressure [Mpa]
+    Public _fs As Double = 1    'Allowable stress shell [N/mm2]
+    Public _f02 As Double = 1   'Yield 0.2% stress shell [N/mm2]
+    Public _fym As Double = 1   'Allowable stress reinforcement [N/mm2]
+
+    Public _De As Double        'Outside diameter shell
+    Public _Di As Double        'Inside diameter shell
+    Public _ecs As Double       'Shell thickness
+
+    Public _deb As Double       'Outside diameter nozzle fitted in shell
+    Public _dib As Double       'Inside diameter nozzle fitted in shell
+    Public _E As Double         'Modulus of elasticity 
+
+    Public Shared joint_eff() As String = {"0.7", "0.85", "1.0"}
 
     'Type AC;Inlaatbreedte;Inlaathoogte;Inlaatlengte;Inlaat hartmaat;Inlaat afschuining;
     'Uitlaat keeldia inw.;Uitlaat flensdiameter inw.;Lengte insteekpijp inw.;
@@ -416,6 +433,24 @@ Public Class Form1
     "110;	0.1",
     "120;	0.01"}
 
+    'EN 10028-2 for steel
+    'EN 10028-7 for stainless steel
+    Public Shared steel() As String = {
+   "Material-------;50c;100;150;200;250;300;350;400;450;500;550;remarks--;cs/ss",
+   "1.0425 (P265GH);265;241;223;205;188;173;160;150;  0;  0;  0; max 400c;cs",
+   "1.0473 (P355GH);343;323;299;275;252;232;214;202;  0;  0;  0; max 400c;cs",
+   "1.4301 (304)   ;190;157;142;127;118;110;104; 98; 95; 92; 90; max 550c;ss",
+   "1.4307 (304L)  ;180;147;132;118;108;100; 94; 89; 85; 81; 80; max 550c;ss",
+   "1.4401 (316)   ;204;177;162;147;137;127;120;115;112;110;108; max 550c;ss",
+   "1.4404 (316L)  ;200;166;152;137;127;118;113;108;103;100; 98; max 550c;ss"}
+
+    'Chapter 6, Max allowed values for pressure parts
+    Public Shared chap6() As String = {
+   "Chap 6.2, Steel, safety, rupture < 30%; 1.5",
+   "Chap 6.4, Austenitic steel, rupture 30-35%; 1.5",
+   "Chap 6.5, Austenitic steel, rupture >35%; 3.0",
+   "Chap 6.6, Cast steel; 1.9"}
+
     '----------- directory's-----------
     ReadOnly dirpath_Eng As String = "N:\Engineering\VBasic\Cyclone_sizing_input\"
     ReadOnly dirpath_Rap As String = "N:\Engineering\VBasic\Cyclone_rapport_copy\"
@@ -535,8 +570,24 @@ Public Class Form1
             ComboBox1.Items.Add(words(0))
             ComboBox2.Items.Add(words(0))
         Next hh
+
+        ComboBox4.Items.Clear()
+        For hh = 0 To (chap6.Length - 1)  'Fill combobox 
+            words = chap6(hh).Split(separators, StringSplitOptions.None)
+            ComboBox4.Items.Add(words(0))
+        Next hh
+
+        ComboBox5.Items.Clear()
+        For hh = 1 To (steel.Length - 1)  'Fill combobox steel
+            words = steel(hh).Split(separators, StringSplitOptions.None)
+            ComboBox5.Items.Add(words(0))
+        Next hh
+
+
         ComboBox1.SelectedIndex = 2                 'Select Cyclone type AC_435
         ComboBox2.SelectedIndex = 5                 'Select Cyclone type AC_850
+        ComboBox4.SelectedIndex = 1                 'chapter6
+        ComboBox5.SelectedIndex = 2                 'Steel
 
         TextBox148.Text = "Het d50 getal geeft de diameter aan waarbij 50% verloren gat 50% wordt gevangen." & vbCrLf
         TextBox148.Text = "Het d100 getal geeft de diameter aan waarbij 100% verloren gaat." & vbCrLf
@@ -3589,4 +3640,221 @@ Public Class Form1
     Private Sub Button23_Click(sender As Object, e As EventArgs) Handles Button23.Click, TabPage13.Enter
         Draw_chart4(Chart4)             'PSD selected product
     End Sub
+
+    Private Sub Button24_Click(sender As Object, e As EventArgs) Handles Button24.Click
+        Calc_cyl_shell742()         'Cylindrical shell
+        Calc_conical_shell764()     'Conus shell
+        Calc_Junction766()          'Junction large end
+    End Sub
+    '7.4.2 Cylindrical shells internal pressure
+    Private Sub Calc_cyl_shell742()
+        Dim De, Di, Dm, ea, z_joint, e_wall, Pmax, valid_check As Double
+
+        If (ComboBox2.SelectedIndex > -1) Then          'Prevent exceptions
+            Double.TryParse(joint_eff(ComboBox2.SelectedIndex), z_joint)      'Joint efficiency
+        End If
+
+        De = NumericUpDown15.Value  'OD [mm]
+        ea = NumericUpDown16.Value  'Wall thicknes [mm]
+        Di = De - 2 * ea            'ID [mm]
+        TextBox160.Text = Di.ToString("0.0")
+
+        Dm = (De + Di) / 2                          'Average Dia
+        Pmax = 2 * _fs * z_joint * ea / Dm          'Max pressure equation 7.4.3 
+
+        e_wall = _P * De / (2 * _fs * z_joint + _P) 'equation 7.4.2 Required wall thickness
+        valid_check = Round(e_wall / De, 4)
+
+        '--------- present results--------
+        TextBox2.Text = Round(e_wall, 4).ToString       'required wall [mm]
+        TextBox5.Text = valid_check.ToString
+        TextBox6.Text = _P.ToString("0.00")             '[MPa]
+        TextBox53.Text = (_P * 10).ToString("0.00")     '[Bar]
+        TextBox7.Text = _fs.ToString
+        TextBox8.Text = (Pmax * 10).ToString("0.00")    '[Bar]
+
+        '---------- Check-----
+        TextBox5.BackColor = CType(IIf(valid_check > 0.16, Color.Red, Color.LightGreen), Color)
+        TextBox8.BackColor = CType(IIf(Pmax < _P, Color.Red, Color.LightGreen), Color)
+    End Sub
+    '7.6.4 Conical shells 
+    Private Sub Calc_conical_shell764()
+        Dim α As Double 'Half apex cone
+        Dim De, Di, ea, z_joint, e_con, e_cone As Double
+        Dim pmaxx As Double 'max pressure
+        Dim Dm As Double
+        If (ComboBox2.SelectedIndex > -1) Then          'Prevent exceptions
+            Double.TryParse(joint_eff(ComboBox2.SelectedIndex), z_joint)      'Joint efficiency
+        End If
+
+        De = NumericUpDown15.Value  'OD
+        ea = NumericUpDown16.Value  'Wall thicknes
+        Di = De - 2 * ea            'ID
+        α = NumericUpDown13.Value / 180 * PI        'Half apex in radials
+        Dm = (De + Di) / 2                          'Average diameter
+        e_cone = NumericUpDown42.Value              'Cone wall
+
+        '----------- cone wall thickness ----------
+        e_con = _P * Di / (2 * _fs * z_joint - _P)  'equation (7.6-2) Required wall thickness
+        e_con *= 1 / Cos(α)
+
+        '---------- max pressure ---------------
+        pmaxx = 2 * _fs * z_joint * e_cone * Cos(α) / Dm   'Max pressure equation (7.6-4) 
+
+        '--------- present results--------
+        TextBox145.Text = Round(e_con, 2).ToString   'required cone wall [mm]
+        TextBox161.Text = (pmaxx * 10).ToString("0.00") '[MPa]-->[Bar]
+
+        '---------- Check-----
+        TextBox161.BackColor = CType(IIf(pmaxx < _P, Color.Red, Color.LightGreen), Color)
+    End Sub
+
+    '7.6.6 Junction between the large end of a cone and a cylinder without a knuckle
+    Private Sub Calc_Junction766()
+        Dim α As Double     'is Half apex cone
+        Dim β As Double     'is a factor defined in 7.6.6;
+        Dim Dc As Double    'diameter large end cone
+        Dim ej As Double    'is a required or analysis thickness at a junction at the large end of a cone
+        Dim ej1 As Double
+
+        Dc = NumericUpDown15.Value              'OD cone large end
+        α = NumericUpDown13.Value / 180 * PI    'Half apex in radials
+
+        ej = 40  'Initial thickness, Now iterate
+
+        For i = 1 To 1000
+
+            '----------- factor β ---------------------
+            β = 1 / 3 * Sqrt(Dc / ej)                '(7.6-11)
+            β *= Tan(α) / (1 + 1 / Sqrt(Cos(α)))
+            β -= 0.15
+
+            '----------- factor ej ---------------------
+            ej1 = _P * Dc * β / (2 * _fs)            '(7.6-12)
+
+            If ej < ej1 Then
+                ej *= 1.03
+            Else
+                ej *= 0.97
+            End If
+            If Abs(ej - ej1) < 0.01 Then
+                i = 1000
+                TextBox18.BackColor = Color.LightGreen
+            Else
+                TextBox18.BackColor = Color.Red
+            End If
+        Next
+
+        '--------- present results--------
+        TextBox236.Text = β.ToString("0.0")     'Factor '(7.6-11)
+        TextBox18.Text = ej.ToString("0.000")    'required cone wall [mm]
+
+        '---------- Check-----
+        'TextBox161.BackColor = CType(IIf(pmaxx < _P, Color.Red, Color.LightGreen), Color)
+    End Sub
+
+    Private Sub Design_stress()
+        Dim sf As Double = 1        'Safety factor init value
+        Dim temperature As Double   'temperature
+        Dim words() As String
+        Dim y50, y100, y150, y200, y250, y300, y350, y400 As Double
+        Dim ΔT As Double
+
+
+        If (ComboBox5.SelectedIndex > -1) Then          'Prevent exceptions
+            words = steel(ComboBox5.SelectedIndex + 1).Split(separators, StringSplitOptions.None)
+            TextBox3.Text = words(1)
+            TextBox104.Text = words(2)
+            TextBox105.Text = words(3)
+            TextBox106.Text = words(4)
+            TextBox107.Text = words(5)
+            TextBox108.Text = words(6)
+            TextBox109.Text = words(7)
+            TextBox110.Text = words(8)
+            TextBox182.Text = words(13) 'cs or ss
+            Double.TryParse(words(1), y50)
+            Double.TryParse(words(2), y100)
+            Double.TryParse(words(3), y150)
+            Double.TryParse(words(4), y200)
+            Double.TryParse(words(5), y250)
+            Double.TryParse(words(6), y300)
+            Double.TryParse(words(7), y350)
+            Double.TryParse(words(8), y400)
+
+            temperature = CDbl(numericUpDown5.Value)        '[c]
+            Select Case True
+
+                Case 50 >= temperature
+                    _f02 = CDec(y50)
+                Case 100 >= temperature
+                    ΔT = 50 - temperature
+                    _f02 = Calc_design_stress(y50, y100, ΔT)
+                Case 150 >= temperature
+                    ΔT = 100 - temperature
+                    _f02 = Calc_design_stress(y100, y150, ΔT)
+                Case 200 >= temperature
+                    ΔT = 150 - temperature
+                    _f02 = Calc_design_stress(y150, y200, ΔT)
+                Case 250 >= temperature
+                    ΔT = 200 - temperature
+                    _f02 = Calc_design_stress(y200, y250, ΔT)
+                Case 300 >= temperature
+                    ΔT = 250 - temperature
+                    _f02 = Calc_design_stress(y250, y300, ΔT)
+                Case 350 >= temperature
+                    ΔT = 300 - temperature
+                    _f02 = Calc_design_stress(y300, y350, ΔT)
+                Case 400 >= temperature
+                    ΔT = 350 - temperature
+                    _f02 = Calc_design_stress(y350, y400, ΔT)
+                Case temperature > 450
+                    MessageBox.Show("Problem temperature too high")
+            End Select
+        End If
+
+        _P = NumericUpDown4.Value                       'Calculation pressure [MPa=N/mm2]
+
+        If (ComboBox1.SelectedIndex > -1) Then          'Prevent exceptions
+            words = chap6(ComboBox1.SelectedIndex).Split(separators, StringSplitOptions.None)
+            Double.TryParse(words(1), sf)               'Safety factor
+            TextBox4.Text = sf.ToString                 'Safety factor
+            _fs = CDec(_f02 / sf)
+
+            Select Case True
+                Case RadioButton4.Checked
+                    _fs *= 1        'PED article 3.3 (NO calc required)
+                Case RadioButton1.Checked
+                    _fs *= 1        'PED I,II,III
+                Case RadioButton2.Checked
+                    _fs *= 0.9      'PED IV
+                Case RadioButton3.Checked
+                    _fs = _f02      'EN 14460 6.2.1 (Shock resistant)
+            End Select
+
+            If String.Equals(TextBox182.Text, "cs") Then
+                _E = (213.16 - 6.92 * temperature / 10 ^ 2 - 1.824 / 10 ^ 5 * temperature ^ 2) * 1000 '[N/mm2]
+            Else
+                _E = (201.66 - 8.48 * temperature / 10 ^ 2) * 1000      '[N/mm2]
+            End If
+
+            '-------- present -------------
+            TextBox131.Text = (_P * 10 ^ 4).ToString    'Calculation pressure [mBar]
+            TextBox133.Text = _fym.ToString             'Safety factor
+            TextBox136.Text = _f02.ToString("0")        'Max allowed bend
+            TextBox137.Text = (_f02 * 1.5).ToString("0")    '[N/mm2] Max allowed bend+membrane
+            TextBox140.Text = (_f02 * 1.5).ToString("0")    '[N/mm2] Max allowed bend+membrane
+
+            NumericUpDown7.Value = CDec(_fs)        '[N/mm2] Design stress
+            TextBox133.Text = _f02.ToString("0")    '[N/mm2] Yield stress
+            TextBox178.Text = _E.ToString("0")      '[N/mm2] Youngs modulus
+            TextBox209.Text = _ν.ToString("0.0")    'Poissons rate for steel
+        End If
+    End Sub
+    Public Function Calc_design_stress(stress_A As Double, stress_B As Double, ΔT As Double) As Double
+        Dim Δy As Double
+
+        Δy = stress_B - stress_A
+        Return (stress_A - (ΔT / 50 * Δy))
+    End Function
+
 End Class
