@@ -140,19 +140,19 @@ Public Class Form1
     Private ReadOnly _Gasconstant As Double = 8.31445984848     'ideal gas constant 
     Private ReadOnly separators() As String = {";"}
 
-    Public _ν As Double = 0.3   'Poisson ratio for steel
-    Public _P As Double         'Calculation pressure [Mpa]
-    Public _fs As Double = 1    'Allowable stress shell [N/mm2]
-    Public _f02 As Double = 1   'Yield 0.2% stress shell [N/mm2]
-    Public _fym As Double = 1   'Allowable stress reinforcement [N/mm2]
+    Public _ν As Double = 0.3       'Poisson ratio for steel
+    Public _P As Double             'Calculation pressure [Mpa]
+    Public _fs As Double = 1        'Allowable stress shell [N/mm2]
+    Public _f02 As Double = 1       'Yield 0.2% stress shell [N/mm2]
+    Public _fym As Double = 1       'Allowable stress reinforcement [N/mm2]
 
-    Public _De As Double        'Outside diameter shell
-    Public _Di As Double        'Inside diameter shell
-    Public _ecs As Double       'Shell thickness
+    Public _De As Double            'Outside diameter shell
+    Public _Di As Double            'Inside diameter shell
+    Public _ecs As Double           'Shell thickness
 
-    Public _deb As Double       'Outside diameter nozzle fitted in shell
-    Public _dib As Double       'Inside diameter nozzle fitted in shell
-    Public _E As Double         'Modulus of elasticity 
+    Public _deb As Double           'Outside diameter nozzle fitted in shell
+    Public _dib As Double           'Inside diameter nozzle fitted in shell
+    Public _E As Double             'Modulus of elasticity 
 
     Public Shared joint_eff() As String = {"0.7", "0.85", "1.0"}
 
@@ -744,6 +744,8 @@ Public Class Form1
 
         Build_clear_dgv6()              'PSD input grid
         Calc_sequence()
+        Design_stress()
+
         init = True                     'init is now done
     End Sub
 
@@ -3654,6 +3656,7 @@ Public Class Form1
     End Sub
 
     Private Sub Button24_Click(sender As Object, e As EventArgs) Handles Button24.Click, NumericUpDown8.ValueChanged, NumericUpDown15.ValueChanged, NumericUpDown13.ValueChanged, ComboBox3.SelectedIndexChanged, TabPage15.Enter
+        Design_stress()
         Calc_cyl_shell742()         'Cylindrical shell
         Calc_conical_shell764()     'Conus shell
         Calc_Junction766()          'Junction large end
@@ -3778,29 +3781,29 @@ Public Class Form1
         Dim y50, y100, y150, y200, y250, y300, y350, y400 As Double
         Dim ΔT As Double
 
-        If (ComboBox5.SelectedIndex > -1) Then          'Prevent exceptions
-            words = steel(ComboBox5.SelectedIndex + 1).Split(separators, StringSplitOptions.None)
-            TextBox226.Text = words(1)
-            TextBox225.Text = words(2)
-            TextBox224.Text = words(3)
-            TextBox223.Text = words(4)
-            TextBox222.Text = words(5)
-            TextBox221.Text = words(6)
-            TextBox220.Text = words(7)
-            TextBox219.Text = words(8)
-            TextBox232.Text = words(13) 'cs or ss
-            Double.TryParse(words(1), y50)
-            Double.TryParse(words(2), y100)
-            Double.TryParse(words(3), y150)
-            Double.TryParse(words(4), y200)
-            Double.TryParse(words(5), y250)
-            Double.TryParse(words(6), y300)
-            Double.TryParse(words(7), y350)
-            Double.TryParse(words(8), y400)
+        words = steel(ComboBox5.SelectedIndex + 1).Split(separators, StringSplitOptions.None)
+        TextBox226.Text = words(1)
+        TextBox225.Text = words(2)
+        TextBox224.Text = words(3)
+        TextBox223.Text = words(4)
+        TextBox222.Text = words(5)
+        TextBox221.Text = words(6)
+        TextBox220.Text = words(7)
+        TextBox219.Text = words(8)
+        TextBox232.Text = words(13) 'cs or ss
+        Double.TryParse(words(1), y50)
+        Double.TryParse(words(2), y100)
+        Double.TryParse(words(3), y150)
+        Double.TryParse(words(4), y200)
+        Double.TryParse(words(5), y250)
+        Double.TryParse(words(6), y300)
+        Double.TryParse(words(7), y350)
+        Double.TryParse(words(8), y400)
 
-            temperature = NumericUpDown11.Value        '[c]
+        temperature = NumericUpDown11.Value        '[c]
+
+        If (ComboBox5.SelectedIndex > -1) And (ComboBox4.SelectedIndex > -1) Then  'Prevent exceptions
             Select Case True
-
                 Case 50 >= temperature
                     _f02 = CDec(y50)
                 Case 100 >= temperature
@@ -3827,11 +3830,8 @@ Public Class Form1
                 Case temperature > 450
                     MessageBox.Show("Problem temperature too high")
             End Select
-        End If
 
-        _P = NumericUpDown12.Value                       'Calculation pressure [MPa=N/mm2]
-
-        If (ComboBox4.SelectedIndex > -1) Then          'Prevent exceptions
+            _P = NumericUpDown12.Value                      'Calculation pressure [MPa=N/mm2]
 
             '------- chapter 6 rupture sensitivity ----
             ComboBox4.Enabled = False
@@ -3884,8 +3884,11 @@ Public Class Form1
         Return (stress_A - (ΔT / 50 * Δy))
     End Function
 
-    Private Sub Button26_Click(sender As Object, e As EventArgs) Handles Button26.Click, NumericUpDown9.ValueChanged, NumericUpDown7.ValueChanged, NumericUpDown57.ValueChanged, NumericUpDown48.ValueChanged, NumericUpDown23.ValueChanged, NumericUpDown10.ValueChanged
-        Calc_Cylinder_vacuum_852()
+    Private Sub Button26_Click(sender As Object, e As EventArgs) Handles Button26.Click, NumericUpDown9.ValueChanged, NumericUpDown7.ValueChanged, NumericUpDown57.ValueChanged, NumericUpDown48.ValueChanged, NumericUpDown23.ValueChanged, NumericUpDown10.ValueChanged, TabPage17.Enter
+        For i = 0 To 2
+            Design_stress()
+            Calc_Cylinder_vacuum_852()
+        Next
     End Sub
     Private Sub Calc_Cylinder_vacuum_852()
         'Vacumm cylindrical shell NO stiffeners
@@ -3906,20 +3909,20 @@ Public Class Form1
         Dim PrPy As Double  'Figure 8.5-5 — Values of Pt/PP versus Pm/PP 
 
         '--- get data ----
-        De = NumericUpDown43.Value      'OD shell
-        Lcyl = NumericUpDown44.Value    'Cylinder length
-        h = NumericUpDown45.Value       'Dished head height
-        Lcon = NumericUpDown46.Value    'Cone length
+        De = NumericUpDown10.Value      'OD shell
+        Lcyl = NumericUpDown23.Value    'Cylinder length
+        h = NumericUpDown9.Value       'Dished head height
+        Lcon = NumericUpDown7.Value    'Cone length
         ea = NumericUpDown48.Value      'Shell wall thickness
         α = NumericUpDown57.Value       'Half apex cone
-        R_ = De / 2                'Radius shell
+        R_ = De / 2                     'Radius shell
 
         '---- material --------
         S = 1.5         'Safety factor (8.4.4-1) 
 
         '8.4.3 For shells made in austenitic steel, the nominal elastic limit shall be given by: 
-        Double.TryParse(TextBox133.Text, σe)
-        If String.Equals(TextBox182.Text, "ss") Then
+        σe = _f02        'Mill certificate number
+        If String.Equals(TextBox232.Text, "ss") Then
             σe /= 1.25
         Else
             σe /= 1.0
@@ -3934,7 +3937,7 @@ Public Class Form1
         End If
 
         '--- pressure at which mean circumferential stress yields
-        Py = σe * ea / R_            '(8.5.2-4) 
+        Py = σe * ea / R_    '(8.5.2-4) 
 
         Z = PI * R_ / L      '(8.5.2-7) 
 
@@ -3967,26 +3970,26 @@ Public Class Form1
         Tolerance = 0.005 * Pr / (_P * S) * 100  '[%](8.5.1-1) 
 
         '--------- present results--------
-        TextBox162.Text = (_P * 10).ToString("0.00")    '[MPa]-->[Bar]
-        TextBox170.Text = σe.ToString("0.0")            '[N/mm]
-        TextBox171.Text = S.ToString("0.0")             '[-]
-        TextBox165.Text = Tolerance.ToString("0.00")    '[-]
-        TextBox166.Text = (Py * 10).ToString("0.00")    '[MPa]-->[Bar]
-        TextBox167.Text = L.ToString("0")               '[mm]
-        TextBox172.Text = (Pm * 10).ToString("0.00")    '[MPa]-->[Bar]
-        TextBox173.Text = Z.ToString("0.0")             '[-]
-        TextBox174.Text = ε.ToString("0.00000")         '[-]
-        TextBox175.Text = _ν.ToString("0.0")            '[-]
-        TextBox177.Text = _E.ToString("0")     '[-]
-        TextBox179.Text = ncyl.ToString("0")            '[-]
-        TextBox176.Text = x.ToString("0.0")             '[-]Pm/Py
-        TextBox180.Text = PrPy.ToString("0.00")         '[-]Pr/Py
-        TextBox181.Text = (Pr * 10).ToString("0.00")    '[MPa]-->[Bar]
+        TextBox244.Text = (_P * 10).ToString("F2")    '[MPa]-->[Bar]
+        TextBox242.Text = σe.ToString("F1")           '[N/mm]
+        TextBox218.Text = S.ToString("F1")            '[-]
+        TextBox243.Text = Tolerance.ToString("F2")    '[-]circular toleeance
+        TextBox239.Text = (Py * 10).ToString("F2")    '[MPa]-->[Bar] at which mean circumferential stress yields
+        TextBox238.Text = L.ToString("F0")            '[mm] unsupported length
+        TextBox237.Text = (Pm * 10).ToString("F2")    '[MPa]-->[Bar]
+        TextBox235.Text = Z.ToString("F1")            '[-]
+        TextBox234.Text = ε.ToString("F5")            '[-]
+        TextBox241.Text = _ν.ToString("F1")           '[-]
+        TextBox240.Text = _E.ToString("F0")           '[-]
+        TextBox217.Text = ncyl.ToString("F0")         '[-]
+        TextBox216.Text = x.ToString("F1")            '[-]Pm/Py
+        TextBox215.Text = PrPy.ToString("F2")         '[-]Pr/Py
+        TextBox214.Text = (Pr * 10).ToString("F2")    '[MPa]-->[Bar]
 
         '---------- Check-----
-        TextBox166.BackColor = CType(IIf(Py < _P, Color.Red, Color.LightGreen), Color)
-        TextBox172.BackColor = CType(IIf(Pm < _P, Color.Red, Color.LightGreen), Color)
-        TextBox181.BackColor = CType(IIf(Pr / S < _P, Color.Red, Color.LightGreen), Color)
+        TextBox239.BackColor = CType(IIf(Py < _P, Color.Red, Color.LightGreen), Color)
+        TextBox237.BackColor = CType(IIf(Pm < _P, Color.Red, Color.LightGreen), Color)
+        TextBox214.BackColor = CType(IIf(Pr / S < _P, Color.Red, Color.LightGreen), Color)
     End Sub
     Private Function Calc_ε(ncyl As Double, Z As Double, R_ As Double, ea As Double, ν As Double) As Double
         'Chapter External pressure 8.5
@@ -3997,5 +4000,6 @@ Public Class Form1
         ε *= 1 / (ncyl ^ 2 - 1 + Z ^ 2 / 2)
         Return (ε)
     End Function
+
 
 End Class
