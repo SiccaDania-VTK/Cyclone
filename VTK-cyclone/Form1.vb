@@ -587,7 +587,7 @@ Public Class Form1
         ComboBox1.SelectedIndex = 2                 'Select Cyclone type AC_435
         ComboBox2.SelectedIndex = 5                 'Select Cyclone type AC_850
         ComboBox4.SelectedIndex = 1                 'chapter6
-        ComboBox5.SelectedIndex = 1                 'Steel
+        ComboBox5.SelectedIndex = 0                 'Steel
 
 
 
@@ -736,8 +736,6 @@ Public Class Form1
         "Safety factors follow the Eurocode" & vbCrLf & vbCrLf &
         "EN 14460:2006, Explosion resistand design follow EN 13445" & vbCrLf &
         "for Explosion-Pressure-Shock-Resistant design stress multiplied bu 1.5"
-
-
 
         Me.Size = New System.Drawing.Size(1305, 906)
 
@@ -2716,7 +2714,6 @@ Public Class Form1
         Dim p304, p316 As Double
         Dim c_area1, c_area2 As Double      'Outside area est.
 
-
         If _db1 > 0.001 And _db2 > 0.001 Then
 
             '========== Stage cyclone #1 =====
@@ -3765,7 +3762,7 @@ Public Class Form1
         'TextBox161.BackColor = CType(IIf(pmaxx < _P, Color.Red, Color.LightGreen), Color)
     End Sub
 
-    Private Sub Button25_Click(sender As Object, e As EventArgs) Handles Button25.Click, NumericUpDown12.ValueChanged, NumericUpDown11.ValueChanged, ComboBox5.SelectedIndexChanged, ComboBox4.SelectedIndexChanged
+    Private Sub Button25_Click(sender As Object, e As EventArgs) Handles Button25.Click, NumericUpDown12.ValueChanged, NumericUpDown11.ValueChanged, ComboBox5.SelectedIndexChanged, ComboBox4.SelectedIndexChanged, RadioButton6.CheckedChanged, RadioButton5.CheckedChanged, RadioButton4.CheckedChanged, RadioButton3.CheckedChanged
         Design_stress()
     End Sub
 
@@ -3830,17 +3827,16 @@ Public Class Form1
         _P = NumericUpDown12.Value                       'Calculation pressure [MPa=N/mm2]
 
         If (ComboBox4.SelectedIndex > -1) Then          'Prevent exceptions
-            words = chap6(ComboBox1.SelectedIndex).Split(separators, StringSplitOptions.None)
+            words = chap6(ComboBox4.SelectedIndex).Split(separators, StringSplitOptions.None)
             Double.TryParse(words(1), sf)               'Safety factor
-
             _fs = CDec(_f02 / sf)
 
             Select Case True
                 Case RadioButton4.Checked
                     _fs *= 1        'PED article 3.3 (NO calc required)
-                Case RadioButton1.Checked
+                Case RadioButton5.Checked
                     _fs *= 1        'PED I,II,III
-                Case RadioButton2.Checked
+                Case RadioButton6.Checked
                     _fs *= 0.9      'PED IV
                 Case RadioButton3.Checked
                     _fs = _f02      'EN 14460 6.2.1 (Shock resistant)
@@ -3853,17 +3849,14 @@ Public Class Form1
             End If
 
             '-------- present -------------
-            TextBox4.Text = sf.ToString                 'Safety factor
-            TextBox230.Text = (_P * 10 ^ 4).ToString    'Calculation pressure [mBar]
-            TextBox233.Text = _fym.ToString             'Safety factor
-            TextBox231.Text = _f02.ToString("0")        'Max allowed bend
-            'TextBox137.Text = (_f02 * 1.5).ToString("0")    '[N/mm2] Max allowed bend+membrane
-            'TextBox140.Text = (_f02 * 1.5).ToString("0")    '[N/mm2] Max allowed bend+membrane
+            TextBox230.Text = (_P * 10 ^ 4).ToString        'Calculation pressure [mBar]
+            TextBox233.Text = sf.ToString                   'Safety factor
+            TextBox231.Text = _f02.ToString("0")            'Max allowed bend
 
-            NumericUpDown14.Value = CDec(_fs)        '[N/mm2] Design stress
-            TextBox133.Text = _f02.ToString("0")    '[N/mm2] Yield stress
-            TextBox229.Text = _E.ToString("0")      '[N/mm2] Youngs modulus
-            TextBox228.Text = _ν.ToString("0.0")    'Poissons rate for steel
+            NumericUpDown14.Value = CDec(_fs)           '[N/mm2] Design stress
+            TextBox133.Text = _f02.ToString("0")        '[N/mm2] Yield stress
+            TextBox229.Text = _E.ToString("0")          '[N/mm2] Youngs modulus
+            TextBox228.Text = _ν.ToString("0.0")        'Poissons rate for steel
         End If
     End Sub
     Public Function Calc_design_stress(stress_A As Double, stress_B As Double, ΔT As Double) As Double
