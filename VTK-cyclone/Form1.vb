@@ -587,7 +587,9 @@ Public Class Form1
         ComboBox1.SelectedIndex = 2                 'Select Cyclone type AC_435
         ComboBox2.SelectedIndex = 5                 'Select Cyclone type AC_850
         ComboBox4.SelectedIndex = 1                 'chapter6
-        ComboBox5.SelectedIndex = 2                 'Steel
+        ComboBox5.SelectedIndex = 1                 'Steel
+
+
 
         TextBox148.Text = "Het d50 getal geeft de diameter aan waarbij 50% verloren gat 50% wordt gevangen." & vbCrLf
         TextBox148.Text = "Het d100 getal geeft de diameter aan waarbij 100% verloren gaat." & vbCrLf
@@ -726,6 +728,16 @@ Public Class Form1
         "10-02-2021, Emmision on kg/h added " & vbCrLf &
         "10-02-2021, Potato PSD added" & vbCrLf &
         "25-02-2021, AKO rvs kg price 11.00 E/kg "
+
+        TextBox227.Text =
+        "Important note" & vbCrLf &
+        "The yield strength follows EN 10028-2:2009 (mild steel)" & vbCrLf &
+        "and EN 10028-7:2016 for stainless steel at given temperatureerature." & vbCrLf &
+        "Safety factors follow the Eurocode" & vbCrLf & vbCrLf &
+        "EN 14460:2006, Explosion resistand design follow EN 13445" & vbCrLf &
+        "for Explosion-Pressure-Shock-Resistant design stress multiplied bu 1.5"
+
+
 
         Me.Size = New System.Drawing.Size(1305, 906)
 
@@ -3753,6 +3765,10 @@ Public Class Form1
         'TextBox161.BackColor = CType(IIf(pmaxx < _P, Color.Red, Color.LightGreen), Color)
     End Sub
 
+    Private Sub Button25_Click(sender As Object, e As EventArgs) Handles Button25.Click, NumericUpDown12.ValueChanged, NumericUpDown11.ValueChanged, ComboBox5.SelectedIndexChanged, ComboBox4.SelectedIndexChanged
+        Design_stress()
+    End Sub
+
     Private Sub Design_stress()
         Dim sf As Double = 1        'Safety factor init value
         Dim temperature As Double   'temperature
@@ -3760,18 +3776,17 @@ Public Class Form1
         Dim y50, y100, y150, y200, y250, y300, y350, y400 As Double
         Dim ΔT As Double
 
-
         If (ComboBox5.SelectedIndex > -1) Then          'Prevent exceptions
             words = steel(ComboBox5.SelectedIndex + 1).Split(separators, StringSplitOptions.None)
-            TextBox3.Text = words(1)
-            TextBox104.Text = words(2)
-            TextBox105.Text = words(3)
-            TextBox106.Text = words(4)
-            TextBox107.Text = words(5)
-            TextBox108.Text = words(6)
-            TextBox109.Text = words(7)
-            TextBox110.Text = words(8)
-            TextBox182.Text = words(13) 'cs or ss
+            TextBox226.Text = words(1)
+            TextBox225.Text = words(2)
+            TextBox224.Text = words(3)
+            TextBox223.Text = words(4)
+            TextBox222.Text = words(5)
+            TextBox221.Text = words(6)
+            TextBox220.Text = words(7)
+            TextBox219.Text = words(8)
+            TextBox232.Text = words(13) 'cs or ss
             Double.TryParse(words(1), y50)
             Double.TryParse(words(2), y100)
             Double.TryParse(words(3), y150)
@@ -3812,12 +3827,12 @@ Public Class Form1
             End Select
         End If
 
-        _P = NumericUpDown4.Value                       'Calculation pressure [MPa=N/mm2]
+        _P = NumericUpDown12.Value                       'Calculation pressure [MPa=N/mm2]
 
-        If (ComboBox1.SelectedIndex > -1) Then          'Prevent exceptions
+        If (ComboBox4.SelectedIndex > -1) Then          'Prevent exceptions
             words = chap6(ComboBox1.SelectedIndex).Split(separators, StringSplitOptions.None)
             Double.TryParse(words(1), sf)               'Safety factor
-            TextBox4.Text = sf.ToString                 'Safety factor
+
             _fs = CDec(_f02 / sf)
 
             Select Case True
@@ -3831,23 +3846,24 @@ Public Class Form1
                     _fs = _f02      'EN 14460 6.2.1 (Shock resistant)
             End Select
 
-            If String.Equals(TextBox182.Text, "cs") Then
+            If String.Equals(TextBox232.Text, "cs") Then
                 _E = (213.16 - 6.92 * temperature / 10 ^ 2 - 1.824 / 10 ^ 5 * temperature ^ 2) * 1000 '[N/mm2]
             Else
                 _E = (201.66 - 8.48 * temperature / 10 ^ 2) * 1000      '[N/mm2]
             End If
 
             '-------- present -------------
-            TextBox131.Text = (_P * 10 ^ 4).ToString    'Calculation pressure [mBar]
-            TextBox133.Text = _fym.ToString             'Safety factor
-            TextBox136.Text = _f02.ToString("0")        'Max allowed bend
-            TextBox137.Text = (_f02 * 1.5).ToString("0")    '[N/mm2] Max allowed bend+membrane
-            TextBox140.Text = (_f02 * 1.5).ToString("0")    '[N/mm2] Max allowed bend+membrane
+            TextBox4.Text = sf.ToString                 'Safety factor
+            TextBox230.Text = (_P * 10 ^ 4).ToString    'Calculation pressure [mBar]
+            TextBox233.Text = _fym.ToString             'Safety factor
+            TextBox231.Text = _f02.ToString("0")        'Max allowed bend
+            'TextBox137.Text = (_f02 * 1.5).ToString("0")    '[N/mm2] Max allowed bend+membrane
+            'TextBox140.Text = (_f02 * 1.5).ToString("0")    '[N/mm2] Max allowed bend+membrane
 
-            NumericUpDown7.Value = CDec(_fs)        '[N/mm2] Design stress
+            NumericUpDown14.Value = CDec(_fs)        '[N/mm2] Design stress
             TextBox133.Text = _f02.ToString("0")    '[N/mm2] Yield stress
-            TextBox178.Text = _E.ToString("0")      '[N/mm2] Youngs modulus
-            TextBox209.Text = _ν.ToString("0.0")    'Poissons rate for steel
+            TextBox229.Text = _E.ToString("0")      '[N/mm2] Youngs modulus
+            TextBox228.Text = _ν.ToString("0.0")    'Poissons rate for steel
         End If
     End Sub
     Public Function Calc_design_stress(stress_A As Double, stress_B As Double, ΔT As Double) As Double
@@ -3856,5 +3872,6 @@ Public Class Form1
         Δy = stress_B - stress_A
         Return (stress_A - (ΔT / 50 * Δy))
     End Function
+
 
 End Class
