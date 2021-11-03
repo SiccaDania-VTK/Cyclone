@@ -587,7 +587,7 @@ Public Class Form1
         ComboBox1.SelectedIndex = 2                 'Select Cyclone type AC_435
         ComboBox2.SelectedIndex = 5                 'Select Cyclone type AC_850
         ComboBox4.SelectedIndex = 1                 'chapter6
-        ComboBox5.SelectedIndex = 0                 'Steel
+        ComboBox5.SelectedIndex = 3                 'Steel 304L
 
 
 
@@ -3793,7 +3793,7 @@ Public Class Form1
             Double.TryParse(words(7), y350)
             Double.TryParse(words(8), y400)
 
-            temperature = CDbl(numericUpDown5.Value)        '[c]
+            temperature = CDbl(NumericUpDown11.Value)        '[c]
             Select Case True
 
                 Case 50 >= temperature
@@ -3827,6 +3827,25 @@ Public Class Form1
         _P = NumericUpDown12.Value                       'Calculation pressure [MPa=N/mm2]
 
         If (ComboBox4.SelectedIndex > -1) Then          'Prevent exceptions
+
+            '------- chapter 6 rupture sensitivity ----
+            ComboBox4.Enabled = False
+            Select Case True
+                Case String.Equals(TextBox232.Text, "cs")
+                    ComboBox4.SelectedIndex = 0
+                Case String.Equals(TextBox232.Text, "ss")
+                    ComboBox4.SelectedIndex = 1
+                Case Else
+                    ComboBox4.SelectedIndex = 3
+            End Select
+
+
+            If String.Equals(TextBox232.Text, "cs") Then
+                _E = (213.16 - 6.92 * temperature / 10 ^ 2 - 1.824 / 10 ^ 5 * temperature ^ 2) * 1000 '[N/mm2]
+            Else
+                _E = (201.66 - 8.48 * temperature / 10 ^ 2) * 1000      '[N/mm2]
+            End If
+
             words = chap6(ComboBox4.SelectedIndex).Split(separators, StringSplitOptions.None)
             Double.TryParse(words(1), sf)               'Safety factor
             _fs = CDec(_f02 / sf)
@@ -3842,11 +3861,7 @@ Public Class Form1
                     _fs = _f02      'EN 14460 6.2.1 (Shock resistant)
             End Select
 
-            If String.Equals(TextBox232.Text, "cs") Then
-                _E = (213.16 - 6.92 * temperature / 10 ^ 2 - 1.824 / 10 ^ 5 * temperature ^ 2) * 1000 '[N/mm2]
-            Else
-                _E = (201.66 - 8.48 * temperature / 10 ^ 2) * 1000      '[N/mm2]
-            End If
+
 
             '-------- present -------------
             TextBox230.Text = (_P * 10 ^ 4).ToString        'Calculation pressure [mBar]
