@@ -3884,5 +3884,118 @@ Public Class Form1
         Return (stress_A - (ΔT / 50 * Δy))
     End Function
 
+    Private Sub Button26_Click(sender As Object, e As EventArgs) Handles Button26.Click, NumericUpDown9.ValueChanged, NumericUpDown7.ValueChanged, NumericUpDown57.ValueChanged, NumericUpDown48.ValueChanged, NumericUpDown23.ValueChanged, NumericUpDown10.ValueChanged
+        Calc_Cylinder_vacuum_852()
+    End Sub
+    Private Sub Calc_Cylinder_vacuum_852()
+        'Vacumm cylindrical shell NO stiffeners
+        Dim σe As Double
+        Dim α As Double 'Half apex cone
+        Dim De, Lcyl, h, Lcon, S As Double
+        Dim Tolerance As Double
+        Dim Pr As Double    'calculated lower bound collapse pressure 
+        Dim Py As Double    'pressure at which mean circumferential stress yields
+        Dim Pm As Double    'theoretical elastic instability pressure for collapse of a perfect cylindrical
+        Dim L As Double     'unsupported length of the shell
+        Dim R_ As Double 'mean radius of a cylindrical or spherical shell
+        Dim ε As Double     'mean elastic circumferential strain at collapse, see 8.5.2.2
+        Dim ncyl As Double  'number of circumferential waves for an unstiffened part of a cylinder, see 8.5.2.2; 
+        Dim Z As Double     'Formula (8.5.2-7) 
+        Dim ea As Double    'shell wall thickness
+        Dim x As Double     'Figure 8.5-5 — Values of Pt/PP versus Pm/PP 
+        Dim PrPy As Double  'Figure 8.5-5 — Values of Pt/PP versus Pm/PP 
+
+        '--- get data ----
+        De = NumericUpDown43.Value      'OD shell
+        Lcyl = NumericUpDown44.Value    'Cylinder length
+        h = NumericUpDown45.Value       'Dished head height
+        Lcon = NumericUpDown46.Value    'Cone length
+        ea = NumericUpDown48.Value      'Shell wall thickness
+        α = NumericUpDown57.Value       'Half apex cone
+        R_ = De / 2                'Radius shell
+
+        '---- material --------
+        S = 1.5         'Safety factor (8.4.4-1) 
+
+        '8.4.3 For shells made in austenitic steel, the nominal elastic limit shall be given by: 
+        Double.TryParse(TextBox133.Text, σe)
+        If String.Equals(TextBox182.Text, "ss") Then
+            σe /= 1.25
+        Else
+            σe /= 1.0
+        End If
+
+
+        '---- calculated lower bound collapse pressure obtained from Figure 8.5-5 ----------
+        If α >= 30 Then
+            L = Lcyl + 0.4 * h    '(8.5.2) Unsupported Length
+        Else
+            L = Lcyl + 0.4 * h + Lcon   '(8.5.3) Unsupported Length
+        End If
+
+        '--- pressure at which mean circumferential stress yields
+        Py = σe * ea / R_            '(8.5.2-4) 
+
+        Z = PI * R_ / L      '(8.5.2-7) 
+
+        '---------- Find the smallest Pm ----------
+        Dim Pm_small As Double = 9999
+
+        For i = 2 To 20
+            '--- calculate ε ----
+            ε = Calc_ε(i, Z, R_, ea, _ν) '(8.5.2-6) 
+            '--- theoretical elastic instability pressure for collapse of a perfect cylindrical
+            Pm = _E * ea * ε / R_         '(8.5.2-5)
+            If Pm < Pm_small Then
+                Pm_small = Pm
+                ncyl = i
+            End If
+        Next
+
+        '--- now return to the smalles found case ----
+        ε = Calc_ε(ncyl, Z, R_, ea, _ν) '(8.5.2-6) 
+        '--- theoretical elastic instability pressure for collapse of a perfect cylindrical
+        Pm = _E * ea * ε / R_         '(8.5.2-5)
+
+        '---------------------------
+        x = Pm / Py
+        PrPy = -0.0016 * x ^ 4 + 0.031 * x ^ 3 - 0.2225 * x ^ 2 + 0.7227 * x - 0.0288
+
+        Pr = PrPy * Py  'Calculated lower bound collapse pressure obtained from Figure 8.5-5
+
+        '----------- Circularity tolerance  ----------
+        Tolerance = 0.005 * Pr / (_P * S) * 100  '[%](8.5.1-1) 
+
+        '--------- present results--------
+        TextBox162.Text = (_P * 10).ToString("0.00")    '[MPa]-->[Bar]
+        TextBox170.Text = σe.ToString("0.0")            '[N/mm]
+        TextBox171.Text = S.ToString("0.0")             '[-]
+        TextBox165.Text = Tolerance.ToString("0.00")    '[-]
+        TextBox166.Text = (Py * 10).ToString("0.00")    '[MPa]-->[Bar]
+        TextBox167.Text = L.ToString("0")               '[mm]
+        TextBox172.Text = (Pm * 10).ToString("0.00")    '[MPa]-->[Bar]
+        TextBox173.Text = Z.ToString("0.0")             '[-]
+        TextBox174.Text = ε.ToString("0.00000")         '[-]
+        TextBox175.Text = _ν.ToString("0.0")            '[-]
+        TextBox177.Text = _E.ToString("0")     '[-]
+        TextBox179.Text = ncyl.ToString("0")            '[-]
+        TextBox176.Text = x.ToString("0.0")             '[-]Pm/Py
+        TextBox180.Text = PrPy.ToString("0.00")         '[-]Pr/Py
+        TextBox181.Text = (Pr * 10).ToString("0.00")    '[MPa]-->[Bar]
+
+        '---------- Check-----
+        TextBox166.BackColor = CType(IIf(Py < _P, Color.Red, Color.LightGreen), Color)
+        TextBox172.BackColor = CType(IIf(Pm < _P, Color.Red, Color.LightGreen), Color)
+        TextBox181.BackColor = CType(IIf(Pr / S < _P, Color.Red, Color.LightGreen), Color)
+    End Sub
+    Private Function Calc_ε(ncyl As Double, Z As Double, R_ As Double, ea As Double, ν As Double) As Double
+        'Chapter External pressure 8.5
+        Dim ε As Double
+        ε = (ncyl ^ 2 - 1 + Z ^ 2) ^ 2      'Formula(8.5.2-6) 
+        ε *= ea ^ 2 / (12 * R_ ^ 2 * (1 - ν ^ 2))
+        ε += 1 / (ncyl ^ 2 / Z ^ 2 + 1) ^ 2
+        ε *= 1 / (ncyl ^ 2 - 1 + Z ^ 2 / 2)
+        Return (ε)
+    End Function
 
 End Class
