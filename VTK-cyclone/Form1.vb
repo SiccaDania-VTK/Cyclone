@@ -3655,12 +3655,67 @@ Public Class Form1
         Draw_chart4(Chart4)             'PSD selected product
     End Sub
 
-    Private Sub Button24_Click(sender As Object, e As EventArgs) Handles Button24.Click, NumericUpDown8.ValueChanged, NumericUpDown15.ValueChanged, NumericUpDown13.ValueChanged, ComboBox3.SelectedIndexChanged, TabPage15.Enter
+    Private Sub Button24_Click(sender As Object, e As EventArgs) Handles Button24.Click, NumericUpDown8.ValueChanged, NumericUpDown15.ValueChanged, NumericUpDown13.ValueChanged, ComboBox3.SelectedIndexChanged, TabPage15.Enter, RadioButton9.CheckedChanged, RadioButton8.CheckedChanged, RadioButton7.CheckedChanged
+        Sync_input1()
         Design_stress()
         Calc_cyl_shell742()         'Cylindrical shell
         Calc_conical_shell764()     'Conus shell
         Calc_Junction766()          'Junction large end
     End Sub
+    Private Sub Sync_input1()
+        Dim dia, apex As Decimal
+        Dim Lcyl, Lcone As Decimal
+
+        Label291.Text = "No sync, free selection"
+        Select Case True
+            Case RadioButton8.Checked
+                Label291.Text = "Sync cyclone stage 1"
+                Decimal.TryParse(TextBox37.Text, dia)
+                Decimal.TryParse(TextBox150.Text, apex)
+                Decimal.TryParse(TextBox10.Text, Lcyl)
+                Decimal.TryParse(TextBox11.Text, Lcone)
+
+                Lcone = CDec(dia / 2 * Cos(apex / 180 * PI))
+            Case RadioButton9.Checked
+                Label291.Text = "Sync cyclone stage 2"
+                Decimal.TryParse(TextBox74.Text, dia)
+                Decimal.TryParse(TextBox151.Text, apex)
+                Decimal.TryParse(TextBox93.Text, Lcyl)
+                Decimal.TryParse(TextBox94.Text, Lcone)
+                Lcone = CDec(dia * 0.5 / Tan(apex / 180 * PI))
+        End Select
+
+        If RadioButton8.Checked Or RadioButton9.Checked Then
+            ComboBox3.SelectedIndex = 0             'Weld factor
+            NumericUpDown10.Value = dia * 1000      'Shell OD
+            NumericUpDown15.Value = dia * 1000      'Shell OD
+            NumericUpDown13.Value = apex            '1/2 apex
+            NumericUpDown57.Value = apex            '1/2 apex
+            NumericUpDown9.Value = 200              'Height klöpper bodem
+            NumericUpDown23.Value = Lcyl * 1000     '[mm] Cylinder
+            NumericUpDown7.Value = Lcone * 1000     '[mm] Cone
+            '---- change color ---
+            ComboBox3.BackColor = Color.White           'Weld factor
+            NumericUpDown10.BackColor = Color.White     'Shell OD
+            NumericUpDown15.BackColor = Color.White     'Shell OD
+            NumericUpDown13.BackColor = Color.White     '1/2 apex
+            NumericUpDown57.BackColor = Color.White     '1/2 apex
+            NumericUpDown9.BackColor = Color.White      'Height klöpper bodem
+            NumericUpDown23.BackColor = Color.White     '[mm] Cylinder
+            NumericUpDown7.BackColor = Color.White      '[mm] Cone
+
+        Else
+            ComboBox3.BackColor = Color.Yellow          'Weld factor
+            NumericUpDown10.BackColor = Color.Yellow    'Shell OD
+            NumericUpDown15.BackColor = Color.Yellow    'Shell OD
+            NumericUpDown13.BackColor = Color.Yellow    '1/2 apex
+            NumericUpDown57.BackColor = Color.Yellow    '1/2 apex
+            NumericUpDown9.BackColor = Color.Yellow     'Height klöpper bodem
+            NumericUpDown23.BackColor = Color.Yellow    '[mm] Cylinder
+            NumericUpDown7.BackColor = Color.Yellow     '[mm] Cone
+        End If
+    End Sub
+
     '7.4.2 Cylindrical shells internal pressure
     Private Sub Calc_cyl_shell742()
         Dim De, Di, Dm, ea, z_joint, e_wall, Pmax, valid_check As Double
