@@ -3675,7 +3675,7 @@ Public Class Form1
                 Decimal.TryParse(TextBox10.Text, Lcyl)
                 Decimal.TryParse(TextBox11.Text, Lcone)
 
-                Lcone = CDec(dia / 2 * Cos(apex / 180 * PI))
+                Lcone = CDec(dia * 0.5 / Tan(apex / 180 * PI))
             Case RadioButton9.Checked
                 Label291.Text = "Sync cyclone stage 2"
                 Decimal.TryParse(TextBox74.Text, dia)
@@ -3687,13 +3687,13 @@ Public Class Form1
 
         If RadioButton8.Checked Or RadioButton9.Checked Then
             ComboBox3.SelectedIndex = 0             'Weld factor
-            NumericUpDown10.Value = dia * 1000      'Shell OD
-            NumericUpDown15.Value = dia * 1000      'Shell OD
-            NumericUpDown13.Value = apex            '1/2 apex
-            NumericUpDown57.Value = apex            '1/2 apex
-            NumericUpDown9.Value = 200              'Height klöpper bodem
-            NumericUpDown23.Value = Lcyl * 1000     '[mm] Cylinder
-            NumericUpDown7.Value = Lcone * 1000     '[mm] Cone
+            Set_numeric_control_value(NumericUpDown10, dia * 1000)      'Shell OD
+            Set_numeric_control_value(NumericUpDown15, dia * 1000)      'Shell OD
+            Set_numeric_control_value(NumericUpDown13, apex)            '1/2 apex
+            Set_numeric_control_value(NumericUpDown57, apex)            '1/2 apex
+            Set_numeric_control_value(NumericUpDown9, 200)              'Height klöpper bodem
+            Set_numeric_control_value(NumericUpDown23, Lcyl * 1000)     '[mm] Cylinder
+            Set_numeric_control_value(NumericUpDown7, Lcone * 1000)     '[mm] Cone
             '---- change color ---
             ComboBox3.BackColor = Color.White           'Weld factor
             NumericUpDown10.BackColor = Color.White     'Shell OD
@@ -3949,7 +3949,8 @@ Public Class Form1
         'Vacumm cylindrical shell NO stiffeners
         Dim σe As Double
         Dim α As Double 'Half apex cone
-        Dim De, Lcyl, h, Lcon, S As Double
+        Dim De, Lcyl, h, Lcon As Double
+        Dim matS As Double  'material safety
         Dim Tolerance As Double
         Dim Pr As Double    'calculated lower bound collapse pressure 
         Dim Py As Double    'pressure at which mean circumferential stress yields
@@ -3973,7 +3974,7 @@ Public Class Form1
         R_ = De / 2                     'Radius shell
 
         '---- material --------
-        S = 1.5         'Safety factor (8.4.4-1) 
+        matS = 1.5         'Safety factor (8.4.4-1) 
 
         '8.4.3 For shells made in austenitic steel, the nominal elastic limit shall be given by: 
         σe = _f02        'Mill certificate number
@@ -4022,12 +4023,12 @@ Public Class Form1
         Pr = PrPy * Py  'Calculated lower bound collapse pressure obtained from Figure 8.5-5
 
         '----------- Circularity tolerance  ----------
-        Tolerance = 0.005 * Pr / (_P * S) * 100  '[%](8.5.1-1) 
+        Tolerance = 0.005 * Pr / (_P * matS) * 100  '[%](8.5.1-1) 
 
         '--------- present results--------
         TextBox244.Text = (_P * 10).ToString("F2")    '[MPa]-->[Bar]
         TextBox242.Text = σe.ToString("F1")           '[N/mm]
-        TextBox218.Text = S.ToString("F1")            '[-]
+        TextBox218.Text = matS.ToString("F1")            '[-]
         TextBox243.Text = Tolerance.ToString("F2")    '[-]circular toleeance
         TextBox239.Text = (Py * 10).ToString("F2")    '[MPa]-->[Bar] at which mean circumferential stress yields
         TextBox238.Text = L.ToString("F0")            '[mm] unsupported length
@@ -4044,7 +4045,7 @@ Public Class Form1
         '---------- Check-----
         TextBox239.BackColor = CType(IIf(Py < _P, Color.Red, Color.LightGreen), Color)
         TextBox237.BackColor = CType(IIf(Pm < _P, Color.Red, Color.LightGreen), Color)
-        TextBox214.BackColor = CType(IIf(Pr / S < _P, Color.Red, Color.LightGreen), Color)
+        TextBox214.BackColor = CType(IIf(Pr / matS < _P, Color.Red, Color.LightGreen), Color)
     End Sub
     Private Function Calc_ε(ncyl As Double, Z As Double, R_ As Double, ea As Double, ν As Double) As Double
         'Chapter External pressure 8.5
@@ -4056,5 +4057,15 @@ Public Class Form1
         Return (ε)
     End Function
 
-
+    'Keep the numeric control within the Min and Max limits
+    Private Sub Set_numeric_control_value(num As NumericUpDown, value As Decimal)
+        Select Case True
+            Case value <= num.Maximum And value >= num.Minimum
+                num.Value = value
+            Case value > num.Maximum
+                num.Value = num.Maximum
+            Case value < num.Minimum
+                num.Value = num.Minimum
+        End Select
+    End Sub
 End Class
