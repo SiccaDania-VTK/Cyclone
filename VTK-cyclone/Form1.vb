@@ -3182,33 +3182,70 @@ Public Class Form1
         Return (ro_normal)
     End Function
 
-    Private Sub Button9_Click(sender As Object, e As EventArgs)
+    Private Sub Button9_Click(sender As Object, e As EventArgs) Handles Button9.Click, TabPage5.Enter, NumericUpDown47.ValueChanged, NumericUpDown46.ValueChanged, NumericUpDown16.ValueChanged, NumericUpDown50.ValueChanged, NumericUpDown49.ValueChanged, NumericUpDown17.ValueChanged
         'Stress calculation
+        Calc_Round_plate()
+        Calc_shell()
     End Sub
     Private Sub Calc_Round_plate()
         'Round plate simply supported
         Dim dia, r, t As Double
-        Dim σm, yt As Double
-        Dim d_hole As Double = NumericUpDown16.Value
+        Dim Elas, p, σm, yt As Double
+        Dim _fs, sf, _σ_02 As Double
+        Dim temper As Double
 
-        If NumericUpDown10.Value > 0 Then
+        _σ_02 = NumericUpDown17.Value           '[N/mm2]
+        sf = NumericUpDown49.Value             '[-] safety factor
+        _fs = _σ_02 / sf
 
-            dia = NumericUpDown10.Value / 1000.0            '[m]
-            r = dia / 2                                     '[m]
-            t = NumericUpDown46.Value / 1000.0              '[m]
+        p = NumericUpDown16.Value * 100.0         '[mbar->[N/m2]]
 
-            σm = 1.238 * _P * r ^ 2.0 / t ^ 2
-            σm /= 10 ^ 6.0                                  '[N/mm2]
+        dia = NumericUpDown47.Value / 1000.0      '[m]
+        r = dia / 2                             '[m]
+        t = NumericUpDown46.Value / 1000.0        '[m]
+        temper = NumericUpDown18.Value          '[celsius]
 
-            yt = (0.696 * _P * r ^ 4.0) / (_E * t ^ 3)      '[m]
-            yt *= 1000.0                                    '[m]--->[mm]
+        Elas = (201.66 - 8.48 * temper / 10.0 ^ 2) '* 10 ^ 9   '[GPa] for 304
+        Elas *= 10 ^ 9.0                                       '[Pa] for 304
 
-            TextBox136.Text = σm.ToString()             '[N/mm2]
-            TextBox137.Text = yt.ToString("F1")             '[mm]
+        σm = 1.238 * p * r ^ 2.0 / t ^ 2
+        σm /= 10 ^ 6.0                                        '[N/mm2]
 
-            '===== check ================
-            TextBox136.BackColor = CType(IIf(σm > _fs, Color.Red, Color.LightGreen), Color)
-        End If
+        yt = (0.696 * p * r ^ 4.0) / (Elas * t ^ 3)           '[m]
+        yt *= 1000.0                                          '[m]--->[mm]
+
+        TextBox144.Text = temper.ToString("F0")             '[celsius]
+        TextBox138.Text = (Elas / 10 ^ 9).ToString("F0")    '[GPa]
+        TextBox136.Text = σm.ToString("F0")                 '[N/mm2]
+        TextBox137.Text = yt.ToString("F1")                 '[mm]
+
+        '===== check ================
+        TextBox136.BackColor = CType(IIf(σm > _fs, Color.Red, Color.LightGreen), Color)
+    End Sub
+
+    Private Sub Calc_shell()
+        'EN13445, equation 7.4.2 Required wall thickness
+        'For symbols, quanties and units see page 12
+        Dim dia As Double
+        Dim p, e_wall As Double
+        Dim _σ_02 As Double
+        Dim _fs As Double
+        Dim z_joint As Double      'weld joint efficiency
+        Dim sf As Double            'Safety factor
+
+        _σ_02 = NumericUpDown17.Value           '[N/mm2]
+        sf = NumericUpDown49.Value             '[-] safety factor
+        z_joint = NumericUpDown50.Value         '[-] weld factor
+        _fs = _σ_02 / sf
+
+        p = CDbl(NumericUpDown16.Value) / 10000           '[mbar->[N/mm2]=[MPa]]
+        dia = NumericUpDown47.Value                '[mm]
+        e_wall = p * dia / (2 * _fs * z_joint + p)  'equation (7.4.2) page 30, Required wall thickness
+
+        '---------------------
+        TextBox139.Text = p.ToString("F3")          '[N/mm2] pressure
+        TextBox140.Text = e_wall.ToString("F1")     '[mm] wall thickness
+        TextBox141.Text = _fs.ToString("F0")        '[N/mm2] design stress
     End Sub
 
     Private Sub Button10_Click(sender As Object, e As EventArgs) Handles Button10.Click, TabPage10.Enter
@@ -3487,6 +3524,7 @@ Public Class Form1
         id = LCase(id)
 
         '========= Disable page Tabs for everybody ===============
+        TabControl1.TabPages.Remove(TabPage5)       'Stress calculation
         TabControl1.TabPages.Remove(TabPage8)       'Logging
         TabControl1.TabPages.Remove(TabPage10)      'High Dust load
         PictureBox4.Visible = False
@@ -3494,6 +3532,7 @@ Public Class Form1
         TextBox174.Visible = False
 
         If (id = "gp" Or id = "gerritp" Or id = "user") Then
+            TabControl1.TabPages.Add(TabPage5)       'Stress calculation
             TabControl1.TabPages.Add(TabPage8)       'Logging
             TabControl1.TabPages.Add(TabPage10)      'High Dust load
             PictureBox4.Visible = True
@@ -3626,29 +3665,25 @@ Public Class Form1
     Private Sub Sync_input1()
         Dim dia, apex As Decimal
         Dim Lcyl, Lcone As Decimal
-        Dim d_hole As Decimal
 
-        Label291.Text = "Free selection"
+        Label291.Text = "No sync, free selection"
         Select Case True
             Case RadioButton8.Checked
-                Label291.Text = "Sync. dimensions cyclone #1"
+                Label291.Text = "Sync cyclone stage 1"
                 Decimal.TryParse(TextBox37.Text, dia)
                 Decimal.TryParse(TextBox150.Text, apex)
                 Decimal.TryParse(TextBox10.Text, Lcyl)
                 Decimal.TryParse(TextBox11.Text, Lcone)
-                Decimal.TryParse(TextBox82.Text, d_hole)
+
                 Lcone = CDec(dia / 2 * Cos(apex / 180 * PI))
             Case RadioButton9.Checked
-                Label291.Text = "Sync. dimensions cyclone #2"
+                Label291.Text = "Sync cyclone stage 2"
                 Decimal.TryParse(TextBox74.Text, dia)
                 Decimal.TryParse(TextBox151.Text, apex)
                 Decimal.TryParse(TextBox93.Text, Lcyl)
                 Decimal.TryParse(TextBox94.Text, Lcone)
-                Decimal.TryParse(TextBox162.Text, d_hole)
                 Lcone = CDec(dia * 0.5 / Tan(apex / 180 * PI))
         End Select
-
-
 
         If RadioButton8.Checked Or RadioButton9.Checked Then
             ComboBox3.SelectedIndex = 0             'Weld factor
@@ -3659,41 +3694,27 @@ Public Class Form1
             NumericUpDown9.Value = 200              'Height klöpper bodem
             NumericUpDown23.Value = Lcyl * 1000     '[mm] Cylinder
             NumericUpDown7.Value = Lcone * 1000     '[mm] Cone
-            NumericUpDown16.Value = d_hole          '[mm] discharge pipe
             '---- change color ---
-            ComboBox3.BackColor = Color.White       'Weld factor
-            Numeric_enable(NumericUpDown10, False)  'Shell OD
-            Numeric_enable(NumericUpDown15, False)  'Shell OD
-            Numeric_enable(NumericUpDown13, False)  '1/2 apex
-            Numeric_enable(NumericUpDown57, False)  '1/2 apex
-            Numeric_enable(NumericUpDown9, False)   'Height klöpper bodem
-            Numeric_enable(NumericUpDown23, False)  '[mm] Cylinder
-            Numeric_enable(NumericUpDown7, False)   '[mm] Cone
-            Numeric_enable(NumericUpDown16, False)  '[mm] discharge pipe
+            ComboBox3.BackColor = Color.White           'Weld factor
+            NumericUpDown10.BackColor = Color.White     'Shell OD
+            NumericUpDown15.BackColor = Color.White     'Shell OD
+            NumericUpDown13.BackColor = Color.White     '1/2 apex
+            NumericUpDown57.BackColor = Color.White     '1/2 apex
+            NumericUpDown9.BackColor = Color.White      'Height klöpper bodem
+            NumericUpDown23.BackColor = Color.White     '[mm] Cylinder
+            NumericUpDown7.BackColor = Color.White      '[mm] Cone
+
         Else
-            ComboBox3.BackColor = Color.Yellow     'Weld factor
-            Numeric_enable(NumericUpDown10, True)  'Shell OD
-            Numeric_enable(NumericUpDown15, True)  'Shell OD
-            Numeric_enable(NumericUpDown13, True)  '1/2 apex
-            Numeric_enable(NumericUpDown57, True)  '1/2 apex
-            Numeric_enable(NumericUpDown9, True)   'Height klöpper bodem
-            Numeric_enable(NumericUpDown23, True)  '[mm] Cylinder
-            Numeric_enable(NumericUpDown7, True)   '[mm] Cone
-            Numeric_enable(NumericUpDown16, True)  '[mm] discharge pipe
+            ComboBox3.BackColor = Color.Yellow          'Weld factor
+            NumericUpDown10.BackColor = Color.Yellow    'Shell OD
+            NumericUpDown15.BackColor = Color.Yellow    'Shell OD
+            NumericUpDown13.BackColor = Color.Yellow    '1/2 apex
+            NumericUpDown57.BackColor = Color.Yellow    '1/2 apex
+            NumericUpDown9.BackColor = Color.Yellow     'Height klöpper bodem
+            NumericUpDown23.BackColor = Color.Yellow    '[mm] Cylinder
+            NumericUpDown7.BackColor = Color.Yellow     '[mm] Cone
         End If
     End Sub
-    Private Sub Numeric_enable(ByRef num As NumericUpDown, free As Boolean)
-        If free Then
-            num.BackColor = Color.Yellow    '
-            num.Enabled = True
-        Else
-            num.BackColor = Color.White
-            num.Enabled = False
-        End If
-
-    End Sub
-
-
 
     '7.4.2 Cylindrical shells internal pressure
     Private Sub Calc_cyl_shell742()
@@ -3918,11 +3939,10 @@ Public Class Form1
         Return (stress_A - (ΔT / 50 * Δy))
     End Function
 
-    Private Sub Button26_Click(sender As Object, e As EventArgs) Handles Button26.Click, NumericUpDown9.ValueChanged, NumericUpDown7.ValueChanged, NumericUpDown57.ValueChanged, NumericUpDown48.ValueChanged, NumericUpDown23.ValueChanged, NumericUpDown10.ValueChanged, TabPage17.Enter, NumericUpDown46.ValueChanged
+    Private Sub Button26_Click(sender As Object, e As EventArgs) Handles Button26.Click, NumericUpDown9.ValueChanged, NumericUpDown7.ValueChanged, NumericUpDown57.ValueChanged, NumericUpDown48.ValueChanged, NumericUpDown23.ValueChanged, NumericUpDown10.ValueChanged, TabPage17.Enter
         For i = 0 To 2
             Design_stress()
             Calc_Cylinder_vacuum_852()
-            Calc_Round_plate()
         Next
     End Sub
     Private Sub Calc_Cylinder_vacuum_852()
