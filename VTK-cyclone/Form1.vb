@@ -152,7 +152,7 @@ Public Class Form1
 
     Public _deb As Double           'Outside diameter nozzle fitted in shell
     Public _dib As Double           'Inside diameter nozzle fitted in shell
-    Public _E As Double             'Modulus of elasticity 
+    Public _Emod As Double          'Modulus of elasticity 
 
     Public Shared joint_eff() As String = {"0.7", "0.85", "1.0"}
 
@@ -3182,39 +3182,6 @@ Public Class Form1
         Return (ro_normal)
     End Function
 
-    Private Sub Calc_Round_plate()
-        'Round plate simply supported
-        Dim dia, r, t As Double
-        Dim Elas, p, σm, yt As Double
-        Dim _fs As Double
-        Dim temper As Double
-
-        p = _P
-
-        dia = NumericUpDown10.Value / 1000.0      '[m]
-        r = dia / 2                             '[m]
-        t = NumericUpDown46.Value / 1000.0        '[m]
-        temper = NumericUpDown18.Value          '[celsius]
-
-        Elas = (201.66 - 8.48 * temper / 10.0 ^ 2) '* 10 ^ 9   '[GPa] for 304
-        Elas *= 10 ^ 9.0                                       '[Pa] for 304
-
-        σm = 1.238 * p * r ^ 2.0 / t ^ 2
-        σm /= 10 ^ 6.0                                        '[N/mm2]
-
-        yt = (0.696 * p * r ^ 4.0) / (Elas * t ^ 3)           '[m]
-        yt *= 1000.0                                          '[m]--->[mm]
-
-
-        TextBox136.Text = σm.ToString("F0")                 '[N/mm2]
-        TextBox137.Text = yt.ToString("F1")                 '[mm]
-
-        '===== check ================
-        TextBox136.BackColor = CType(IIf(σm > _fs, Color.Red, Color.LightGreen), Color)
-    End Sub
-
-
-
     Private Sub Button10_Click(sender As Object, e As EventArgs) Handles Button10.Click, TabPage10.Enter
         Draw_chart3(Chart3)             'Dust load correction
     End Sub
@@ -3866,9 +3833,9 @@ Public Class Form1
 
 
             If String.Equals(TextBox232.Text, "cs") Then
-                _E = (213.16 - 6.92 * temperature / 10 ^ 2 - 1.824 / 10 ^ 5 * temperature ^ 2) * 1000 '[N/mm2]
+                _Emod = (213.16 - 6.92 * temperature / 10 ^ 2 - 1.824 / 10 ^ 5 * temperature ^ 2) * 1000 '[N/mm2]
             Else
-                _E = (201.66 - 8.48 * temperature / 10 ^ 2) * 1000      '[N/mm2]
+                _Emod = (201.66 - 8.48 * temperature / 10 ^ 2) * 1000      '[N/mm2]
             End If
 
             words = chap6(ComboBox4.SelectedIndex).Split(separators, StringSplitOptions.None)
@@ -3893,7 +3860,7 @@ Public Class Form1
 
             NumericUpDown14.Value = CDec(_fs)           '[N/mm2] Design stress
             TextBox133.Text = _f02.ToString("0")        '[N/mm2] Yield stress
-            TextBox229.Text = _E.ToString("0")          '[N/mm2] Youngs modulus
+            TextBox229.Text = _Emod.ToString("0")          '[N/mm2] Youngs modulus
             TextBox228.Text = _ν.ToString("0.0")        'Poissons rate for steel
         End If
     End Sub
@@ -3904,11 +3871,12 @@ Public Class Form1
         Return (stress_A - (ΔT / 50 * Δy))
     End Function
 
-    Private Sub Button26_Click(sender As Object, e As EventArgs) Handles Button26.Click, NumericUpDown9.ValueChanged, NumericUpDown7.ValueChanged, NumericUpDown57.ValueChanged, NumericUpDown48.ValueChanged, NumericUpDown23.ValueChanged, NumericUpDown10.ValueChanged, TabPage17.Enter
+    Private Sub Button26_Click(sender As Object, e As EventArgs) Handles Button26.Click, NumericUpDown9.ValueChanged, NumericUpDown7.ValueChanged, NumericUpDown57.ValueChanged, NumericUpDown48.ValueChanged, NumericUpDown23.ValueChanged, NumericUpDown10.ValueChanged, TabPage17.Enter, NumericUpDown46.ValueChanged
         For i = 0 To 2
             Design_stress()
             Calc_Cylinder_vacuum_852()
-            Calc_Round_plate()
+            'Calc_Round_plate()
+            Calc_top_plate()
         Next
     End Sub
     Private Sub Calc_Cylinder_vacuum_852()
@@ -3970,7 +3938,7 @@ Public Class Form1
             '--- calculate ε ----
             ε = Calc_ε(i, Z, R_, ea, _ν) '(8.5.2-6) 
             '--- theoretical elastic instability pressure for collapse of a perfect cylindrical
-            Pm = _E * ea * ε / R_         '(8.5.2-5)
+            Pm = _Emod * ea * ε / R_         '(8.5.2-5)
             If Pm < Pm_small Then
                 Pm_small = Pm
                 ncyl = i
@@ -3980,7 +3948,7 @@ Public Class Form1
         '--- now return to the smalles found case ----
         ε = Calc_ε(ncyl, Z, R_, ea, _ν) '(8.5.2-6) 
         '--- theoretical elastic instability pressure for collapse of a perfect cylindrical
-        Pm = _E * ea * ε / R_         '(8.5.2-5)
+        Pm = _Emod * ea * ε / R_         '(8.5.2-5)
 
         '---------------------------
         x = Pm / Py
@@ -4002,7 +3970,7 @@ Public Class Form1
         TextBox235.Text = Z.ToString("F1")            '[-]
         TextBox234.Text = ε.ToString("F5")            '[-]
         TextBox241.Text = _ν.ToString("F1")           '[-]
-        TextBox240.Text = _E.ToString("F0")           '[-]
+        TextBox240.Text = _Emod.ToString("F0")           '[-]
         TextBox217.Text = ncyl.ToString("F0")         '[-]
         TextBox216.Text = x.ToString("F1")            '[-]Pm/Py
         TextBox215.Text = PrPy.ToString("F2")         '[-]Pr/Py
@@ -4033,5 +4001,51 @@ Public Class Form1
             Case value < num.Minimum
                 num.Value = num.Minimum
         End Select
+    End Sub
+
+    Private Sub Calc_top_plate()
+        'Round with hole
+        Dim dia, diahole As Double
+        Dim a, b, t As Double
+        Dim σm, ym As Double
+        Dim x, k1, k2 As Double
+        Dim wght As Double
+
+        If NumericUpDown10.Value > 0 And (_P > 0) Then
+            dia = NumericUpDown10.Value / 1000          '[m]
+            diahole = NumericUpDown16.Value / 1000      '[m]
+            t = NumericUpDown46.Value / 1000            '[m]
+            a = dia / 2
+            b = diahole / 2
+
+            '============= determine k1, k2 =================
+            x = a / b
+
+            k1 = 0.0067 * x ^ 4 - 0.0584 * x ^ 3 + 0.0519 * x ^ 2 + 0.6132 * x - 0.4358
+            k2 = 0.0127 * x ^ 4 - 0.131 * x ^ 3 + 0.3117 * x ^ 2 + 0.6069 * x - 0.219
+
+            If x > 5 Then k1 = 0.815
+            If x > 5 Then k2 = 2.2
+
+            'MessageBox.Show("a= " & a.ToString & " b= " & b.ToString & " t=" & t.ToString & " e=" & ee.ToString)
+            '------ bend stress ----
+            σm = k2 * _P * a ^ 2 / (t ^ 2) '[N/mm2]
+
+            '------ bend -------
+            ym = k1 * _P * a ^ 4
+            ym /= _Emod * t ^ 3
+            ym *= 10 ^ 3                        '[mm]
+            wght = PI * dia ^ 2 * t * 7850      '[kg]
+
+            TextBox141.Text = x.ToString("F1")
+            TextBox144.Text = σm.ToString("F0")
+            TextBox140.Text = k1.ToString("F3")
+            TextBox245.Text = k2.ToString("F3")
+            TextBox246.Text = ym.ToString("F1")
+            TextBox139.Text = wght.ToString("F0")
+
+            '===== check ================
+            TextBox144.BackColor = CType(IIf(σm > _fs, Color.Red, Color.LightGreen), Color)
+        End If
     End Sub
 End Class
