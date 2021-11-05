@@ -3182,25 +3182,16 @@ Public Class Form1
         Return (ro_normal)
     End Function
 
-    Private Sub Button9_Click(sender As Object, e As EventArgs) Handles Button9.Click, TabPage5.Enter, NumericUpDown47.ValueChanged, NumericUpDown46.ValueChanged, NumericUpDown16.ValueChanged, NumericUpDown50.ValueChanged, NumericUpDown49.ValueChanged, NumericUpDown17.ValueChanged
-        'Stress calculation
-        Calc_Round_plate()
-        Calc_shell()
-    End Sub
     Private Sub Calc_Round_plate()
         'Round plate simply supported
         Dim dia, r, t As Double
         Dim Elas, p, σm, yt As Double
-        Dim _fs, sf, _σ_02 As Double
+        Dim _fs As Double
         Dim temper As Double
 
-        _σ_02 = NumericUpDown17.Value           '[N/mm2]
-        sf = NumericUpDown49.Value             '[-] safety factor
-        _fs = _σ_02 / sf
+        p = _P
 
-        p = NumericUpDown16.Value * 100.0         '[mbar->[N/m2]]
-
-        dia = NumericUpDown47.Value / 1000.0      '[m]
+        dia = NumericUpDown10.Value / 1000.0      '[m]
         r = dia / 2                             '[m]
         t = NumericUpDown46.Value / 1000.0        '[m]
         temper = NumericUpDown18.Value          '[celsius]
@@ -3214,8 +3205,7 @@ Public Class Form1
         yt = (0.696 * p * r ^ 4.0) / (Elas * t ^ 3)           '[m]
         yt *= 1000.0                                          '[m]--->[mm]
 
-        TextBox144.Text = temper.ToString("F0")             '[celsius]
-        TextBox138.Text = (Elas / 10 ^ 9).ToString("F0")    '[GPa]
+
         TextBox136.Text = σm.ToString("F0")                 '[N/mm2]
         TextBox137.Text = yt.ToString("F1")                 '[mm]
 
@@ -3223,30 +3213,7 @@ Public Class Form1
         TextBox136.BackColor = CType(IIf(σm > _fs, Color.Red, Color.LightGreen), Color)
     End Sub
 
-    Private Sub Calc_shell()
-        'EN13445, equation 7.4.2 Required wall thickness
-        'For symbols, quanties and units see page 12
-        Dim dia As Double
-        Dim p, e_wall As Double
-        Dim _σ_02 As Double
-        Dim _fs As Double
-        Dim z_joint As Double      'weld joint efficiency
-        Dim sf As Double            'Safety factor
 
-        _σ_02 = NumericUpDown17.Value           '[N/mm2]
-        sf = NumericUpDown49.Value             '[-] safety factor
-        z_joint = NumericUpDown50.Value         '[-] weld factor
-        _fs = _σ_02 / sf
-
-        p = CDbl(NumericUpDown16.Value) / 10000           '[mbar->[N/mm2]=[MPa]]
-        dia = NumericUpDown47.Value                '[mm]
-        e_wall = p * dia / (2 * _fs * z_joint + p)  'equation (7.4.2) page 30, Required wall thickness
-
-        '---------------------
-        TextBox139.Text = p.ToString("F3")          '[N/mm2] pressure
-        TextBox140.Text = e_wall.ToString("F1")     '[mm] wall thickness
-        TextBox141.Text = _fs.ToString("F0")        '[N/mm2] design stress
-    End Sub
 
     Private Sub Button10_Click(sender As Object, e As EventArgs) Handles Button10.Click, TabPage10.Enter
         Draw_chart3(Chart3)             'Dust load correction
@@ -3524,7 +3491,6 @@ Public Class Form1
         id = LCase(id)
 
         '========= Disable page Tabs for everybody ===============
-        TabControl1.TabPages.Remove(TabPage5)       'Stress calculation
         TabControl1.TabPages.Remove(TabPage8)       'Logging
         TabControl1.TabPages.Remove(TabPage10)      'High Dust load
         PictureBox4.Visible = False
@@ -3532,7 +3498,6 @@ Public Class Form1
         TextBox174.Visible = False
 
         If (id = "gp" Or id = "gerritp" Or id = "user") Then
-            TabControl1.TabPages.Add(TabPage5)       'Stress calculation
             TabControl1.TabPages.Add(TabPage8)       'Logging
             TabControl1.TabPages.Add(TabPage10)      'High Dust load
             PictureBox4.Visible = True
@@ -3943,6 +3908,7 @@ Public Class Form1
         For i = 0 To 2
             Design_stress()
             Calc_Cylinder_vacuum_852()
+            Calc_Round_plate()
         Next
     End Sub
     Private Sub Calc_Cylinder_vacuum_852()
