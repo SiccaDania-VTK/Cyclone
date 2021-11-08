@@ -710,6 +710,7 @@ Public Class Form1
         "Use cyclone as 1 stage before AA850 to prevent blocking"
 
         TextBox187.Text = "Log" & vbCrLf &
+        "09-11-2021, Tab Steel, Stress# 1 and stress #2 added still under construction" & vbCrLf &
         "02-11-2021, Checkbox added @ viscosity to enable manual input" & vbCrLf &
         "29-10-2021, Bugfix cyclone outside area and weight" & vbCrLf &
         "30-09-2021, Emissions now in milli-gram instead of gram" & vbCrLf &
@@ -3588,15 +3589,19 @@ Public Class Form1
     End Sub
 
     Private Sub Button24_Click(sender As Object, e As EventArgs) Handles Button24.Click, NumericUpDown8.ValueChanged, NumericUpDown15.ValueChanged, NumericUpDown13.ValueChanged, ComboBox3.SelectedIndexChanged, TabPage15.Enter, RadioButton9.CheckedChanged, RadioButton8.CheckedChanged, RadioButton7.CheckedChanged
-        Sync_input1()
-        Design_stress()
-        Calc_cyl_shell742()         'Cylindrical shell
-        Calc_conical_shell764()     'Conus shell
-        Calc_Junction766()          'Junction large end
+        If TextBox37.Text.Length > 1 Then   'prevent startup exceptions
+            Design_stress()
+            Sync_input1()
+            Calc_cyl_shell742()         'Cylindrical shell
+            Calc_conical_shell764()     'Conus shell
+            Calc_Junction766()          'Junction large end
+        End If
     End Sub
     Private Sub Sync_input1()
         Dim dia, apex As Decimal
         Dim Lcyl, Lcone As Decimal
+        Dim dia_discharge As Decimal
+
 
         Label291.Text = "No sync, free selection"
         Select Case True
@@ -3606,6 +3611,7 @@ Public Class Form1
                 Decimal.TryParse(TextBox150.Text, apex)
                 Decimal.TryParse(TextBox10.Text, Lcyl)
                 Decimal.TryParse(TextBox11.Text, Lcone)
+                Decimal.TryParse(TextBox6.Text, dia_discharge)
 
                 Lcone = CDec(dia * 0.5 / Tan(apex / 180 * PI))
             Case RadioButton9.Checked
@@ -3614,18 +3620,22 @@ Public Class Form1
                 Decimal.TryParse(TextBox151.Text, apex)
                 Decimal.TryParse(TextBox93.Text, Lcyl)
                 Decimal.TryParse(TextBox94.Text, Lcone)
+                Decimal.TryParse(TextBox89.Text, dia_discharge)
                 Lcone = CDec(dia * 0.5 / Tan(apex / 180 * PI))
         End Select
 
         If RadioButton8.Checked Or RadioButton9.Checked Then
             ComboBox3.SelectedIndex = 0             'Weld factor
-            Set_numeric_control_value(NumericUpDown10, dia * 1000)      'Shell OD
-            Set_numeric_control_value(NumericUpDown15, dia * 1000)      'Shell OD
-            Set_numeric_control_value(NumericUpDown13, apex)            '1/2 apex
-            Set_numeric_control_value(NumericUpDown57, apex)            '1/2 apex
-            Set_numeric_control_value(NumericUpDown9, 200)              'Height klöpper bodem
-            Set_numeric_control_value(NumericUpDown23, Lcyl * 1000)     '[mm] Cylinder
-            Set_numeric_control_value(NumericUpDown7, Lcone * 1000)     '[mm] Cone
+            Set_numeric_control_value(NumericUpDown10, dia * 1000)              'Shell OD
+            Set_numeric_control_value(NumericUpDown15, dia * 1000)              'Shell OD
+            Set_numeric_control_value(NumericUpDown13, apex)                    '1/2 apex
+            Set_numeric_control_value(NumericUpDown57, apex)                    '1/2 apex
+            Set_numeric_control_value(NumericUpDown9, 200)                      'Height klöpper bodem
+            Set_numeric_control_value(NumericUpDown23, Lcyl * 1000)             '[mm] Cylinder
+            Set_numeric_control_value(NumericUpDown7, Lcone * 1000)             '[mm] Cone
+            Set_numeric_control_value(NumericUpDown16, dia_discharge * 1000)    '[mm] Cone
+            Set_numeric_control_value(NumericUpDown11, NumericUpDown18.Value)   '[c] Temp
+
             '---- change color ---
             ComboBox3.BackColor = Color.White           'Weld factor
             NumericUpDown10.BackColor = Color.White     'Shell OD
@@ -3635,7 +3645,8 @@ Public Class Form1
             NumericUpDown9.BackColor = Color.White      'Height klöpper bodem
             NumericUpDown23.BackColor = Color.White     '[mm] Cylinder
             NumericUpDown7.BackColor = Color.White      '[mm] Cone
-
+            NumericUpDown16.BackColor = Color.White     '[mm] Dia oulet pipe
+            NumericUpDown11.BackColor = Color.White     '[c] Temperature
         Else
             ComboBox3.BackColor = Color.Yellow          'Weld factor
             NumericUpDown10.BackColor = Color.Yellow    'Shell OD
@@ -3645,6 +3656,8 @@ Public Class Form1
             NumericUpDown9.BackColor = Color.Yellow     'Height klöpper bodem
             NumericUpDown23.BackColor = Color.Yellow    '[mm] Cylinder
             NumericUpDown7.BackColor = Color.Yellow     '[mm] Cone
+            NumericUpDown16.BackColor = Color.Yellow    '[mm] Dia oulet pipe
+            NumericUpDown11.BackColor = Color.Yellow     '[c] Temperature
         End If
     End Sub
 
@@ -3851,17 +3864,18 @@ Public Class Form1
                     _fs *= 0.9      'PED IV
                 Case RadioButton3.Checked
                     _fs = _f02      'EN 14460 6.2.1 (Shock resistant)
+                    sf = 1.0
             End Select
 
             '-------- present -------------
             TextBox230.Text = (_P * 10 ^ 4).ToString        'Calculation pressure [mBar]
-            TextBox233.Text = sf.ToString                   'Safety factor
-            TextBox231.Text = _f02.ToString("0")            'Max allowed bend
+            TextBox233.Text = sf.ToString("F1")             'Safety factor
+            TextBox231.Text = _f02.ToString("F0")           'Max allowed bend
 
-            NumericUpDown14.Value = CDec(_fs)           '[N/mm2] Design stress
-            TextBox133.Text = _f02.ToString("0")        '[N/mm2] Yield stress
-            TextBox229.Text = _Emod.ToString("0")          '[N/mm2] Youngs modulus
-            TextBox228.Text = _ν.ToString("0.0")        'Poissons rate for steel
+            NumericUpDown14.Value = CDec(_fs)               '[N/mm2] Design stress
+            TextBox133.Text = _f02.ToString("F0")           '[N/mm2] Yield stress
+            TextBox229.Text = _Emod.ToString("F0")          '[N/mm2] Youngs modulus
+            TextBox228.Text = _ν.ToString("F1")             'Poissons rate for steel
         End If
     End Sub
     Public Function Calc_design_stress(stress_A As Double, stress_B As Double, ΔT As Double) As Double
