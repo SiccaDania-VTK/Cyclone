@@ -698,7 +698,8 @@ Public Class Form1
         "Test have show that the particles are getting electrically charged and stick to the vessel wall" & vbCrLf
 
         TextBox152.Text = "Particle Density and Bulk (Volumetric) Density" & vbCrLf &
-        "Rule of thumb for foodstuffs, Particle Density= 2 x Bulk density" & vbCrLf
+        "Rule of thumb for foodstuffs, Particle Density= 2 x Bulk density" & vbCrLf &
+        "Use: Starch 1500 kg/m2, Protein 1200 kg/m3" & vbCrLf
 
         TextBox153.Text = "Spray dried product are fragile and may breakup See project P10.1070" & vbCrLf &
         "Inlet speed cyclone is then limited to 16 m/s " & vbCrLf &
