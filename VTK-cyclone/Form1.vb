@@ -711,6 +711,7 @@ Public Class Form1
         "Use cyclone as 1 stage before AA850 to prevent blocking"
 
         TextBox187.Text = "Log" & vbCrLf &
+        "13-11-2021, Now .NET framework 4.8" & vbCrLf &
         "09-11-2021, Tab Steel, Stress# 1 and stress #2 added still under construction" & vbCrLf &
         "02-11-2021, Checkbox added @ viscosity to enable manual input" & vbCrLf &
         "29-10-2021, Bugfix cyclone outside area and weight" & vbCrLf &
