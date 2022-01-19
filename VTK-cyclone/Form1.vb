@@ -549,9 +549,11 @@ Public Class Form1
         Next
 
         If pass_name = False Or pass_disc = False Then
+            Clipboard.SetText("User= " & Pro_user & ", HD=  " & HD_number)
             MessageBox.Show("VTK Cyclone selection program" & vbCrLf & "Access denied, contact GPa" & vbCrLf)
             MessageBox.Show("User_name= " & Pro_user & ", Pass name= " & pass_name.ToString)
             MessageBox.Show("HD_id= *" & HD_number & "*" & ", Pass disc= " & pass_disc.ToString)
+            MessageBox.Show("Name and number are copied to the Clipboard !")
             Environment.Exit(0)
         End If
 
