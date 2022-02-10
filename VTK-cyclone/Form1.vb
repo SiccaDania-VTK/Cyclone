@@ -494,6 +494,9 @@ Public Class Form1
         user_list.Add("user")
         hard_disk_list.Add("058F63646471")          'Privee PC, graslaan25
 
+        user_list.Add("gpath")
+        hard_disk_list.Add("S5RRNF0R784528M")       'VTK PC, GP
+
         user_list.Add("GerritP")
         hard_disk_list.Add("S2R6NX0H740154H")       'VTK PC, GP
 
