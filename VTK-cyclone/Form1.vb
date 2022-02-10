@@ -156,7 +156,11 @@ Public Class Form1
     Public _dib As Double           'Inside diameter nozzle fitted in shell
     Public _Emod As Double          'Modulus of elasticity 
 
-    Public Shared joint_eff() As String = {"0.7", "0.85", "1.0"}
+    Public Shared joint_eff() As String = {"0.7", "0.85", "1.0"}    'Welding
+
+    '===== Testing with Normal-log distribution ======
+    Public norm_log_dist_pdf(100, 2) As Double   'Normal-log distribution
+    Public norm_log_dist_cdf(100, 2) As Double   'Normal-log distribution
 
     'Type AC;Inlaatbreedte;Inlaathoogte;Inlaatlengte;Inlaat hartmaat;Inlaat afschuining;
     'Uitlaat keeldia inw.;Uitlaat flensdiameter inw.;Lengte insteekpijp inw.;
@@ -471,11 +475,13 @@ Public Class Form1
         Dim pass_name As Boolean = False
         Dim pass_disc As Boolean = False
 
-        DataGridView1.ColumnCount = 9
-        DataGridView1.Rows.Clear()
-        DataGridView1.Rows.Add(23)
-        DataGridView1.RowHeadersVisible = False
-        DataGridView1.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill
+        With DataGridView1
+            .ColumnCount = 9
+            .Rows.Clear()
+            .Rows.Add(23)
+            .RowHeadersVisible = False
+            .AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill
+        End With
 
         'Initialize the arrays in the struct
         For i = 0 To _cees.Length - 1
@@ -1657,11 +1663,49 @@ Public Class Form1
             TextBox24.Text &= "dia= " & r_points(h, 0).ToString("F2") & ", perc= " & r_points(h, 1).ToString("F5") & vbCrLf
             ch.Series(0).Points.AddXY(r_points(h, 0), r_points(h, 1))   '
         Next h
-
     End Sub
+
+    Private Sub Draw_chart5()
+        With Chart5
+            .Series.Clear()
+            .ChartAreas.Clear()
+            .Titles.Clear()
+            .ChartAreas.Add("ChartArea0")
+
+            .Series.Add("Series50")
+            .Series(0).ChartArea = "ChartArea0"
+            .Series(0).ChartType = DataVisualization.Charting.SeriesChartType.Line
+            .Series(0).BorderWidth = 2
+            .Series(0).IsVisibleInLegend = False
+
+            .Series.Add("Series51")
+            .Series(1).ChartArea = "ChartArea0"
+            .Series(1).ChartType = DataVisualization.Charting.SeriesChartType.Line
+            .Series(1).BorderWidth = 2
+            .Series(1).IsVisibleInLegend = False
+
+            .Titles.Add("Log Normal Distribution")
+            .ChartAreas("ChartArea0").AxisX.Title = "Particle diameter [mu]"
+            .ChartAreas("ChartArea0").AxisX.IsLogarithmic = True
+            .ChartAreas("ChartArea0").AxisY.Title = "Particle size percentage [%]"
+            .ChartAreas("ChartArea0").AxisY.Minimum = 0     'Loss
+            .ChartAreas("ChartArea0").AxisY.Maximum = 1.0   'Loss
+            .ChartAreas("ChartArea0").AxisX.Minimum = 0.1   '[mu] Particle size
+
+            '------ now present-------------
+            For h = 0 To norm_log_dist_pdf.GetLength(0) - 1   'Fill line chart
+                If norm_log_dist_pdf(h, 0) > 0 And norm_log_dist_pdf(h, 1) > 0 Then
+                    .Series(0).Points.AddXY(norm_log_dist_pdf(h, 0), norm_log_dist_pdf(h, 1))   'Log normal
+                End If
+                If norm_log_dist_cdf(h, 0) > 0 And norm_log_dist_cdf(h, 1) > 0 Then
+                    .Series(1).Points.AddXY(norm_log_dist_cdf(h, 0), norm_log_dist_cdf(h, 1))   'Log normal
+                End If
+            Next h
+        End With
+    End Sub
+
     Private Sub Button2_Click(sender As Object, e As EventArgs) Handles TabPage9.Enter, CheckBox6.CheckedChanged, CheckBox7.CheckedChanged, CheckBox4.CheckedChanged, CheckBox9.CheckedChanged, CheckBox8.CheckedChanged, CheckBox10.CheckedChanged, CheckBox5.CheckedChanged, CheckBox12.CheckedChanged, CheckBox11.CheckedChanged, CheckBox1.CheckedChanged, CheckBox13.CheckedChanged, CheckBox14.CheckedChanged, CheckBox15.CheckedChanged, CheckBox16.CheckedChanged, CheckBox17.CheckedChanged, CheckBox18.CheckedChanged, CheckBox19.CheckedChanged, RadioButton2.CheckedChanged, RadioButton1.CheckedChanged
         Draw_chart2(Chart2, 0)      'Present the results loss curve
-        ' Calc_sequence()
     End Sub
     Private Sub Calc_sequence()
         Dim case_nr As Integer = CInt(NumericUpDown30.Value)
@@ -4069,11 +4113,48 @@ Public Class Form1
         End If
     End Sub
 
-    Private Sub Button9_Click(sender As Object, e As EventArgs) Handles Button9.Click
-
-        TextBox136.Clear()
+    Private Sub Button9_Click(sender As Object, e As EventArgs) Handles Button9.Click, NumericUpDown24.ValueChanged, NumericUpDown17.ValueChanged
         'https://numerics.mathdotnet.com/api/MathNet.Numerics.Distributions/index.htm
-        TextBox136.Text &= MathNet.Numerics.Distributions.LogNormal.PDF(4, 10, 4).ToString
+        'https://www.weibull.com/hotwire/issue47/relbasics47.htm
+
+        Dim mu As Double = NumericUpDown17.Value
+        Dim sigma As Double = NumericUpDown24.Value
+        Dim ww As Double
+
+        With DataGridView5
+            .ColumnCount = 2
+            .Rows.Clear()
+            .Rows.Add(100)
+            .RowHeadersVisible = False
+            .AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill
+            .Columns(0).HeaderText = "Dia [mu]"
+            .Columns(1).HeaderText = "Perc"
+        End With
+        With DataGridView7
+            .ColumnCount = 2
+            .Rows.Clear()
+            .Rows.Add(100)
+            .RowHeadersVisible = False
+            .AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill
+            .Columns(0).HeaderText = "Dia [mu]"
+            .Columns(1).HeaderText = "Perc"
+        End With
+
+        For h = 0 To norm_log_dist_pdf.GetLength(0) - 1   'Fill line chart
+            ww = h / 4
+            norm_log_dist_pdf(h, 0) = ww
+            norm_log_dist_pdf(h, 1) = Numerics.Distributions.LogNormal.PDF(mu, sigma, ww)  'Log normal
+            DataGridView5.Rows(h).Cells(0).Value = norm_log_dist_pdf(h, 0)
+            DataGridView5.Rows(h).Cells(1).Value = Round(norm_log_dist_pdf(h, 1) * 1000) / 10.0
+
+            '----------------- 
+            norm_log_dist_cdf(h, 0) = ww
+            norm_log_dist_cdf(h, 1) = Numerics.Distributions.LogNormal.CDF(mu, sigma, ww)  'Log normal
+            DataGridView7.Rows(h).Cells(0).Value = norm_log_dist_cdf(h, 0)
+            DataGridView7.Rows(h).Cells(1).Value = (1000 - Round(norm_log_dist_cdf(h, 1) * 1000.0)) / 10.0
+        Next h
+
+        Draw_chart5()
 
     End Sub
 
