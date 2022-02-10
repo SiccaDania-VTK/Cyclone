@@ -22,22 +22,22 @@ Partial Class Form1
     'Do not modify it using the code editor.
     <System.Diagnostics.DebuggerStepThrough()>
     Private Sub InitializeComponent()
-        Dim ChartArea16 As System.Windows.Forms.DataVisualization.Charting.ChartArea = New System.Windows.Forms.DataVisualization.Charting.ChartArea()
-        Dim Legend16 As System.Windows.Forms.DataVisualization.Charting.Legend = New System.Windows.Forms.DataVisualization.Charting.Legend()
-        Dim Series16 As System.Windows.Forms.DataVisualization.Charting.Series = New System.Windows.Forms.DataVisualization.Charting.Series()
+        Dim ChartArea6 As System.Windows.Forms.DataVisualization.Charting.ChartArea = New System.Windows.Forms.DataVisualization.Charting.ChartArea()
+        Dim Legend6 As System.Windows.Forms.DataVisualization.Charting.Legend = New System.Windows.Forms.DataVisualization.Charting.Legend()
+        Dim Series6 As System.Windows.Forms.DataVisualization.Charting.Series = New System.Windows.Forms.DataVisualization.Charting.Series()
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(Form1))
-        Dim ChartArea17 As System.Windows.Forms.DataVisualization.Charting.ChartArea = New System.Windows.Forms.DataVisualization.Charting.ChartArea()
-        Dim Legend17 As System.Windows.Forms.DataVisualization.Charting.Legend = New System.Windows.Forms.DataVisualization.Charting.Legend()
-        Dim Series17 As System.Windows.Forms.DataVisualization.Charting.Series = New System.Windows.Forms.DataVisualization.Charting.Series()
-        Dim ChartArea19 As System.Windows.Forms.DataVisualization.Charting.ChartArea = New System.Windows.Forms.DataVisualization.Charting.ChartArea()
-        Dim Legend19 As System.Windows.Forms.DataVisualization.Charting.Legend = New System.Windows.Forms.DataVisualization.Charting.Legend()
-        Dim Series19 As System.Windows.Forms.DataVisualization.Charting.Series = New System.Windows.Forms.DataVisualization.Charting.Series()
-        Dim ChartArea20 As System.Windows.Forms.DataVisualization.Charting.ChartArea = New System.Windows.Forms.DataVisualization.Charting.ChartArea()
-        Dim Legend20 As System.Windows.Forms.DataVisualization.Charting.Legend = New System.Windows.Forms.DataVisualization.Charting.Legend()
-        Dim Series20 As System.Windows.Forms.DataVisualization.Charting.Series = New System.Windows.Forms.DataVisualization.Charting.Series()
-        Dim ChartArea18 As System.Windows.Forms.DataVisualization.Charting.ChartArea = New System.Windows.Forms.DataVisualization.Charting.ChartArea()
-        Dim Legend18 As System.Windows.Forms.DataVisualization.Charting.Legend = New System.Windows.Forms.DataVisualization.Charting.Legend()
-        Dim Series18 As System.Windows.Forms.DataVisualization.Charting.Series = New System.Windows.Forms.DataVisualization.Charting.Series()
+        Dim ChartArea7 As System.Windows.Forms.DataVisualization.Charting.ChartArea = New System.Windows.Forms.DataVisualization.Charting.ChartArea()
+        Dim Legend7 As System.Windows.Forms.DataVisualization.Charting.Legend = New System.Windows.Forms.DataVisualization.Charting.Legend()
+        Dim Series7 As System.Windows.Forms.DataVisualization.Charting.Series = New System.Windows.Forms.DataVisualization.Charting.Series()
+        Dim ChartArea9 As System.Windows.Forms.DataVisualization.Charting.ChartArea = New System.Windows.Forms.DataVisualization.Charting.ChartArea()
+        Dim Legend9 As System.Windows.Forms.DataVisualization.Charting.Legend = New System.Windows.Forms.DataVisualization.Charting.Legend()
+        Dim Series9 As System.Windows.Forms.DataVisualization.Charting.Series = New System.Windows.Forms.DataVisualization.Charting.Series()
+        Dim ChartArea10 As System.Windows.Forms.DataVisualization.Charting.ChartArea = New System.Windows.Forms.DataVisualization.Charting.ChartArea()
+        Dim Legend10 As System.Windows.Forms.DataVisualization.Charting.Legend = New System.Windows.Forms.DataVisualization.Charting.Legend()
+        Dim Series10 As System.Windows.Forms.DataVisualization.Charting.Series = New System.Windows.Forms.DataVisualization.Charting.Series()
+        Dim ChartArea8 As System.Windows.Forms.DataVisualization.Charting.ChartArea = New System.Windows.Forms.DataVisualization.Charting.ChartArea()
+        Dim Legend8 As System.Windows.Forms.DataVisualization.Charting.Legend = New System.Windows.Forms.DataVisualization.Charting.Legend()
+        Dim Series8 As System.Windows.Forms.DataVisualization.Charting.Series = New System.Windows.Forms.DataVisualization.Charting.Series()
         Me.OpenFileDialog1 = New System.Windows.Forms.OpenFileDialog()
         Me.TabPage10 = New System.Windows.Forms.TabPage()
         Me.Button10 = New System.Windows.Forms.Button()
@@ -852,17 +852,19 @@ Partial Class Form1
         Me.Label471 = New System.Windows.Forms.Label()
         Me.Label698 = New System.Windows.Forms.Label()
         Me.TabPage5 = New System.Windows.Forms.TabPage()
-        Me.Button9 = New System.Windows.Forms.Button()
+        Me.DataGridView7 = New System.Windows.Forms.DataGridView()
         Me.GroupBox15 = New System.Windows.Forms.GroupBox()
+        Me.Button9 = New System.Windows.Forms.Button()
         Me.NumericUpDown24 = New System.Windows.Forms.NumericUpDown()
         Me.Label212 = New System.Windows.Forms.Label()
         Me.NumericUpDown17 = New System.Windows.Forms.NumericUpDown()
         Me.Label77 = New System.Windows.Forms.Label()
         Me.Chart5 = New System.Windows.Forms.DataVisualization.Charting.Chart()
+        Me.DataGridView5 = New System.Windows.Forms.DataGridView()
         Me.BackgroundWorker1 = New System.ComponentModel.BackgroundWorker()
         Me.BackgroundWorker2 = New System.ComponentModel.BackgroundWorker()
-        Me.DataGridView5 = New System.Windows.Forms.DataGridView()
-        Me.DataGridView7 = New System.Windows.Forms.DataGridView()
+        Me.TableLayoutPanel4 = New System.Windows.Forms.TableLayoutPanel()
+        Me.TableLayoutPanel5 = New System.Windows.Forms.TableLayoutPanel()
         Me.TabPage10.SuspendLayout
         Me.GroupBox18.SuspendLayout
         CType(Me.Chart3, System.ComponentModel.ISupportInitialize).BeginInit
@@ -985,12 +987,14 @@ Partial Class Form1
         CType(Me.NumericUpDown10, System.ComponentModel.ISupportInitialize).BeginInit
         CType(Me.NumericUpDown23, System.ComponentModel.ISupportInitialize).BeginInit
         Me.TabPage5.SuspendLayout
+        CType(Me.DataGridView7, System.ComponentModel.ISupportInitialize).BeginInit
         Me.GroupBox15.SuspendLayout
         CType(Me.NumericUpDown24, System.ComponentModel.ISupportInitialize).BeginInit
         CType(Me.NumericUpDown17, System.ComponentModel.ISupportInitialize).BeginInit
         CType(Me.Chart5, System.ComponentModel.ISupportInitialize).BeginInit
         CType(Me.DataGridView5, System.ComponentModel.ISupportInitialize).BeginInit
-        CType(Me.DataGridView7, System.ComponentModel.ISupportInitialize).BeginInit
+        Me.TableLayoutPanel4.SuspendLayout
+        Me.TableLayoutPanel5.SuspendLayout
         Me.SuspendLayout
         '
         'OpenFileDialog1
@@ -1031,17 +1035,17 @@ Partial Class Form1
         '
         'Chart3
         '
-        ChartArea16.Name = "ChartArea1"
-        Me.Chart3.ChartAreas.Add(ChartArea16)
+        ChartArea6.Name = "ChartArea1"
+        Me.Chart3.ChartAreas.Add(ChartArea6)
         Me.Chart3.Dock = System.Windows.Forms.DockStyle.Fill
-        Legend16.Name = "Legend1"
-        Me.Chart3.Legends.Add(Legend16)
+        Legend6.Name = "Legend1"
+        Me.Chart3.Legends.Add(Legend6)
         Me.Chart3.Location = New System.Drawing.Point(3, 16)
         Me.Chart3.Name = "Chart3"
-        Series16.ChartArea = "ChartArea1"
-        Series16.Legend = "Legend1"
-        Series16.Name = "Series1"
-        Me.Chart3.Series.Add(Series16)
+        Series6.ChartArea = "ChartArea1"
+        Series6.Legend = "Legend1"
+        Series6.Name = "Series1"
+        Me.Chart3.Series.Add(Series6)
         Me.Chart3.Size = New System.Drawing.Size(551, 374)
         Me.Chart3.TabIndex = 81
         Me.Chart3.Text = "Chart3"
@@ -5186,16 +5190,16 @@ Partial Class Form1
         '
         'Chart2
         '
-        ChartArea17.Name = "ChartArea1"
-        Me.Chart2.ChartAreas.Add(ChartArea17)
-        Legend17.Name = "Legend1"
-        Me.Chart2.Legends.Add(Legend17)
+        ChartArea7.Name = "ChartArea1"
+        Me.Chart2.ChartAreas.Add(ChartArea7)
+        Legend7.Name = "Legend1"
+        Me.Chart2.Legends.Add(Legend7)
         Me.Chart2.Location = New System.Drawing.Point(883, 357)
         Me.Chart2.Name = "Chart2"
-        Series17.ChartArea = "ChartArea1"
-        Series17.Legend = "Legend1"
-        Series17.Name = "Series1"
-        Me.Chart2.Series.Add(Series17)
+        Series7.ChartArea = "ChartArea1"
+        Series7.Legend = "Legend1"
+        Series7.Name = "Series1"
+        Me.Chart2.Series.Add(Series7)
         Me.Chart2.Size = New System.Drawing.Size(382, 224)
         Me.Chart2.TabIndex = 80
         Me.Chart2.Text = "Chart2"
@@ -6625,18 +6629,18 @@ Partial Class Form1
         'Chart1
         '
         Me.Chart1.AllowDrop = True
-        ChartArea19.Name = "ChartArea1"
-        Me.Chart1.ChartAreas.Add(ChartArea19)
+        ChartArea9.Name = "ChartArea1"
+        Me.Chart1.ChartAreas.Add(ChartArea9)
         Me.Chart1.Dock = System.Windows.Forms.DockStyle.Fill
         Me.Chart1.Enabled = False
-        Legend19.Name = "Legend1"
-        Me.Chart1.Legends.Add(Legend19)
+        Legend9.Name = "Legend1"
+        Me.Chart1.Legends.Add(Legend9)
         Me.Chart1.Location = New System.Drawing.Point(0, 0)
         Me.Chart1.Name = "Chart1"
-        Series19.ChartArea = "ChartArea1"
-        Series19.Legend = "Legend1"
-        Series19.Name = "Series1"
-        Me.Chart1.Series.Add(Series19)
+        Series9.ChartArea = "ChartArea1"
+        Series9.Legend = "Legend1"
+        Series9.Name = "Series1"
+        Me.Chart1.Series.Add(Series9)
         Me.Chart1.Size = New System.Drawing.Size(1067, 658)
         Me.Chart1.TabIndex = 68
         Me.Chart1.Text = "Chart1"
@@ -7007,17 +7011,17 @@ Partial Class Form1
         'Chart4
         '
         Me.Chart4.AllowDrop = True
-        ChartArea20.Name = "ChartArea1"
-        Me.Chart4.ChartAreas.Add(ChartArea20)
+        ChartArea10.Name = "ChartArea1"
+        Me.Chart4.ChartAreas.Add(ChartArea10)
         Me.Chart4.Enabled = False
-        Legend20.Name = "Legend1"
-        Me.Chart4.Legends.Add(Legend20)
+        Legend10.Name = "Legend1"
+        Me.Chart4.Legends.Add(Legend10)
         Me.Chart4.Location = New System.Drawing.Point(451, 443)
         Me.Chart4.Name = "Chart4"
-        Series20.ChartArea = "ChartArea1"
-        Series20.Legend = "Legend1"
-        Series20.Name = "Series1"
-        Me.Chart4.Series.Add(Series20)
+        Series10.ChartArea = "ChartArea1"
+        Series10.Legend = "Legend1"
+        Series10.Name = "Series1"
+        Me.Chart4.Series.Add(Series10)
         Me.Chart4.Size = New System.Drawing.Size(333, 219)
         Me.Chart4.TabIndex = 69
         Me.Chart4.Text = "Chart4"
@@ -9943,9 +9947,7 @@ Partial Class Form1
         '
         'TabPage5
         '
-        Me.TabPage5.Controls.Add(Me.DataGridView7)
-        Me.TabPage5.Controls.Add(Me.GroupBox15)
-        Me.TabPage5.Controls.Add(Me.DataGridView5)
+        Me.TabPage5.Controls.Add(Me.TableLayoutPanel4)
         Me.TabPage5.Location = New System.Drawing.Point(4, 22)
         Me.TabPage5.Name = "TabPage5"
         Me.TabPage5.Padding = New System.Windows.Forms.Padding(3)
@@ -9954,15 +9956,14 @@ Partial Class Form1
         Me.TabPage5.Text = "Tools"
         Me.TabPage5.UseVisualStyleBackColor = True
         '
-        'Button9
+        'DataGridView7
         '
-        Me.Button9.Location = New System.Drawing.Point(658, 38)
-        Me.Button9.Name = "Button9"
-        Me.Button9.Size = New System.Drawing.Size(75, 23)
-        Me.Button9.TabIndex = 1
-        Me.Button9.Text = "Button9"
-        Me.Button9.UseVisualStyleBackColor = True
-        Me.Button9.Visible = False
+        Me.DataGridView7.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
+        Me.DataGridView7.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.DataGridView7.Location = New System.Drawing.Point(1070, 3)
+        Me.DataGridView7.Name = "DataGridView7"
+        Me.DataGridView7.Size = New System.Drawing.Size(196, 652)
+        Me.DataGridView7.TabIndex = 136
         '
         'GroupBox15
         '
@@ -9971,13 +9972,23 @@ Partial Class Form1
         Me.GroupBox15.Controls.Add(Me.Label212)
         Me.GroupBox15.Controls.Add(Me.NumericUpDown17)
         Me.GroupBox15.Controls.Add(Me.Label77)
-        Me.GroupBox15.Controls.Add(Me.Chart5)
-        Me.GroupBox15.Location = New System.Drawing.Point(29, 23)
+        Me.GroupBox15.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.GroupBox15.Location = New System.Drawing.Point(3, 3)
         Me.GroupBox15.Name = "GroupBox15"
-        Me.GroupBox15.Size = New System.Drawing.Size(949, 575)
+        Me.GroupBox15.Size = New System.Drawing.Size(855, 114)
         Me.GroupBox15.TabIndex = 0
         Me.GroupBox15.TabStop = False
         Me.GroupBox15.Text = "Log normal distribution"
+        '
+        'Button9
+        '
+        Me.Button9.Location = New System.Drawing.Point(724, 38)
+        Me.Button9.Name = "Button9"
+        Me.Button9.Size = New System.Drawing.Size(75, 23)
+        Me.Button9.TabIndex = 1
+        Me.Button9.Text = "Button9"
+        Me.Button9.UseVisualStyleBackColor = True
+        Me.Button9.Visible = False
         '
         'NumericUpDown24
         '
@@ -9986,7 +9997,7 @@ Partial Class Form1
         Me.NumericUpDown24.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.NumericUpDown24.ImeMode = System.Windows.Forms.ImeMode.Off
         Me.NumericUpDown24.Increment = New Decimal(New Integer() {1, 0, 0, 131072})
-        Me.NumericUpDown24.Location = New System.Drawing.Point(76, 43)
+        Me.NumericUpDown24.Location = New System.Drawing.Point(49, 57)
         Me.NumericUpDown24.Name = "NumericUpDown24"
         Me.NumericUpDown24.Size = New System.Drawing.Size(61, 22)
         Me.NumericUpDown24.TabIndex = 133
@@ -9997,11 +10008,11 @@ Partial Class Form1
         '
         Me.Label212.AutoSize = True
         Me.Label212.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label212.Location = New System.Drawing.Point(143, 45)
+        Me.Label212.Location = New System.Drawing.Point(116, 60)
         Me.Label212.Name = "Label212"
-        Me.Label212.Size = New System.Drawing.Size(452, 16)
+        Me.Label212.Size = New System.Drawing.Size(243, 16)
         Me.Label212.TabIndex = 134
-        Me.Label212.Text = "Sigma, standard deviation of the natural logarithms of the particle diameters"
+        Me.Label212.Text = "Standard deviation natural-log diameter"
         '
         'NumericUpDown17
         '
@@ -10010,7 +10021,7 @@ Partial Class Form1
         Me.NumericUpDown17.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.NumericUpDown17.ImeMode = System.Windows.Forms.ImeMode.Off
         Me.NumericUpDown17.Increment = New Decimal(New Integer() {1, 0, 0, 131072})
-        Me.NumericUpDown17.Location = New System.Drawing.Point(76, 19)
+        Me.NumericUpDown17.Location = New System.Drawing.Point(49, 31)
         Me.NumericUpDown17.Name = "NumericUpDown17"
         Me.NumericUpDown17.Size = New System.Drawing.Size(61, 22)
         Me.NumericUpDown17.TabIndex = 131
@@ -10021,43 +10032,70 @@ Partial Class Form1
         '
         Me.Label77.AutoSize = True
         Me.Label77.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label77.Location = New System.Drawing.Point(143, 21)
+        Me.Label77.Location = New System.Drawing.Point(116, 33)
         Me.Label77.Name = "Label77"
-        Me.Label77.Size = New System.Drawing.Size(354, 16)
+        Me.Label77.Size = New System.Drawing.Size(211, 16)
         Me.Label77.TabIndex = 132
-        Me.Label77.Text = "mu, mean of the natural logarithms of the particle diameters"
+        Me.Label77.Text = "mean natural-log particle diameter"
         '
         'Chart5
         '
-        ChartArea18.Name = "ChartArea1"
-        Me.Chart5.ChartAreas.Add(ChartArea18)
-        Legend18.Name = "Legend1"
-        Me.Chart5.Legends.Add(Legend18)
-        Me.Chart5.Location = New System.Drawing.Point(6, 71)
+        ChartArea8.Name = "ChartArea1"
+        Me.Chart5.ChartAreas.Add(ChartArea8)
+        Me.Chart5.Dock = System.Windows.Forms.DockStyle.Fill
+        Legend8.Name = "Legend1"
+        Me.Chart5.Legends.Add(Legend8)
+        Me.Chart5.Location = New System.Drawing.Point(3, 123)
+        Me.Chart5.MinimumSize = New System.Drawing.Size(500, 500)
         Me.Chart5.Name = "Chart5"
-        Series18.ChartArea = "ChartArea1"
-        Series18.Legend = "Legend1"
-        Series18.Name = "Series1"
-        Me.Chart5.Series.Add(Series18)
-        Me.Chart5.Size = New System.Drawing.Size(772, 487)
+        Series8.ChartArea = "ChartArea1"
+        Series8.Legend = "Legend1"
+        Series8.Name = "Series1"
+        Me.Chart5.Series.Add(Series8)
+        Me.Chart5.Size = New System.Drawing.Size(855, 527)
         Me.Chart5.TabIndex = 81
         Me.Chart5.Text = "Chart5"
         '
         'DataGridView5
         '
         Me.DataGridView5.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
-        Me.DataGridView5.Location = New System.Drawing.Point(984, 23)
+        Me.DataGridView5.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.DataGridView5.Location = New System.Drawing.Point(870, 3)
         Me.DataGridView5.Name = "DataGridView5"
-        Me.DataGridView5.Size = New System.Drawing.Size(132, 455)
+        Me.DataGridView5.Size = New System.Drawing.Size(194, 652)
         Me.DataGridView5.TabIndex = 135
         '
-        'DataGridView7
+        'TableLayoutPanel4
         '
-        Me.DataGridView7.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
-        Me.DataGridView7.Location = New System.Drawing.Point(1122, 23)
-        Me.DataGridView7.Name = "DataGridView7"
-        Me.DataGridView7.Size = New System.Drawing.Size(132, 455)
-        Me.DataGridView7.TabIndex = 136
+        Me.TableLayoutPanel4.ColumnCount = 3
+        Me.TableLayoutPanel4.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100.0!))
+        Me.TableLayoutPanel4.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 200.0!))
+        Me.TableLayoutPanel4.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 202.0!))
+        Me.TableLayoutPanel4.Controls.Add(Me.DataGridView7, 2, 0)
+        Me.TableLayoutPanel4.Controls.Add(Me.DataGridView5, 1, 0)
+        Me.TableLayoutPanel4.Controls.Add(Me.TableLayoutPanel5, 0, 0)
+        Me.TableLayoutPanel4.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.TableLayoutPanel4.Location = New System.Drawing.Point(3, 3)
+        Me.TableLayoutPanel4.Name = "TableLayoutPanel4"
+        Me.TableLayoutPanel4.RowCount = 1
+        Me.TableLayoutPanel4.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100.0!))
+        Me.TableLayoutPanel4.Size = New System.Drawing.Size(1269, 658)
+        Me.TableLayoutPanel4.TabIndex = 137
+        '
+        'TableLayoutPanel5
+        '
+        Me.TableLayoutPanel5.ColumnCount = 1
+        Me.TableLayoutPanel5.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 200.0!))
+        Me.TableLayoutPanel5.Controls.Add(Me.Chart5, 0, 1)
+        Me.TableLayoutPanel5.Controls.Add(Me.GroupBox15, 0, 0)
+        Me.TableLayoutPanel5.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.TableLayoutPanel5.Location = New System.Drawing.Point(3, 3)
+        Me.TableLayoutPanel5.Name = "TableLayoutPanel5"
+        Me.TableLayoutPanel5.RowCount = 2
+        Me.TableLayoutPanel5.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 120.0!))
+        Me.TableLayoutPanel5.RowStyles.Add(New System.Windows.Forms.RowStyle())
+        Me.TableLayoutPanel5.Size = New System.Drawing.Size(861, 652)
+        Me.TableLayoutPanel5.TabIndex = 137
         '
         'Form1
         '
@@ -10231,13 +10269,15 @@ Partial Class Form1
         CType(Me.NumericUpDown10, System.ComponentModel.ISupportInitialize).EndInit
         CType(Me.NumericUpDown23, System.ComponentModel.ISupportInitialize).EndInit
         Me.TabPage5.ResumeLayout(False)
+        CType(Me.DataGridView7, System.ComponentModel.ISupportInitialize).EndInit
         Me.GroupBox15.ResumeLayout(False)
         Me.GroupBox15.PerformLayout
         CType(Me.NumericUpDown24, System.ComponentModel.ISupportInitialize).EndInit
         CType(Me.NumericUpDown17, System.ComponentModel.ISupportInitialize).EndInit
         CType(Me.Chart5, System.ComponentModel.ISupportInitialize).EndInit
         CType(Me.DataGridView5, System.ComponentModel.ISupportInitialize).EndInit
-        CType(Me.DataGridView7, System.ComponentModel.ISupportInitialize).EndInit
+        Me.TableLayoutPanel4.ResumeLayout(False)
+        Me.TableLayoutPanel5.ResumeLayout(False)
         Me.ResumeLayout(False)
 
     End Sub
@@ -11066,4 +11106,6 @@ Partial Class Form1
     Friend WithEvents Label212 As Label
     Friend WithEvents DataGridView5 As DataGridView
     Friend WithEvents DataGridView7 As DataGridView
+    Friend WithEvents TableLayoutPanel4 As TableLayoutPanel
+    Friend WithEvents TableLayoutPanel5 As TableLayoutPanel
 End Class

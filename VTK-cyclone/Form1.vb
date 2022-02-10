@@ -721,6 +721,7 @@ Public Class Form1
         "Use cyclone as 1 stage before AA850 to prevent blocking"
 
         TextBox187.Text = "Log" & vbCrLf &
+        "10-02-2022, Lognormal Distribution tool added" & vbCrLf &
         "13-11-2021, Now .NET framework 4.8" & vbCrLf &
         "09-11-2021, Tab Steel, Stress# 1 and stress #2 added still under construction" & vbCrLf &
         "02-11-2021, Checkbox added @ viscosity to enable manual input" & vbCrLf &
@@ -760,6 +761,7 @@ Public Class Form1
         Design_stress()
 
         init = True                     'init is now done
+        Draw_chart5()
     End Sub
 
     Private Sub Button1_Click(sender As Object, e As EventArgs) Handles button1.Click, TabPage1.Enter, numericUpDown2.ValueChanged, NumericUpDown1.ValueChanged, numericUpDown5.ValueChanged, NumericUpDown20.ValueChanged, NumericUpDown19.ValueChanged, NumericUpDown18.ValueChanged, ComboBox1.SelectedIndexChanged, NumericUpDown4.ValueChanged, NumericUpDown34.ValueChanged, NumericUpDown33.ValueChanged, ComboBox2.SelectedIndexChanged, NumericUpDown43.ValueChanged, NumericUpDown22.ValueChanged, CheckBox3.CheckedChanged, CheckBox2.CheckedChanged, NumericUpDown3.ValueChanged, CheckBox20.CheckedChanged, NumericUpDown6.ValueChanged
@@ -1691,6 +1693,7 @@ Public Class Form1
             .ChartAreas("ChartArea0").AxisY.Minimum = 0     'Loss
             .ChartAreas("ChartArea0").AxisY.Maximum = 1.0   'Loss
             .ChartAreas("ChartArea0").AxisX.Minimum = 0.1   '[mu] Particle size
+            .ChartAreas("ChartArea0").AxisX.Maximum = 100   '[mu] Particle size
 
             '------ now present-------------
             For h = 0 To norm_log_dist_pdf.GetLength(0) - 1   'Fill line chart
@@ -1701,7 +1704,9 @@ Public Class Form1
                     .Series(1).Points.AddXY(norm_log_dist_cdf(h, 0), norm_log_dist_cdf(h, 1))   'Log normal
                 End If
             Next h
+            Chart5.Refresh()
         End With
+
     End Sub
 
     Private Sub Button2_Click(sender As Object, e As EventArgs) Handles TabPage9.Enter, CheckBox6.CheckedChanged, CheckBox7.CheckedChanged, CheckBox4.CheckedChanged, CheckBox9.CheckedChanged, CheckBox8.CheckedChanged, CheckBox10.CheckedChanged, CheckBox5.CheckedChanged, CheckBox12.CheckedChanged, CheckBox11.CheckedChanged, CheckBox1.CheckedChanged, CheckBox13.CheckedChanged, CheckBox14.CheckedChanged, CheckBox15.CheckedChanged, CheckBox16.CheckedChanged, CheckBox17.CheckedChanged, CheckBox18.CheckedChanged, CheckBox19.CheckedChanged, RadioButton2.CheckedChanged, RadioButton1.CheckedChanged
@@ -4113,7 +4118,7 @@ Public Class Form1
         End If
     End Sub
 
-    Private Sub Button9_Click(sender As Object, e As EventArgs) Handles Button9.Click, NumericUpDown24.ValueChanged, NumericUpDown17.ValueChanged
+    Private Sub Button9_Click(sender As Object, e As EventArgs) Handles Button9.Click, NumericUpDown24.ValueChanged, NumericUpDown17.ValueChanged, NumericUpDown17.Enter
         'https://numerics.mathdotnet.com/api/MathNet.Numerics.Distributions/index.htm
         'https://www.weibull.com/hotwire/issue47/relbasics47.htm
 
@@ -4145,7 +4150,7 @@ Public Class Form1
             norm_log_dist_pdf(h, 0) = ww
             norm_log_dist_pdf(h, 1) = Numerics.Distributions.LogNormal.PDF(mu, sigma, ww)  'Log normal
             DataGridView5.Rows(h).Cells(0).Value = norm_log_dist_pdf(h, 0)
-            DataGridView5.Rows(h).Cells(1).Value = Round(norm_log_dist_pdf(h, 1) * 1000) / 10.0
+            DataGridView5.Rows(h).Cells(1).Value = Round(norm_log_dist_pdf(h, 1) * 1000.0) / 10.0
 
             '----------------- 
             norm_log_dist_cdf(h, 0) = ww
