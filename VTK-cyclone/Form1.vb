@@ -5,6 +5,8 @@ Imports System.Math
 Imports System.Threading
 Imports System.Windows.Forms.DataVisualization.Charting
 Imports Word = Microsoft.Office.Interop.Word
+Imports MathNet
+
 '------- Input data------
 'This structure is required for the different operating cases of a cyclone
 'Therefore the struct does only contain  the input information
@@ -4066,4 +4068,13 @@ Public Class Form1
             TextBox144.BackColor = CType(IIf(σm > _fs, Color.Red, Color.LightGreen), Color)
         End If
     End Sub
+
+    Private Sub Button9_Click(sender As Object, e As EventArgs) Handles Button9.Click
+
+        TextBox136.Clear()
+        'https://numerics.mathdotnet.com/api/MathNet.Numerics.Distributions/index.htm
+        TextBox136.Text &= MathNet.Numerics.Distributions.LogNormal.PDF(4, 10, 4).ToString
+
+    End Sub
+
 End Class
