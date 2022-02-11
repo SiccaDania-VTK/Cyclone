@@ -448,6 +448,14 @@ Public Class Form1
    "1.4401 (316)   ;204;177;162;147;137;127;120;115;112;110;108; max 550c;ss",
    "1.4404 (316L)  ;200;166;152;137;127;118;113;108;103;100; 98; max 550c;ss"}
 
+    'Typical Lognatural distribution; mu; sigma
+    Public Shared typ_distri() As String = {
+    "Free selection;0;0",
+    "Corn;2.5;0.4",
+    "Chickpea;3.2;1.3",
+    "Potato;3.6;0.54",
+    "Maltodex;4.4;1.3"}
+
     'Chapter 6, Max allowed values for pressure parts
     Public Shared chap6() As String = {
    "Chap 6.2, Steel, safety, rupture < 30%; 1.5",
@@ -599,18 +607,18 @@ Public Class Form1
             ComboBox5.Items.Add(words(0))
         Next hh
 
+        ComboBox6.Items.Clear()
+        For hh = 0 To (typ_distri.Length - 1)  'Fill combobox distribution
+            words = typ_distri(hh).Split(separators, StringSplitOptions.None)
+            ComboBox6.Items.Add(words(0))
+        Next hh
+
         ComboBox1.SelectedIndex = 2                 'Select Cyclone type AC_435
         ComboBox2.SelectedIndex = 5                 'Select Cyclone type AC_850
         ComboBox3.SelectedIndex = 0                 'Weld joint efficiency
         ComboBox4.SelectedIndex = 1                 'chapter6
         ComboBox5.SelectedIndex = 3                 'Steel 304L
-
-        TextBox136.Clear()
-        TextBox136.Text &= "Typical LogNatural Distribution" & vbCrLf
-        TextBox136.Text &= "Corn" & vbTab & "mu= 2.5, sigma= 0.40" & vbCrLf
-        TextBox136.Text &= "Chickpea" & vbTab & "mu= 3.2, sigma= 1.30" & vbCrLf
-        TextBox136.Text &= "Potato" & vbTab & "mu= 3.6, sigma= 0.54" & vbCrLf
-        TextBox136.Text &= "Maltodex. " & "mu= 4.4, sigma= 1.30" & vbCrLf
+        ComboBox6.SelectedIndex = 0                 'Distribution
 
         TextBox148.Text = "Het d50 getal geeft de diameter aan waarbij 50% verloren gat 50% wordt gevangen." & vbCrLf
         TextBox148.Text &= "Het d100 getal geeft de diameter aan waarbij 100% verloren gaat." & vbCrLf
@@ -1697,15 +1705,16 @@ Public Class Form1
             .Series.Add("Series52")
             .Series(2).ChartArea = "ChartArea0"
             .Series(2).ChartType = DataVisualization.Charting.SeriesChartType.Line
-            .Series(2).BorderWidth = 2
+            .Series(2).BorderWidth = 3
             .Series(2).IsVisibleInLegend = False
+            .Series(2).BorderDashStyle = ChartDashStyle.DashDot
 
             .Titles.Add("Log Normal Distribution")
             .ChartAreas("ChartArea0").AxisX.Title = "Particle diameter [mu]"
             .ChartAreas("ChartArea0").AxisX.IsLogarithmic = True
-            .ChartAreas("ChartArea0").AxisY.Title = "Particle size percentage [%]"
+            .ChartAreas("ChartArea0").AxisY.Title = "Exit loss [%]"
             .ChartAreas("ChartArea0").AxisY.Minimum = 0D     'Loss
-            .ChartAreas("ChartArea0").AxisY.Maximum = 100D '[%] weight
+            .ChartAreas("ChartArea0").AxisY.Maximum = 100D   '[%] weight
             .ChartAreas("ChartArea0").AxisX.Minimum = 0.1D   '[mu] Particle size
             .ChartAreas("ChartArea0").AxisX.Maximum = 1000D  '[mu] Particle size
 
@@ -1783,6 +1792,7 @@ Public Class Form1
             Draw_chart2(Chart2, 0)      'Present the results loss curve
             Screen_contrast()           'White text on ted background 
             ResumeLayout()              'Calcu is done update screen
+            Calc_plot_Distribution()
             ProgressBar1.Visible = False
         End If
         'Debug.WriteLine("Calc_sequence()")
@@ -4191,4 +4201,28 @@ Public Class Form1
         Draw_chart5()
     End Sub
 
+    Private Sub ComboBox6_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboBox6.SelectedIndexChanged
+        With ComboBox6
+            Select Case True
+                Case .SelectedIndex = 0
+                Case .SelectedIndex = 1                 'Corn
+                    NumericUpDown17.Value = 2.5D 'mu
+                    NumericUpDown24.Value = 0.4D 'sigma
+                Case .SelectedIndex = 2                 'Chickpea
+                    NumericUpDown17.Value = 3.2D 'mu
+                    NumericUpDown24.Value = 1.3D 'sigma
+                Case .SelectedIndex = 3                 'Potato
+                    NumericUpDown17.Value = 3.6D 'mu
+                    NumericUpDown24.Value = 0.54D 'sigma
+                Case .SelectedIndex = 4                 'Maltodextrine
+                    NumericUpDown17.Value = 4.4D 'mu
+                    NumericUpDown24.Value = 1.3D 'sigma
+                Case Else
+            End Select
+
+            .BackColor = CType(IIf(.SelectedIndex > 0, Color.LightGreen, Color.White), Color)
+
+        End With
+        Calc_plot_Distribution()
+    End Sub
 End Class
