@@ -4,8 +4,8 @@ Imports System.Management
 Imports System.Math
 Imports System.Threading
 Imports System.Windows.Forms.DataVisualization.Charting
-Imports Word = Microsoft.Office.Interop.Word
 Imports MathNet
+Imports Word = Microsoft.Office.Interop.Word
 
 '------- Input data------
 'This structure is required for the different operating cases of a cyclone
@@ -21,8 +21,6 @@ Imports MathNet
 
     '====== INPUT DATA ======
     Public FlowT As Double          '[Am3/h] Air flow 
-    'Public dia_big() As Double      '[mu] Particle diameter inlet cyclone (input data)
-    'Public class_load() As Double   '[% weight] group_weight_cum in de inlaat stroom 
     Public ro_gas As Double         '[kg/hr] Density 
     Public ro_solid As Double       '[kg/hr] Density 
     Public visco As Double          '[Centi Poise] Visco in 
@@ -159,8 +157,8 @@ Public Class Form1
     Public Shared joint_eff() As String = {"0.7", "0.85", "1.0"}    'Welding
 
     '===== Testing with Normal-log distribution ======
-    Public norm_log_dist_pdf(100, 2) As Double   'Normal-log distribution
-    Public norm_log_dist_cdf(100, 2) As Double   'Normal-log distribution
+    Public norm_log_dist_pdf(300, 2) As Double   'Normal-log distribution, Bell Curve
+    Public norm_log_dist_cdf(300, 2) As Double   'Normal-log distribution, Cumulative wght
 
     'Type AC;Inlaatbreedte;Inlaathoogte;Inlaatlengte;Inlaat hartmaat;Inlaat afschuining;
     'Uitlaat keeldia inw.;Uitlaat flensdiameter inw.;Lengte insteekpijp inw.;
@@ -765,6 +763,7 @@ Public Class Form1
 
         init = True                     'init is now done
         Draw_chart5()
+        Calc_plot_Distribution()
     End Sub
 
     Private Sub Button1_Click(sender As Object, e As EventArgs) Handles button1.Click, TabPage1.Enter, numericUpDown2.ValueChanged, NumericUpDown1.ValueChanged, numericUpDown5.ValueChanged, NumericUpDown20.ValueChanged, NumericUpDown19.ValueChanged, NumericUpDown18.ValueChanged, ComboBox1.SelectedIndexChanged, NumericUpDown4.ValueChanged, NumericUpDown34.ValueChanged, NumericUpDown33.ValueChanged, ComboBox2.SelectedIndexChanged, NumericUpDown43.ValueChanged, NumericUpDown22.ValueChanged, CheckBox3.CheckedChanged, CheckBox2.CheckedChanged, NumericUpDown3.ValueChanged, CheckBox20.CheckedChanged, NumericUpDown6.ValueChanged
@@ -796,7 +795,6 @@ Public Class Form1
         '====  Inlet Conditions stage #1 ====
         _cees(ks).Temp = NumericUpDown18.Value                         'Temperature [c] 
         _cees(ks).p1_abs = NumericUpDown19.Value * 100.0 + 101325      'Pressure [Pa]
-
 
         Dim R_gas As Double = 1000 * _Gasconstant / NumericUpDown3.Value             '[J.kg.K]  
         _cees(ks).Ro_gas1_Am3 = _cees(ks).p1_abs / (R_gas * (_cees(ks).Temp + 273.15))  '[kg/Am3]
@@ -1489,24 +1487,24 @@ Public Class Form1
         '------ Data from DataGridView2 -------------
         If CheckBox16.Checked Then
             For h = 0 To DataGridView2.Rows.Count - 1                   'Fill line chart
-                a = CDbl((DataGridView2.Rows(h).Cells(0).Value))        'Particle size
-                b = CDbl((DataGridView2.Rows(h).Cells(5).Value))        'Get data eff1
+                a = CDbl(DataGridView2.Rows(h).Cells(0).Value)        'Particle size
+                b = CDbl(DataGridView2.Rows(h).Cells(5).Value)        'Get data eff1
                 ch.Series(4).Points.AddXY(a, b)                         'Plot eff #1
             Next h
         End If
 
         If CheckBox17.Checked Then
             For h = 0 To DataGridView2.Rows.Count - 1                   'Fill line chart
-                a = CDbl((DataGridView2.Rows(h).Cells(0).Value))        'Particle size
-                b = CDbl((DataGridView3.Rows(h).Cells(5).Value))        'Get data eff2
+                a = CDbl(DataGridView2.Rows(h).Cells(0).Value)        'Particle size
+                b = CDbl(DataGridView3.Rows(h).Cells(5).Value)        'Get data eff2
                 ch.Series(5).Points.AddXY(a, b)                         'Plot eff #2
             Next h
         End If
 
         If CheckBox18.Checked Then
             For h = 0 To DataGridView2.Rows.Count - 1                   'Fill line chart
-                a = CDbl((DataGridView4.Rows(h).Cells(0).Value))        'Particle size
-                b = CDbl((DataGridView4.Rows(h).Cells(9).Value))        'get data Eff 1&2 [%]
+                a = CDbl(DataGridView4.Rows(h).Cells(0).Value)        'Particle size
+                b = CDbl(DataGridView4.Rows(h).Cells(9).Value)        'get data Eff 1&2 [%]
                 ch.Series(6).Points.AddXY(a, b)                         'Plot Eff 1&2 [%]
             Next h
         End If
@@ -1517,16 +1515,16 @@ Public Class Form1
 
         If CheckBox19.Checked Then
             For h = 0 To DataGridView4.Rows.Count - 1                   'Fill line chart
-                a = CDbl((DataGridView4.Rows(h).Cells(0).Value))        'Particle size
-                b = CDbl((DataGridView4.Rows(h).Cells(5).Value))        'Get data Loss 1
+                a = CDbl(DataGridView4.Rows(h).Cells(0).Value)        'Particle size
+                b = CDbl(DataGridView4.Rows(h).Cells(5).Value)        'Get data Loss 1
                 ch.Series(2).Points.AddXY(a, b)                         'Plot Loss 1
             Next
         End If
 
         If CheckBox6.Checked Then
             For h = 0 To DataGridView4.Rows.Count - 1                   'Fill line chart
-                a = CDbl((DataGridView4.Rows(h).Cells(0).Value))        'Particle size
-                b = CDbl((DataGridView3.Rows(h).Cells(14).Value))       'Get data Loss 2
+                a = CDbl(DataGridView4.Rows(h).Cells(0).Value)        'Particle size
+                b = CDbl(DataGridView3.Rows(h).Cells(14).Value)       'Get data Loss 2
                 ch.Series(3).Points.AddXY(a, b)                         'Plot Loss 2
             Next h
         End If
@@ -1689,14 +1687,20 @@ Public Class Form1
             .Series(1).BorderWidth = 2
             .Series(1).IsVisibleInLegend = False
 
+            .Series.Add("Series52")
+            .Series(2).ChartArea = "ChartArea0"
+            .Series(2).ChartType = DataVisualization.Charting.SeriesChartType.Line
+            .Series(2).BorderWidth = 2
+            .Series(2).IsVisibleInLegend = False
+
             .Titles.Add("Log Normal Distribution")
             .ChartAreas("ChartArea0").AxisX.Title = "Particle diameter [mu]"
             .ChartAreas("ChartArea0").AxisX.IsLogarithmic = True
             .ChartAreas("ChartArea0").AxisY.Title = "Particle size percentage [%]"
             .ChartAreas("ChartArea0").AxisY.Minimum = 0     'Loss
-            .ChartAreas("ChartArea0").AxisY.Maximum = 1.0   'Loss
+            .ChartAreas("ChartArea0").AxisY.Maximum = 100.0 '[%] weight
             .ChartAreas("ChartArea0").AxisX.Minimum = 0.1   '[mu] Particle size
-            .ChartAreas("ChartArea0").AxisX.Maximum = 100   '[mu] Particle size
+            .ChartAreas("ChartArea0").AxisX.Maximum = 1000  '[mu] Particle size
 
             '------ now present-------------
             For h = 0 To norm_log_dist_pdf.GetLength(0) - 1   'Fill line chart
@@ -1707,10 +1711,19 @@ Public Class Form1
                     .Series(1).Points.AddXY(norm_log_dist_cdf(h, 0), norm_log_dist_cdf(h, 1))   'Log normal
                 End If
             Next h
-            Chart5.Refresh()
-        End With
 
+            '------- PSD input data -----
+            Dim a, b As Double
+            If CheckBox21.Checked Then
+                For h = 0 To DataGridView6.Rows.Count - 1                   'Fill line chart
+                    a = CDbl(DataGridView6.Rows(h).Cells(0).Value)        'Particle upper diameter
+                    b = CDbl(DataGridView6.Rows(h).Cells(1).Value)        'Cum weight
+                    .Series(2).Points.AddXY(a, b)                           'PSD 
+                Next
+            End If
+        End With
     End Sub
+
 
     Private Sub Button2_Click(sender As Object, e As EventArgs) Handles TabPage9.Enter, CheckBox6.CheckedChanged, CheckBox7.CheckedChanged, CheckBox4.CheckedChanged, CheckBox9.CheckedChanged, CheckBox8.CheckedChanged, CheckBox10.CheckedChanged, CheckBox5.CheckedChanged, CheckBox12.CheckedChanged, CheckBox11.CheckedChanged, CheckBox1.CheckedChanged, CheckBox13.CheckedChanged, CheckBox14.CheckedChanged, CheckBox15.CheckedChanged, CheckBox16.CheckedChanged, CheckBox17.CheckedChanged, CheckBox18.CheckedChanged, CheckBox19.CheckedChanged, RadioButton2.CheckedChanged, RadioButton1.CheckedChanged
         Draw_chart2(Chart2, 0)      'Present the results loss curve
@@ -3216,7 +3229,7 @@ Public Class Form1
         loss = 100.0 - loss
         For row = 1 To DataGridView4.Rows.Count - 1
             If loss <= CDbl(DataGridView4.Rows(row).Cells(9).Value) Then
-                Return CDbl((DataGridView4.Rows(row).Cells(0).Value))
+                Return CDbl(DataGridView4.Rows(row).Cells(0).Value)
                 Exit For
             End If
         Next
@@ -4121,7 +4134,10 @@ Public Class Form1
         End If
     End Sub
 
-    Private Sub Button9_Click(sender As Object, e As EventArgs) Handles Button9.Click, NumericUpDown24.ValueChanged, NumericUpDown17.ValueChanged, NumericUpDown17.Enter
+    Private Sub Button9_Click(sender As Object, e As EventArgs) Handles Button9.Click, NumericUpDown24.ValueChanged, NumericUpDown17.ValueChanged, NumericUpDown17.Enter, CheckBox21.CheckedChanged, Chart5.Enter
+        Calc_plot_Distribution()
+    End Sub
+    Private Sub Calc_plot_Distribution()
         'https://numerics.mathdotnet.com/api/MathNet.Numerics.Distributions/index.htm
         'https://www.weibull.com/hotwire/issue47/relbasics47.htm
 
@@ -4132,38 +4148,40 @@ Public Class Form1
         With DataGridView5
             .ColumnCount = 2
             .Rows.Clear()
-            .Rows.Add(100)
+            .Rows.Add(300)
             .RowHeadersVisible = False
             .AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill
             .Columns(0).HeaderText = "Dia [mu]"
-            .Columns(1).HeaderText = "Perc"
+            .Columns(1).HeaderText = "Bell [%]"
         End With
         With DataGridView7
             .ColumnCount = 2
             .Rows.Clear()
-            .Rows.Add(100)
+            .Rows.Add(300)
             .RowHeadersVisible = False
             .AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill
             .Columns(0).HeaderText = "Dia [mu]"
-            .Columns(1).HeaderText = "Perc"
+            .Columns(1).HeaderText = "Cum wght[%]"
         End With
 
         For h = 0 To norm_log_dist_pdf.GetLength(0) - 1   'Fill line chart
-            ww = h / 4
+            ww = h / 2
+            '------------- Bell curve ----------------
             norm_log_dist_pdf(h, 0) = ww
-            norm_log_dist_pdf(h, 1) = Numerics.Distributions.LogNormal.PDF(mu, sigma, ww)  'Log normal
-            DataGridView5.Rows(h).Cells(0).Value = norm_log_dist_pdf(h, 0)
-            DataGridView5.Rows(h).Cells(1).Value = Round(norm_log_dist_pdf(h, 1) * 1000.0) / 10.0
+            norm_log_dist_pdf(h, 1) = Numerics.Distributions.LogNormal.PDF(mu, sigma, ww) * 100.0  '[%] Lognormal
 
-            '----------------- 
+            '------------- S curve ---- 
             norm_log_dist_cdf(h, 0) = ww
-            norm_log_dist_cdf(h, 1) = Numerics.Distributions.LogNormal.CDF(mu, sigma, ww)  'Log normal
-            DataGridView7.Rows(h).Cells(0).Value = norm_log_dist_cdf(h, 0)
-            DataGridView7.Rows(h).Cells(1).Value = (1000 - Round(norm_log_dist_cdf(h, 1) * 1000.0)) / 10.0
+            norm_log_dist_cdf(h, 1) = (1.0 - Numerics.Distributions.LogNormal.CDF(mu, sigma, ww)) * 100.0  '[%] Lognormal
+
+            '------------- Copy to the data grids ----
+            DataGridView5.Rows(h).Cells(0).Value = Round(norm_log_dist_pdf(h, 0), 2)    'Bell Curve
+            DataGridView5.Rows(h).Cells(1).Value = Round(norm_log_dist_pdf(h, 1), 2)    'Bell Curve
+            DataGridView7.Rows(h).Cells(0).Value = Round(norm_log_dist_cdf(h, 0), 2)    'Cum weight
+            DataGridView7.Rows(h).Cells(1).Value = Round(norm_log_dist_cdf(h, 1), 2)    'Cum weight
         Next h
 
         Draw_chart5()
-
     End Sub
 
 End Class
