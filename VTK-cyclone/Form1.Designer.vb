@@ -858,6 +858,7 @@ Partial Class Form1
         Me.TableLayoutPanel5 = New System.Windows.Forms.TableLayoutPanel()
         Me.Chart5 = New System.Windows.Forms.DataVisualization.Charting.Chart()
         Me.GroupBox15 = New System.Windows.Forms.GroupBox()
+        Me.CheckBox21 = New System.Windows.Forms.CheckBox()
         Me.Button9 = New System.Windows.Forms.Button()
         Me.NumericUpDown24 = New System.Windows.Forms.NumericUpDown()
         Me.Label212 = New System.Windows.Forms.Label()
@@ -865,7 +866,7 @@ Partial Class Form1
         Me.Label77 = New System.Windows.Forms.Label()
         Me.BackgroundWorker1 = New System.ComponentModel.BackgroundWorker()
         Me.BackgroundWorker2 = New System.ComponentModel.BackgroundWorker()
-        Me.CheckBox21 = New System.Windows.Forms.CheckBox()
+        Me.TextBox136 = New System.Windows.Forms.TextBox()
         Me.TabPage10.SuspendLayout
         Me.GroupBox18.SuspendLayout
         CType(Me.Chart3, System.ComponentModel.ISupportInitialize).BeginInit
@@ -1008,7 +1009,7 @@ Partial Class Form1
         Me.TabPage10.Controls.Add(Me.GroupBox18)
         Me.TabPage10.Location = New System.Drawing.Point(4, 22)
         Me.TabPage10.Name = "TabPage10"
-        Me.TabPage10.Padding = New System.Windows.Forms.Padding(3, 3, 3, 3)
+        Me.TabPage10.Padding = New System.Windows.Forms.Padding(3)
         Me.TabPage10.Size = New System.Drawing.Size(1275, 664)
         Me.TabPage10.TabIndex = 9
         Me.TabPage10.Text = "High dust load"
@@ -1057,7 +1058,7 @@ Partial Class Form1
         Me.TabPage8.Controls.Add(Me.TextBox24)
         Me.TabPage8.Location = New System.Drawing.Point(4, 22)
         Me.TabPage8.Name = "TabPage8"
-        Me.TabPage8.Padding = New System.Windows.Forms.Padding(3, 3, 3, 3)
+        Me.TabPage8.Padding = New System.Windows.Forms.Padding(3)
         Me.TabPage8.Size = New System.Drawing.Size(1275, 664)
         Me.TabPage8.TabIndex = 7
         Me.TabPage8.Text = "Log"
@@ -1094,7 +1095,7 @@ Partial Class Form1
         Me.TabPage7.Controls.Add(Me.PictureBox1)
         Me.TabPage7.Location = New System.Drawing.Point(4, 22)
         Me.TabPage7.Name = "TabPage7"
-        Me.TabPage7.Padding = New System.Windows.Forms.Padding(3, 3, 3, 3)
+        Me.TabPage7.Padding = New System.Windows.Forms.Padding(3)
         Me.TabPage7.Size = New System.Drawing.Size(1275, 664)
         Me.TabPage7.TabIndex = 6
         Me.TabPage7.Text = "AC dimensions"
@@ -1126,9 +1127,9 @@ Partial Class Form1
         Me.GroupBox10.Controls.Add(Me.Label255)
         Me.GroupBox10.Controls.Add(Me.TextBox135)
         Me.GroupBox10.Location = New System.Drawing.Point(469, 499)
-        Me.GroupBox10.Margin = New System.Windows.Forms.Padding(2, 2, 2, 2)
+        Me.GroupBox10.Margin = New System.Windows.Forms.Padding(2)
         Me.GroupBox10.Name = "GroupBox10"
-        Me.GroupBox10.Padding = New System.Windows.Forms.Padding(2, 2, 2, 2)
+        Me.GroupBox10.Padding = New System.Windows.Forms.Padding(2)
         Me.GroupBox10.Size = New System.Drawing.Size(240, 289)
         Me.GroupBox10.TabIndex = 31
         Me.GroupBox10.TabStop = False
@@ -2989,7 +2990,7 @@ Partial Class Form1
         Me.TabPage6.Controls.Add(Me.GroupBox6)
         Me.TabPage6.Location = New System.Drawing.Point(4, 22)
         Me.TabPage6.Name = "TabPage6"
-        Me.TabPage6.Padding = New System.Windows.Forms.Padding(3, 3, 3, 3)
+        Me.TabPage6.Padding = New System.Windows.Forms.Padding(3)
         Me.TabPage6.Size = New System.Drawing.Size(1275, 664)
         Me.TabPage6.TabIndex = 5
         Me.TabPage6.Text = "Various"
@@ -3271,7 +3272,7 @@ Partial Class Form1
         Me.TabPage4.Controls.Add(Me.pictureBox2)
         Me.TabPage4.Location = New System.Drawing.Point(4, 22)
         Me.TabPage4.Name = "TabPage4"
-        Me.TabPage4.Padding = New System.Windows.Forms.Padding(3, 3, 3, 3)
+        Me.TabPage4.Padding = New System.Windows.Forms.Padding(3)
         Me.TabPage4.Size = New System.Drawing.Size(1275, 664)
         Me.TabPage4.TabIndex = 3
         Me.TabPage4.Text = "STD cyclone efficiency"
@@ -3324,7 +3325,7 @@ Partial Class Form1
         Me.TabPage3.Controls.Add(Me.TableLayoutPanel2)
         Me.TabPage3.Location = New System.Drawing.Point(4, 22)
         Me.TabPage3.Name = "TabPage3"
-        Me.TabPage3.Padding = New System.Windows.Forms.Padding(3, 3, 3, 3)
+        Me.TabPage3.Padding = New System.Windows.Forms.Padding(3)
         Me.TabPage3.Size = New System.Drawing.Size(1275, 664)
         Me.TabPage3.TabIndex = 2
         Me.TabPage3.Text = "VTK Cyclone"
@@ -3371,7 +3372,7 @@ Partial Class Form1
         Me.TabPage2.Controls.Add(Me.TableLayoutPanel3)
         Me.TabPage2.Location = New System.Drawing.Point(4, 22)
         Me.TabPage2.Name = "TabPage2"
-        Me.TabPage2.Padding = New System.Windows.Forms.Padding(3, 3, 3, 3)
+        Me.TabPage2.Padding = New System.Windows.Forms.Padding(3)
         Me.TabPage2.Size = New System.Drawing.Size(1275, 664)
         Me.TabPage2.TabIndex = 10
         Me.TabPage2.Text = "2nd stage separation"
@@ -3389,12 +3390,12 @@ Partial Class Form1
         Me.TableLayoutPanel3.Name = "TableLayoutPanel3"
         Me.TableLayoutPanel3.RowCount = 1
         Me.TableLayoutPanel3.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 64.44141!))
-        Me.TableLayoutPanel3.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 660.0!))
-        Me.TableLayoutPanel3.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 660.0!))
-        Me.TableLayoutPanel3.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 660.0!))
-        Me.TableLayoutPanel3.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 660.0!))
-        Me.TableLayoutPanel3.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 660.0!))
-        Me.TableLayoutPanel3.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 660.0!))
+        Me.TableLayoutPanel3.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 658.0!))
+        Me.TableLayoutPanel3.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 658.0!))
+        Me.TableLayoutPanel3.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 658.0!))
+        Me.TableLayoutPanel3.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 658.0!))
+        Me.TableLayoutPanel3.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 658.0!))
+        Me.TableLayoutPanel3.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 658.0!))
         Me.TableLayoutPanel3.Size = New System.Drawing.Size(1269, 658)
         Me.TableLayoutPanel3.TabIndex = 0
         '
@@ -3681,7 +3682,7 @@ Partial Class Form1
         Me.TabPage9.Controls.Add(Me.TableLayoutPanel1)
         Me.TabPage9.Location = New System.Drawing.Point(4, 22)
         Me.TabPage9.Name = "TabPage9"
-        Me.TabPage9.Padding = New System.Windows.Forms.Padding(3, 3, 3, 3)
+        Me.TabPage9.Padding = New System.Windows.Forms.Padding(3)
         Me.TabPage9.Size = New System.Drawing.Size(1275, 664)
         Me.TabPage9.TabIndex = 8
         Me.TabPage9.Text = "1st stage separation"
@@ -3700,9 +3701,9 @@ Partial Class Form1
         Me.TableLayoutPanel1.Name = "TableLayoutPanel1"
         Me.TableLayoutPanel1.RowCount = 1
         Me.TableLayoutPanel1.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 59.68883!))
-        Me.TableLayoutPanel1.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 660.0!))
-        Me.TableLayoutPanel1.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 660.0!))
-        Me.TableLayoutPanel1.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 660.0!))
+        Me.TableLayoutPanel1.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 658.0!))
+        Me.TableLayoutPanel1.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 658.0!))
+        Me.TableLayoutPanel1.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 658.0!))
         Me.TableLayoutPanel1.Size = New System.Drawing.Size(1269, 658)
         Me.TableLayoutPanel1.TabIndex = 0
         '
@@ -4030,7 +4031,7 @@ Partial Class Form1
         Me.TabPage1.Controls.Add(Me.groupBox1)
         Me.TabPage1.Location = New System.Drawing.Point(4, 22)
         Me.TabPage1.Name = "TabPage1"
-        Me.TabPage1.Padding = New System.Windows.Forms.Padding(3, 3, 3, 3)
+        Me.TabPage1.Padding = New System.Windows.Forms.Padding(3)
         Me.TabPage1.Size = New System.Drawing.Size(1275, 664)
         Me.TabPage1.TabIndex = 0
         Me.TabPage1.Text = "Data Input"
@@ -6574,7 +6575,7 @@ Partial Class Form1
         Me.TabPage12.Controls.Add(Me.DataGridView4)
         Me.TabPage12.Location = New System.Drawing.Point(4, 22)
         Me.TabPage12.Name = "TabPage12"
-        Me.TabPage12.Padding = New System.Windows.Forms.Padding(3, 3, 3, 3)
+        Me.TabPage12.Padding = New System.Windows.Forms.Padding(3)
         Me.TabPage12.Size = New System.Drawing.Size(1275, 664)
         Me.TabPage12.TabIndex = 12
         Me.TabPage12.Text = "Combined 1&2"
@@ -6598,7 +6599,7 @@ Partial Class Form1
         Me.TabPage11.Controls.Add(Me.SplitContainer1)
         Me.TabPage11.Location = New System.Drawing.Point(4, 22)
         Me.TabPage11.Name = "TabPage11"
-        Me.TabPage11.Padding = New System.Windows.Forms.Padding(3, 3, 3, 3)
+        Me.TabPage11.Padding = New System.Windows.Forms.Padding(3)
         Me.TabPage11.Size = New System.Drawing.Size(1275, 664)
         Me.TabPage11.TabIndex = 11
         Me.TabPage11.Text = "Charts"
@@ -6943,7 +6944,7 @@ Partial Class Form1
         Me.TabPage14.Controls.Add(Me.PictureBox4)
         Me.TabPage14.Location = New System.Drawing.Point(4, 22)
         Me.TabPage14.Name = "TabPage14"
-        Me.TabPage14.Padding = New System.Windows.Forms.Padding(3, 3, 3, 3)
+        Me.TabPage14.Padding = New System.Windows.Forms.Padding(3)
         Me.TabPage14.Size = New System.Drawing.Size(1275, 664)
         Me.TabPage14.TabIndex = 14
         Me.TabPage14.Text = "Axial Cyclone"
@@ -6992,9 +6993,9 @@ Partial Class Form1
         Me.TabPage13.Controls.Add(Me.PictureBox9)
         Me.TabPage13.Controls.Add(Me.PictureBox8)
         Me.TabPage13.Location = New System.Drawing.Point(4, 22)
-        Me.TabPage13.Margin = New System.Windows.Forms.Padding(2, 2, 2, 2)
+        Me.TabPage13.Margin = New System.Windows.Forms.Padding(2)
         Me.TabPage13.Name = "TabPage13"
-        Me.TabPage13.Padding = New System.Windows.Forms.Padding(2, 2, 2, 2)
+        Me.TabPage13.Padding = New System.Windows.Forms.Padding(2)
         Me.TabPage13.Size = New System.Drawing.Size(1275, 664)
         Me.TabPage13.TabIndex = 15
         Me.TabPage13.Text = "Typical PSD's"
@@ -7093,7 +7094,7 @@ Partial Class Form1
         Me.TabPage16.Controls.Add(Me.PictureBox15)
         Me.TabPage16.Location = New System.Drawing.Point(4, 22)
         Me.TabPage16.Name = "TabPage16"
-        Me.TabPage16.Padding = New System.Windows.Forms.Padding(3, 3, 3, 3)
+        Me.TabPage16.Padding = New System.Windows.Forms.Padding(3)
         Me.TabPage16.Size = New System.Drawing.Size(1275, 664)
         Me.TabPage16.TabIndex = 17
         Me.TabPage16.Text = "Steel"
@@ -7788,7 +7789,7 @@ Partial Class Form1
         Me.TabPage15.Controls.Add(Me.GroupBox25)
         Me.TabPage15.Location = New System.Drawing.Point(4, 22)
         Me.TabPage15.Name = "TabPage15"
-        Me.TabPage15.Padding = New System.Windows.Forms.Padding(3, 3, 3, 3)
+        Me.TabPage15.Padding = New System.Windows.Forms.Padding(3)
         Me.TabPage15.Size = New System.Drawing.Size(1275, 664)
         Me.TabPage15.TabIndex = 16
         Me.TabPage15.Text = "Stress #1"
@@ -8674,7 +8675,7 @@ Partial Class Form1
         Me.TabPage17.Controls.Add(Me.GroupBox28)
         Me.TabPage17.Location = New System.Drawing.Point(4, 22)
         Me.TabPage17.Name = "TabPage17"
-        Me.TabPage17.Padding = New System.Windows.Forms.Padding(3, 3, 3, 3)
+        Me.TabPage17.Padding = New System.Windows.Forms.Padding(3)
         Me.TabPage17.Size = New System.Drawing.Size(1275, 664)
         Me.TabPage17.TabIndex = 18
         Me.TabPage17.Text = "Stress #2"
@@ -9951,7 +9952,7 @@ Partial Class Form1
         Me.TabPage5.Controls.Add(Me.TableLayoutPanel4)
         Me.TabPage5.Location = New System.Drawing.Point(4, 22)
         Me.TabPage5.Name = "TabPage5"
-        Me.TabPage5.Padding = New System.Windows.Forms.Padding(3, 3, 3, 3)
+        Me.TabPage5.Padding = New System.Windows.Forms.Padding(3)
         Me.TabPage5.Size = New System.Drawing.Size(1275, 664)
         Me.TabPage5.TabIndex = 19
         Me.TabPage5.Text = "Distribution"
@@ -10029,6 +10030,7 @@ Partial Class Form1
         '
         'GroupBox15
         '
+        Me.GroupBox15.Controls.Add(Me.TextBox136)
         Me.GroupBox15.Controls.Add(Me.CheckBox21)
         Me.GroupBox15.Controls.Add(Me.Button9)
         Me.GroupBox15.Controls.Add(Me.NumericUpDown24)
@@ -10043,9 +10045,21 @@ Partial Class Form1
         Me.GroupBox15.TabStop = False
         Me.GroupBox15.Text = "Log normal distribution"
         '
+        'CheckBox21
+        '
+        Me.CheckBox21.AutoSize = True
+        Me.CheckBox21.Checked = True
+        Me.CheckBox21.CheckState = System.Windows.Forms.CheckState.Checked
+        Me.CheckBox21.Location = New System.Drawing.Point(49, 91)
+        Me.CheckBox21.Name = "CheckBox21"
+        Me.CheckBox21.Size = New System.Drawing.Size(105, 17)
+        Me.CheckBox21.TabIndex = 135
+        Me.CheckBox21.Text = "Plot Clinet's PSD"
+        Me.CheckBox21.UseVisualStyleBackColor = True
+        '
         'Button9
         '
-        Me.Button9.Location = New System.Drawing.Point(724, 38)
+        Me.Button9.Location = New System.Drawing.Point(774, 85)
         Me.Button9.Name = "Button9"
         Me.Button9.Size = New System.Drawing.Size(75, 23)
         Me.Button9.TabIndex = 1
@@ -10101,17 +10115,13 @@ Partial Class Form1
         Me.Label77.TabIndex = 132
         Me.Label77.Text = "mean natural-log particle diameter"
         '
-        'CheckBox21
+        'TextBox136
         '
-        Me.CheckBox21.AutoSize = True
-        Me.CheckBox21.Checked = True
-        Me.CheckBox21.CheckState = System.Windows.Forms.CheckState.Checked
-        Me.CheckBox21.Location = New System.Drawing.Point(456, 38)
-        Me.CheckBox21.Name = "CheckBox21"
-        Me.CheckBox21.Size = New System.Drawing.Size(105, 17)
-        Me.CheckBox21.TabIndex = 135
-        Me.CheckBox21.Text = "Plot Clinet's PSD"
-        Me.CheckBox21.UseVisualStyleBackColor = True
+        Me.TextBox136.Location = New System.Drawing.Point(395, 23)
+        Me.TextBox136.Multiline = True
+        Me.TextBox136.Name = "TextBox136"
+        Me.TextBox136.Size = New System.Drawing.Size(174, 84)
+        Me.TextBox136.TabIndex = 136
         '
         'Form1
         '
@@ -11125,4 +11135,5 @@ Partial Class Form1
     Friend WithEvents TableLayoutPanel4 As TableLayoutPanel
     Friend WithEvents TableLayoutPanel5 As TableLayoutPanel
     Friend WithEvents CheckBox21 As CheckBox
+    Friend WithEvents TextBox136 As TextBox
 End Class

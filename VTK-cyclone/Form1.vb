@@ -605,8 +605,15 @@ Public Class Form1
         ComboBox4.SelectedIndex = 1                 'chapter6
         ComboBox5.SelectedIndex = 3                 'Steel 304L
 
+        TextBox136.Clear()
+        TextBox136.Text &= "Typical LogNatural Distribution" & vbCrLf
+        TextBox136.Text &= "Corn" & vbTab & "mu= 2.5, sigma= 0.40" & vbCrLf
+        TextBox136.Text &= "Chickpea" & vbTab & "mu= 3.2, sigma= 1.30" & vbCrLf
+        TextBox136.Text &= "Potato" & vbTab & "mu= 3.6, sigma= 0.54" & vbCrLf
+        TextBox136.Text &= "Maltodex. " & "mu= 4.4, sigma= 1.30" & vbCrLf
+
         TextBox148.Text = "Het d50 getal geeft de diameter aan waarbij 50% verloren gat 50% wordt gevangen." & vbCrLf
-        TextBox148.Text = "Het d100 getal geeft de diameter aan waarbij 100% verloren gaat." & vbCrLf
+        TextBox148.Text &= "Het d100 getal geeft de diameter aan waarbij 100% verloren gaat." & vbCrLf
         TextBox148.Text &= " " & vbCrLf
         TextBox148.Text &= "In de cirkel is voor iedere cycloon de verhouding van het d50 getal tov" & vbCrLf
         TextBox148.Text &= "het d50 getal voor AC435 cycloon bij het debiet Qv aangegeven." & vbCrLf
@@ -1697,10 +1704,10 @@ Public Class Form1
             .ChartAreas("ChartArea0").AxisX.Title = "Particle diameter [mu]"
             .ChartAreas("ChartArea0").AxisX.IsLogarithmic = True
             .ChartAreas("ChartArea0").AxisY.Title = "Particle size percentage [%]"
-            .ChartAreas("ChartArea0").AxisY.Minimum = 0     'Loss
-            .ChartAreas("ChartArea0").AxisY.Maximum = 100.0 '[%] weight
-            .ChartAreas("ChartArea0").AxisX.Minimum = 0.1   '[mu] Particle size
-            .ChartAreas("ChartArea0").AxisX.Maximum = 1000  '[mu] Particle size
+            .ChartAreas("ChartArea0").AxisY.Minimum = 0D     'Loss
+            .ChartAreas("ChartArea0").AxisY.Maximum = 100D '[%] weight
+            .ChartAreas("ChartArea0").AxisX.Minimum = 0.1D   '[mu] Particle size
+            .ChartAreas("ChartArea0").AxisX.Maximum = 1000D  '[mu] Particle size
 
             '------ now present-------------
             For h = 0 To norm_log_dist_pdf.GetLength(0) - 1   'Fill line chart
@@ -4164,7 +4171,7 @@ Public Class Form1
             .Columns(1).HeaderText = "Cum wght[%]"
         End With
 
-        For h = 0 To norm_log_dist_pdf.GetLength(0) - 1   'Fill line chart
+        For h = 1 To norm_log_dist_pdf.GetLength(0) - 1   'Fill line chart
             ww = h / 2
             '------------- Bell curve ----------------
             norm_log_dist_pdf(h, 0) = ww
@@ -4175,10 +4182,10 @@ Public Class Form1
             norm_log_dist_cdf(h, 1) = (1.0 - Numerics.Distributions.LogNormal.CDF(mu, sigma, ww)) * 100.0  '[%] Lognormal
 
             '------------- Copy to the data grids ----
-            DataGridView5.Rows(h).Cells(0).Value = Round(norm_log_dist_pdf(h, 0), 2)    'Bell Curve
-            DataGridView5.Rows(h).Cells(1).Value = Round(norm_log_dist_pdf(h, 1), 2)    'Bell Curve
-            DataGridView7.Rows(h).Cells(0).Value = Round(norm_log_dist_cdf(h, 0), 2)    'Cum weight
-            DataGridView7.Rows(h).Cells(1).Value = Round(norm_log_dist_cdf(h, 1), 2)    'Cum weight
+            DataGridView5.Rows(h - 1).Cells(0).Value = Round(norm_log_dist_pdf(h, 0), 2)    'Bell Curve
+            DataGridView5.Rows(h - 1).Cells(1).Value = Round(norm_log_dist_pdf(h, 1), 2)    'Bell Curve
+            DataGridView7.Rows(h - 1).Cells(0).Value = Round(norm_log_dist_cdf(h, 0), 2)    'Cum weight
+            DataGridView7.Rows(h - 1).Cells(1).Value = Round(norm_log_dist_cdf(h, 1), 2)    'Cum weight
         Next h
 
         Draw_chart5()
