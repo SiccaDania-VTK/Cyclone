@@ -1711,12 +1711,12 @@ Public Class Form1
 
             .Titles.Add("Log Normal Distribution")
             .ChartAreas("ChartArea0").AxisX.Title = "Particle diameter [mu]"
-            .ChartAreas("ChartArea0").AxisX.IsLogarithmic = True
+            '.ChartAreas("ChartArea0").AxisX.IsLogarithmic = True
             .ChartAreas("ChartArea0").AxisY.Title = "Exit loss [%]"
             .ChartAreas("ChartArea0").AxisY.Minimum = 0D     'Loss
             .ChartAreas("ChartArea0").AxisY.Maximum = 100D   '[%] weight
             .ChartAreas("ChartArea0").AxisX.Minimum = 0.1D   '[mu] Particle size
-            .ChartAreas("ChartArea0").AxisX.Maximum = 1000D  '[mu] Particle size
+            '.ChartAreas("ChartArea0").AxisX.Maximum = 200D  '[mu] Particle size
 
             '------ now present-------------
             For h = 0 To norm_log_dist_pdf.GetLength(0) - 1   'Fill line chart
@@ -4158,47 +4158,50 @@ Public Class Form1
         'https://numerics.mathdotnet.com/api/MathNet.Numerics.Distributions/index.htm
         'https://www.weibull.com/hotwire/issue47/relbasics47.htm
 
-        Dim mu As Double = NumericUpDown17.Value
-        Dim sigma As Double = NumericUpDown24.Value
-        Dim ww As Double
+        Dim shape As Double = NumericUpDown17.Value
+        Dim scale As Double = NumericUpDown24.Value
+        Dim xx As Double
+        If shape > 0 And scale > 0 Then
+            With DataGridView5
+                .ColumnCount = 2
+                .Rows.Clear()
+                .Rows.Add(300)
+                .RowHeadersVisible = False
+                .AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill
+                .Columns(0).HeaderText = "Dia [mu]"
+                .Columns(1).HeaderText = "Bell [%]"
+            End With
+            With DataGridView7
+                .ColumnCount = 2
+                .Rows.Clear()
+                .Rows.Add(300)
+                .RowHeadersVisible = False
+                .AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill
+                .Columns(0).HeaderText = "Dia [mu]"
+                .Columns(1).HeaderText = "Cum wght[%]"
+            End With
 
-        With DataGridView5
-            .ColumnCount = 2
-            .Rows.Clear()
-            .Rows.Add(300)
-            .RowHeadersVisible = False
-            .AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill
-            .Columns(0).HeaderText = "Dia [mu]"
-            .Columns(1).HeaderText = "Bell [%]"
-        End With
-        With DataGridView7
-            .ColumnCount = 2
-            .Rows.Clear()
-            .Rows.Add(300)
-            .RowHeadersVisible = False
-            .AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill
-            .Columns(0).HeaderText = "Dia [mu]"
-            .Columns(1).HeaderText = "Cum wght[%]"
-        End With
+            For h = 1 To norm_log_dist_pdf.GetLength(0) - 1   'Fill line chart
+                xx = h / 2
+                '------------- Bell curve ----------------
+                norm_log_dist_pdf(h, 0) = xx
+                ' norm_log_dist_pdf(h, 1) = Numerics.Distributions.LogNormal.PDF(mu, sigma, ww) * 100.0  '[%] Lognormal
+                norm_log_dist_pdf(h, 1) = Numerics.Distributions.Weibull.PDF(shape, scale, xx) * 100.0  '[%] Weibull
 
-        For h = 1 To norm_log_dist_pdf.GetLength(0) - 1   'Fill line chart
-            ww = h / 2
-            '------------- Bell curve ----------------
-            norm_log_dist_pdf(h, 0) = ww
-            norm_log_dist_pdf(h, 1) = Numerics.Distributions.LogNormal.PDF(mu, sigma, ww) * 100.0  '[%] Lognormal
+                '------------- S curve ---- 
+                norm_log_dist_cdf(h, 0) = xx
+                'norm_log_dist_cdf(h, 1) = (1.0 - Numerics.Distributions.LogNormal.CDF(mu, sigma, ww)) * 100.0  '[%] Lognormal
+                norm_log_dist_cdf(h, 1) = (1.0 - Numerics.Distributions.Weibull.CDF(shape, scale, xx)) * 100.0  '[%] Weibull
 
-            '------------- S curve ---- 
-            norm_log_dist_cdf(h, 0) = ww
-            norm_log_dist_cdf(h, 1) = (1.0 - Numerics.Distributions.LogNormal.CDF(mu, sigma, ww)) * 100.0  '[%] Lognormal
+                '------------- Copy to the data grids ----
+                DataGridView5.Rows(h - 1).Cells(0).Value = Round(norm_log_dist_pdf(h, 0), 2)    'Bell Curve
+                DataGridView5.Rows(h - 1).Cells(1).Value = Round(norm_log_dist_pdf(h, 1), 2)    'Bell Curve
+                DataGridView7.Rows(h - 1).Cells(0).Value = Round(norm_log_dist_cdf(h, 0), 2)    'Cum weight
+                DataGridView7.Rows(h - 1).Cells(1).Value = Round(norm_log_dist_cdf(h, 1), 2)    'Cum weight
+            Next h
 
-            '------------- Copy to the data grids ----
-            DataGridView5.Rows(h - 1).Cells(0).Value = Round(norm_log_dist_pdf(h, 0), 2)    'Bell Curve
-            DataGridView5.Rows(h - 1).Cells(1).Value = Round(norm_log_dist_pdf(h, 1), 2)    'Bell Curve
-            DataGridView7.Rows(h - 1).Cells(0).Value = Round(norm_log_dist_cdf(h, 0), 2)    'Cum weight
-            DataGridView7.Rows(h - 1).Cells(1).Value = Round(norm_log_dist_cdf(h, 1), 2)    'Cum weight
-        Next h
-
-        Draw_chart5()
+            Draw_chart5()
+        End If
     End Sub
 
     Private Sub ComboBox6_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboBox6.SelectedIndexChanged
