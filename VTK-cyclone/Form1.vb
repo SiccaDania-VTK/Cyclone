@@ -891,7 +891,6 @@ Public Class Form1
                 wc_dust1 = CDbl(words(9))       'Resistance Coefficient dust
             Else
                 MessageBox.Show("Error 763")
-                Exit Sub
             End If
             _cees(ks).dpgas1 = 0.5 * _cees(ks).Ro_gas1_Am3 * _cees(ks).inv1 ^ 2 * wc_air1      '[Pa]
             _cees(ks).dpdust1 = 0.5 * _cees(ks).Ro_gas1_Am3 * _cees(ks).inv1 ^ 2 * wc_dust1    '[Pa]
@@ -1748,53 +1747,54 @@ Public Class Form1
     Private Sub Calc_sequence()
         Dim case_nr As Integer = CInt(NumericUpDown30.Value)
 
-        If Update_screen_fram_array_done = V1 Then Exit Sub
+        If Update_screen_fram_array_done Then
 
-        Read_dgv6_Calc_Class_load()
-        Check_DGV6()
+            Read_dgv6_Calc_Class_load()
+            Check_DGV6()
 
-        If ComboBox1.Items.Count > 0 AndAlso ComboBox2.Items.Count > 0 AndAlso init Then
+            If ComboBox1.Items.Count > 0 AndAlso ComboBox2.Items.Count > 0 AndAlso init Then
 
-            ProgressBar1.Visible = True
-            ProgressBar1.Value = 50
-            SuspendLayout()                             'Speedup the program
+                ProgressBar1.Visible = True
+                ProgressBar1.Value = 50
+                SuspendLayout()                             'Speedup the program
 
-            '============== ALL calculation is done is Case(0) ========
-            '============== other cases are for storage ===============
-            _cees(0) = _cees(case_nr)                   'Transfer data to case(0)
-            '==========================================================
+                '============== ALL calculation is done is Case(0) ========
+                '============== other cases are for storage ===============
+                _cees(0) = _cees(case_nr)                   'Transfer data to case(0)
+                '==========================================================
 
-            If String.Equals(ComboBox1.SelectedItem.ToString, "AA850") Then
-                numericUpDown5.Value = CDec(0.3)        '[m] Diameter
+                If String.Equals(ComboBox1.SelectedItem.ToString, "AA850") Then
+                    numericUpDown5.Value = CDec(0.3)        '[m] Diameter
+                End If
+
+                If String.Equals(ComboBox2.SelectedItem.ToString, "AA850") Then
+                    NumericUpDown34.Value = CDec(0.3)       '[m] Diameter
+                End If
+
+                Fill_array_from_screen(0)   'Read input data from sceen
+                Dust_load_correction(0)
+
+                Get_input_calc_1(0)         'This is the CASE number
+                Calc_part_dia_loss(0)
+
+                For i = 0 To 3
+                    Calc_stage1(0)          'Calc according stage #1
+                    Calc_stage2(0)          'Calc according stage #2
+                Next
+
+                Calc_stage1_2_comb(0)       'Calc stage #1 and stage #2 combined
+
+                Present_loss_grid1(0)       'Present the results stage #1
+                Present_loss_grid2(0)       'Present the results stage #2
+                Present_Datagridview1(0)    'Present the results stage #1
+
+                Draw_chart1(Chart1, 0)      'Present the results 
+                Draw_chart2(Chart2, 0)      'Present the results loss curve
+                Screen_contrast()           'White text on ted background 
+                ResumeLayout()              'Calcu is done update screen
+                Calc_plot_Distribution()
+                ProgressBar1.Visible = False
             End If
-
-            If String.Equals(ComboBox2.SelectedItem.ToString, "AA850") Then
-                NumericUpDown34.Value = CDec(0.3)       '[m] Diameter
-            End If
-
-            Fill_array_from_screen(0)   'Read input data from sceen
-            Dust_load_correction(0)
-
-            Get_input_calc_1(0)         'This is the CASE number
-            Calc_part_dia_loss(0)
-
-            For i = 0 To 3
-                Calc_stage1(0)          'Calc according stage #1
-                Calc_stage2(0)          'Calc according stage #2
-            Next
-
-            Calc_stage1_2_comb(0)       'Calc stage #1 and stage #2 combined
-
-            Present_loss_grid1(0)       'Present the results stage #1
-            Present_loss_grid2(0)       'Present the results stage #2
-            Present_Datagridview1(0)    'Present the results stage #1
-
-            Draw_chart1(Chart1, 0)      'Present the results 
-            Draw_chart2(Chart2, 0)      'Present the results loss curve
-            Screen_contrast()           'White text on ted background 
-            ResumeLayout()              'Calcu is done update screen
-            Calc_plot_Distribution()
-            ProgressBar1.Visible = False
         End If
         'Debug.WriteLine("Calc_sequence()")
     End Sub
@@ -1811,46 +1811,45 @@ Public Class Form1
 
         If TextBox28.Text.Trim.Length = 0 OrElse TextBox29.Text.Trim.Length = 0 Then
             MessageBox.Show("Complete Quote and Tag number")
-            Exit Sub
+        Else
+            Save_present_case_to_array()            'Store data in array
+
+            '------------- create filemame ----------
+            user = Trim(Environment.UserName)           'User name on the screen
+            filename = "Cyclone_select_" & TextBox28.Text & "_" & TextBox29.Text & DateTime.Now.ToString("_yyyy_MM_dd_") & user & ".vtk2"
+            filename = Replace(filename, Chr(32), Chr(95)) 'Replace the space's
+
+            '------------- Create directories if they do not exist ----
+            Try
+                If (Not System.IO.Directory.Exists(dirpath_Temp)) Then System.IO.Directory.CreateDirectory(dirpath_Temp)
+                If (Not System.IO.Directory.Exists(dirpath_Eng)) Then System.IO.Directory.CreateDirectory(dirpath_Eng)
+                If (Not System.IO.Directory.Exists(dirpath_Rap)) Then System.IO.Directory.CreateDirectory(dirpath_Rap)
+            Catch ex As Exception
+                MessageBox.Show("Can not create directory on the VTK intranet (L6286) " & vbCrLf & vbCrLf & ex.Message)
+            End Try
+
+            Try
+                If Directory.Exists(dirpath_Eng) Then
+                    filename = dirpath_Eng & filename 'used at VTK with intranet
+                Else
+                    filename = dirpath_tmp & filename 'used at VTK with intranet'used at home
+                    MessageBox.Show("VTK intranet not acceasable, saved on " & filename)
+                End If
+
+                '--- Delete existing file -------
+                If System.IO.File.Exists(filename) Then
+                    System.IO.File.Delete(filename)
+                End If
+
+                '--- and save new file to disk -------
+                Dim fStream As New FileStream(filename, FileMode.CreateNew)
+                bf.Serialize(fStream, _cees) ' write to file
+                bf.Serialize(fStream, _input) ' write to file
+                fStream.Close()
+            Catch ex As Exception
+                MessageBox.Show("Line 6298, " & ex.Message)  ' Show the exception's message.
+            End Try
         End If
-
-        Save_present_case_to_array()            'Store data in array
-
-        '------------- create filemame ----------
-        user = Trim(Environment.UserName)           'User name on the screen
-        filename = "Cyclone_select_" & TextBox28.Text & "_" & TextBox29.Text & DateTime.Now.ToString("_yyyy_MM_dd_") & user & ".vtk2"
-        filename = Replace(filename, Chr(32), Chr(95)) 'Replace the space's
-
-        '------------- Create directories if they do not exist ----
-        Try
-            If (Not System.IO.Directory.Exists(dirpath_Temp)) Then System.IO.Directory.CreateDirectory(dirpath_Temp)
-            If (Not System.IO.Directory.Exists(dirpath_Eng)) Then System.IO.Directory.CreateDirectory(dirpath_Eng)
-            If (Not System.IO.Directory.Exists(dirpath_Rap)) Then System.IO.Directory.CreateDirectory(dirpath_Rap)
-        Catch ex As Exception
-            MessageBox.Show("Can not create directory on the VTK intranet (L6286) " & vbCrLf & vbCrLf & ex.Message)
-        End Try
-
-        Try
-            If Directory.Exists(dirpath_Eng) Then
-                filename = dirpath_Eng & filename 'used at VTK with intranet
-            Else
-                filename = dirpath_tmp & filename 'used at VTK with intranet'used at home
-                MessageBox.Show("VTK intranet not acceasable, saved on " & filename)
-            End If
-
-            '--- Delete existing file -------
-            If System.IO.File.Exists(filename) = True Then
-                System.IO.File.Delete(filename)
-            End If
-
-            '--- and save new file to disk -------
-            Dim fStream As New FileStream(filename, FileMode.CreateNew)
-            bf.Serialize(fStream, _cees) ' write to file
-            bf.Serialize(fStream, _input) ' write to file
-            fStream.Close()
-        Catch ex As Exception
-            MessageBox.Show("Line 6298, " & ex.Message)  ' Show the exception's message.
-        End Try
     End Sub
     Private Sub Retrieve_from_disk()
         Dim bf As New System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
@@ -1912,10 +1911,10 @@ Public Class Form1
             For Each oPropert In oIte.Properties
                 If oPropert.Value IsNot Nothing AndAlso oPropert.Name = "SerialNumber" Then
                     tmpStr2 = oPropert.Value.ToString
-                    Exit For
+                    '  Exit For
                 End If
             Next
-            Exit For
+            ' Exit For
         Next
         Return (Trim(tmpStr2))         'Harddisk identification
     End Function
@@ -1932,7 +1931,7 @@ Public Class Form1
     'Write COMMERCIAL data to Word 
     'see https://msdn.microsoft.com/en-us/library/office/aa192495(v=office.11).aspx
     Private Sub Write_to_word_com()
-        Dim bmp_tab_page1 As New Bitmap(TabPage1.Width, TabPage1.Height)
+        '  Dim bmp_tab_page1 As New Bitmap(TabPage1.Width, TabPage1.Height)
         Dim oWord As Word.Application
         Dim oDoc As Word.Document
         Dim oTable As Word.Table
@@ -2360,7 +2359,6 @@ Public Class Form1
 
         If Double.IsNaN(_cees(ks).stage1(0).dia) OrElse Double.IsInfinity(_cees(ks).stage1(0).dia) Then
             MessageBox.Show("stage1 diameter1 = indifinity")
-            Exit Sub
         End If
 
         If ComboBox1.Items.Count > 0 AndAlso ComboBox2.Items.Count > 0 AndAlso init Then
@@ -2430,7 +2428,7 @@ Public Class Form1
 
             For i = 1 To 110
                 _cees(ks).stage1(i).dia = _cees(ks).stage1(i - 1).dia * _istep
-                _cees(ks).stage1(i).d_ave = ((_cees(ks).stage1(i - 1).dia + _cees(ks).stage1(i).dia)) / 2   'Average diameter
+                _cees(ks).stage1(i).d_ave = (_cees(ks).stage1(i - 1).dia + _cees(ks).stage1(i).dia) / 2   'Average diameter
                 _cees(ks).stage1(i).d_ave_K = _cees(ks).stage1(i).d_ave / _cees(ks).Kstokes1                'dia/k_stokes
                 _cees(ks).stage1(i).loss_overall = Calc_verlies(_cees(ks).stage1(i).d_ave, _cees(ks).Kstokes1, 1)   '[-] loss overall
                 Calc_verlies_corrected(_cees(ks).stage1(i), 1)                                              '[-] loss overall corrected
@@ -2530,7 +2528,6 @@ Public Class Form1
 
         If Double.IsNaN(_cees(ks).stage1(0).dia) OrElse Double.IsInfinity(_cees(ks).stage1(0).dia) Then
             MessageBox.Show("stage2 diameter = indifinity")
-            Exit Sub
         End If
 
         If ComboBox1.Items.Count > 0 AndAlso ComboBox2.Items.Count > 0 AndAlso init Then
@@ -2590,46 +2587,46 @@ Public Class Form1
             _cees(ks).Dmax2 = Calc_dia_particle(perc_smallest_part2, _cees(ks).Kstokes2, 2)     '=100% loss (biggest particle)
             _cees(ks).Dmin2 = _cees(ks).Kstokes2 * fac_m                'diameter smallest particle caught
 
-
             For i = 1 To 110    '=========Stage #2, Grid lines 1...============ 
-                If Double.IsNaN(_cees(ks).stage1(ks).dia) OrElse Double.IsInfinity(_cees(ks).stage1(ks).dia) Then Exit Sub
+                If Not (Double.IsNaN(_cees(ks).stage1(ks).dia) OrElse Double.IsInfinity(_cees(ks).stage1(ks).dia)) Then
 
-                _cees(ks).stage2(i).dia = _cees(ks).stage1(i).dia                               'Diameter Copy stage #1
-                _cees(ks).stage2(i).d_ave = _cees(ks).stage1(i).d_ave                           'Average diameter
-                _cees(ks).stage2(i).d_ave_K = _cees(ks).stage2(i).d_ave / _cees(ks).Kstokes2    'dia/k_stokes
-                _cees(ks).stage2(i).loss_overall = Calc_verlies(_cees(ks).stage2(i).d_ave, _cees(ks).Kstokes2, 2)   '[-] loss overall
-                Calc_verlies_corrected(_cees(ks).stage2(i), 2)                                  '[-] loss overall corrected
+                    _cees(ks).stage2(i).dia = _cees(ks).stage1(i).dia                               'Diameter Copy stage #1
+                    _cees(ks).stage2(i).d_ave = _cees(ks).stage1(i).d_ave                           'Average diameter
+                    _cees(ks).stage2(i).d_ave_K = _cees(ks).stage2(i).d_ave / _cees(ks).Kstokes2    'dia/k_stokes
+                    _cees(ks).stage2(i).loss_overall = Calc_verlies(_cees(ks).stage2(i).d_ave, _cees(ks).Kstokes2, 2)   '[-] loss overall
+                    Calc_verlies_corrected(_cees(ks).stage2(i), 2)                                  '[-] loss overall corrected
 
-                '------------- Load correction stage #2 -------------------
-                If CheckBox3.Checked Then
-                    _cees(ks).stage2(i).catch_chart = (1 - _cees(ks).stage2(i).loss_overall_C) * 100.0  '[%] Corrected
-                Else
-                    _cees(ks).stage2(i).catch_chart = (1 - _cees(ks).stage2(i).loss_overall) * 100.0    '[%] NOT corrected
+                    '------------- Load correction stage #2 -------------------
+                    If CheckBox3.Checked Then
+                        _cees(ks).stage2(i).catch_chart = (1 - _cees(ks).stage2(i).loss_overall_C) * 100.0  '[%] Corrected
+                    Else
+                        _cees(ks).stage2(i).catch_chart = (1 - _cees(ks).stage2(i).loss_overall) * 100.0    '[%] NOT corrected
+                    End If
+
+                    Calc_diam_classification(_cees(ks).stage2(i))                                     'Calc
+                    _cees(ks).stage2(i).i_grp = _cees(ks).stage1(i).i_grp
+
+                    If _cees(ks).stage2(i).i_grp < no_PDS_inputs Then
+                        Calc_k_and_m(_cees(ks).stage2(i))
+                        _cees(ks).stage2(i).psd_cum = Math.E ^ (-(_cees(ks).stage2(i).dia / _cees(ks).stage2(i).i_m) ^ _cees(ks).stage2(i).i_k)
+                        _cees(ks).stage2(i).psd_cum_pro = _cees(ks).stage2(i).psd_cum * 100.0 '[%]
+                        _cees(ks).stage2(i).psd_dif = 100.0 * _cees(ks).stage1(i).loss_abs_C / _cees(ks).sum_loss_C1
+                    Else
+                        _cees(ks).stage2(i).i_k = 0.0
+                        _cees(ks).stage2(i).i_m = 0.0
+                        _cees(ks).stage2(i).psd_cum = 0.0
+                        _cees(ks).stage2(i).psd_cum_pro = 0.0
+                        _cees(ks).stage2(i).psd_dif = 0.0
+                    End If
+
+                    _cees(ks).stage2(i).loss_abs = _cees(ks).stage2(i).loss_overall * _cees(ks).stage2(i).psd_dif
+                    _cees(ks).stage2(i).loss_abs_C = _cees(ks).stage2(i).loss_overall_C * _cees(ks).stage2(i).psd_dif
+
+                    '----- sum value incremental values -----
+                    _cees(ks).sum_psd_diff2 += _cees(ks).stage2(i).psd_dif
+                    _cees(ks).sum_loss2 += _cees(ks).stage2(i).loss_abs
+                    _cees(ks).sum_loss_C2 += _cees(ks).stage2(i).loss_abs_C
                 End If
-
-                Calc_diam_classification(_cees(ks).stage2(i))                                     'Calc
-                _cees(ks).stage2(i).i_grp = _cees(ks).stage1(i).i_grp
-
-                If _cees(ks).stage2(i).i_grp < no_PDS_inputs Then
-                    Calc_k_and_m(_cees(ks).stage2(i))
-                    _cees(ks).stage2(i).psd_cum = Math.E ^ (-(_cees(ks).stage2(i).dia / _cees(ks).stage2(i).i_m) ^ _cees(ks).stage2(i).i_k)
-                    _cees(ks).stage2(i).psd_cum_pro = _cees(ks).stage2(i).psd_cum * 100.0 '[%]
-                    _cees(ks).stage2(i).psd_dif = 100.0 * _cees(ks).stage1(i).loss_abs_C / _cees(ks).sum_loss_C1
-                Else
-                    _cees(ks).stage2(i).i_k = 0.0
-                    _cees(ks).stage2(i).i_m = 0.0
-                    _cees(ks).stage2(i).psd_cum = 0.0
-                    _cees(ks).stage2(i).psd_cum_pro = 0.0
-                    _cees(ks).stage2(i).psd_dif = 0.0
-                End If
-
-                _cees(ks).stage2(i).loss_abs = _cees(ks).stage2(i).loss_overall * _cees(ks).stage2(i).psd_dif
-                _cees(ks).stage2(i).loss_abs_C = _cees(ks).stage2(i).loss_overall_C * _cees(ks).stage2(i).psd_dif
-
-                '----- sum value incremental values -----
-                _cees(ks).sum_psd_diff2 += _cees(ks).stage2(i).psd_dif
-                _cees(ks).sum_loss2 += _cees(ks).stage2(i).loss_abs
-                _cees(ks).sum_loss_C2 += _cees(ks).stage2(i).loss_abs_C
             Next i
             _cees(ks).loss_total2 = _cees(ks).sum_loss_C2 + ((100.0 - _cees(ks).sum_psd_diff2) * perc_smallest_part2)
             _cees(ks).emmis2_Am3 = _cees(ks).emmis1_Am3 * _cees(ks).loss_total2 / 100.0
@@ -2744,39 +2741,41 @@ Public Class Form1
     Private Sub Check_DGV6()
 
         With DataGridView6
-            If .RowCount = 0 Then Exit Sub
-            Dim dia, dia_previous As Double
-            Dim c_load, c_load_previous As Double
+            If .RowCount > 0 Then
+                Dim dia, dia_previous As Double
+                Dim c_load, c_load_previous As Double
 
-            '---------CHECK- diameters must increase-----------
-            .Rows(0).Cells(0).Style.BackColor = Color.LightGreen
-            For i = 1 To .Rows.Count - 1
-                dia = _input(i).dia_big
-                dia_previous = _input(i - 1).dia_big
+                '---------CHECK- diameters must increase-----------
+                .Rows(0).Cells(0).Style.BackColor = Color.LightGreen
+                For i = 1 To .Rows.Count - 1
+                    dia = _input(i).dia_big
+                    dia_previous = _input(i - 1).dia_big
 
-                .Rows(i).Cells(0).Style.BackColor = CType(IIf(dia < dia_previous AndAlso dia <> 0, Color.Red, Color.LightGreen), Color)
-            Next
+                    .Rows(i).Cells(0).Style.BackColor = CType(IIf(dia < dia_previous AndAlso dia <> 0, Color.Red, Color.LightGreen), Color)
+                Next
 
-            '---------CHECK-cummulative weight must decrease-----------
-            .Rows(0).Cells(1).Style.BackColor = Color.LightGreen
-            For i = 1 To .Rows.Count - 1
-                c_load = _input(i).class_load
-                c_load_previous = _input(i - 1).class_load
+                '---------CHECK-cummulative weight must decrease-----------
+                .Rows(0).Cells(1).Style.BackColor = Color.LightGreen
+                For i = 1 To .Rows.Count - 1
+                    c_load = _input(i).class_load
+                    c_load_previous = _input(i - 1).class_load
 
-                ' .Rows(i).Cells(1).Style.BackColor = If(c_load > c_load_previous And c_load <> 0, Color.Orange, Color.LightGreen)
-                If (c_load > c_load_previous AndAlso c_load <> 0) Then
-                    .Rows(i).Cells(1).Style.BackColor = Color.Orange
-                Else
-                    .Rows(i).Cells(1).Style.BackColor = Color.LightGreen
+                    ' .Rows(i).Cells(1).Style.BackColor = If(c_load > c_load_previous And c_load <> 0, Color.Orange, Color.LightGreen)
+                    If (c_load > c_load_previous AndAlso c_load <> 0) Then
+                        .Rows(i).Cells(1).Style.BackColor = Color.Orange
+                    Else
+                        .Rows(i).Cells(1).Style.BackColor = Color.LightGreen
+                    End If
+                Next
+
+                '--- Value 100 gives errors -----
+                Dim qq As Double = CDbl(.Rows(0).Cells(1).Value)
+                If qq >= 100.0 Then
+                    .Rows(0).Cells(1).Value = "99.9999"
                 End If
-            Next
-
-            '--- Value 100 gives errors -----
-            Dim qq As Double = CDbl(.Rows(0).Cells(1).Value)
-            If qq >= 100.0 Then
-                .Rows(0).Cells(1).Value = "99.9999"
             End If
         End With
+
     End Sub
 
     'Calculate cyclone weight
@@ -2945,84 +2944,85 @@ Public Class Form1
         Dim factor1(9) As Double                    '[-]
         Dim factor2(9) As Double                    '[-]
 
-        If numericUpDown5.Value < 1 OrElse NumericUpDown3.Value < 1 Then Exit Sub
-        _db1 = CDbl(numericUpDown5.Value) * 1000          '[mm] dia cyclone stage 1
-        _db2 = CDbl(NumericUpDown34.Value) * 1000         '[mm] dia cyclone stage 2
+        If numericUpDown5.Value > 1 AndAlso NumericUpDown3.Value > 1 Then
+            _db1 = CDbl(numericUpDown5.Value) * 1000          '[mm] dia cyclone stage 1
+            _db2 = CDbl(NumericUpDown34.Value) * 1000         '[mm] dia cyclone stage 2
 
-        '-------- dimension cyclone stage #1
-        If ComboBox1.SelectedIndex < Tangent_out_dimensions.Length - 1 Then
-            words = Tangent_out_dimensions(ComboBox1.SelectedIndex).Split(CType(";", Char()))
-            For hh = 1 To factor1.Length - 2
-                factor1(hh) = CDbl(words(hh))          'Tangent outlet dimensions
-            Next
-        Else
-            For hh = 1 To factor1.Length - 2
-                factor1(hh) = 0          'Tangent outlet dimensions
-            Next
+            '-------- dimension cyclone stage #1
+            If ComboBox1.SelectedIndex < Tangent_out_dimensions.Length - 1 Then
+                words = Tangent_out_dimensions(ComboBox1.SelectedIndex).Split(CType(";", Char()))
+                For hh = 1 To factor1.Length - 2
+                    factor1(hh) = CDbl(words(hh))          'Tangent outlet dimensions
+                Next
+            Else
+                For hh = 1 To factor1.Length - 2
+                    factor1(hh) = 0          'Tangent outlet dimensions
+                Next
+            End If
+
+
+            '-------- dimension cyclone stage #2
+            If ComboBox2.SelectedIndex < Tangent_out_dimensions.Length - 1 Then
+                words = Tangent_out_dimensions(ComboBox2.SelectedIndex).Split(CType(";", Char()))
+                For hh = 1 To factor2.Length - 2
+                    factor2(hh) = CDbl(words(hh))          'Tangent outlet dimensions
+                Next
+            Else
+                For hh = 1 To factor2.Length - 2
+                    factor2(hh) = 0          'Tangent outlet dimensions
+                Next
+            End If
+
+            '--------- 1st stage cyclone -----
+            tan1(1) = _db1 * factor1(1)         'Diameter
+            tan1(2) = _db1 * factor1(2)         'uitlaat breedte
+            tan1(3) = _db1 * factor1(3)         'Uitlaat hoogte
+            tan1(4) = _db1 * factor1(4)         'uitlaat lengte
+            tan1(5) = _db1 * factor1(5)         'uitlaat hartmaat
+            tan1(6) = _db1 * factor1(6)         'Steekmaat radii
+            tan1(7) = _db1 * factor1(7)         'Radius 1
+            tan1(8) = _db1 * factor1(8)         'Radius gooze neck
+            tan1(9) = tan1(7) - 1 * tan1(6)     'Radius 2
+            tan1(10) = tan1(7) - 2 * tan1(6)    'Radius 3
+
+            '--------- 2nd stage cyclone -----
+            tan2(1) = _db2 * factor2(1)         'Diameter
+            tan2(2) = _db2 * factor2(2)         'uitlaat breedte
+            tan2(3) = _db2 * factor2(3)         'Uitlaat hoogte
+            tan2(4) = _db2 * factor2(4)         'uitlaat lengte
+            tan2(5) = _db2 * factor2(5)         'uitlaat hartmaat
+            tan2(6) = _db2 * factor2(6)         'Steekmaat radii
+            tan2(7) = _db2 * factor2(7)         'Radius 1
+            tan2(8) = _db2 * factor2(8)         'radius gooze neck
+            tan2(9) = tan2(7) - 1 * tan1(6)     'Radius 2
+            tan2(10) = tan2(7) - 2 * tan1(6)    'Radius 3
+
+            '--------- 1st stage cyclone -----
+            TextBox81.Text = CType(ComboBox1.SelectedItem, String)      'Cycloon type        
+            TextBox82.Text = tan1(1).ToString("F0")         'Diameter
+            TextBox154.Text = tan1(2).ToString("F0")        'uitlaat breedte
+            TextBox155.Text = tan1(3).ToString("F0")        'Uitlaat hoogte
+            TextBox156.Text = tan1(4).ToString("F0")        'uitlaat lengte
+            TextBox157.Text = tan1(5).ToString("F0")        'uitlaat hartmaat
+            TextBox158.Text = tan1(6).ToString("F0")        'Steekmaat radii
+            TextBox159.Text = tan1(7).ToString("F0")        'Radius 1
+            TextBox160.Text = tan1(8).ToString("F0")        'Radius gooze neck
+            TextBox172.Text = tan1(9).ToString("F0")        'Radius 2
+            TextBox173.Text = tan1(10).ToString("F0")       'Radius 3
+
+            '--------- 2nd stage cyclone -----
+            TextBox161.Text = CType(ComboBox2.SelectedItem, String)      'Cycloon type
+            TextBox162.Text = tan2(1).ToString("F0")        'Diameter
+            TextBox163.Text = tan2(2).ToString("F0")        'uitlaat breedte
+            TextBox164.Text = tan2(3).ToString("F0")        'Uitlaat hoogte
+            TextBox165.Text = tan2(4).ToString("F0")        'uitlaat lengte
+            TextBox166.Text = tan2(5).ToString("F0")        'uitlaat hartmaat
+            TextBox167.Text = tan2(6).ToString("F0")        'Steekmaat radii
+            TextBox168.Text = tan2(7).ToString("F0")        'Radius 1
+            TextBox169.Text = tan2(8).ToString("F0")        'Radius gooze neck
+            TextBox170.Text = tan2(9).ToString("F0")        'Radius 2
+            TextBox171.Text = tan2(10).ToString("F0")       'Tadius 3
         End If
-
-
-        '-------- dimension cyclone stage #2
-        If ComboBox2.SelectedIndex < Tangent_out_dimensions.Length - 1 Then
-            words = Tangent_out_dimensions(ComboBox2.SelectedIndex).Split(CType(";", Char()))
-            For hh = 1 To factor2.Length - 2
-                factor2(hh) = CDbl(words(hh))          'Tangent outlet dimensions
-            Next
-        Else
-            For hh = 1 To factor2.Length - 2
-                factor2(hh) = 0          'Tangent outlet dimensions
-            Next
-        End If
-
-        '--------- 1st stage cyclone -----
-        tan1(1) = _db1 * factor1(1)         'Diameter
-        tan1(2) = _db1 * factor1(2)         'uitlaat breedte
-        tan1(3) = _db1 * factor1(3)         'Uitlaat hoogte
-        tan1(4) = _db1 * factor1(4)         'uitlaat lengte
-        tan1(5) = _db1 * factor1(5)         'uitlaat hartmaat
-        tan1(6) = _db1 * factor1(6)         'Steekmaat radii
-        tan1(7) = _db1 * factor1(7)         'Radius 1
-        tan1(8) = _db1 * factor1(8)         'Radius gooze neck
-        tan1(9) = tan1(7) - 1 * tan1(6)     'Radius 2
-        tan1(10) = tan1(7) - 2 * tan1(6)    'Radius 3
-
-        '--------- 2nd stage cyclone -----
-        tan2(1) = _db2 * factor2(1)         'Diameter
-        tan2(2) = _db2 * factor2(2)         'uitlaat breedte
-        tan2(3) = _db2 * factor2(3)         'Uitlaat hoogte
-        tan2(4) = _db2 * factor2(4)         'uitlaat lengte
-        tan2(5) = _db2 * factor2(5)         'uitlaat hartmaat
-        tan2(6) = _db2 * factor2(6)         'Steekmaat radii
-        tan2(7) = _db2 * factor2(7)         'Radius 1
-        tan2(8) = _db2 * factor2(8)         'radius gooze neck
-        tan2(9) = tan2(7) - 1 * tan1(6)     'Radius 2
-        tan2(10) = tan2(7) - 2 * tan1(6)    'Radius 3
-
-        '--------- 1st stage cyclone -----
-        TextBox81.Text = CType(ComboBox1.SelectedItem, String)      'Cycloon type        
-        TextBox82.Text = tan1(1).ToString("F0")         'Diameter
-        TextBox154.Text = tan1(2).ToString("F0")        'uitlaat breedte
-        TextBox155.Text = tan1(3).ToString("F0")        'Uitlaat hoogte
-        TextBox156.Text = tan1(4).ToString("F0")        'uitlaat lengte
-        TextBox157.Text = tan1(5).ToString("F0")        'uitlaat hartmaat
-        TextBox158.Text = tan1(6).ToString("F0")        'Steekmaat radii
-        TextBox159.Text = tan1(7).ToString("F0")        'Radius 1
-        TextBox160.Text = tan1(8).ToString("F0")        'Radius gooze neck
-        TextBox172.Text = tan1(9).ToString("F0")        'Radius 2
-        TextBox173.Text = tan1(10).ToString("F0")       'Radius 3
-
-        '--------- 2nd stage cyclone -----
-        TextBox161.Text = CType(ComboBox2.SelectedItem, String)      'Cycloon type
-        TextBox162.Text = tan2(1).ToString("F0")        'Diameter
-        TextBox163.Text = tan2(2).ToString("F0")        'uitlaat breedte
-        TextBox164.Text = tan2(3).ToString("F0")        'Uitlaat hoogte
-        TextBox165.Text = tan2(4).ToString("F0")        'uitlaat lengte
-        TextBox166.Text = tan2(5).ToString("F0")        'uitlaat hartmaat
-        TextBox167.Text = tan2(6).ToString("F0")        'Steekmaat radii
-        TextBox168.Text = tan2(7).ToString("F0")        'Radius 1
-        TextBox169.Text = tan2(8).ToString("F0")        'Radius gooze neck
-        TextBox170.Text = tan2(9).ToString("F0")        'Radius 2
-        TextBox171.Text = tan2(10).ToString("F0")       'Tadius 3
     End Sub
     Private Sub Button8_Click(sender As Object, e As EventArgs) Handles Button8.Click
         '--- Save case ----
@@ -3221,7 +3221,7 @@ Public Class Form1
                 li(8) = qq - li(7)                                      'Loss2 pds.cum [%] 
                 li(9) = 100.0 * ((li(1) - li(6)) / li(1))                 'Eff stage1&2 [%]
 
-                If li(8) = 0 Then li(9) = 100.0       'Loss is zero eff must be 100%
+                If li(8) = 0.0 Then li(9) = 100.0       'Loss is zero eff must be 100%
 
                 '========== prevent silly results ======
                 For col = 0 To 9  'Fill the DataGridview
@@ -3248,7 +3248,6 @@ Public Class Form1
         For row = 1 To DataGridView4.Rows.Count - 1
             If loss <= CDbl(DataGridView4.Rows(row).Cells(9).Value) Then
                 Return CDbl(DataGridView4.Rows(row).Cells(0).Value)
-                Exit For
             End If
         Next
 
@@ -3568,7 +3567,7 @@ Public Class Form1
         If e.Control AndAlso e.KeyCode = Keys.V Then
             Dim row As Integer = 0
             For Each line As String In Clipboard.GetText.Split(CChar(vbNewLine))
-                If Not line.Trim.ToString = "" Then
+                If line.Trim.Length > 0 Then
 
                     Dim item As String() = line.Split(vbTab(0)).Select(Function(X) X.Trim).ToArray
                     item(0) = item(0).Replace(",", ".")
