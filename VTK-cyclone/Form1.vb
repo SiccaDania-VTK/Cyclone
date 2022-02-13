@@ -4182,7 +4182,7 @@ Public Class Form1
             End With
 
             For h = 1 To norm_log_dist_pdf.GetLength(0) - 1 'Fill line chart
-                xx = h / 2              'Calulation step
+                xx = h / 6              'Calulation step
                 '------------- Bell curve ----------------
                 norm_log_dist_pdf(h, 0) = xx
                 norm_log_dist_pdf(h, 1) = Numerics.Distributions.Weibull.PDF(shape, scale, xx) * 100.0  '[%] Weibull
@@ -4195,12 +4195,14 @@ Public Class Form1
                     norm_log_dist_cdf(h, 1) = (Numerics.Distributions.Weibull.CDF(shape, scale, xx)) * 100.0  '[%] Weibull
                 End If
 
-
                 '------------- Copy to the data grids ----
                 DataGridView5.Rows(h - 1).Cells(0).Value = Round(norm_log_dist_pdf(h, 0), 2)    'Bell Curve
                 DataGridView5.Rows(h - 1).Cells(1).Value = Round(norm_log_dist_pdf(h, 1), 2)    'Bell Curve
                 DataGridView7.Rows(h - 1).Cells(0).Value = Round(norm_log_dist_cdf(h, 0), 2)    'Cum weight
                 DataGridView7.Rows(h - 1).Cells(1).Value = Round(norm_log_dist_cdf(h, 1), 2)    'Cum weight
+                If Round(norm_log_dist_cdf(h, 1)) = 50 Then
+                    DataGridView7.Item(1, h - 1).Style.BackColor = Color.Red
+                End If
             Next h
 
             Draw_chart5_weibull()
