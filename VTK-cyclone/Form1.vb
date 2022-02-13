@@ -57,7 +57,7 @@ Imports Word = Microsoft.Office.Interop.Word
     Public outv1 As Double          '[m/s] Outlet velocity cyclone
     Public Kstokes1 As Double       'Stokes getal
     Public m1 As Double             'm factor loss curve d< dia critical
-    Public stage1() As GvG_Calc_struct   'tbv calculatie stage #1
+    Public stage1 As GvG_Calc_struct()   'tbv calculatie stage #1
     Public Dmin1 As Double          'Smallest particle 100% loss
     Public Dmax1 As Double          'Biggest particle 100% catch
 
@@ -95,7 +95,7 @@ Imports Word = Microsoft.Office.Interop.Word
     Public Ro_gas3_Nm3 As Double    '[kg/Nm3] density gas (outlet stage #2)
 
     Public m2 As Double             'm factor loss curve d< dia critical
-    Public stage2() As GvG_Calc_struct   'tbv calculatie stage #2
+    Public stage2 As GvG_Calc_struct()   'tbv calculatie stage #2
     Public Dmin2 As Double          '[mu] Smallest particle 100% loss
     Public Dmax2 As Double          '[mu] Biggest particle 100% catch
 End Structure
@@ -129,6 +129,8 @@ End Structure
 
 Public Class Form1
     Public Const no_PDS_inputs As Integer = 100         'Data from the customer
+    Private Const V As Boolean = False
+    Private Const V1 As Boolean = False
     Public _cyl1_dim(20) As Double                      'Cyclone stage #1 dimensions
     Public _cyl2_dim(20) As Double                      'Cyclone stage #2 dimensions
     Public _istep As Double                             '[mu] Particle size calculation step
@@ -138,7 +140,7 @@ Public Class Form1
     Private init As Boolean = False                         'Initialize done
     Private Update_screen_fram_array_done As Boolean = True 'Program chokes during retrieve
     Private ReadOnly _Gasconstant As Double = 8.31445984848     'ideal gas constant 
-    Private ReadOnly separators() As String = {";"}
+    Private ReadOnly separators As String() = {";"}
 
     Public _ν As Double = 0.3       'Poisson ratio for steel
     Public _P As Double             'Calculation pressure [Mpa]
@@ -154,7 +156,7 @@ Public Class Form1
     Public _dib As Double           'Inside diameter nozzle fitted in shell
     Public _Emod As Double          'Modulus of elasticity 
 
-    Public Shared joint_eff() As String = {"0.7", "0.85", "1.0"}    'Welding
+    Public Shared joint_eff As String() = {"0.7", "0.85", "1.0"}    'Welding
 
     '===== Testing with Normal-log distribution ======
     Public norm_log_dist_pdf(300, 2) As Double   'Normal-log distribution, Bell Curve
@@ -164,7 +166,7 @@ Public Class Form1
     'Uitlaat keeldia inw.;Uitlaat flensdiameter inw.;Lengte insteekpijp inw.;
     'Lengte romp + conus;Lengte romp;Lengte conus;Dia_conus / 3P-pijp;Lengte 3P-pijp;Lengte 3P-conus;Kleine dia 3P-conus",
 
-    Private ReadOnly cyl_dimensions() As String = {
+    Private ReadOnly cyl_dimensions As String() = {
     "AC-300;0.34        ;0.770;0.600;0.630;0.300;0.680  ;0.6956;0.892;3.360;1.312;2.048;0.4;0.6;0.6;0.25",
     "AC-350;0.32        ;0.700;0.600;0.617;0.300;0.630  ;0.6456;0.892;3.360;1.312;2.048;0.4;0.6;0.6;0.25",
     "AC-435;0.282       ;0.640;0.600;0.600;0.300;0.560  ;0.5756;0.892;3.360;1.312;2.048;0.4;0.6;0.6;0.25",
@@ -178,7 +180,7 @@ Public Class Form1
     '"Void;0.203;0.457  ;0.600;0.564;0.300;0.307;0.428  ;0.8920;3.797;1.312;2.485;0.4;0.6;0.6;0.25"     'NOT UP TO DATE CHECK !!!!!!
     '}
 
-    Private ReadOnly Tangent_out_dimensions() As String = {
+    Private ReadOnly Tangent_out_dimensions As String() = {
     "AC-300 ;0.6956;0.5440;0.5440   ;0.5100;0.3400;0.0340;0.5780;0.0680",
     "AC-350 ;0.6456;0.5040;0.5040   ;0.4725;0.3150;0.0315;0.5355;0.0630",
     "AC-435 ;0.5756;0.4480;0.4480   ;0.4200;0.2800;0.0280;0.4760;0.0560",
@@ -192,7 +194,7 @@ Public Class Form1
     'm1,k1,a1 als d < d_krit
     'm2,k2,a2 als d > d_krit
     'type; d/krit; m1; k1; a1; m2; k2; a2; drukcoef air; drukcoef dust
-    Private ReadOnly rekenlijnen() As String = {
+    Private ReadOnly rekenlijnen As String() = {
     "AC300;     12.2;   1.15;   7.457;  1.005;      8.5308;     1.6102; 0.4789; 7;      0",
     "AC350;     10.2;   1.0;    5.3515; 1.0474;     4.4862;     2.4257; 0.6472; 7;      7.927",
     "AC435.;    8.93;   0.69;   4.344;  1.139;      4.2902;     1.3452; 0.5890; 7;      8.26",
@@ -207,7 +209,7 @@ Public Class Form1
     }
 
     'DSM polymer power DSM Geleen (cumulatief[%], particle diameter[mu])
-    Private ReadOnly DSM_psd_example() As String = {
+    Private ReadOnly DSM_psd_example As String() = {
     "4.50;0.04",
     "5.50;0.27",
     "6.50;0.61",
@@ -233,7 +235,7 @@ Public Class Form1
     "215;99.95"}
 
     'Typical Corn ( particle diameter[mu],cumulatief[%] )
-    Private ReadOnly psd_corn() As String = {
+    Private ReadOnly psd_corn As String() = {
     "1;	99.99",
     "2;	99.9",
     "4;	99.8",
@@ -254,7 +256,7 @@ Public Class Form1
     "48;0.001"}
 
     'Typical Chickpea Starch (particle diameter[mu], cumulatief[%])
-    Private ReadOnly psd_chickpea_starch() As String = {
+    Private ReadOnly psd_chickpea_starch As String() = {
     "6.1590;	99.9998",
     "6.7610;	99.995",
     "7.4000;	99.96",
@@ -299,7 +301,7 @@ Public Class Form1
 
 
     'SURESH, Cargill China (particle diameter[mu],cumulatief[%] )
-    Private ReadOnly maltodextrine_psd_suresh() As String = {
+    Private ReadOnly maltodextrine_psd_suresh As String() = {
     "1.0	;	99.9999",
     "3.5	;	97.00",
     "7.5	;	93.80",
@@ -321,7 +323,7 @@ Public Class Form1
     "350.0	;	0.01"}
 
     'Cargill China (particle diameter[mu], cumulatief[%])
-    Private ReadOnly maltodextrine_psd() As String = {
+    Private ReadOnly maltodextrine_psd As String() = {
     "0.359;99.999	",
     "0.652;99.990	",
     "0.717;99.980	",
@@ -381,7 +383,7 @@ Public Class Form1
     "450.0	;	0.001"}
 
     'GvG Excelsheet, Cumulatief[%], particle diameter[mu])
-    Private ReadOnly GvG_excel() As String = {
+    Private ReadOnly GvG_excel As String() = {
     "10;   99.2",
     "15;   85.2",
     "20;   57.5",
@@ -393,7 +395,7 @@ Public Class Form1
     "100;  0"}
 
     'AA850 test GvG Excelsheet, Cumulatief[%], particle diameter[mu])
-    Private ReadOnly AA_excel() As String = {
+    Private ReadOnly AA_excel As String() = {
     "2;   99.9973",
     "3;   99.92",
     "4;   99.61",
@@ -408,7 +410,7 @@ Public Class Form1
     "50;  0.001"}
 
     'Whey (cumulatief[%], particle diameter[mu])
-    Private ReadOnly psd_whey_A6605() As String = {
+    Private ReadOnly psd_whey_A6605 As String() = {
     "3.0;	99.975",
     "5.0;	99.955",
     "8.0;	99.92",
@@ -423,7 +425,7 @@ Public Class Form1
     "1200;	0.1"}
 
     'Potato from Flash drier (cumulatief[%], particle diameter[mu])
-    Private ReadOnly psd_potato_flash_drier() As String = {
+    Private ReadOnly psd_potato_flash_drier As String() = {
     "5;	    99.999",
     "7;	    99.7",
     "10;	99.0",
@@ -439,7 +441,7 @@ Public Class Form1
 
     'EN 10028-2 for steel
     'EN 10028-7 for stainless steel
-    Public Shared steel() As String = {
+    Public Shared steel As String() = {
    "Material-------;50c;100;150;200;250;300;350;400;450;500;550;remarks--;cs/ss",
    "1.0425 (P265GH);265;241;223;205;188;173;160;150;  0;  0;  0; max 400c;cs",
    "1.0473 (P355GH);343;323;299;275;252;232;214;202;  0;  0;  0; max 400c;cs",
@@ -449,7 +451,7 @@ Public Class Form1
    "1.4404 (316L)  ;200;166;152;137;127;118;113;108;103;100; 98; max 550c;ss"}
 
     'Typical Lognatural distribution; mu; sigma
-    Public Shared typ_distri() As String = {
+    Public Shared typ_distri As String() = {
     "Free selection;0;0",
     "Corn;2.5;0.4",
     "Chickpea;3.2;1.3",
@@ -457,7 +459,7 @@ Public Class Form1
     "Maltodex;4.4;1.3"}
 
     'Chapter 6, Max allowed values for pressure parts
-    Public Shared chap6() As String = {
+    Public Shared chap6 As String() = {
    "Chap 6.2, Steel, safety, rupture < 30%; 1.5",
    "Chap 6.4, Austenitic steel, rupture 30-35%; 1.5",
    "Chap 6.5, Austenitic steel, rupture >35%; 3.0",
@@ -472,8 +474,8 @@ Public Class Form1
 
     Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         Dim hh, life_time, i As Integer
-        Dim words() As String
-        Dim separators() As String = {";"}
+        Dim words As String()
+        Dim separators As String() = {";"}
         Dim Pro_user, HD_number As String
         Dim nu, nu2 As Date
         Dim user_list As New List(Of String)
@@ -565,7 +567,7 @@ Public Class Form1
             If HD_number = Trim(hard_disk_list(i)) Then pass_disc = True
         Next
 
-        If pass_name = False Or pass_disc = False Then
+        If pass_name = V OrElse pass_disc = V Then
             Clipboard.SetText("User= " & Pro_user & ", HD=  " & HD_number)
             MessageBox.Show("VTK Cyclone selection program" & vbCrLf & "Access denied, contact GPa" & vbCrLf)
             MessageBox.Show("User_name= " & Pro_user & ", Pass name= " & pass_name.ToString)
@@ -788,7 +790,7 @@ Public Class Form1
     Private Sub Get_input_calc_1(ks As Integer)
         Dim db1 As Double           'Body diameter stage #1
         Dim db2 As Double           'Body diameter stage #2
-        Dim words() As String
+        Dim words As String()
 
         '===Input parameter ===
         Dim ro_solid As Double      'Density [kg/hr]
@@ -829,7 +831,7 @@ Public Class Form1
         TextBox129.Text = _cees(ks).Ro_gas1_Nm3.ToString("F3")              'kg/Nm3 inlet gas
         TextBox191.Text = (NumericUpDown1.Value / ratio).ToString("F0")     'Nm3/h inlet gas
 
-        If (ComboBox1.SelectedIndex > -1) And (ComboBox2.SelectedIndex > -1) Then 'Prevent exceptions
+        If (ComboBox1.SelectedIndex > -1) AndAlso (ComboBox2.SelectedIndex > -1) Then 'Prevent exceptions
             '-------- dimension cyclone stage #1
             words = cyl_dimensions(ComboBox1.SelectedIndex).Split(CType(";", Char()))
             For hh = 1 To 15
@@ -888,7 +890,6 @@ Public Class Form1
                 wc_air1 = CDbl(words(8))        'Resistance Coefficient air
                 wc_dust1 = CDbl(words(9))       'Resistance Coefficient dust
             Else
-
                 MessageBox.Show("Error 763")
                 Exit Sub
             End If
@@ -1035,10 +1036,10 @@ Public Class Form1
             TextBox182.Text = _cees(ks).Ro_gas3_Am3.ToString("F3")      '[kg/Am3]
 
             '---------- Check inlet speed [m/s] stage #1---------------
-            TextBox16.BackColor = If(_cees(ks).inv1 < 12 Or _cees(ks).inv1 > 32, Color.Red, Color.LightGreen)
+            TextBox16.BackColor = If(_cees(ks).inv1 < 12 OrElse _cees(ks).inv1 > 32, Color.Red, Color.LightGreen)
 
             '---------- Check inlet speed stage #2---------------
-            TextBox80.BackColor = If(_cees(ks).inv2 < 12 Or _cees(ks).inv2 > 32, Color.Red, Color.LightGreen)
+            TextBox80.BackColor = If(_cees(ks).inv2 < 12 OrElse _cees(ks).inv2 > 32, Color.Red, Color.LightGreen)
 
             '---------- Check dp [pa] stage #1---------------
             TextBox17.BackColor = If(_cees(ks).dpgas1 > 3000.0, Color.Red, Color.LightGreen)
@@ -1213,14 +1214,14 @@ Public Class Form1
         Dim st1, st2 As String
 
         For row = 0 To DataGridView6.Rows.Count - 1
-            If Not IsNothing(DataGridView6.Rows(row).Cells(0).Value) And Not IsNothing(DataGridView6.Rows(row).Cells(1).Value) Then
+            If Not IsNothing(DataGridView6.Rows(row).Cells(0).Value) AndAlso Not IsNothing(DataGridView6.Rows(row).Cells(1).Value) Then
                 st1 = DataGridView6.Rows(row).Cells(0).Value.ToString
                 st2 = DataGridView6.Rows(row).Cells(1).Value.ToString
 
                 Double.TryParse(st1, a)
                 Double.TryParse(st2, b)
 
-                If a > 0 And b > 0 Then
+                If a > 0 AndAlso b > 0 Then
                     _input(row).dia_big = a
                     _input(row).class_load = b / 100.0
                 Else
@@ -1234,12 +1235,12 @@ Public Class Form1
     '-------- Bereken het verlies getal NIET gecorrigeerd -----------
     '----- de input is de GEMIDDELDE korrel grootte-----------
     Private Function Calc_verlies(korrel_g As Double, stokes As Double, stage As Integer) As Double
-        Dim words() As String
+        Dim words As String()
         Dim dia_Kcrit, fac_m, fac_a, fac_k As Double
         Dim verlies As Double
         Dim dia_K As Double
 
-        If (ComboBox1.Items.Count > 0 And ComboBox2.Items.Count > 0) Then
+        If (ComboBox1.Items.Count > 0 AndAlso ComboBox2.Items.Count > 0) Then
             '-------------- korrelgrootte factoren ------
             If (stage = 1) Then     'Stage #1 cyclone
                 words = rekenlijnen(ComboBox1.SelectedIndex).Split(CType(";", Char()))
@@ -1278,9 +1279,9 @@ Public Class Form1
     Private Sub Calc_verlies_corrected(ByRef grp As GvG_Calc_struct, stage As Integer)
         Dim cor1, cor2 As Double
 
-        If stage > 2 Or stage < 1 Then MessageBox.Show("Problem in Line 1034")  '----- check input ----
+        If stage > 2 OrElse stage < 1 Then MessageBox.Show("Problem in Line 1034")  '----- check input ----
 
-        If (ComboBox1.Items.Count > 0) And ComboBox2.Items.Count > 0 Then
+        If (ComboBox1.Items.Count > 0) AndAlso ComboBox2.Items.Count > 0 Then
             If (stage = 1) Then                         'Stage #1 cyclone
                 cor1 = 1 / CDbl(NumericUpDown22.Value)      'Correctie insteek pijp stage #1
                 Double.TryParse(TextBox55.Text, cor2)   'Hoge stof belasting correctie acc VT-UK
@@ -1299,7 +1300,7 @@ Public Class Form1
     'Separation depends on Stokes
     Private Function Calc_dia_particle(qq As Double, stokes As Double, stage As Integer) As Double
         Dim dia_result As Double
-        Dim words() As String
+        Dim words As String()
         Dim dia_Kcrit As Double
         Dim d1, d2 As Double
         Dim cor1, cor2 As Double        'Insteek pijp diameter
@@ -1308,7 +1309,7 @@ Public Class Form1
 
         '--- check input ----
         If qq > 1 Then MessageBox.Show("Loss > 100% is impossible, Line 486, qq= " & qq.ToString)
-        If stage > 2 Or stage < 1 Then MessageBox.Show("Problem in Line 708")
+        If stage > 2 OrElse stage < 1 Then MessageBox.Show("Problem in Line 708")
 
         '----- Insteek pijp corectie correctie -------
         If (stage = 1) Then                         'Cyclone 1# stage
@@ -1328,13 +1329,13 @@ Public Class Form1
         fac_m1 = CDbl(words(2))
         fac_k1 = CDbl(words(3))
         fac_a1 = CDbl(words(4))
-        d1 = fac_k1 * stokes * ((-Math.Log(qq ^ (1 / (cor1 * cor2))))) ^ (1 / fac_a1) + fac_m1 * stokes
+        d1 = fac_k1 * stokes * (-Math.Log(qq ^ (1 / (cor1 * cor2)))) ^ (1 / fac_a1) + fac_m1 * stokes
 
         '---- diameter particle groter dan de diameter kritisch
         fac_m2 = CDbl(words(5))
         fac_k2 = CDbl(words(6))
         fac_a2 = CDbl(words(7))
-        d2 = fac_k2 * stokes * ((-Math.Log(qq ^ (1 / (cor1 * cor2))))) ^ (1 / fac_a2) + fac_m2 * stokes
+        d2 = fac_k2 * stokes * (-Math.Log(qq ^ (1 / (cor1 * cor2)))) ^ (1 / fac_a2) + fac_m2 * stokes
 
         If ((d1 / stokes) < dia_Kcrit) Then
             dia_result = d1     'diameter kleiner kritisch
@@ -1721,10 +1722,10 @@ Public Class Form1
 
             '------ now present-------------
             For h = 0 To norm_log_dist_pdf.GetLength(0) - 1   'Fill line chart
-                If norm_log_dist_pdf(h, 0) > 0 And norm_log_dist_pdf(h, 1) > 0 Then
+                If norm_log_dist_pdf(h, 0) > 0 AndAlso norm_log_dist_pdf(h, 1) > 0 Then
                     .Series(0).Points.AddXY(norm_log_dist_pdf(h, 0), norm_log_dist_pdf(h, 1))   'Log normal
                 End If
-                If norm_log_dist_cdf(h, 0) > 0 And norm_log_dist_cdf(h, 1) > 0 Then
+                If norm_log_dist_cdf(h, 0) > 0 AndAlso norm_log_dist_cdf(h, 1) > 0 Then
                     .Series(1).Points.AddXY(norm_log_dist_cdf(h, 0), norm_log_dist_cdf(h, 1))   'Log normal
                 End If
             Next h
@@ -1747,12 +1748,12 @@ Public Class Form1
     Private Sub Calc_sequence()
         Dim case_nr As Integer = CInt(NumericUpDown30.Value)
 
-        If Update_screen_fram_array_done = False Then Exit Sub
+        If Update_screen_fram_array_done = V1 Then Exit Sub
 
         Read_dgv6_Calc_Class_load()
         Check_DGV6()
 
-        If ComboBox1.Items.Count > 0 And ComboBox2.Items.Count > 0 And init = True Then
+        If ComboBox1.Items.Count > 0 AndAlso ComboBox2.Items.Count > 0 AndAlso init Then
 
             ProgressBar1.Visible = True
             ProgressBar1.Value = 50
@@ -1808,7 +1809,7 @@ Public Class Form1
         Dim filename, user As String
         Dim bf As New System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
 
-        If TextBox28.Text.Trim.Length = 0 Or TextBox29.Text.Trim.Length = 0 Then
+        If TextBox28.Text.Trim.Length = 0 OrElse TextBox29.Text.Trim.Length = 0 Then
             MessageBox.Show("Complete Quote and Tag number")
             Exit Sub
         End If
@@ -2350,19 +2351,19 @@ Public Class Form1
         Dim i As Integer = 0
         Dim perc_smallest_part1 As Double   '[%]
         Dim fac_m As Double                 '[-]
-        Dim words() As String
+        Dim words As String()
         Dim density_ratio1 As Double        '[-] Density ratio stage#1  kg/Nm3 and kg/Am3
         Dim density_ratio2 As Double        '[-] Density ratio stage#1  kg/Nm3 and kg/Am3
         Dim dc1 As Double                   '[m] diameter cyclone stage #1
         Dim dc2 As Double                   '[m] diameter cyclone stage #2
         Dim dustload As Double              '[g/Am3] dust load
 
-        If Double.IsNaN(_cees(ks).stage1(0).dia) Or Double.IsInfinity(_cees(ks).stage1(0).dia) Then
+        If Double.IsNaN(_cees(ks).stage1(0).dia) OrElse Double.IsInfinity(_cees(ks).stage1(0).dia) Then
             MessageBox.Show("stage1 diameter1 = indifinity")
             Exit Sub
         End If
 
-        If ComboBox1.Items.Count > 0 And ComboBox2.Items.Count > 0 And init Then
+        If ComboBox1.Items.Count > 0 AndAlso ComboBox2.Items.Count > 0 AndAlso init Then
 
             dustload = NumericUpDown4.Value     '[g/Am3] dust load
 
@@ -2523,16 +2524,16 @@ Public Class Form1
         Dim i As Integer = 0
         Dim perc_smallest_part2 As Double
         Dim fac_m As Double
-        Dim words() As String
+        Dim words As String()
         Dim kgh, tot_kgh As Double
         Dim Eff_comb As Double      'Efficiency stage #1 and #2
 
-        If Double.IsNaN(_cees(ks).stage1(0).dia) Or Double.IsInfinity(_cees(ks).stage1(0).dia) Then
+        If Double.IsNaN(_cees(ks).stage1(0).dia) OrElse Double.IsInfinity(_cees(ks).stage1(0).dia) Then
             MessageBox.Show("stage2 diameter = indifinity")
             Exit Sub
         End If
 
-        If ComboBox1.Items.Count > 0 And ComboBox2.Items.Count > 0 And init Then
+        If ComboBox1.Items.Count > 0 AndAlso ComboBox2.Items.Count > 0 AndAlso init Then
 
             '----------- stof belasting ------------
             tot_kgh = _cees(ks).emis1_kgh                       '[kg/hr] Dust inlet 
@@ -2591,7 +2592,7 @@ Public Class Form1
 
 
             For i = 1 To 110    '=========Stage #2, Grid lines 1...============ 
-                If Double.IsNaN(_cees(ks).stage1(ks).dia) Or Double.IsInfinity(_cees(ks).stage1(ks).dia) Then Exit Sub
+                If Double.IsNaN(_cees(ks).stage1(ks).dia) OrElse Double.IsInfinity(_cees(ks).stage1(ks).dia) Then Exit Sub
 
                 _cees(ks).stage2(i).dia = _cees(ks).stage1(i).dia                               'Diameter Copy stage #1
                 _cees(ks).stage2(i).d_ave = _cees(ks).stage1(i).d_ave                           'Average diameter
@@ -2685,7 +2686,7 @@ Public Class Form1
 
         '=========== Determine how many PSD groups are there? ============
         For i = 0 To no_PDS_inputs - 1
-            If (_input(i).dia_big > 0) And (_input(i).class_load > 0) Then grp_count += 1
+            If (_input(i).dia_big > 0) AndAlso (_input(i).class_load > 0) Then grp_count += 1
         Next
         g.i_grp = 0
 
@@ -2701,7 +2702,7 @@ Public Class Form1
 
             '=========== mid section ===========
             For i = 1 To grp_count
-                If (g.dia >= _input(i - 1).dia_big And g.dia < _input(i).dia_big And _input(i).dia_big > 0) Then
+                If (g.dia >= _input(i - 1).dia_big AndAlso g.dia < _input(i).dia_big AndAlso _input(i).dia_big > 0) Then
                     g.i_d1 = _input(i - 1).dia_big              'Diameter small [mu]
                     g.i_d2 = _input(i).dia_big                  'Diameter big [mu]
                     g.i_p1 = _input(i - 1).class_load           'User lower input percentage
@@ -2711,7 +2712,7 @@ Public Class Form1
             Next
 
             '=========== last entered PSD data point ===========
-            If (g.dia >= _input(no_PDS_inputs).dia_big And _input(no_PDS_inputs).dia_big > 0) Then
+            If (g.dia >= _input(no_PDS_inputs).dia_big AndAlso _input(no_PDS_inputs).dia_big > 0) Then
                 g.i_d1 = _input(no_PDS_inputs).dia_big        'Diameter small [mu]
                 g.i_d2 = 2000                                       'Diameter big [mu]
                 g.i_p1 = _input(no_PDS_inputs).class_load           'User lower input percentage
@@ -2720,7 +2721,7 @@ Public Class Form1
             End If
 
             Dim w(no_PDS_inputs) As Double    'Individual particle class weights 
-            Dim q(no_PDS_inputs) As Double    'Individual particle class weights 
+            'Dim q(no_PDS_inputs) As Double    'Individual particle class weights 
             Dim qsum(no_PDS_inputs) As Double 'Sum of weights
             Dim j As Integer
 
@@ -2753,7 +2754,7 @@ Public Class Form1
                 dia = _input(i).dia_big
                 dia_previous = _input(i - 1).dia_big
 
-                .Rows(i).Cells(0).Style.BackColor = CType(IIf(dia < dia_previous And dia <> 0, Color.Red, Color.LightGreen), Color)
+                .Rows(i).Cells(0).Style.BackColor = CType(IIf(dia < dia_previous AndAlso dia <> 0, Color.Red, Color.LightGreen), Color)
             Next
 
             '---------CHECK-cummulative weight must decrease-----------
@@ -2763,7 +2764,7 @@ Public Class Form1
                 c_load_previous = _input(i - 1).class_load
 
                 ' .Rows(i).Cells(1).Style.BackColor = If(c_load > c_load_previous And c_load <> 0, Color.Orange, Color.LightGreen)
-                If (c_load > c_load_previous And c_load <> 0) Then
+                If (c_load > c_load_previous AndAlso c_load <> 0) Then
                     .Rows(i).Cells(1).Style.BackColor = Color.Orange
                 Else
                     .Rows(i).Cells(1).Style.BackColor = Color.LightGreen
@@ -2808,7 +2809,7 @@ Public Class Form1
         Dim p304, p316 As Double
         Dim c_area1, c_area2 As Double      'Outside area est.
 
-        If _db1 > 0.001 And _db2 > 0.001 Then
+        If _db1 > 0.001 AndAlso _db2 > 0.001 Then
 
             '========== Stage cyclone #1 =====
             'weight top plate
@@ -2937,14 +2938,14 @@ Public Class Form1
     End Sub
 
     Private Sub Calc_Tang_outlet()
-        Dim words() As String
+        Dim words As String()
         Dim _db1, _db2 As Double                    '[mm] outlet cyclone = inlet tangential
         Dim tan1(11) As Double                      '[mm] 
         Dim tan2(11) As Double
         Dim factor1(9) As Double                    '[-]
         Dim factor2(9) As Double                    '[-]
 
-        If numericUpDown5.Value < 1 Or NumericUpDown3.Value < 1 Then Exit Sub
+        If numericUpDown5.Value < 1 OrElse NumericUpDown3.Value < 1 Then Exit Sub
         _db1 = CDbl(numericUpDown5.Value) * 1000          '[mm] dia cyclone stage 1
         _db2 = CDbl(NumericUpDown34.Value) * 1000         '[mm] dia cyclone stage 2
 
@@ -3198,7 +3199,7 @@ Public Class Form1
 
             For col = 0 To 9  'Fill the DataGrid
                 If Double.IsNaN(li(col)) Then li(col) = 0           'prevent silly results
-                If li(col) < 0 Or li(col) > 10 ^ 5 Then li(col) = 0   'prevent silly results
+                If li(col) < 0 OrElse li(col) > 10 ^ 5 Then li(col) = 0   'prevent silly results
                 DataGridView4.Rows(row).Cells(col).Value = li(col).ToString("F5")
             Next
 
@@ -3225,7 +3226,7 @@ Public Class Form1
                 '========== prevent silly results ======
                 For col = 0 To 9  'Fill the DataGridview
                     If Double.IsNaN(li(col)) Then li(col) = 0               'prevent silly results
-                    If li(col) < 0 Or li(col) > 10 ^ 5 Then li(col) = 0     'prevent silly results
+                    If li(col) < 0 OrElse li(col) > 10 ^ 5 Then li(col) = 0     'prevent silly results
                     DataGridView4.Rows(row).Cells(col).Value = li(col).ToString("F6")
                 Next
             Next
@@ -3241,7 +3242,7 @@ Public Class Form1
     End Sub
     Private Function Vlookup_db(loss As Double) As Double
         'If the loss percenatege is found return the particle diameter
-        If loss > 100.0 Or loss < 0.0 Then MsgBox("Problem in line Vlookup_db")
+        If loss > 100.0 OrElse loss < 0.0 Then MsgBox("Problem in line Vlookup_db")
 
         loss = 100.0 - loss
         For row = 1 To DataGridView4.Rows.Count - 1
@@ -3442,7 +3443,7 @@ Public Class Form1
         Fill_dgv6_example(DSM_psd_example)
     End Sub
     Private Sub Fill_dgv6_example(ww As String())
-        Dim words() As String
+        Dim words As String()
         With DataGridView6
             For row = 0 To .Rows.Count - 1
                 If row < ww.Length Then
@@ -3553,7 +3554,7 @@ Public Class Form1
         TextBox20.Visible = False
         TextBox174.Visible = False
 
-        If (id = "gp" Or id = "gerritp" Or id = "user") Then
+        If (id = "gp" OrElse id = "gerritp" OrElse id = "user") Then
             TabControl1.TabPages.Add(TabPage8)       'Logging
             TabControl1.TabPages.Add(TabPage10)      'High Dust load
             PictureBox4.Visible = True
@@ -3569,7 +3570,7 @@ Public Class Form1
             For Each line As String In Clipboard.GetText.Split(CChar(vbNewLine))
                 If Not line.Trim.ToString = "" Then
 
-                    Dim item() As String = line.Split(vbTab(0)).Select(Function(X) X.Trim).ToArray
+                    Dim item As String() = line.Split(vbTab(0)).Select(Function(X) X.Trim).ToArray
                     item(0) = item(0).Replace(",", ".")
                     item(1) = item(1).Replace(",", ".")
                     DataGridView6.Rows(row).Cells(0).Value = item(0)
@@ -3624,7 +3625,7 @@ Public Class Form1
     Private Sub Button12_Click(sender As Object, e As EventArgs) Handles Button12.Click
         '======= Invert the Cumm weight colums =====
         For Each row As DataGridViewRow In DataGridView6.Rows
-            If Not IsNothing(row.Cells(0).Value) And Not IsNothing(row.Cells(1).Value) Then
+            If Not IsNothing(row.Cells(0).Value) AndAlso Not IsNothing(row.Cells(1).Value) Then
                 If Not IsNothing(row.Cells(1).Value) Then row.Cells(1).Value = 100.0 - CDbl(row.Cells(1).Value)
 
                 '===== diameter NULL than also weight is NUL ======
@@ -3712,7 +3713,7 @@ Public Class Form1
                 Lcone = CDec(dia * 0.5 / Tan(apex / 180 * PI))
         End Select
 
-        If RadioButton8.Checked Or RadioButton9.Checked Then
+        If RadioButton8.Checked OrElse RadioButton9.Checked Then
             ComboBox3.SelectedIndex = 0             'Weld factor
             Set_numeric_control_value(NumericUpDown10, dia * 1000)              'Shell OD
             Set_numeric_control_value(NumericUpDown15, dia * 1000)              'Shell OD
@@ -3865,7 +3866,7 @@ Public Class Form1
     Private Sub Design_stress()
         Dim sf As Double = 1        'Safety factor init value
         Dim temperature As Double   'temperature
-        Dim words() As String
+        Dim words As String()
         Dim y50, y100, y150, y200, y250, y300, y350, y400 As Double
         Dim ΔT As Double
 
@@ -3890,7 +3891,7 @@ Public Class Form1
 
         temperature = NumericUpDown11.Value        '[c]
 
-        If (ComboBox5.SelectedIndex > -1) And (ComboBox4.SelectedIndex > -1) Then  'Prevent exceptions
+        If (ComboBox5.SelectedIndex > -1) AndAlso (ComboBox4.SelectedIndex > -1) Then  'Prevent exceptions
             Select Case True
                 Case 50 >= temperature
                     _f02 = CDec(y50)
@@ -4096,7 +4097,7 @@ Public Class Form1
     'Keep the numeric control within the Min and Max limits
     Private Sub Set_numeric_control_value(num As NumericUpDown, value As Decimal)
         Select Case True
-            Case value <= num.Maximum And value >= num.Minimum
+            Case value <= num.Maximum AndAlso value >= num.Minimum
                 num.Value = value
             Case value > num.Maximum
                 num.Value = num.Maximum
@@ -4113,7 +4114,7 @@ Public Class Form1
         Dim x, k1, k2 As Double
         Dim wght As Double
 
-        If NumericUpDown10.Value > 0 And (_P > 0) Then
+        If NumericUpDown10.Value > 0 AndAlso (_P > 0) Then
             dia = NumericUpDown10.Value / 1000          '[m]
             diahole = NumericUpDown16.Value / 1000      '[m]
             t = NumericUpDown46.Value / 1000            '[m]
@@ -4161,7 +4162,7 @@ Public Class Form1
         Dim shape As Double = NumericUpDown17.Value
         Dim scale As Double = NumericUpDown24.Value
         Dim xx As Double
-        If shape > 0 And scale > 0 Then
+        If shape > 0 AndAlso scale > 0 Then
             With DataGridView5
                 .ColumnCount = 2
                 .Rows.Clear()
