@@ -868,6 +868,7 @@ Partial Class Form1
         Me.Label77 = New System.Windows.Forms.Label()
         Me.BackgroundWorker1 = New System.ComponentModel.BackgroundWorker()
         Me.BackgroundWorker2 = New System.ComponentModel.BackgroundWorker()
+        Me.CheckBox22 = New System.Windows.Forms.CheckBox()
         Me.TabPage10.SuspendLayout
         Me.GroupBox18.SuspendLayout
         CType(Me.Chart3, System.ComponentModel.ISupportInitialize).BeginInit
@@ -10880,6 +10881,7 @@ Partial Class Form1
         '
         'GroupBox15
         '
+        Me.GroupBox15.Controls.Add(Me.CheckBox22)
         Me.GroupBox15.Controls.Add(Me.GroupBox17)
         Me.GroupBox15.Controls.Add(Me.CheckBox21)
         Me.GroupBox15.Controls.Add(Me.Button9)
@@ -10925,7 +10927,7 @@ Partial Class Form1
         Me.CheckBox21.AutoSize = True
         Me.CheckBox21.Checked = True
         Me.CheckBox21.CheckState = System.Windows.Forms.CheckState.Checked
-        Me.CheckBox21.Location = New System.Drawing.Point(74, 140)
+        Me.CheckBox21.Location = New System.Drawing.Point(345, 48)
         Me.CheckBox21.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
         Me.CheckBox21.Name = "CheckBox21"
         Me.CheckBox21.Size = New System.Drawing.Size(154, 24)
@@ -10994,6 +10996,19 @@ Partial Class Form1
         Me.Label77.Size = New System.Drawing.Size(136, 25)
         Me.Label77.TabIndex = 132
         Me.Label77.Text = "Weibull shape"
+        '
+        'CheckBox22
+        '
+        Me.CheckBox22.AutoSize = True
+        Me.CheckBox22.Checked = True
+        Me.CheckBox22.CheckState = System.Windows.Forms.CheckState.Checked
+        Me.CheckBox22.Location = New System.Drawing.Point(345, 87)
+        Me.CheckBox22.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
+        Me.CheckBox22.Name = "CheckBox22"
+        Me.CheckBox22.Size = New System.Drawing.Size(117, 24)
+        Me.CheckBox22.TabIndex = 140
+        Me.CheckBox22.Text = "Flip S curve"
+        Me.CheckBox22.UseVisualStyleBackColor = True
         '
         'Form1
         '
@@ -12011,4 +12026,5 @@ Partial Class Form1
     Friend WithEvents CheckBox21 As CheckBox
     Friend WithEvents ComboBox6 As ComboBox
     Friend WithEvents GroupBox17 As GroupBox
+    Friend WithEvents CheckBox22 As CheckBox
 End Class

@@ -777,7 +777,7 @@ Public Class Form1
         Design_stress()
 
         init = True                     'init is now done
-        Draw_chart5()
+        Draw_chart5_weibull()
         Calc_plot_Distribution()
     End Sub
 
@@ -1683,7 +1683,7 @@ Public Class Form1
         Next h
     End Sub
 
-    Private Sub Draw_chart5()
+    Private Sub Draw_chart5_weibull()
         With Chart5
             .Series.Clear()
             .ChartAreas.Clear()
@@ -1709,14 +1709,15 @@ Public Class Form1
             .Series(2).IsVisibleInLegend = False
             .Series(2).BorderDashStyle = ChartDashStyle.DashDot
 
-            .Titles.Add("Log Normal Distribution")
+            .Titles.Add("Weibull Distribution")
             .ChartAreas("ChartArea0").AxisX.Title = "Particle diameter [mu]"
-            '.ChartAreas("ChartArea0").AxisX.IsLogarithmic = True
+            .ChartAreas("ChartArea0").AxisX.IsLogarithmic = False
             .ChartAreas("ChartArea0").AxisY.Title = "Exit loss [%]"
             .ChartAreas("ChartArea0").AxisY.Minimum = 0D     'Loss
             .ChartAreas("ChartArea0").AxisY.Maximum = 100D   '[%] weight
             .ChartAreas("ChartArea0").AxisX.Minimum = 0.1D   '[mu] Particle size
-            '.ChartAreas("ChartArea0").AxisX.Maximum = 200D  '[mu] Particle size
+            .ChartAreas("ChartArea0").AxisX.Maximum = 100D   '[mu] Particle size
+            .ChartAreas("ChartArea0").AxisX.LabelStyle.Format = "F0"
 
             '------ now present-------------
             For h = 0 To norm_log_dist_pdf.GetLength(0) - 1   'Fill line chart
@@ -1731,15 +1732,14 @@ Public Class Form1
             '------- PSD input data -----
             Dim a, b As Double
             If CheckBox21.Checked Then
-                For h = 0 To DataGridView6.Rows.Count - 1                   'Fill line chart
+                For h = 0 To DataGridView6.Rows.Count - 1                 'Fill line chart
                     a = CDbl(DataGridView6.Rows(h).Cells(0).Value)        'Particle upper diameter
-                    b = CDbl(DataGridView6.Rows(h).Cells(1).Value)        'Cum weight
-                    .Series(2).Points.AddXY(a, b)                           'PSD 
+                    b = CDbl(DataGridView6.Rows(h).Cells(1).Value)        'Cum PSD weight
+                    .Series(2).Points.AddXY(a, b)                         'PSD 
                 Next
             End If
         End With
     End Sub
-
 
     Private Sub Button2_Click(sender As Object, e As EventArgs) Handles TabPage9.Enter, CheckBox6.CheckedChanged, CheckBox7.CheckedChanged, CheckBox4.CheckedChanged, CheckBox9.CheckedChanged, CheckBox8.CheckedChanged, CheckBox10.CheckedChanged, CheckBox5.CheckedChanged, CheckBox12.CheckedChanged, CheckBox11.CheckedChanged, CheckBox1.CheckedChanged, CheckBox13.CheckedChanged, CheckBox14.CheckedChanged, CheckBox15.CheckedChanged, CheckBox16.CheckedChanged, CheckBox17.CheckedChanged, CheckBox18.CheckedChanged, CheckBox19.CheckedChanged, RadioButton2.CheckedChanged, RadioButton1.CheckedChanged
         Draw_chart2(Chart2, 0)      'Present the results loss curve
@@ -4151,7 +4151,7 @@ Public Class Form1
         End If
     End Sub
 
-    Private Sub Button9_Click(sender As Object, e As EventArgs) Handles Button9.Click, NumericUpDown24.ValueChanged, NumericUpDown17.ValueChanged, NumericUpDown17.Enter, CheckBox21.CheckedChanged, Chart5.Enter
+    Private Sub Button9_Click(sender As Object, e As EventArgs) Handles Button9.Click, NumericUpDown24.ValueChanged, NumericUpDown17.ValueChanged, NumericUpDown17.Enter, CheckBox21.CheckedChanged, Chart5.Enter, CheckBox22.CheckedChanged
         Calc_plot_Distribution()
     End Sub
     Private Sub Calc_plot_Distribution()
@@ -4178,20 +4178,23 @@ Public Class Form1
                 .RowHeadersVisible = False
                 .AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill
                 .Columns(0).HeaderText = "Dia [mu]"
-                .Columns(1).HeaderText = "Cum wght[%]"
+                .Columns(1).HeaderText = "PSD Cum wght[%]"
             End With
 
-            For h = 1 To norm_log_dist_pdf.GetLength(0) - 1   'Fill line chart
-                xx = h / 2
+            For h = 1 To norm_log_dist_pdf.GetLength(0) - 1 'Fill line chart
+                xx = h / 2              'Calulation step
                 '------------- Bell curve ----------------
                 norm_log_dist_pdf(h, 0) = xx
-                ' norm_log_dist_pdf(h, 1) = Numerics.Distributions.LogNormal.PDF(mu, sigma, ww) * 100.0  '[%] Lognormal
                 norm_log_dist_pdf(h, 1) = Numerics.Distributions.Weibull.PDF(shape, scale, xx) * 100.0  '[%] Weibull
 
-                '------------- S curve ---- 
+                '------------- S curve (Cumulatief) ---- 
                 norm_log_dist_cdf(h, 0) = xx
-                'norm_log_dist_cdf(h, 1) = (1.0 - Numerics.Distributions.LogNormal.CDF(mu, sigma, ww)) * 100.0  '[%] Lognormal
-                norm_log_dist_cdf(h, 1) = (1.0 - Numerics.Distributions.Weibull.CDF(shape, scale, xx)) * 100.0  '[%] Weibull
+                If CheckBox22.Checked Then
+                    norm_log_dist_cdf(h, 1) = (1.0 - Numerics.Distributions.Weibull.CDF(shape, scale, xx)) * 100.0  '[%] Weibull
+                Else
+                    norm_log_dist_cdf(h, 1) = (Numerics.Distributions.Weibull.CDF(shape, scale, xx)) * 100.0  '[%] Weibull
+                End If
+
 
                 '------------- Copy to the data grids ----
                 DataGridView5.Rows(h - 1).Cells(0).Value = Round(norm_log_dist_pdf(h, 0), 2)    'Bell Curve
@@ -4200,7 +4203,7 @@ Public Class Form1
                 DataGridView7.Rows(h - 1).Cells(1).Value = Round(norm_log_dist_cdf(h, 1), 2)    'Cum weight
             Next h
 
-            Draw_chart5()
+            Draw_chart5_weibull()
         End If
     End Sub
 
