@@ -501,6 +501,7 @@ Public Class Form1
         '------ allowed users with hard disc id's -----
         user_list.Add("user")
         hard_disk_list.Add("058F63646471")          'Privee PC, graslaan25
+        hard_disk_list.Add("50026B768223EE72")      'Desktop Privee PC, graslaan25
 
         user_list.Add("gpath")
         hard_disk_list.Add("S5RRNF0R784528M")       'VTK PC, GP
