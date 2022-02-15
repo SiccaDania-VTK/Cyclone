@@ -2097,11 +2097,11 @@ Public Class Form1
         row += 1
         oTable.Cell(row, 1).Range.Text = "Emission stage1"
         oTable.Cell(row, 2).Range.Text = TextBox18.Text
-        oTable.Cell(row, 3).Range.Text = "[gr/Am3]"
+        oTable.Cell(row, 3).Range.Text = "[mg/Am3]"
         row += 1
         oTable.Cell(row, 1).Range.Text = "Emission stage1"
         oTable.Cell(row, 2).Range.Text = TextBox180.Text
-        oTable.Cell(row, 3).Range.Text = "[gr/Nm3]"
+        oTable.Cell(row, 3).Range.Text = "[mg/Nm3]"
         row += 1
         oTable.Cell(row, 1).Range.Text = "Emission stage1"
         oTable.Cell(row, 2).Range.Text = TextBox186.Text
@@ -2126,11 +2126,11 @@ Public Class Form1
         row += 1
         oTable.Cell(row, 1).Range.Text = "Emission stage2"
         oTable.Cell(row, 2).Range.Text = TextBox108.Text
-        oTable.Cell(row, 3).Range.Text = "[gr/Am3]"
+        oTable.Cell(row, 3).Range.Text = "[mg/Am3]"
         row += 1
         oTable.Cell(row, 1).Range.Text = "Emission stage2"
         oTable.Cell(row, 2).Range.Text = TextBox179.Text
-        oTable.Cell(row, 3).Range.Text = "[gr/Nm3]"
+        oTable.Cell(row, 3).Range.Text = "[mg/Nm3]"
         row += 1
         oTable.Cell(row, 1).Range.Text = "Emission stage2"
         oTable.Cell(row, 2).Range.Text = TextBox184.Text
@@ -2142,11 +2142,11 @@ Public Class Form1
         row += 1
         oTable.Cell(row, 1).Range.Text = "Emission stage1+2"
         oTable.Cell(row, 2).Range.Text = TextBox134.Text
-        oTable.Cell(row, 3).Range.Text = "[gr/Am3]"
+        oTable.Cell(row, 3).Range.Text = "[mg/Am3]"
         row += 1
         oTable.Cell(row, 1).Range.Text = "Emission stage1+2"
         oTable.Cell(row, 2).Range.Text = TextBox178.Text
-        oTable.Cell(row, 3).Range.Text = "[gr/Nm3]"
+        oTable.Cell(row, 3).Range.Text = "[mg/Nm3]"
         row += 1
         oTable.Cell(row, 1).Range.Text = "Emission stage1+2"
         oTable.Cell(row, 2).Range.Text = TextBox184.Text
@@ -2184,7 +2184,6 @@ Public Class Form1
         oPara4.Range.InsertParagraphAfter()
     End Sub
     'Air viscosity
-
     Private Sub Button6_Click(sender As Object, e As EventArgs) Handles Button6.Click, NumericUpDown21.ValueChanged
         Dim Visco As Double
         Visco = Air_visco(NumericUpDown21.Value)
@@ -2204,7 +2203,6 @@ Public Class Form1
         vis = C1 * temp ^ 1.5 / (temp + C2)
         Return (vis * 100.0)    '[kg/m-s]-->[centi Poise]
     End Function
-
     Private Sub Present_loss_grid1(ks As Integer)
         Dim j As Integer
 
@@ -2240,11 +2238,11 @@ Public Class Form1
         For row = 1 To 110  'Fill the DataGrid
             j = row - 1
             DataGridView2.Rows(j).Cells(0).Value = _cees(ks).stage1(j).dia.ToString("F8")
-            DataGridView2.Rows(j).Cells(1).Value = _cees(ks).stage1(j).d_ave.ToString("F8")          'Average diameter
-            DataGridView2.Rows(j).Cells(2).Value = _cees(ks).stage1(j).d_ave_K.ToString("F5")       'Average dia/K stokes
-            DataGridView2.Rows(j).Cells(3).Value = _cees(ks).stage1(j).loss_overall.ToString("F5")  'Loss 
-            DataGridView2.Rows(j).Cells(4).Value = _cees(ks).stage1(j).loss_overall_C.ToString("F5") 'Loss 
-            DataGridView2.Rows(j).Cells(5).Value = _cees(ks).stage1(j).catch_chart.ToString("F5")    'Catch
+            DataGridView2.Rows(j).Cells(1).Value = _cees(ks).stage1(j).d_ave.ToString("F8")        'Average diameter
+            DataGridView2.Rows(j).Cells(2).Value = _cees(ks).stage1(j).d_ave_K.ToString("F5")      'Average dia/K stokes
+            DataGridView2.Rows(j).Cells(3).Value = _cees(ks).stage1(j).loss_overall.ToString("F5")      'Loss 
+            DataGridView2.Rows(j).Cells(4).Value = _cees(ks).stage1(j).loss_overall_C.ToString("F5")    'Loss 
+            DataGridView2.Rows(j).Cells(5).Value = _cees(ks).stage1(j).catch_chart.ToString("F5")       'Catch
             DataGridView2.Rows(j).Cells(6).Value = _cees(ks).stage1(j).i_grp.ToString              'Groep nummer
             DataGridView2.Rows(j).Cells(7).Value = _cees(ks).stage1(j).i_d1.ToString("F5")         'class lower dia limit
             DataGridView2.Rows(j).Cells(8).Value = _cees(ks).stage1(j).i_d2.ToString("F5")         'class upper dia limit
