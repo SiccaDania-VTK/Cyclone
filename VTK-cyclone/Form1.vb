@@ -2,6 +2,7 @@
 Imports System.IO
 Imports System.Management
 Imports System.Math
+Imports System.Text
 Imports System.Threading
 Imports System.Windows.Forms.DataVisualization.Charting
 Imports MathNet
@@ -740,6 +741,7 @@ Public Class Form1
         "Use cyclone as 1 stage before AA850 to prevent blocking"
 
         TextBox187.Text = "Log" & vbCrLf &
+        "15-02-2022, Bugfix printout gram->mg/Nm3" & vbCrLf &
         "10-02-2022, Lognormal Distribution tool added" & vbCrLf &
         "13-11-2021, Now .NET framework 4.8" & vbCrLf &
         "09-11-2021, Tab Steel, Stress# 1 and stress #2 added still under construction" & vbCrLf &
@@ -1678,10 +1680,14 @@ Public Class Form1
         TextBox24.Text = "Present selected PSD" & vbCrLf
 
         '------ now present-------------
+        'https://docs.microsoft.com/en-us/dotnet/standard/base-types/stringbuilder
+        Dim sb As New StringBuilder()
         For h = 0 To no_PDS_inputs - 1    'Fill line chart
-            TextBox24.Text &= "dia= " & r_points(h, 0).ToString("F2") & ", perc= " & r_points(h, 1).ToString("F5") & vbCrLf
+            sb.AppendFormat("dia={0:F2} , perc = {1:F5}", r_points(h, 0), r_points(h, 1) & vbCrLf)
             ch.Series(0).Points.AddXY(r_points(h, 0), r_points(h, 1))   '
         Next h
+        TextBox24.Text &= sb.ToString
+        MsgBox(sb.ToString)
     End Sub
 
     Private Sub Draw_chart5_weibull()
@@ -1811,7 +1817,7 @@ Public Class Form1
         Dim bf As New System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
 
         If TextBox28.Text.Trim.Length = 0 OrElse TextBox29.Text.Trim.Length = 0 Then
-            MessageBox.Show("Complete Quote and Tag number")
+            MessageBox.Show("Complete Quote And Tag number")
         Else
             Save_present_case_to_array()            'Store data in array
 
@@ -1826,7 +1832,7 @@ Public Class Form1
                 If (Not System.IO.Directory.Exists(dirpath_Eng)) Then System.IO.Directory.CreateDirectory(dirpath_Eng)
                 If (Not System.IO.Directory.Exists(dirpath_Rap)) Then System.IO.Directory.CreateDirectory(dirpath_Rap)
             Catch ex As Exception
-                MessageBox.Show("Can not create directory on the VTK intranet (L6286) " & vbCrLf & vbCrLf & ex.Message)
+                MessageBox.Show("Can Not create directory On the VTK intranet (L6286) " & vbCrLf & vbCrLf & ex.Message)
             End Try
 
             Try
@@ -1834,7 +1840,7 @@ Public Class Form1
                     filename = dirpath_Eng & filename 'used at VTK with intranet
                 Else
                     filename = dirpath_tmp & filename 'used at VTK with intranet'used at home
-                    MessageBox.Show("VTK intranet not acceasable, saved on " & filename)
+                    MessageBox.Show("VTK intranet Not acceasable, saved On " & filename)
                 End If
 
                 '--- Delete existing file -------
@@ -1903,7 +1909,7 @@ Public Class Form1
         'imports system.management
         Dim tmpStr2 As String = ""
         Dim myScop As New ManagementScope("\\" & Environment.MachineName & "\root\cimv2")
-        Dim oQuer As New SelectQuery("SELECT * FROM WIN32_DiskDrive")
+        Dim oQuer As New SelectQuery("Select * FROM WIN32_DiskDrive")
 
         Dim oResult As New ManagementObjectSearcher(myScop, oQuer)
         Dim oIte As ManagementObject
@@ -1925,7 +1931,7 @@ Public Class Form1
             Calc_sequence()
             Write_to_word_com()     'Commercial data to Word
         Else
-            MessageBox.Show("Enter Quote nummer and Tag, then Export sizing data to Word")
+            MessageBox.Show("Enter Quote nummer And Tag, Then Export sizing data To Word")
         End If
     End Sub
 
@@ -1976,7 +1982,7 @@ Public Class Form1
         oTable.Cell(row, 1).Range.Text = "Tag nummer "
         oTable.Cell(row, 2).Range.Text = TextBox29.Text
         row += 1
-        oTable.Cell(row, 1).Range.Text = "Print date"
+        oTable.Cell(row, 1).Range.Text = "Print Date"
         oTable.Cell(row, 2).Range.Text = Now().ToString("MM-dd-yyyy")
         row += 2
         oTable.Cell(row, 1).Range.Text = "Flow"
@@ -2213,7 +2219,7 @@ Public Class Form1
 
         DataGridView2.EnableHeadersVisualStyles = False                     'For backcolor
         DataGridView2.Columns(0).HeaderText = "Dia upper [mu]"              '
-        DataGridView2.Columns(1).HeaderText = "Dia (aver.) class [mu]"      '         
+        DataGridView2.Columns(1).HeaderText = "Dia (aver.) Class [mu]"      '         
         DataGridView2.Columns(2).HeaderText = "Dia/ k_stokes [-]"            '
         DataGridView2.Columns(3).HeaderText = "Loss overall [-]"            '
         DataGridView2.Columns(4).HeaderText = "Loss overall Corrected"      '
@@ -2272,7 +2278,7 @@ Public Class Form1
 
         DataGridView3.EnableHeadersVisualStyles = False                         'For backcolor
         DataGridView3.Columns(0).HeaderText = "Dia upper [mu]"                  '
-        DataGridView3.Columns(1).HeaderText = "Dia (aver.) class [mu]"          '
+        DataGridView3.Columns(1).HeaderText = "Dia (aver.) Class [mu]"          '
         DataGridView3.Columns(2).HeaderText = "Dia/ k_stokes [-]"                       '
         DataGridView3.Columns(3).HeaderText = "Loss overall [-]"                '
         DataGridView3.Columns(4).HeaderText = "Loss overall Corrected [-]"      '
@@ -2285,9 +2291,9 @@ Public Class Form1
         DataGridView3.Columns(11).HeaderText = "k [-]"                          '    
         DataGridView3.Columns(12).HeaderText = "m [-]"                          '
         DataGridView3.Columns(13).HeaderText = "interpol. psd cum [-]"          '
-        DataGridView3.Columns(14).HeaderText = "psd_cum_pro for chart"          '
-        DataGridView3.Columns(15).HeaderText = "psd diff [%] of 1-stage"        '
-        DataGridView3.Columns(16).HeaderText = "psd diff [%] of 2-stage"        '
+        DataGridView3.Columns(14).HeaderText = "psd_cum_pro For chart"          '
+        DataGridView3.Columns(15).HeaderText = "psd diff [%] Of 1-stage"        '
+        DataGridView3.Columns(16).HeaderText = "psd diff [%] Of 2-stage"        '
         DataGridView3.Columns(17).HeaderText = "catch loss abs [%]"             '
         DataGridView3.Columns(18).HeaderText = "loss abs corrected [%]"         '
 
@@ -2733,7 +2739,7 @@ Public Class Form1
 
             Label1.Visible = False  'Error message
         Else
-            MessageBox.Show("Error in Calc_diam_classification")
+            MessageBox.Show("Error In Calc_diam_classification")
             Label1.Visible = True   'Error message
         End If
     End Sub
@@ -3107,19 +3113,20 @@ Public Class Form1
     End Sub
 
     Private Sub Dump_log_to_box24()
+        Dim sb As New StringBuilder()
 
         TextBox24.Text = "----------------------------------------" & vbCrLf
         For zz = 0 To 4
-            TextBox24.Text &= "zz= " & zz.ToString & ",  _cees(zz).Noc1= " & _cees(zz).Noc1.ToString & vbCrLf
-            TextBox24.Text &= "zz= " & zz.ToString & ",  _cees(zz).Noc2= " & _cees(zz).Noc2.ToString & vbCrLf
-            TextBox24.Text &= "zz= " & zz.ToString & ",  _cees(zz).db1= " & _cees(zz).db1.ToString & vbCrLf
-            TextBox24.Text &= "zz= " & zz.ToString & ",  _cees(zz).db2= " & _cees(zz).db2.ToString & vbCrLf & vbCrLf
+            sb.AppendFormat("zz= {0} _cees(zz).Noc1= {1}", zz, _cees(zz).Noc1 & vbCrLf)
+            sb.AppendFormat("zz= {0} _cees(zz).Noc2= {1}", zz, _cees(zz).Noc2 & vbCrLf)
+            sb.AppendFormat("zz= {0} _cees(zz).db1= {1}", zz, _cees(zz).db1 & vbCrLf)
+            sb.AppendFormat("zz= {0} _cees(zz).db2= {1}", zz, _cees(zz).db2 & vbCrLf & vbCrLf)
         Next
 
         For zz = 0 To 4
-            TextBox24.Text &= "_input(" & zz.ToString & ").dia_big = " & _input(zz).dia_big.ToString & vbCrLf
+            sb.AppendFormat("= _input({1}).dia_big= ", zz, _input(zz).dia_big & vbCrLf)
         Next
-
+        TextBox24.Text &= sb.ToString
     End Sub
 
     Private Sub Chck_value(num As NumericUpDown, value As Decimal)
@@ -3158,7 +3165,7 @@ Public Class Form1
             DataGridView4.EnableHeadersVisualStyles = False                         'For backcolor
             DataGridView4.RowHeadersVisible = False
 
-            DataGridView4.Columns(0).HeaderText = "Dia class [mu]"                  'Chart
+            DataGridView4.Columns(0).HeaderText = "Dia Class [mu]"                  'Chart
             DataGridView4.Columns(1).HeaderText = "In abs [g/Am3]"
             DataGridView4.Columns(2).HeaderText = "Inlet psd diff [%]"
             DataGridView4.Columns(3).HeaderText = "Inlet psd cum (chart)[%]"
@@ -4213,17 +4220,17 @@ Public Class Form1
             Select Case True
                 Case .SelectedIndex = 0
                 Case .SelectedIndex = 1                 'Corn
-                    NumericUpDown17.Value = 2.5D 'mu
-                    NumericUpDown24.Value = 0.4D 'sigma
+                    NumericUpDown17.Value = 3.6D 'shape
+                    NumericUpDown24.Value = 13.4D 'scale
                 Case .SelectedIndex = 2                 'Chickpea
-                    NumericUpDown17.Value = 3.2D 'mu
-                    NumericUpDown24.Value = 1.3D 'sigma
+                    NumericUpDown17.Value = 4D 'shape
+                    NumericUpDown24.Value = 25D 'scale
                 Case .SelectedIndex = 3                 'Potato
-                    NumericUpDown17.Value = 3.6D 'mu
-                    NumericUpDown24.Value = 0.54D 'sigma
+                    NumericUpDown17.Value = 2.4D 'shape
+                    NumericUpDown24.Value = 47D 'scale
                 Case .SelectedIndex = 4                 'Maltodextrine
-                    NumericUpDown17.Value = 4.4D 'mu
-                    NumericUpDown24.Value = 1.3D 'sigma
+                    NumericUpDown17.Value = 1D 'shape
+                    NumericUpDown24.Value = 121D 'scale
                 Case Else
             End Select
 
