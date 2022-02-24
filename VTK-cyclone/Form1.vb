@@ -129,7 +129,7 @@ End Structure
 End Structure
 
 Public Class Form1
-    Public Const no_PDS_inputs As Integer = 100         'Data from the customer
+    Public Const no_PDS_inputs As Integer = 200         'was 100, Data from the customer
     Private Const V As Boolean = False
     Private Const V1 As Boolean = False
     Public _cyl1_dim(20) As Double                      'Cyclone stage #1 dimensions
@@ -4232,5 +4232,19 @@ Public Class Form1
 
         End With
         Calc_plot_Distribution()
+    End Sub
+
+    Private Sub Button27_Click(sender As Object, e As EventArgs) Handles Button27.Click
+        With DataGridView6
+            For row = 0 To .Rows.Count - 1
+                If CDbl(DataGridView7.Rows(row).Cells(1).Value) > 0 Then
+                    .Rows(row).Cells(0).Value = DataGridView7.Rows(row).Cells(0).Value
+                    .Rows(row).Cells(1).Value = DataGridView7.Rows(row).Cells(1).Value
+                Else
+                    .Rows(row).Cells(0).Value = 0
+                    .Rows(row).Cells(1).Value = 0
+                End If
+            Next
+        End With
     End Sub
 End Class
