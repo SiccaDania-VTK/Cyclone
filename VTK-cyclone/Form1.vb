@@ -451,13 +451,15 @@ Public Class Form1
    "1.4401 (316)   ;204;177;162;147;137;127;120;115;112;110;108; max 550c;ss",
    "1.4404 (316L)  ;200;166;152;137;127;118;113;108;103;100; 98; max 550c;ss"}
 
-    'Typical Lognatural distribution; mu; sigma
+    'Typical Lognatural distribution; Weibull shape; Weibull scale
     Public Shared typ_distri As String() = {
     "Free selection;0;0",
-    "Corn;2.5;0.4",
-    "Chickpea;3.2;1.3",
-    "Potato;3.6;0.54",
-    "Maltodex;4.4;1.3"}
+    "Corn;3.4;14.0",
+    "Chickpea;4.0;25.0",
+    "Potato;2.4;47",
+    "Maltodex;1.0;121",
+    "Hi protein Pet food powder;2.1;72.4"}
+
 
     'Chapter 6, Max allowed values for pressure parts
     Public Shared chap6 As String() = {
@@ -544,9 +546,8 @@ Public Class Form1
         hard_disk_list.Add("134309552747")          'VTK PC, Peter de Wild
 
         user_list.Add("bertk")
-        'hard_disk_list.Add("WD-WXB1A14C9942")      'VTK oude desktop. BKo
         hard_disk_list.Add("0025_3886_01E9_11D6.")  'VTK new desktop. BKo (24/11/2020)
-
+        hard_disk_list.Add("NA8QWR8W")              'VTK new intallatie BKo (23/02/2022)
 
         nu = Now()
         nu2 = CDate("2022-06-01 00:00:00")
@@ -4166,6 +4167,7 @@ Public Class Form1
 
         Dim shape As Double = NumericUpDown17.Value
         Dim scale As Double = NumericUpDown24.Value
+
         Dim xx As Double
         If shape > 0 AndAlso scale > 0 Then
             With DataGridView5
@@ -4187,13 +4189,14 @@ Public Class Form1
                 .Columns(1).HeaderText = "PSD Cum wght[%]"
             End With
 
+
             For h = 1 To norm_log_dist_pdf.GetLength(0) - 1 'Fill line chart
-                xx = h / 6              'Calulation step
-                '------------- Bell curve ----------------
+                xx = h / 6        'Calulation step
+                '------------- Datagridview Bell curve ----------------
                 norm_log_dist_pdf(h, 0) = xx
                 norm_log_dist_pdf(h, 1) = Numerics.Distributions.Weibull.PDF(shape, scale, xx) * 100.0  '[%] Weibull
 
-                '------------- S curve (Cumulatief) ---- 
+                '------------- Datagridview S curve (Cumulatief) ---- 
                 norm_log_dist_cdf(h, 0) = xx
                 If CheckBox22.Checked Then
                     norm_log_dist_cdf(h, 1) = (1.0 - Numerics.Distributions.Weibull.CDF(shape, scale, xx)) * 100.0  '[%] Weibull
@@ -4210,29 +4213,20 @@ Public Class Form1
                     DataGridView7.Item(1, h - 1).Style.BackColor = Color.Red
                 End If
             Next h
-
-            Draw_chart5_weibull()
         End If
+        Draw_chart5_weibull()
+
     End Sub
 
     Private Sub ComboBox6_SelectedIndexChanged(sender As Object, e As EventArgs) Handles ComboBox6.SelectedIndexChanged
+        Dim words As String()
+        Dim separators As String() = {";"}
+
         With ComboBox6
-            Select Case True
-                Case .SelectedIndex = 0
-                Case .SelectedIndex = 1                 'Corn
-                    NumericUpDown17.Value = 3.6D 'shape
-                    NumericUpDown24.Value = 13.4D 'scale
-                Case .SelectedIndex = 2                 'Chickpea
-                    NumericUpDown17.Value = 4D 'shape
-                    NumericUpDown24.Value = 25D 'scale
-                Case .SelectedIndex = 3                 'Potato
-                    NumericUpDown17.Value = 2.4D 'shape
-                    NumericUpDown24.Value = 47D 'scale
-                Case .SelectedIndex = 4                 'Maltodextrine
-                    NumericUpDown17.Value = 1D 'shape
-                    NumericUpDown24.Value = 121D 'scale
-                Case Else
-            End Select
+            words = typ_distri(.SelectedIndex).Split(separators, StringSplitOptions.None)
+
+            NumericUpDown17.Value = CDec(Trim(words(1))) 'shape
+            NumericUpDown24.Value = CDec(Trim(words(2))) 'scale
 
             .BackColor = CType(IIf(.SelectedIndex > 0, Color.LightGreen, Color.White), Color)
 
