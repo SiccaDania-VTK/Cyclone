@@ -22,8 +22,8 @@ Imports Word = Microsoft.Office.Interop.Word
 
     '====== INPUT DATA ======
     Public FlowT As Double          '[Am3/h] Air flow 
-    Public ro_gas As Double         '[kg/hr] Density 
-    Public ro_solid As Double       '[kg/hr] Density 
+    Public ro_gas As Double         '[kg/m3] Density gas
+    Public ro_solid As Double       '[kg/m3] Density 
     Public visco As Double          '[Centi Poise] Visco in 
     Public Temp As Double           '[c] Temperature 
     Public Spare1 As String         'For future use
@@ -32,6 +32,7 @@ Imports Word = Microsoft.Office.Interop.Word
 
     '===== stage #1 parameter ======
     Public Flow1 As Double          '[Am3/s] Air flow per cyclone 
+    Public Flow_air_kgh As Double   '[kg/h] Air flow total
     Public dust1_in_kgh As Double   '[kg/h] Dust inlet stage 1 total  
     Public dust1_Am3 As Double      '[g/Am3] Dust load inlet 
     Public dust1_Nm3 As Double      '[g/Nm3] Dust load inlet 
@@ -129,7 +130,7 @@ End Structure
 End Structure
 
 Public Class Form1
-    Public Const no_PDS_inputs As Integer = 200         'was 100, Data from the customer
+    Public Const no_PDS_inputs As Integer = 300         'was 100, Data from the customer
     Private Const V As Boolean = False
     Private Const V1 As Boolean = False
     Public _cyl1_dim(20) As Double                      'Cyclone stage #1 dimensions
@@ -502,25 +503,20 @@ Public Class Form1
         Next
 
         '------ allowed users with hard disc id's -----
+        user_list.Add("GP")
+        user_list.Add("gpath")
+        user_list.Add("GerritP")
+        user_list.Add("gerrit.pathuis")
         user_list.Add("user")
         hard_disk_list.Add("058F63646471")          'Privee PC, graslaan25
         hard_disk_list.Add("50026B768223EE72")      'Desktop Privee PC, graslaan25
-
-        user_list.Add("gpath")
         hard_disk_list.Add("S5RRNF0R784528M")       'VTK PC, GP
-
-        user_list.Add("GerritP")
         hard_disk_list.Add("S2R6NX0H740154H")       'VTK PC, GP
-
-        user_list.Add("GerritP")
         hard_disk_list.Add("0008_0D02_003E_0FBB.")  'VTK laptop, GP
-
-        user_list.Add("GP")
         hard_disk_list.Add("S28ZNXAG521979")        'VTK laptop, GP privee
 
         user_list.Add("FredKo")
-        'hard_disk_list.Add("JR10006P02Y6EE")       'VTK laptop, FKo
-        'hard_disk_list.Add("0025_3851_91B1_072E.")  'VTK new laptop, FKo
+        user_list.Add("fred.korbeeck")
         hard_disk_list.Add("UGXVK01J1BBS7O")  'VTK new laptop, FKo
 
         user_list.Add("JanK")
@@ -546,6 +542,7 @@ Public Class Form1
         hard_disk_list.Add("134309552747")          'VTK PC, Peter de Wild
 
         user_list.Add("bertk")
+        user_list.Add("bert.korbeeck")
         hard_disk_list.Add("0025_3886_01E9_11D6.")  'VTK new desktop. BKo (24/11/2020)
         hard_disk_list.Add("NA8QWR8W")              'VTK new intallatie BKo (23/02/2022)
 
@@ -783,8 +780,10 @@ Public Class Form1
         Design_stress()
 
         init = True                     'init is now done
+        Debug.WriteLine("789  " & _input.GetLength(0).ToString)
         Draw_chart5_weibull()
         Calc_plot_Distribution()
+
     End Sub
 
     Private Sub Button1_Click(sender As Object, e As EventArgs) Handles button1.Click, TabPage1.Enter, numericUpDown2.ValueChanged, NumericUpDown1.ValueChanged, numericUpDown5.ValueChanged, NumericUpDown20.ValueChanged, NumericUpDown19.ValueChanged, NumericUpDown18.ValueChanged, ComboBox1.SelectedIndexChanged, NumericUpDown4.ValueChanged, NumericUpDown34.ValueChanged, NumericUpDown33.ValueChanged, ComboBox2.SelectedIndexChanged, NumericUpDown43.ValueChanged, NumericUpDown22.ValueChanged, CheckBox3.CheckedChanged, CheckBox2.CheckedChanged, NumericUpDown3.ValueChanged, CheckBox20.CheckedChanged, NumericUpDown6.ValueChanged
@@ -817,23 +816,25 @@ Public Class Form1
         _cees(ks).Temp = NumericUpDown18.Value                         'Temperature [c] 
         _cees(ks).p1_abs = NumericUpDown19.Value * 100.0 + 101325      'Pressure [Pa]
 
-        Dim R_gas As Double = 1000 * _Gasconstant / NumericUpDown3.Value             '[J.kg.K]  
+        Dim R_gas As Double = 1000 * _Gasconstant / NumericUpDown3.Value                '[J.kg.K]  
         _cees(ks).Ro_gas1_Am3 = _cees(ks).p1_abs / (R_gas * (_cees(ks).Temp + 273.15))  '[kg/Am3]
+        _cees(ks).Flow_air_kgh = NumericUpDown1.Value * _cees(ks).Ro_gas1_Am3           '[kg/h] air
 
-
-        TextBox190.Text = _cees(ks).Ro_gas1_Am3.ToString("F3")                     '[kg/Am3]
         '------ dust load NORMAL conditions ----
         _cees(ks).Ro_gas1_Nm3 = Calc_Normal_density(_cees(ks).Ro_gas1_Am3, _cees(ks).p1_abs, _cees(ks).Temp)
 
         '--------- ratio  Nm2 and Am3 ---------
         ratio = _cees(ks).Ro_gas1_Nm3 / _cees(ks).Ro_gas1_Am3
-        _cees(ks).dust1_Am3 = NumericUpDown4.Value                    'gram/Am3
-        _cees(ks).dust1_Nm3 = _cees(ks).dust1_Am3 * ratio                   'gram/Nm3
+        _cees(ks).dust1_Am3 = NumericUpDown4.Value                                      'dust gram/Am3
+        _cees(ks).dust1_Nm3 = _cees(ks).dust1_Am3 * ratio                               'dust gram/Nm3
 
         '--------- present -------------
-        TextBox132.Text = _cees(ks).dust1_Nm3.ToString("F3")                'gram/Nm3
-        TextBox129.Text = _cees(ks).Ro_gas1_Nm3.ToString("F3")              'kg/Nm3 inlet gas
-        TextBox191.Text = (NumericUpDown1.Value / ratio).ToString("F0")     'Nm3/h inlet gas
+        TextBox190.Text = _cees(ks).Ro_gas1_Am3.ToString("F3")                          '[kg/Am3]
+        TextBox132.Text = _cees(ks).dust1_Nm3.ToString("F3")                            'gram/Nm3
+        TextBox129.Text = _cees(ks).Ro_gas1_Nm3.ToString("F3")                          'kg/Nm3 inlet gas
+        TextBox191.Text = (NumericUpDown1.Value / ratio).ToString("F0")                 'Nm3/h inlet gas
+        TextBox136.Text = _cees(ks).Flow_air_kgh.ToString("F0")                         '[kg/h] air
+
 
         If (ComboBox1.SelectedIndex > -1) AndAlso (ComboBox2.SelectedIndex > -1) Then 'Prevent exceptions
             '-------- dimension cyclone stage #1
@@ -898,21 +899,21 @@ Public Class Form1
             End If
             _cees(ks).dpgas1 = 0.5 * _cees(ks).Ro_gas1_Am3 * _cees(ks).inv1 ^ 2 * wc_air1      '[Pa]
             _cees(ks).dpdust1 = 0.5 * _cees(ks).Ro_gas1_Am3 * _cees(ks).inv1 ^ 2 * wc_dust1    '[Pa]
-            _cees(ks).p2_abs = _cees(ks).p1_abs - _cees(ks).dpgas1              '[P_abs (inlet stage #2)]
+            _cees(ks).p2_abs = _cees(ks).p1_abs - _cees(ks).dpgas1                              '[P_abs (inlet stage #2)]
 
 
             '=========== Inlet Stage #2 ==============
             _cees(ks).Ro_gas2_Am3 = _cees(ks).Ro_gas1_Am3 * _cees(ks).p2_abs / _cees(ks).p1_abs  '[kg/Am3] Inlet stage #2 
             _cees(ks).Ro_gas2_Nm3 = Calc_Normal_density(_cees(ks).Ro_gas2_Am3, _cees(ks).p2_abs, _cees(ks).Temp)
 
-            _cees(ks).Flow2 = _cees(ks).FlowT / (3600 * _cees(ks).Noc2)         '[Am3/s/cycloon]
+            _cees(ks).Flow2 = _cees(ks).FlowT / (3600 * _cees(ks).Noc2)                 '[Am3/s] Air flow per cyclone 
 
             '------ compensate the flow for the pressure loss over stage 1 ---
-            _cees(ks).Flow2 *= _cees(ks).p1_abs / _cees(ks).p2_abs
+            _cees(ks).Flow2 *= _cees(ks).p1_abs / _cees(ks).p2_abs                      '[Am3/s] Air flow per cyclone 
 
             '---- Compensate for the Speed for the pressure loss in stage #1 ----
-            _cees(ks).inv2 = _cees(ks).Flow2 / (_cees(ks).inb2 * _cees(ks).inh2)    '[m/s]
-            _cees(ks).outv2 = _cees(ks).Flow2 / ((PI / 4) * _cees(ks).dout2 ^ 2)    '[m/s]
+            _cees(ks).inv2 = _cees(ks).Flow2 / (_cees(ks).inb2 * _cees(ks).inh2)         '[m/s]
+            _cees(ks).outv2 = _cees(ks).Flow2 / ((PI / 4) * _cees(ks).dout2 ^ 2)        '[m/s]
 
             '----------- Pressure loss cyclone stage #2----------------------
             words = rekenlijnen(ComboBox2.SelectedIndex).Split(CType(";", Char()))
@@ -955,6 +956,7 @@ Public Class Form1
 
             TextBox36.Text = (_cees(ks).FlowT / 3600).ToString("F2")    '[m3/s] flow
             TextBox177.Text = _cees(ks).dust1_in_kgh.ToString("F1")     '[kg/h] dust
+
 
             If (ComboBox1.SelectedIndex = 9) Then
                 groupBox3.Visible = False
@@ -1884,8 +1886,10 @@ Public Class Form1
             _input = CType(bf.Deserialize(fStream), Psd_input_struct()) ' read from file
             fStream.Close()
 
-            Fill_DGV6_from_input_array()
+            '==== the length of _input is CHANGED bij Deserialize, return to correct length
+            ReDim Preserve _input(no_PDS_inputs + 1)
 
+            Fill_DGV6_from_input_array()
         Else
             TextBox24.Text &= "Retrieved project from disk failed" & vbCrLf
         End If
@@ -1894,7 +1898,6 @@ Public Class Form1
 
     Private Sub Button4_Click(sender As Object, e As EventArgs) Handles Button4.Click
         'Retrieve project from disk and goto case nr 0
-
         Retrieve_from_disk()            'Read from disk to array
 
         '======= program chokes on this section ===========
@@ -3059,7 +3062,7 @@ Public Class Form1
 
     Private Sub Update_Screen_from_array(zz As Integer)
         Dim p1_rel As Double
-
+    
         If init Then
             SuspendLayout()
             '----------- General (not calculated) data------------------
@@ -3110,7 +3113,6 @@ Public Class Form1
             DataGridView6.Rows(row).Cells(1).Value = _input(row).class_load * 100
         Next
         DataGridView6.Refresh()
-        ' Debug.WriteLine("Fill_DGV6_from_input_array done")
     End Sub
 
     Private Sub Dump_log_to_box24()
