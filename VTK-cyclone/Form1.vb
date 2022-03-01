@@ -530,18 +530,20 @@ Public Class Form1
         hard_disk_list.Add("4C530000100828121514")  'Suresh.Sundararaj Denmark
 
         user_list.Add("beko")                       '02/11/2021
+        user_list.Add("beji.kort")                  '01/03/2022
         hard_disk_list.Add("0025_38AA_01B5_BD94.")  'VTK laptop, Benji Kort
 
-        user_list.Add("JeroenA")
+
+        user_list.Add("jeroen.agricola")
         hard_disk_list.Add("171095402070")          'VTK desktop, Jeroen
         hard_disk_list.Add("170228801578")          'VTK laptop, Jeroen disk 1
         hard_disk_list.Add("MCDBM1M4F3QRBEH6")      'VTK laptop, Jeroen disk 2
         hard_disk_list.Add("0025_388A_81BB_14B5.")  'Zweet kamer, Jeroen 
 
         user_list.Add("Peterdw")
+        user_list.Add("peter.de.wildt")             '01/03/2022
         hard_disk_list.Add("134309552747")          'VTK PC, Peter de Wild
 
-        user_list.Add("bertk")
         user_list.Add("bert.korbeeck")
         hard_disk_list.Add("0025_3886_01E9_11D6.")  'VTK new desktop. BKo (24/11/2020)
         hard_disk_list.Add("NA8QWR8W")              'VTK new intallatie BKo (23/02/2022)
